@@ -1,0 +1,5 @@
+{
+  "allowedPaths": ["app", "src", "nodes"],
+  "forbiddenPaths": ["brains", "core", "private", "ip"],
+  "branchStrategy": "pr-only"
+}

@@ -1,0 +1,5 @@
+
+- Add env vars in Vercel from .env.example
+- Deploy: `npx vercel --prod`
+- Check: /api/status, /api/assist/v1/status, /api/assist/v1/summary?q=test
+- Paste owner logic into HX2_STRATEGY_BASE64 (Prod) and redeploy.
