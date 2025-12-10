@@ -1,6 +1,5 @@
 {
   "name": "hx-orchestrator",
-  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev",
