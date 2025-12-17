@@ -1,30 +1,18 @@
-import { prisma } from "@/lib/prisma"; // adjust if different
+import { prisma } from "@/lib/prisma";
+import { redis } from "@/lib/redis"; // MUST exist in HX2
 
 export async function enqueueTask(type: string, payload: any) {
+  // 1. Create canonical DB record
   const task = await prisma.ap2Task.create({
     data: {
       taskType: type,
       payload,
+      state: "queued",
     },
   });
 
+  // 2. Enqueue task ID into Redis
+  await redis.lpush("ap2:queue", task.id);
+
   return task;
-}
-
-export async function listTasks(state?: string) {
-  return prisma.ap2Task.findMany({
-    where: state ? { state } : {},
-    orderBy: { createdAt: "desc" },
-  });
-}
-
-export async function getTask(id: string) {
-  return prisma.ap2Task.findUnique({ where: { id } });
-}
-
-export async function updateTask(id: string, update: any) {
-  return prisma.ap2Task.update({
-    where: { id },
-    data: update,
-  });
 }
