@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { enqueueTask, getTask, listTasks, updateTask } from "@/lib/ap2Queue";
-
+import { enqueueTask } from "@/lib/ap2Queue";
+import { prisma } from "@/lib/prisma";
 
 type HX2Command =
   | "ping"
@@ -174,7 +174,10 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const task = await getTask(taskId);
+  const task = await prisma.ap2Task.findUnique({
+  where: { id: taskId },
+});
+
 
   if (!task) {
     return NextResponse.json(
@@ -194,7 +197,10 @@ export async function POST(req: NextRequest) {
 
 
     case "ap2.task.list": {
-  const tasks = await listTasks(body.args?.state);
+  const tasks = await prisma.ap2Task.findMany({
+  where: body.args?.state ? { state: body.args.state } : {},
+  orderBy: { createdAt: "desc" },
+});
 
   return NextResponse.json({
     status: "ok",
