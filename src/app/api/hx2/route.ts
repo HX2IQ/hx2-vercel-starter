@@ -7,6 +7,8 @@ type HX2Command =
   | "registry.report"
   | "ap2.install"
   | "ap2.status"
+  | "ap2.build.files"
+  | "ap2.deploy.vercel"
   | "ap2.task.enqueue"
   | "ap2.task.status"
   | "ap2.task.list"
@@ -54,9 +56,6 @@ function err(
 export async function POST(req: NextRequest) {
   let body: HX2RequestBody = {};
 
-  // --------------------------------------------------------
-  // Parse JSON safely
-  // --------------------------------------------------------
   try {
     body = (await req.json()) as HX2RequestBody;
   } catch {
@@ -71,13 +70,10 @@ export async function POST(req: NextRequest) {
     return err(undefined, "INVALID_COMMAND", "command must be a string");
   }
 
-  // --------------------------------------------------------
-  // Main command dispatcher (controller switch)
-  // --------------------------------------------------------
   switch (command) {
-    // ======================================================
-    // V1 COMMANDS — MUST FULLY WORK
-    // ======================================================
+    /* =========================
+       CORE
+    ========================== */
 
     case "ping":
       return ok(command, {
@@ -88,32 +84,11 @@ export async function POST(req: NextRequest) {
 
     case "registry.report":
       return ok(command, {
-        mode: args.mode ?? "summary",
         nodes: [
-          {
-            id: "H2",
-            label: "Geopolitical / Macro",
-            version: "2.1",
-            status: "active",
-          },
-          {
-            id: "X2",
-            label: "Crypto",
-            version: "2.0",
-            status: "active",
-          },
-          {
-            id: "K2",
-            label: "Marketing",
-            version: "2.0",
-            status: "active",
-          },
-          {
-            id: "AP2",
-            label: "Node builder / automation",
-            version: "1.0",
-            status: "installed",
-          },
+          { id: "H2", label: "Geopolitical / Macro", version: "2.1" },
+          { id: "X2", label: "Crypto", version: "2.0" },
+          { id: "K2", label: "Marketing", version: "2.0" },
+          { id: "AP2", label: "Node builder / automation", version: "1.0" },
         ],
       });
 
@@ -121,137 +96,126 @@ export async function POST(req: NextRequest) {
       return ok(command, {
         installed: true,
         version: "1.0.0",
-        message: "AP2 ensured installed and ready.",
       });
 
-    case "ap2.status":
-      return ok(command, {
-        installed: true,
-        version: "1.0.0",
-        lastRun: null,
-        queueDepth: 0,
-        notes: "AP2 online and idle (stub).",
+    /* =========================
+       REQUIRED REAL MAPPINGS
+    ========================== */
+
+    case "ap2.status": {
+      const res = await fetch("/api/ap2/status", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(args || {}),
       });
 
-    // ======================================================
-    // V2 COMMANDS — STUBS (required for contract stability)
-    // ======================================================
+      const data = await res.json();
+      return ok(command, data);
+    }
+
+    case "ap2.build.files": {
+      const filesRes = await fetch("/api/ap2/files", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(args),
+      });
+
+      const filesResult = await filesRes.json();
+
+      if (!filesRes.ok) {
+        return err(
+          command,
+          "AP2_FILES_FAILED",
+          "File write failed",
+          filesResult
+        );
+      }
+
+      if (args?.operations?.includes("trigger_vercel_redeploy")) {
+        const deployRes = await fetch("/api/ap2/vercel/deploy", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            comment: args.comment || "Triggered by HX2",
+          }),
+        });
+
+        const deployResult = await deployRes.json();
+
+        return ok(command, {
+          files: filesResult,
+          deploy: deployResult,
+        });
+      }
+
+      return ok(command, filesResult);
+    }
+
+    case "ap2.deploy.vercel": {
+      const res = await fetch("/api/ap2/vercel/deploy", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(args || {}),
+      });
+
+      const data = await res.json();
+      return ok(command, data);
+    }
+
+    /* =========================
+       TASK API (OK TO KEEP)
+    ========================== */
 
     case "ap2.task.enqueue": {
-  const { taskType, payload } = body.args || {};
+      const { taskType, payload } = args || {};
 
-  if (!taskType) {
-    return NextResponse.json(
-      {
-        status: "error",
-        error: "Missing taskType",
-      },
-      { status: 400 }
-    );
-  }
+      if (!taskType) {
+        return err(command, "MISSING_TASK_TYPE", "taskType is required");
+      }
 
-  const task = await enqueueTask(taskType, payload || {});
-
-  return NextResponse.json({
-    status: "ok",
-    hx2: true,
-    command,
-    result: {
-      taskId: task.id,
-      state: task.state,
-    },
-    timestamp: new Date().toISOString(),
-  });
-}
-
+      const task = await enqueueTask(taskType, payload || {});
+      return ok(command, { taskId: task.id, state: task.state });
+    }
 
     case "ap2.task.status": {
-  const taskId = body.args?.taskId;
-  if (!taskId) {
-    return NextResponse.json(
-      { status: "error", error: "Missing taskId" },
-      { status: 400 }
-    );
-  }
+      const taskId = args?.taskId;
+      if (!taskId) {
+        return err(command, "MISSING_TASK_ID", "taskId required");
+      }
 
-  const task = await prisma.ap2Task.findUnique({
-  where: { id: taskId },
-});
+      const task = await prisma.ap2Task.findUnique({
+        where: { id: taskId },
+      });
 
+      if (!task) {
+        return err(command, "NOT_FOUND", "Task not found");
+      }
 
-  if (!task) {
-    return NextResponse.json(
-      { status: "error", error: "Task not found" },
-      { status: 404 }
-    );
-  }
-
-  return NextResponse.json({
-    status: "ok",
-    hx2: true,
-    command,
-    result: task,
-    timestamp: new Date().toISOString(),
-  });
-}
-
+      return ok(command, task);
+    }
 
     case "ap2.task.list": {
-  const tasks = await prisma.ap2Task.findMany({
-  where: body.args?.state ? { state: body.args.state } : {},
-  orderBy: { createdAt: "desc" },
-});
+      const tasks = await prisma.ap2Task.findMany({
+        where: args?.state ? { state: args.state } : {},
+        orderBy: { createdAt: "desc" },
+      });
 
-  return NextResponse.json({
-    status: "ok",
-    hx2: true,
-    command,
-    result: {
-      tasks,
-    },
-    timestamp: new Date().toISOString(),
-  });
-}
+      return ok(command, { tasks });
+    }
 
+    /* =========================
+       OPTIONAL / FUTURE
+    ========================== */
 
     case "ap2.scaffold.node":
-      return ok(command, {
-        taskId: "task_124",
-        queued: true,
-        nodeId: args.nodeId ?? "H2",
-        blueprint: args.blueprint ?? "hx2-node-v1",
-      });
-
     case "registry.node.install":
-      return ok(command, {
-        nodeId: args.nodeId ?? "H2",
-        version: args.version ?? "2.1",
-        label: args.label ?? "Geopolitical / Macro",
-        status: "installed",
-      });
-
-    // ======================================================
-    // UNKNOWN COMMAND
-    // ======================================================
-    default:
       return err(
         command,
-        "UNKNOWN_COMMAND",
-        `Unsupported command: ${command}`,
-        {
-          allowed: [
-            "ping",
-            "registry.report",
-            "ap2.install",
-            "ap2.status",
-            "ap2.task.enqueue",
-            "ap2.task.status",
-            "ap2.task.list",
-            "ap2.scaffold.node",
-            "registry.node.install",
-          ],
-          source,
-        }
+        "NOT_IMPLEMENTED",
+        "Command not implemented in v1"
       );
+
+    default:
+      return err(command, "UNKNOWN_COMMAND", `Unsupported command: ${command}`);
   }
 }
