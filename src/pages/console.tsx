@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
 
+<<<<<<< HEAD
 
 type StatusCardProps = {
   title: string;
@@ -249,3 +249,6 @@ export default function ConsolePage() {
     </main>
   );
 }
+=======
+<p>AP2 verification line</p>
+>>>>>>> eb1a23ebf4e24495342497bc914cff856e3c3cef
