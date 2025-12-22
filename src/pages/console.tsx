@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 
+
 type StatusCardProps = {
   title: string;
   endpoint: string;
@@ -204,7 +205,7 @@ export default function ConsolePage() {
           >
             Live status for HX2 core, registry integrity, and AP2 worker.
             Cognitive modules stay sealed; this page only talks to safe{" "}
-            <code>app/api/*</code> endpoints.
+            <code>app/api/*</code>  endpoints.
           </p>
         </header>
 
