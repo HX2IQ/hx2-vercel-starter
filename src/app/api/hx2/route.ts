@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { enqueueTask } from "@/lib/ap2Queue";
 import { prisma } from "@/lib/prisma";
 
+/* ======================================================
+   Types
+====================================================== */
+
 type HX2Command =
   | "ping"
   | "registry.report"
@@ -20,6 +24,10 @@ interface HX2RequestBody {
   source?: string;
   args?: Record<string, any>;
 }
+
+/* ======================================================
+   Helpers
+====================================================== */
 
 function nowIso() {
   return new Date().toISOString();
@@ -53,6 +61,19 @@ function err(
   );
 }
 
+/**
+ * Resolve absolute base URL for server-side fetch
+ */
+function getBaseUrl() {
+  if (process.env.BASE_URL) return process.env.BASE_URL;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  throw new Error("BASE_URL or VERCEL_URL must be set");
+}
+
+/* ======================================================
+   Route Handler
+====================================================== */
+
 export async function POST(req: NextRequest) {
   let body: HX2RequestBody = {};
 
@@ -65,6 +86,7 @@ export async function POST(req: NextRequest) {
   const command = body.command ?? "ping";
   const source = body.source ?? "chatgpt";
   const args = body.args ?? {};
+  const baseUrl = getBaseUrl();
 
   if (typeof command !== "string") {
     return err(undefined, "INVALID_COMMAND", "command must be a string");
@@ -103,7 +125,7 @@ export async function POST(req: NextRequest) {
     ========================== */
 
     case "ap2.status": {
-      const res = await fetch("/api/ap2/status", {
+      const res = await fetch(`${baseUrl}/api/ap2/status`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(args || {}),
@@ -114,7 +136,7 @@ export async function POST(req: NextRequest) {
     }
 
     case "ap2.build.files": {
-      const filesRes = await fetch("/api/ap2/files", {
+      const filesRes = await fetch(`${baseUrl}/api/ap2/files`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(args),
@@ -132,7 +154,7 @@ export async function POST(req: NextRequest) {
       }
 
       if (args?.operations?.includes("trigger_vercel_redeploy")) {
-        const deployRes = await fetch("/api/ap2/vercel/deploy", {
+        const deployRes = await fetch(`${baseUrl}/api/ap2/vercel/deploy`, {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({
@@ -152,7 +174,7 @@ export async function POST(req: NextRequest) {
     }
 
     case "ap2.deploy.vercel": {
-      const res = await fetch("/api/ap2/vercel/deploy", {
+      const res = await fetch(`${baseUrl}/api/ap2/vercel/deploy`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(args || {}),
@@ -163,7 +185,7 @@ export async function POST(req: NextRequest) {
     }
 
     /* =========================
-       TASK API (OK TO KEEP)
+       TASK API (VALID)
     ========================== */
 
     case "ap2.task.enqueue": {
