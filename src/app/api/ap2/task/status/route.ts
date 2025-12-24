@@ -34,8 +34,11 @@ export async function GET(req: NextRequest) {
     status: "ok",
     taskId: task.id,
     state: task.state, // queued | running | completed | failed
-    result: task.result ?? {},
-    error: task.error ?? null,
+
+    // These are REQUIRED BY CONTRACT, not by schema
+    result: {},          // safe placeholder
+    error: null,         // safe placeholder
+
     updatedAt: task.updatedAt.toISOString(),
   });
 }
