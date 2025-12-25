@@ -1,23 +1,57 @@
-﻿export default function Page() {
+﻿'use client';
+
+import { useState } from 'react';
+
+export default function ChatPage() {
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState<string[]>([]);
+
+
+  async function handleSubmit(e: React.FormEvent) {
+  e.preventDefault();
+
+  const message = input.trim();
+  if (!message) return;
+
+  // show what YOU typed
+  setMessages(prev => [...prev, `You: ${message}`]);
+  setInput("");
+
+  try {
+    const res = await fetch("/api/console/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    });
+
+    const data = await res.json();
+
+    // show what SERVER replied
+    setMessages(prev => [...prev, `HX2: ${data.reply ?? "(no reply)"}`]);
+  } catch (err) {
+    setMessages(prev => [...prev, "HX2: (error calling API)"]);
+  }
+}
+
+
   return (
-    <main style={{ padding: 24, maxWidth: 900, margin: "0 auto" }}>
-      <h1 style={{ fontSize: 24, fontWeight: 700 }}>HX2 Console Chat (SAFE)</h1>
-      <p style={{ opacity: 0.8 }}>SAFE-mode chat UI shell. Wire to a SAFE endpoint next.</p>
+    <div style={{ padding: 24 }}>
+      <h1>HX2 Console Chat</h1>
 
-      <div style={{ border: "1px solid #ddd", borderRadius: 12, padding: 12, height: 380, overflow: "auto", marginTop: 16 }}>
-        <div style={{ opacity: 0.7 }}>No messages yet.</div>
-      </div>
-
-      <form style={{ display: "flex", gap: 8, marginTop: 12 }} onSubmit={(e) => e.preventDefault()}>
+      <form onSubmit={handleSubmit}>
         <input
-          type="text"
-          placeholder="Type a command…"
-          style={{ flex: 1, padding: 10, borderRadius: 10, border: "1px solid #ddd" }}
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          placeholder="Type command..."
         />
-        <button type="submit" style={{ padding: "10px 14px", borderRadius: 10, border: "1px solid #ddd" }}>
-          Send
-        </button>
+        <button type="submit">Send</button>
       </form>
-    </main>
+
+      <ul>
+        {messages.map((m, i) => (
+          <li key={i}>{m}</li>
+        ))}
+      </ul>
+    </div>
   );
 }
