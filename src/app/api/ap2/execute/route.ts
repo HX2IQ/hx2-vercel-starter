@@ -1,14 +1,14 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
-import { taskRouter } from "@/lib/ap2/taskRouter";
+import { routeTask } from "@/lib/ap2/taskRouter";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const result = await taskRouter(body);
-    return NextResponse.json({ ok: true, result });
+    const result = await routeTask(body);
+    return NextResponse.json(result);
   } catch (err: any) {
     return NextResponse.json(
-      { ok: false, error: err?.message || "AP2 execute failed" },
+      { ok: false, endpoint: "ap2.execute", error: err?.message || "Execute handler failed" },
       { status: 500 }
     );
   }

@@ -1,57 +1,45 @@
 ﻿export type SafeMode = "SAFE" | "safe";
 
 export type AP2Task =
+  | { type: "__router_id__" }
   | { type: "ping" }
-  | { type: "registry.status" }
-  | { type: "registry.list" }
-  | { type: "registry.node.install"; node: { id: string; type?: string; mode?: string } }
-  | { type: "scaffold.execute"; blueprint_name: string };
+  | { type: "whoami" };
 
 export type AP2RequestBody = {
   mode?: SafeMode | string;
-  task?: AP2Task | any;
+  task?: AP2Task;
+  command?: string; // accept legacy callers too
 };
 
 export type AP2Result = {
   ok: boolean;
-  mode: "SAFE";
+  mode: string;
   endpoint: "ap2.execute";
-  received?: any;
+  router?: string;
   executed?: any;
+  received?: any;
   error?: string;
 };
 
-type Handler = (body: AP2RequestBody) => Promise<any>;
+export async function routeTask(body: AP2RequestBody): Promise<AP2Result> {
+  const mode = (body?.mode ?? "SAFE") as string;
 
-import { ping } from "./handlers/safe/ping";
-import { registryStatus, registryList, registryNodeInstall } from "./handlers/safe/registry";
-import { scaffoldExecute } from "./handlers/safe/scaffold";
+  // Support BOTH formats:
+  // - new: { task: { type: "ping" } }
+  // - old: { command: "ping" }
+  const type = body?.task?.type ?? (body?.command ? String(body.command) : "");
 
-const ROUTES: Record<string, Handler> = {
-  "ping": ping,
-  "registry.status": registryStatus,
-  "registry.list": registryList,
-  "registry.node.install": registryNodeInstall,
-  "scaffold.execute": scaffoldExecute,
-};
-
-export async function runTask(body: AP2RequestBody): Promise<AP2Result> {
-  const type = body?.task?.type;
-  const mode = "SAFE" as const;
-
-  if (!type || typeof type !== "string") {
-    return { ok: false, mode, endpoint: "ap2.execute", received: body, error: "missing_task_type" };
+  if (type === "__router_id__") {
+    return { ok: true, mode, endpoint: "ap2.execute", router: "REAL_TASK_ROUTER_v1" };
   }
 
-  const handler = ROUTES[type];
-  if (!handler) {
-    return { ok: false, mode, endpoint: "ap2.execute", received: body, error: `unknown_task_type:${type}` };
+  if (type === "ping") {
+    return { ok: true, mode, endpoint: "ap2.execute", executed: { pong: true } };
   }
 
-  try {
-    const executed = await handler(body);
-    return { ok: true, mode, endpoint: "ap2.execute", received: body, executed };
-  } catch (e: any) {
-    return { ok: false, mode, endpoint: "ap2.execute", received: body, error: e?.message ?? "task_failed" };
+  if (type === "whoami") {
+    return { ok: true, mode, endpoint: "ap2.execute", executed: { service: "hx2-vercel-starter", mode } };
   }
+
+  return { ok: false, mode, endpoint: "ap2.execute", received: body, error: `Unknown task/command: ${type || "(blank)"}` };
 }
