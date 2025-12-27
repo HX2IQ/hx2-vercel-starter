@@ -1,19 +1,22 @@
-import { NextResponse } from "next/server";
-import { commandRegistry } from "../lib/registry";
+import { NextRequest, NextResponse } from "next/server";
+import { routeCommand } from "../lib/router";
 
-export async function POST(req: Request) {
-  const body = await req.json();
-  const { command } = body;
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const result = await routeCommand(body);
 
-  const handler = commandRegistry[command];
-
-  if (!handler) {
     return NextResponse.json({
-      ok: false,
-      error: `Unknown command: ${command}`
+      ok: true,
+      result
     });
+  } catch (err: any) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: err?.message || "AP2 execution error"
+      },
+      { status: 500 }
+    );
   }
-
-  const result = await handler(body);
-  return NextResponse.json(result);
 }
