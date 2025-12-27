@@ -1,20 +1,17 @@
-import { handlePing } from "./ping";
-import { handleWhoAmI } from "./whoami";
+import { ping } from "./ping";
+import { whoami } from "./whoami";
 
-export function routeCommand(command: string, ctx: any) {
+export async function routeCommand(command: string) {
   switch (command) {
     case "ping":
-      return handlePing(ctx);
-
+      return await ping();
     case "whoami":
-      return handleWhoAmI(ctx);
-
+      return await whoami();
     default:
       return {
         ok: false,
         error: "Unknown command",
-        command,
-        router: "ap2"
+        command
       };
   }
 }

@@ -1,13 +1,10 @@
-export function handleWhoAmI(ctx: any) {
+export async function whoami() {
   return {
     ok: true,
-    command: "whoami",
     identity: {
-      node: "ap2",
-      mode: ctx?.mode ?? "SAFE",
-      brainAttached: false,
-      environment: process.env.VERCEL ? "vercel" : "local",
-    },
-    note: "AP2 identity handler"
+      runtime: "vercel",
+      user: "ap2",
+      mode: "SAFE"
+    }
   };
 }
