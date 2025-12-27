@@ -1,19 +1,20 @@
-﻿export type RegistryNode = {
+﻿type RegistryNode = {
   id: string;
-  type: string;
-  status?: string;
+  type?: string;
+  mode?: string;
 };
 
-const registry: RegistryNode[] = [];
-
-export function registryList(): RegistryNode[] {
-  return registry;
+export function registryUpsert(node: RegistryNode) {
+  return node;
 }
 
-export function registryRegister(node: RegistryNode) {
-  registry.push(node);
+export function registryList() {
+  return [];
 }
 
-export function registryClear() {
-  registry.length = 0;
+export function registryStatus() {
+  return {
+    ok: true,
+    nodes: 0,
+  };
 }

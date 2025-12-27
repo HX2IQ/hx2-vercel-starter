@@ -1,23 +1,33 @@
 ﻿import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const payload = await req.json().catch(() => ({}));
+  try {
+    const payload = await req.json();
 
-  if (!payload || typeof payload !== "object") {
-    return NextResponse.json({ error: "Invalid JSON payload" }, { status: 400 });
+    if (!payload.mode) {
+      payload.mode = "SAFE";
+    }
+
+    const base =
+      process.env.NEXT_PUBLIC_BASE_URL ??
+      process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "http://localhost:3000";
+
+    const r = await fetch(`${base}/api/ap2/execute`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await r.json();
+    return NextResponse.json(data);
+  } catch (err: any) {
+    return NextResponse.json(
+      { ok: false, error: err?.message ?? "console.execute failed" },
+      { status: 500 }
+    );
   }
-
-  if (!payload.mode) payload.mode = "SAFE";
-
-  const r = await fetch(${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/ap2/task/enqueue, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: Bearer 
-    },
-    body: JSON.stringify(payload)
-  });
-
-  const data = await r.json().catch(() => ({}));
-  return NextResponse.json(data, { status: r.status });
 }
