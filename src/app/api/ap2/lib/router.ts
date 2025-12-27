@@ -1,17 +1,24 @@
-import { ping } from "./ping";
-import { whoami } from "./whoami";
+﻿export type AP2CommandResult = {
+  ok: boolean
+  command: string
+  result?: any
+  error?: string
+}
 
-export async function routeCommand(command: string) {
+import { ping } from "./ping"
+import { whoami } from "./whoami"
+
+export async function routeCommand(command: string): Promise<AP2CommandResult> {
   switch (command) {
     case "ping":
-      return await ping();
+      return ping()
     case "whoami":
-      return await whoami();
+      return whoami()
     default:
       return {
         ok: false,
-        error: "Unknown command",
-        command
-      };
+        command,
+        error: "Unknown command"
+      }
   }
 }
