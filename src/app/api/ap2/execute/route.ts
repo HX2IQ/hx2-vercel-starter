@@ -1,24 +1,19 @@
-import { NextResponse } from "next/server"
-import { runAp2Command } from "../_lib/router"
+import { NextResponse } from "next/server";
+import { commandRegistry } from "../lib/registry";
 
 export async function POST(req: Request) {
-  try {
-    const body = await req.json()
+  const body = await req.json();
+  const { command } = body;
 
-    if (!body?.command) {
-      return NextResponse.json(
-        { ok: false, error: "Missing command" },
-        { status: 400 }
-      )
-    }
+  const handler = commandRegistry[command];
 
-    const result = await runAp2Command(body)
-
-    return NextResponse.json(result)
-  } catch (err: any) {
-    return NextResponse.json(
-      { ok: false, error: err?.message ?? "Unhandled error" },
-      { status: 500 }
-    )
+  if (!handler) {
+    return NextResponse.json({
+      ok: false,
+      error: `Unknown command: ${command}`
+    });
   }
+
+  const result = await handler(body);
+  return NextResponse.json(result);
 }
