@@ -1,83 +1,24 @@
-﻿import { NextResponse } from "next/server";
-
-type Ap2ExecuteBody = {
-  command?: string;
-  mode?: string;
-  scope?: string[]; // optional
-  constraints?: {
-    brainAccess?: boolean;
-    allowBrainAttach?: boolean;
-    logLevel?: string;
-  };
-  [k: string]: any;
-};
+import { NextResponse } from "next/server"
+import { runAp2Command } from "../_lib/router"
 
 export async function POST(req: Request) {
-  let body: Ap2ExecuteBody = {};
   try {
-    body = (await req.json()) as Ap2ExecuteBody;
-  } catch {
-    return NextResponse.json(
-      { ok: false, error: "Invalid JSON body" },
-      { status: 400 }
-    );
-  }
+    const body = await req.json()
 
-  const command = (body.command || "").toLowerCase().trim();
-  const mode = (body.mode || "").toUpperCase().trim();
-
-  // SAFE gate (basic sanity)
-  if (mode && mode !== "SAFE") {
-    return NextResponse.json(
-      { ok: false, error: `Only SAFE mode is allowed here (got: ${mode})` },
-      { status: 400 }
-    );
-  }
-  if (body.constraints?.brainAccess === true || body.constraints?.allowBrainAttach === true) {
-    return NextResponse.json(
-      { ok: false, error: "brainAccess/allowBrainAttach not permitted" },
-      { status: 403 }
-    );
-  }
-
-  // ✅ Real command handling
-  switch (command) {
-    case "ping":
-      return NextResponse.json({
-        ok: true,
-        endpoint: "ap2.execute",
-        command: "ping",
-        mode: "SAFE",
-        status: "pong",
-        runtime: {
-          platform: "vercel",
-          node_env: process.env.NODE_ENV || "unknown",
-          region: process.env.VERCEL_REGION || "unknown",
-        },
-        ts: new Date().toISOString(),
-      });
-
-    case "status":
-      // For now: report what we can from Vercel runtime.
-      // (Real AP2 "self-build" status comes later when VPS worker + queue are wired.)
-      return NextResponse.json({
-        ok: true,
-        endpoint: "ap2.execute",
-        command: "status",
-        mode: "SAFE",
-        status: "online",
-        note: "Vercel API layer online. VPS worker/queue not yet wired (self-build not active).",
-        ts: new Date().toISOString(),
-      });
-
-    default:
+    if (!body?.command) {
       return NextResponse.json(
-        {
-          ok: false,
-          error: `Unknown command: ${command || "(missing)"}`,
-          allowed: ["ping", "status"],
-        },
+        { ok: false, error: "Missing command" },
         { status: 400 }
-      );
+      )
+    }
+
+    const result = await runAp2Command(body)
+
+    return NextResponse.json(result)
+  } catch (err: any) {
+    return NextResponse.json(
+      { ok: false, error: err?.message ?? "Unhandled error" },
+      { status: 500 }
+    )
   }
 }
