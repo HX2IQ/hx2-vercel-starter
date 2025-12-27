@@ -1,17 +1,15 @@
-﻿import { NextResponse } from "next/server"
-import { routeCommand } from "../lib/router"
+import { NextRequest, NextResponse } from "next/server"
+import { handleCommand } from "../lib/router"
 
-export async function POST(req: Request) {
-  const body = await req.json()
-  const command = body.command
-
-  if (!command) {
-    return NextResponse.json({
-      ok: false,
-      error: "Missing command"
-    }, { status: 400 })
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json()
+    const result = await handleCommand(body)
+    return NextResponse.json(result)
+  } catch (err: any) {
+    return NextResponse.json(
+      { ok: false, error: err.message ?? "execute error" },
+      { status: 500 }
+    )
   }
-
-  const result = await routeCommand(command)
-  return NextResponse.json(result)
 }

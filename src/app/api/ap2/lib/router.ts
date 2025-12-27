@@ -1,24 +1,29 @@
-﻿export type AP2CommandResult = {
-  ok: boolean
-  command: string
-  result?: any
-  error?: string
-}
+export async function handleCommand(payload: any) {
+  const cmd = payload?.command
 
-import { ping } from "./ping"
-import { whoami } from "./whoami"
+  if (!cmd) {
+    return { ok: false, error: "No command provided" }
+  }
 
-export async function routeCommand(command: string): Promise<AP2CommandResult> {
-  switch (command) {
+  switch (cmd) {
     case "ping":
-      return ping()
+      return { ok: true, result: "pong" }
+
     case "whoami":
-      return whoami()
+      return {
+        ok: true,
+        result: {
+          runtime: "vercel",
+          handler: "ap2",
+          node: "hx2"
+        }
+      }
+
     default:
       return {
         ok: false,
-        command,
-        error: "Unknown command"
+        error: "Unknown command (real router)",
+        command: cmd
       }
   }
 }
