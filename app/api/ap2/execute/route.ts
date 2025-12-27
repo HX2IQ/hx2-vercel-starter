@@ -1,45 +1,20 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
+import { routeCommand } from "../../../lib/console/commandRouter";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const mode = body?.mode || "SAFE";
-    const task = body?.task || {};
-    const type = task?.type || "";
-
-    let reply = "";
-
-    switch (type) {
-      case "ping":
-        reply = "pong (ap2 execute stub)";
-        break;
-
-      case "status":
-        reply = "ap2 execute stub online";
-        break;
-
-      case "help":
-        reply = "Available AP2 execute tasks: ping, status, help";
-        break;
-
-      default:
-        reply = `AP2 does not recognize task: ${type || "(missing)"} (execute stub)`;
-        break;
-    }
-
-    return NextResponse.json({
-      ok: true,
-      mode,
-      reply,
-      task,
-    });
-  } catch (err: any) {
+    const result: any = await routeCommand(body);
+    const status = result?.ok ? 200 : (result?.status ?? 400);
+    return NextResponse.json(result, { status });
+  } catch (e: any) {
     return NextResponse.json(
-      {
-        ok: false,
-        error: err?.message || "Unknown error",
-      },
-      { status: 500 }
+      { ok: false, error: e?.message ?? "bad_request" },
+      { status: 400 }
     );
   }
+}
+
+export async function GET() {
+  return NextResponse.json({ ok: true, message: "AP2 execute is online. Use POST." });
 }
