@@ -21,7 +21,7 @@ export async function routeTask(body: AP2RequestBody): Promise<AP2Result> {
   const task = body.task ?? {};
 
   // 🔍 Router identity probe
-  if (task.type === "__router_id__") {
+  if (task?.type === "__router_id__") {
     return {
       ok: true,
       mode,
@@ -30,7 +30,7 @@ export async function routeTask(body: AP2RequestBody): Promise<AP2Result> {
     };
   }
 
-  if (task.type === "ping") {
+  if (task?.type === "ping") {
     return {
       ok: true,
       mode,
@@ -39,7 +39,7 @@ export async function routeTask(body: AP2RequestBody): Promise<AP2Result> {
     };
   }
 
-  if (task.type === "whoami") {
+  if (task?.type === "whoami") {
     return {
       ok: true,
       mode,
@@ -55,3 +55,4 @@ export async function routeTask(body: AP2RequestBody): Promise<AP2Result> {
     error: `Unknown task type: ${task.type}`
   };
 }
+
