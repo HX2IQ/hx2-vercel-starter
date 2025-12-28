@@ -18,7 +18,7 @@ export async function registryList(body: AP2RequestBody) {
 }
 
 export async function registryNodeInstall(body: AP2RequestBody) {
-  const node = body?.task?.node ?? null;
+  const node = (body as any)?.task?.node ?? null;
   return {
     ok: true,
     installed: true,
@@ -26,3 +26,5 @@ export async function registryNodeInstall(body: AP2RequestBody) {
     message: "registry node install (stub)",
   };
 }
+
+
