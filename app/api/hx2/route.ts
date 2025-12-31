@@ -26,9 +26,19 @@ export async function POST(req: NextRequest) {
     case "hx2.ping":
       return ok(command, { pong: true });
 
+    case "env.check": {
+      const ap2 = process.env.AP2_WORKER_BASE_URL ?? null;
+      return ok(command, {
+        AP2_WORKER_BASE_URL: ap2,
+        hasAP2: !!ap2,
+        note:
+          "If AP2_WORKER_BASE_URL is null/empty here, set it in the SAME Vercel project that serves optinodeiq.com.",
+      });
+    }
+
     case "ap2.status": {
-      const baseUrl = process.env.AP2_WORKER_BASE_URL;
-      if (!baseUrl || typeof baseUrl !== "string" || !/^https?:\/\//i.test(baseUrl)) {
+      const workerBase = process.env.AP2_WORKER_BASE_URL;
+      if (!workerBase || typeof workerBase !== "string" || !/^https?:\/\//i.test(workerBase)) {
         return NextResponse.json(
           {
             ok: false,
@@ -42,22 +52,39 @@ export async function POST(req: NextRequest) {
           { status: 500 }
         );
       }
-const workerBase = process.env.AP2_WORKER_BASE_URL;
-      if (!workerBase) return err(command, "MISSING_AP2_WORKER_BASE_URL", "Set AP2_WORKER_BASE_URL");
 
-      const res = await fetch(`${workerBase}/api/ap2/status`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(args || {}),
-      });
+      try {
+        const res = await fetch(`${workerBase}/api/ap2/status`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(args || {}),
+        });
 
-      const data = await res.json().catch(() => ({}));
-      return ok(command, { workerBase, http: res.status, data });
-    }case "ap2.task.enqueue": {
+        const data = await res.json().catch(() => ({}));
+        return NextResponse.json(
+          { ok: res.ok, command, data: { workerBase, http: res.status, data } },
+          { status: res.ok ? 200 : 502 }
+        );
+      } catch (e: any) {
+        return NextResponse.json(
+          {
+            ok: false,
+            command,
+            error: {
+              code: "AP2_FETCH_FAILED",
+              message: "Failed to reach AP2 worker (/api/ap2/status).",
+              extra: String(e?.message ?? e),
+            },
+          },
+          { status: 502 }
+        );
+      }
+    }
+
+    case "ap2.task.enqueue": {
       const taskType = args?.taskType ?? args?.type ?? null;
       if (!taskType) return err(command, "MISSING_TASK_TYPE", "taskType is required");
 
-      // Delegate to lib/ap2Queue stub (already created earlier)
       try {
         const mod = await import("../../../lib/ap2Queue");
         const task = await mod.enqueueTask(taskType, args?.payload ?? {});
@@ -77,5 +104,3 @@ const workerBase = process.env.AP2_WORKER_BASE_URL;
       return err(command, "NOT_IMPLEMENTED", "Command not implemented in canonical hx2 route yet");
   }
 }
-
-
