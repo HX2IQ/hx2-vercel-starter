@@ -27,7 +27,22 @@ export async function POST(req: NextRequest) {
       return ok(command, { pong: true });
 
     case "ap2.status": {
-      const workerBase = process.env.AP2_WORKER_BASE_URL;
+      const baseUrl = process.env.AP2_WORKER_BASE_URL;
+      if (!baseUrl || typeof baseUrl !== "string" || !/^https?:\/\//i.test(baseUrl)) {
+        return NextResponse.json(
+          {
+            ok: false,
+            command,
+            error: {
+              code: "MISSING_AP2_WORKER_BASE_URL",
+              message:
+                "AP2_WORKER_BASE_URL is not set (or not http/https) in this Vercel project environment.",
+            },
+          },
+          { status: 500 }
+        );
+      }
+const workerBase = process.env.AP2_WORKER_BASE_URL;
       if (!workerBase) return err(command, "MISSING_AP2_WORKER_BASE_URL", "Set AP2_WORKER_BASE_URL");
 
       const res = await fetch(`${workerBase}/api/ap2/status`, {
@@ -62,4 +77,5 @@ export async function POST(req: NextRequest) {
       return err(command, "NOT_IMPLEMENTED", "Command not implemented in canonical hx2 route yet");
   }
 }
+
 
