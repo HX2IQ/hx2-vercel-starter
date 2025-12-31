@@ -1,4 +1,4 @@
-﻿export async function handleAp2Status(_body: any) {
+export async function handleAp2Status(_body: any) {
   return {
     ok: true,
     service: "ap2_execute",
@@ -12,3 +12,18 @@
     }
   };
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

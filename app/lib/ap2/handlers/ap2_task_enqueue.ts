@@ -1,24 +1,20 @@
-﻿export async function handleAp2TaskEnqueue(body: any) {
-  const mode = body?.mode ?? "SAFE";
-  const task = body?.task ?? null;
-
-  if (!task?.type) {
-    return {
-      ok: false,
-      service: "ap2_execute",
-      mode,
-      executed: "ap2.task.enqueue",
-      error: "Missing task.type",
-    };
-  }
-
-  // Stubbed: enqueue to a real queue later (BullMQ, SQS, etc.)
-  return {
-    ok: true,
-    service: "ap2_execute",
-    mode,
-    executed: "ap2.task.enqueue",
-    message: "Task enqueued (stub)",
-    data: { enqueued: true, task },
-  };
+export async function handleAP2TaskEnqueue(body: any) {
+  return { ok: true, queued: true, type: "ap2.task.enqueue", body };
 }
+
+export const AP2TaskEnqueue = handleAP2TaskEnqueue;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

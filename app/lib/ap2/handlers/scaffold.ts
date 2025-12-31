@@ -1,4 +1,4 @@
-﻿export async function handleScaffoldExecute(body: any) {
+export async function handleScaffoldExecute(body: any) {
   const blueprint = body?.task?.blueprint_name ?? body?.blueprint_name ?? null;
 
   if (!blueprint) {
@@ -15,3 +15,18 @@
     data: { blueprint, created: [] }
   };
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

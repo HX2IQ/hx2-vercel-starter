@@ -1,4 +1,4 @@
-﻿export async function handleRegistryNodeInstall(body: any) {
+export async function handleRegistryNodeInstall(body: any) {
   const mode = body?.mode ?? "SAFE";
   const node = body?.task?.node ?? body?.node ?? null;
 
@@ -22,3 +22,18 @@
     data: { installed: true, node },
   };
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

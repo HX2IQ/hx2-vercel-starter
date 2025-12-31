@@ -1,15 +1,16 @@
-﻿import { NextRequest, NextResponse } from "next/server";
-import { routeTask } from "../../../lib/ap2/taskRouter";
+import { routeTask } from "@/lib/ap2/taskRouter";
+import type { AP2RequestBody } from "@/lib/ap2/types";
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const result = await routeTask(body);
-    return NextResponse.json(result);
-  } catch (err: any) {
-    return NextResponse.json(
-      { ok: false, error: err?.message || "Execute handler failed" },
-      { status: 500 }
-    );
+    const body = (await req.json()) as AP2RequestBody;
+
+    // enforce SAFE default if missing
+    if (!body.mode) body.mode = "SAFE";
+
+    const out = await routeTask(body);
+    return Response.json(out, { status: 200 });
+  } catch (e: any) {
+    return Response.json({ ok: false, error: e?.message || "execute failed" }, { status: 400 });
   }
 }

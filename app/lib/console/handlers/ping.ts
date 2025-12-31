@@ -1,4 +1,4 @@
-﻿export async function handlePing(task: any) {
+export async function handlePing(task: any) {
   return {
     ok: true,
     executed: "ping",
@@ -6,3 +6,14 @@
     message: "AP2 executed task: ping",
   };
 }
+
+
+
+
+
+
+
+
+
+
+

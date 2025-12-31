@@ -1,4 +1,4 @@
-﻿import { listNodes } from "../registry";
+import { listNodes } from "../registry";
 
 export async function handleRegistryList(body: any) {
   const nodes = listNodes();
@@ -11,3 +11,18 @@ export async function handleRegistryList(body: any) {
     data: { nodes },
   };
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

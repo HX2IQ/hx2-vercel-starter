@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 function parseCommand(message: string) {
   const m = (message || "").trim();
@@ -65,3 +65,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, reply: e?.message || "Console router error" }, { status: 500 });
   }
 }
+
+
+
+
+
+
+
+
+
+
+

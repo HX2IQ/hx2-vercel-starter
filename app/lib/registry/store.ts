@@ -1,4 +1,4 @@
-﻿type RegistryNode = {
+type RegistryNode = {
   id: string;
   type?: string;
   mode?: string;
@@ -18,3 +18,14 @@ export function registryStatus() {
     nodes: 0,
   };
 }
+
+
+
+
+
+
+
+
+
+
+

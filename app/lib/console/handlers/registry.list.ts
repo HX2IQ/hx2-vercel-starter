@@ -1,4 +1,4 @@
-﻿export function handleRegistryList(body: any) {
+export function handleRegistryList(body: any) {
   const mode = body?.mode ?? "SAFE";
   return {
     ok: true,
@@ -9,3 +9,14 @@
     data: { nodes: [] }
   };
 }
+
+
+
+
+
+
+
+
+
+
+

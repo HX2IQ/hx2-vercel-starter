@@ -28,3 +28,11 @@ yarn-error.log*
 Thumbs.db
 .vercel
 .env*.local
+.fix_backup/
+_ignored__src/
+node_modules_old/
+*.bak
+*.BACKUP_*
+tsconfig.json.bak*
+canonicalize-ap2.ps1
+ap2_status.json

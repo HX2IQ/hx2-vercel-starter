@@ -1,4 +1,4 @@
-﻿export type Hx2Node = {
+export type Hx2Node = {
   id: string;
   type: string;
   mode?: string;
@@ -11,3 +11,14 @@ export type RegistryState = {
   nodes: Hx2Node[];
   updatedAt: string;
 };
+
+
+
+
+
+
+
+
+
+
+

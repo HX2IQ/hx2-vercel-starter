@@ -1,4 +1,4 @@
-﻿import { upsertNode } from "../registry";
+import { upsertNode } from "../registry";
 
 export async function handleScaffoldExecute(body: any) {
   const blueprint = body?.task?.blueprint_name || body?.blueprint_name;
@@ -47,3 +47,18 @@ export async function handleScaffoldExecute(body: any) {
     allowed: ["console.ui.v1"],
   };
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

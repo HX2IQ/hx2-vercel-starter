@@ -1,4 +1,4 @@
-﻿import { registryList } from '@/app/lib/registry/store';
+import { registryList } from '@/app/lib/registry/store';
 
 export async function handleRegistryList() {
   return {
@@ -9,3 +9,14 @@ export async function handleRegistryList() {
     },
   };
 }
+
+
+
+
+
+
+
+
+
+
+

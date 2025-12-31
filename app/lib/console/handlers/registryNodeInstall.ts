@@ -1,4 +1,4 @@
-﻿import type { HX2Body } from "../commandRouter";
+import type { HX2Body } from "../commandRouter";
 
 export async function handleRegistryNodeInstall(body: HX2Body) {
   const node = (body as any)?.node;
@@ -17,3 +17,14 @@ export async function handleRegistryNodeInstall(body: HX2Body) {
     data: { installed: true, node: { id: node.id, type: node.type, mode: node.mode } },
   };
 }
+
+
+
+
+
+
+
+
+
+
+

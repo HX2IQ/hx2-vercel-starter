@@ -1,4 +1,4 @@
-﻿export function handleRegistryStatus(body: any) {
+export function handleRegistryStatus(body: any) {
   const mode = body?.mode ?? "SAFE";
   return {
     ok: true,
@@ -9,3 +9,14 @@
     data: { status: "ok", nodes: 0 }
   };
 }
+
+
+
+
+
+
+
+
+
+
+

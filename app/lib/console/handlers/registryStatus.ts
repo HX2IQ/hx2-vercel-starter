@@ -1,4 +1,4 @@
-﻿import { registryStatus } from "@/app/lib/registry/store";
+import { registryStatus } from "@/app/lib/registry/store";
 
 export async function handleRegistryStatus() {
   const status = registryStatus();
@@ -9,3 +9,14 @@ export async function handleRegistryStatus() {
     data: status,
   };
 }
+
+
+
+
+
+
+
+
+
+
+

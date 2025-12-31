@@ -1,8 +1,0 @@
-export default function AP2SmokePage() {
-  return (
-    <main style={{ padding: 40 }}>
-      <h1>AP2 Smoke Test</h1>
-      <p id="ap2-proof">AP2 SMOKE TEST � UPDATED</p>
-    </main>
-  );
-}

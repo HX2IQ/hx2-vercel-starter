@@ -1,4 +1,4 @@
-﻿import type { AP2RequestBody } from "../../taskRouter";
+import type { AP2RequestBody } from "@/lib/ap2/types";
 
 export async function registryStatus(body: AP2RequestBody) {
   return {
@@ -26,5 +26,33 @@ export async function registryNodeInstall(body: AP2RequestBody) {
     message: "registry node install (stub)",
   };
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -1,4 +1,4 @@
-﻿export async function handleAp2Status(body: any) {
+export async function handleAp2Status(body: any) {
   const mode = body?.mode ?? "SAFE";
   return {
     ok: true,
@@ -13,3 +13,18 @@
     },
   };
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

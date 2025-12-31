@@ -1,4 +1,4 @@
-﻿import type { AP2RequestBody } from "../../taskRouter";
+import type { AP2RequestBody } from "@/lib/ap2/types";
 
 export async function ping(body: AP2RequestBody) {
   return {
@@ -7,3 +7,32 @@ export async function ping(body: AP2RequestBody) {
     message: "AP2 executed task: ping",
   };
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

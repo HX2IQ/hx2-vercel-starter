@@ -1,4 +1,4 @@
-﻿export type HX2Body = {
+export type HX2Body = {
   command: string;
   mode?: "SAFE" | "OWNER";
   node?: any;
@@ -31,3 +31,14 @@ export async function routeCommand(body: HX2Body) {
       };
   }
 }
+
+
+
+
+
+
+
+
+
+
+

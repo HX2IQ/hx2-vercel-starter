@@ -1,4 +1,4 @@
-﻿export async function handleRegistryList(body: any) {
+export async function handleRegistryList(body: any) {
   const mode = body?.mode ?? "SAFE";
   return {
     ok: true,
@@ -12,3 +12,18 @@
     },
   };
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

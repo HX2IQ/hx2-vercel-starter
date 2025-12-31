@@ -1,4 +1,4 @@
-﻿export type RegistryNode = {
+export type RegistryNode = {
   id: string;
   type: string;
   mode?: "safe" | "owner";
@@ -26,3 +26,16 @@ export function upsertNode(node: RegistryNode) {
   state.lastUpdated = new Date().toISOString();
   return node;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

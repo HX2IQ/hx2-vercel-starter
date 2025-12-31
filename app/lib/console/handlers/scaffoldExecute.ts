@@ -1,4 +1,4 @@
-﻿import { registryUpsert } from "@/app/lib/registry/store";
+import { registryUpsert } from "@/app/lib/registry/store";
 
 const BLUEPRINTS: Record<string, any[]> = {
   "console.ui.v1": [
@@ -34,3 +34,14 @@ export async function handleScaffoldExecute(body: any) {
     }
   };
 }
+
+
+
+
+
+
+
+
+
+
+

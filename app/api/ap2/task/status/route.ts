@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -22,3 +22,14 @@ export async function GET(req: Request) {
     note: "Status endpoint installed. Wire real task store later if needed."
   });
 }
+
+
+
+
+
+
+
+
+
+
+

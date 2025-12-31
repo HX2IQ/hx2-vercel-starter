@@ -1,4 +1,4 @@
-﻿export async function GET() {
+export async function GET() {
   return Response.json({
     status: "ok",
     message: "registry integrity deep endpoint online",
@@ -9,3 +9,14 @@
     }
   });
 }
+
+
+
+
+
+
+
+
+
+
+
