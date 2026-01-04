@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 
-function resp(text: string, status = 200) {
+function plain(text: string, status = 200) {
   return new Response(text, {
     status,
     headers: {
@@ -10,12 +10,15 @@ function resp(text: string, status = 200) {
   });
 }
 
-export async function GET(req: Request) {
+async function proxy(req: Request) {
   const url = new URL(req.url);
-  const lines = url.searchParams.get("lines") ?? "80";
-  const target = `https://ap2-worker.optinodeiq.com/api/ap2/logs/tail?lines=${encodeURIComponent(lines)}`;
+  const target = `https://ap2-worker.optinodeiq.com/api/ap2/logs/tail${url.search}`;
 
-  const r = await fetch(target, { method: "GET" });
-  const t = await r.text();
-  return resp(t, r.status);
+  const upstream = await fetch(target, { method: "GET" });
+  const text = await upstream.text();
+  return plain(text, upstream.status);
+}
+
+export async function GET(req: Request) {
+  return proxy(req);
 }
