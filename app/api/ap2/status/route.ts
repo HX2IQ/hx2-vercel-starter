@@ -1,29 +1,33 @@
 import { NextResponse } from "next/server";
 
-export async function POST(req: Request) {
+export const dynamic = "force-dynamic";
+
+const AP2_GATEWAY_URL = process.env.AP2_GATEWAY_URL || "https://ap2-worker.optinodeiq.com";
+
+export async function POST() {
   try {
-    const body = await req.json().catch(() => ({}));
-    return NextResponse.json({
-      ok: true,
-      endpoint: "ap2.status",
-      mode: body?.mode ?? "SAFE",
-      status: "online (local stub)",
+    const r = await fetch(`${AP2_GATEWAY_URL}/api/ap2/status`, {
+      method: "GET",
+      cache: "no-store",
+      headers: {
+        "accept": "application/json",
+      },
     });
-  } catch (err: any) {
+
+    const text = await r.text();
+
+    // Pass-through status + body
+    return new NextResponse(text, {
+      status: r.status,
+      headers: {
+        "Content-Type": r.headers.get("content-type") || "application/json",
+        "Cache-Control": "no-store",
+      },
+    });
+  } catch (e: any) {
     return NextResponse.json(
-      { ok: false, error: String(err?.message ?? err) },
-      { status: 500 }
+      { ok: false, error: "ap2 gateway unreachable", detail: String(e?.message || e) },
+      { status: 502, headers: { "Cache-Control": "no-store" } }
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
