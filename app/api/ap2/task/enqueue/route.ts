@@ -1,70 +1,42 @@
-export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function json(data: unknown, status = 200) {
+function json(data: any, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
-      "content-type": "application/json; charset=utf-8",
-      "cache-control": "no-store",
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
     },
   });
 }
 
-export async function POST(req: Request) {
+async function proxy(req: Request) {
+  const url = new URL(req.url);
+
+  // CRITICAL: proxy to droplet domain to avoid loops
+  const target = `https://ap2-worker.optinodeiq.com/api/ap2/task/enqueue${url.search}`;
+
+  const bodyText = await req.text();
+
+  const upstream = await fetch(target, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: bodyText,
+  });
+
+  const text = await upstream.text();
   try {
-    const body = await req.json().catch(() => ({} as any));
-
-    const taskType = body.taskType ?? body.type;
-    const payload = body.payload ?? {};
-
-    if (!taskType) {
-      return json({ ok: false, error: "missing taskType" }, 400);
-    }
-
-    const gateway = process.env.AP2_GATEWAY_URL;
-    if (!gateway) {
-      return json(
-        { ok: false, error: "AP2_GATEWAY_URL not set in Vercel" },
-        500
-      );
-    }
-
-    const upstream = await fetch(
-      `${gateway.replace(/\/$/, "")}/api/ap2/task/enqueue`,
-      {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ taskType, payload }),
-        cache: "no-store",
-      }
-    );
-
-    const text = await upstream.text();
-
-    return new Response(text, {
-      status: upstream.status,
-      headers: {
-        "content-type":
-          upstream.headers.get("content-type") ??
-          "application/json; charset=utf-8",
-        "cache-control": "no-store",
-      },
-    });
-  } catch (err: any) {
-    return json(
-      { ok: false, error: "proxy failed", detail: String(err) },
-      500
-    );
+    return json(JSON.parse(text), upstream.status);
+  } catch {
+    return json({ ok: upstream.ok, status: upstream.status, raw: text }, upstream.status);
   }
 }
 
+export async function POST(req: Request) {
+  return proxy(req);
+}
 
-
-
-
-
-
-
-
-
+// optional: if someone hits it by accident
+export async function GET() {
+  return json({ ok: false, error: "Use POST" }, 405);
+}
