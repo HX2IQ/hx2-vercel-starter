@@ -10,15 +10,18 @@ function plain(text: string, status = 200) {
   });
 }
 
-async function proxy(req: Request) {
+export async function GET(req: Request) {
   const url = new URL(req.url);
   const target = `https://ap2-worker.optinodeiq.com/api/ap2/logs/tail${url.search}`;
 
-  const upstream = await fetch(target, { method: "GET" });
+  // Forward the key header if caller provided it
+  const key = req.headers.get("x-ap2-log-key") || "";
+
+  const upstream = await fetch(target, {
+    method: "GET",
+    headers: key ? { "x-ap2-log-key": key } : undefined,
+  });
+
   const text = await upstream.text();
   return plain(text, upstream.status);
-}
-
-export async function GET(req: Request) {
-  return proxy(req);
 }
