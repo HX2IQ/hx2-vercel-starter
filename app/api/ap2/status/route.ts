@@ -1,33 +1,37 @@
-import { NextResponse } from "next/server";
-
 export const dynamic = "force-dynamic";
 
-const AP2_GATEWAY_URL = process.env.AP2_GATEWAY_URL || "https://ap2-worker.optinodeiq.com";
+function json(data: any, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+    },
+  });
+}
 
-export async function POST() {
-  try {
-    const r = await fetch(`${AP2_GATEWAY_URL}/api/ap2/status`, {
-      method: "GET",
-      cache: "no-store",
-      headers: {
-        "accept": "application/json",
-      },
-    });
+async function proxyToGateway(req: Request) {
+  // IMPORTANT: This must call the droplet domain, NOT optinodeiq.com (avoid loops)
+  const url = new URL(req.url);
+  const target = `https://ap2-worker.optinodeiq.com/api/ap2/status${url.search}`;
 
-    const text = await r.text();
+  const upstream = await fetch(target, {
+    method: req.method,
+    headers: { "Content-Type": "application/json" },
+    // no body needed for status, but allow forward if present
+    body: (req.method === "POST" || req.method === "PUT") ? await req.text() : undefined,
+  });
 
-    // Pass-through status + body
-    return new NextResponse(text, {
-      status: r.status,
-      headers: {
-        "Content-Type": r.headers.get("content-type") || "application/json",
-        "Cache-Control": "no-store",
-      },
-    });
-  } catch (e: any) {
-    return NextResponse.json(
-      { ok: false, error: "ap2 gateway unreachable", detail: String(e?.message || e) },
-      { status: 502, headers: { "Cache-Control": "no-store" } }
-    );
-  }
+  const text = await upstream.text();
+  // If upstream returns JSON, pass-through; otherwise wrap
+  try { return json(JSON.parse(text), upstream.status); }
+  catch { return json({ ok: upstream.ok, status: upstream.status, raw: text }, upstream.status); }
+}
+
+export async function GET(req: Request) {
+  return proxyToGateway(req);
+}
+
+export async function POST(req: Request) {
+  return proxyToGateway(req);
 }
