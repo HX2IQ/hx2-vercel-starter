@@ -1,13 +1,25 @@
 import { NextResponse } from "next/server";
 import { Pool } from "pg";
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-});
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __ap2ProofPool: Pool | undefined;
+}
+
+const pool =
+  globalThis.__ap2ProofPool ??
+  new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+  });
+
+globalThis.__ap2ProofPool = pool;
 
 export async function GET() {
-  return NextResponse.json({ ok: true, service: "ap2-proof", ts: new Date().toISOString() });
+  return NextResponse.json({ ok: true, service: "ap2-proof", method: "GET", ts: new Date().toISOString() });
 }
 
 export async function POST(req: Request) {
@@ -36,4 +48,11 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
+}
+
+export async function OPTIONS() {
+  return new Response(null, {
+    status: 204,
+    headers: { Allow: "GET, POST, OPTIONS" },
+  });
 }
