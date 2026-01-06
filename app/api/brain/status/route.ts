@@ -1,49 +1,30 @@
 import { NextResponse } from "next/server";
 
-function pick(obj: any) {
-  return {
-    installed: !!obj?.installed,
-    brain_attached: !!obj?.brain_attached,
-    allow_brain_attach: !!obj?.allow_brain_attach,
-    ip_firewall: !!obj?.ip_firewall,
-    mode: obj?.mode ?? "SAFE",
-    timestamp: obj?.timestamp ?? null,
-    service: obj?.service ?? "hx2-brain-shell"
-  };
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+function isAuthorized(req: Request) {
+  const auth = req.headers.get("authorization") || "";
+  // Expect: "Bearer <HX2_API_KEY>"
+  const token = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
+  return !!process.env.HX2_API_KEY && token === process.env.HX2_API_KEY;
 }
 
-export async function GET() {
-  const base =
-    process.env.AP2_GATEWAY_BASE_URL ||
-    process.env.HX2_GATEWAY_BASE_URL ||
-    process.env.GATEWAY_BASE_URL;
-
-  if (!base) {
-    return NextResponse.json(
-      { ok: false, error: "Missing gateway base URL env var (AP2_GATEWAY_BASE_URL or HX2_GATEWAY_BASE_URL)" },
-      { status: 500 }
-    );
+export async function GET(req: Request) {
+  if (!isAuthorized(req)) {
+    return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 
-  const url = `${base.replace(/\/+$/, "")}/api/brain/status`;
-
-  const res = await fetch(url, {
-    method: "GET",
-    // IMPORTANT: do not forward auth tokens to brain shell; gateway should auth separately if needed
-    headers: { "Accept": "application/json" },
-    cache: "no-store"
+  // This endpoint is a SAFE stub unless/until you add a secure tunnel.
+  // For now it reports Vercel-side status only (no brain internals).
+  return NextResponse.json({
+    ok: true,
+    service: "brain.status",
+    ts: new Date().toISOString(),
+    note: "Proxy not yet wired to VPS brain-shell (owner-only endpoint scaffolded).",
   });
+}
 
-  const text = await res.text();
-  let data: any = null;
-  try { data = JSON.parse(text); } catch { data = { ok: false, raw: null }; }
-
-  if (!res.ok) {
-    return NextResponse.json(
-      { ok: false, upstream_status: res.status, upstream: pick(data) },
-      { status: 502 }
-    );
-  }
-
-  return NextResponse.json({ ok: true, brain: pick(data) }, { status: 200 });
+export async function OPTIONS() {
+  return new Response(null, { status: 204, headers: { Allow: "GET, OPTIONS" } });
 }
