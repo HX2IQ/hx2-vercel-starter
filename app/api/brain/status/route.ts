@@ -1,30 +1,93 @@
 import { NextResponse } from "next/server";
+import { Pool } from "pg";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function isAuthorized(req: Request) {
-  const auth = req.headers.get("authorization") || "";
-  // Expect: "Bearer <HX2_API_KEY>"
-  const token = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
-  return !!process.env.HX2_API_KEY && token === process.env.HX2_API_KEY;
+declare global {
+  // eslint-disable-next-line no-var
+  var __hx2Pool: Pool | undefined;
 }
 
-export async function GET(req: Request) {
-  if (!isAuthorized(req)) {
-    return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+const pool =
+  globalThis.__hx2Pool ??
+  new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+  });
+
+globalThis.__hx2Pool = pool;
+
+function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+async function waitForProof(taskId: string, timeoutMs = 8000) {
+  const started = Date.now();
+  while (Date.now() - started < timeoutMs) {
+    const { rows } = await pool.query(
+      `select id, received_at, task_id, payload
+       from ap2_proof_events
+       where task_id = $1
+       order by id desc
+       limit 1`,
+      [taskId]
+    );
+
+    if (rows.length) return rows[0];
+    await sleep(400);
+  }
+  return null;
+}
+
+export async function POST(req: Request) {
+  // Owner auth (same key you already use for /api/ap2/task/enqueue)
+  const auth = req.headers.get("authorization") || "";
+  const expected = `Bearer ${process.env.HX2_API_KEY || ""}`;
+  if (!process.env.HX2_API_KEY || auth !== expected) {
+    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
   }
 
-  // This endpoint is a SAFE stub unless/until you add a secure tunnel.
-  // For now it reports Vercel-side status only (no brain internals).
-  return NextResponse.json({
-    ok: true,
-    service: "brain.status",
-    ts: new Date().toISOString(),
-    note: "Proxy not yet wired to VPS brain-shell (owner-only endpoint scaffolded).",
+  const origin = new URL(req.url).origin;
+
+  // Enqueue AP2 task
+  const enqueueRes = await fetch(`${origin}/api/ap2/task/enqueue`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      authorization: auth,
+    },
+    body: JSON.stringify({
+      taskType: "brain.status",
+      payload: {},
+      callbackUrl: `${origin}/api/ap2-proof`,
+    }),
   });
+
+  const enqueueJson = await enqueueRes.json().catch(() => null);
+  if (!enqueueRes.ok || !enqueueJson?.task?.id) {
+    return NextResponse.json(
+      { ok: false, error: "enqueue_failed", details: enqueueJson },
+      { status: 500 }
+    );
+  }
+
+  const taskId: string = enqueueJson.task.id;
+
+  // Wait briefly for the AP2 proof event
+  const proof = await waitForProof(taskId, 8000);
+  if (!proof) {
+    return NextResponse.json({
+      ok: true,
+      pending: true,
+      taskId,
+      note: "Task enqueued; proof not received within timeout",
+    });
+  }
+
+  return NextResponse.json({ ok: true, taskId, proof });
 }
 
 export async function OPTIONS() {
-  return new Response(null, { status: 204, headers: { Allow: "GET, OPTIONS" } });
+  return new Response(null, { status: 204, headers: { Allow: "POST, OPTIONS" } });
 }
