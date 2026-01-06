@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { Pool } from "pg";
+import { requireHx2Auth } from "../../../_lib/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -18,7 +19,10 @@ const pool =
 
 globalThis.__ap2ProofPool = pool;
 
-export async function GET(_req: Request, ctx: { params: { id: string } }) {
+export async function GET(req: Request, ctx: { params: { id: string } }) {
+  const deny = requireHx2Auth(req);
+  if (deny) return deny;
+
   const id = Number(ctx.params.id);
   if (!Number.isFinite(id)) {
     return NextResponse.json({ ok: false, error: "Invalid id" }, { status: 400 });

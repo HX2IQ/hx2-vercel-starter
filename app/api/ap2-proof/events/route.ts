@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { Pool } from "pg";
+import { requireHx2Auth } from "../../_lib/auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,6 +20,9 @@ const pool =
 globalThis.__ap2ProofPool = pool;
 
 export async function GET(req: Request) {
+  const deny = requireHx2Auth(req);
+  if (deny) return deny;
+
   const { searchParams } = new URL(req.url);
   const limit = Math.min(parseInt(searchParams.get("limit") || "50", 10), 200);
 
