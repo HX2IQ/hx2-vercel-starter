@@ -16,7 +16,7 @@ export default function ChatPage() {
     setBusy(true);
 
     try {
-      const res = await fetch("/api/brain/chat", , {
+      const res = await fetch("/api/brain/chat", {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -78,6 +78,7 @@ export default function ChatPage() {
     </div>
   );
 }
+
 
 
 
