@@ -1,28 +1,18 @@
-const path = require('path');
-
-/** @type {import('next').NextConfig} */
+/** @type {import("next").NextConfig} */
 const nextConfig = {
-  webpack: (config) => {
-    config.resolve.alias['@'] = path.resolve(__dirname, 'src');
-    return config;
+  async headers() {
+    return [
+      {
+        source: "/chat",
+        headers: [
+          { key: "Cache-Control", value: "no-store, no-cache, must-revalidate, proxy-revalidate" },
+          { key: "Pragma", value: "no-cache" },
+          { key: "Expires", value: "0" },
+          { key: "Surrogate-Control", value: "no-store" }
+        ],
+      },
+    ];
   },
 };
 
 module.exports = nextConfig;
-
-// /** @type {import('next').NextConfig} */
-// const nextConfig = {
-//   reactStrictMode: true,
-//   swcMinify: true,
-//   typescript: {
-//     // Fail the build on TS errors in CI/Vercel, but allow local dev to start.
-//     ignoreBuildErrors: false,
-//   },
-//   webpack: (config) => {
-//     // Optional: ensure TS path aliases work at runtime if needed by some tooling
-//     // Next.js already respects tsconfig paths in imports at build time.
-//     return config;
-//   },
-// };
-
-// module.exports = nextConfig;
