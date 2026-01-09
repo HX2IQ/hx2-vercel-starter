@@ -42,14 +42,17 @@ async function proxy(req: Request) {
 
 export async function POST(req: Request) {
   const deny = requireHx2Auth(req);
-if (deny) return deny;
+  if (deny) return deny;
 
-const body = await req.clone().json().catch(() => null);
-if (!body?.taskType || !ALLOWED_TASKS.has(body.taskType)) {
-  return new Response(
-    JSON.stringify({ ok: false, error: "INVALID_TASK_TYPE" }),
-    { status: 400, headers: { "Content-Type": "application/json" } }
-  );
+  const body = await req.clone().json().catch(() => null);
+  if (!body?.taskType || !ALLOWED_TASKS.has(body.taskType)) {
+    return new Response(
+      JSON.stringify({ ok: false, error: "INVALID_TASK_TYPE" }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  return proxy(req);
 }
 return proxy(req);
 }
@@ -58,5 +61,6 @@ return proxy(req);
 export async function GET() {
   return json({ ok: false, error: "Use POST" }, 405);
 }
+
 
 
