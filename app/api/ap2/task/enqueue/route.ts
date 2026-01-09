@@ -1,66 +1,35 @@
-import { requireHx2Auth } from "../../_lib/auth";
-export const dynamic = "force-dynamic";
+import { NextRequest, NextResponse } from "next/server";
 
-const ALLOWED_TASKS = new Set([
-  "ping",
-  "scaffold.execute",
-  "registry.node.install",
-  "diagnostics.run"
-]);
+export async function POST(req: NextRequest) {
+  const worker = process.env.AP2_WORKER_URL || "https://ap2-worker.optinodeiq.com";
+  const key = process.env.HX2_API_KEY || "";
 
-function json(data: any, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": "no-store",
-    },
-  });
-}
-
-async function proxy(req: Request) {
-  const url = new URL(req.url);
-
-  // CRITICAL: proxy to droplet domain to avoid loops
-  const target = `https://ap2-worker.optinodeiq.com/api/ap2/task/enqueue${url.search}`;
-
-  const bodyText = await req.text();
-
-  const upstream = await fetch(target, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: bodyText,
-  });
-
-  const text = await upstream.text();
-  try {
-    return json(JSON.parse(text), upstream.status);
-  } catch {
-    return json({ ok: upstream.ok, status: upstream.status, raw: text }, upstream.status);
-  }
-}
-
-export async function POST(req: Request) {
-  const deny = requireHx2Auth(req);
-  if (deny) return deny;
-
-  const body = await req.clone().json().catch(() => null);
-  if (!body?.taskType || !ALLOWED_TASKS.has(body.taskType)) {
-    return new Response(
-      JSON.stringify({ ok: false, error: "INVALID_TASK_TYPE" }),
-      { status: 400, headers: { "Content-Type": "application/json" } }
+  if (!key) {
+    return NextResponse.json(
+      { ok: false, status: 500, error: "HX2_API_KEY missing on server" },
+      { status: 500 }
     );
   }
 
-  return proxy(req);
+  const body = await req.text();
+
+  const url = worker.replace(/\/+$/, "") + "/api/ap2/task/enqueue";
+
+  const r = await fetch(url, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "authorization": "Bearer " + key,
+    },
+    body,
+    cache: "no-store",
+  });
+
+  const text = await r.text();
+
+  try {
+    return NextResponse.json(JSON.parse(text), { status: r.status });
+  } catch {
+    return NextResponse.json({ ok: false, status: r.status, raw: text }, { status: r.status });
+  }
 }
-return proxy(req);
-}
-
-// optional: if someone hits it by accident
-export async function GET() {
-  return json({ ok: false, error: "Use POST" }, 405);
-}
-
-
-
