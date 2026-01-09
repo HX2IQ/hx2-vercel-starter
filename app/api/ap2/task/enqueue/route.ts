@@ -1,4 +1,12 @@
+import { requireHx2Auth } from "../../_lib/auth";
 export const dynamic = "force-dynamic";
+
+const ALLOWED_TASKS = new Set([
+  "ping",
+  "scaffold.execute",
+  "registry.node.install",
+  "diagnostics.run"
+]);
 
 function json(data: any, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -33,10 +41,22 @@ async function proxy(req: Request) {
 }
 
 export async function POST(req: Request) {
-  return proxy(req);
+  const deny = requireHx2Auth(req);
+if (deny) return deny;
+
+const body = await req.clone().json().catch(() => null);
+if (!body?.taskType || !ALLOWED_TASKS.has(body.taskType)) {
+  return new Response(
+    JSON.stringify({ ok: false, error: "INVALID_TASK_TYPE" }),
+    { status: 400, headers: { "Content-Type": "application/json" } }
+  );
+}
+return proxy(req);
 }
 
 // optional: if someone hits it by accident
 export async function GET() {
   return json({ ok: false, error: "Use POST" }, 405);
 }
+
+
