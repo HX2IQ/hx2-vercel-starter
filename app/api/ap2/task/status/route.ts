@@ -14,12 +14,16 @@ export async function GET(req: NextRequest) {
   }
 
   const worker = process.env.AP2_WORKER_URL || "https://ap2-worker.optinodeiq.com";
-  const key = process.env.HX2_API_KEY || "";
+  const serverKey = process.env.HX2_API_KEY || "";
 
-  if (!key) {
+  // Prefer the caller's auth header (so Vercel env mismatch can't break this)
+  const callerAuth = req.headers.get("authorization") || "";
+  const auth = callerAuth || (serverKey ? ("Bearer " + serverKey) : "");
+
+  if (!auth) {
     return NextResponse.json(
-      { ok: false, status: 500, error: "HX2_API_KEY missing on server" },
-      { status: 500 }
+      { ok: false, status: 401, error: "missing_auth", message: "Missing Authorization header and HX2_API_KEY not set on server." },
+      { status: 401 }
     );
   }
 
@@ -29,7 +33,7 @@ export async function GET(req: NextRequest) {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      "authorization": "Bearer " + key,
+      "authorization": auth,
     },
     body: JSON.stringify({ taskId }),
     cache: "no-store",
@@ -40,6 +44,6 @@ export async function GET(req: NextRequest) {
   try {
     return NextResponse.json(JSON.parse(text), { status: r.status });
   } catch {
-    return NextResponse.json({ ok: false, status: r.status, raw: text }, { status: r.status });
+    return NextResponse.json({ ok: r.ok, status: r.status, raw: text }, { status: r.status });
   }
 }
