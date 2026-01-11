@@ -15,5 +15,6 @@ export function assertAuth(req: Request) {
    if (!h) {
      return Response.json({ ok: false, error: "unauthorized" }, { status: 401 });
    }
-   return null; // null means "allowed"
+   return;// null means "allowed"
  }
+
