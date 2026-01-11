@@ -111,3 +111,4 @@ export async function HEAD(req: Request) {
     headers: { "x-hx2-env-check": has ? "1" : "0" },
   });
 }
+
