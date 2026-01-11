@@ -62,6 +62,8 @@ async function handle(taskId: string, wait: boolean) {
     return NextResponse.json(
       { ok: false, status: 400, error: "missing_taskId", message: "Provide taskId." },
       { status: 400, headers: { "Cache-Control": "no-store" } }
+    );
+  }
 
   const proof = wait ? await waitForProof(taskId, 12000) : await latestProof(taskId);
 
@@ -69,19 +71,13 @@ async function handle(taskId: string, wait: boolean) {
     return NextResponse.json(
       { ok: true, taskId, state: "PENDING", found: false },
       { status: 200, headers: { "Cache-Control": "no-store" } }
+    );
+  }
 
   return NextResponse.json(
     { ok: true, taskId, state: "DONE", found: true, proof },
     { status: 200, headers: { "Cache-Control": "no-store" } }
-
-export async function GET(req: NextRequest) {
-  if (!authOk(req)) {
-    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
-  }
-  const url = new URL(req.url);
-  const taskId = url.searchParams.get("taskId") || "";
-  const wait = (url.searchParams.get("wait") || "") === "1";
-  return handle(taskId, wait);
+  );
 }
 
 export async function POST(req: NextRequest) {
@@ -113,6 +109,5 @@ export async function HEAD(req: Request) {
     status: has ? 204 : 503,
     headers: { "x-hx2-env-check": has ? "1" : "0" },
   });
-}  const has = !!process.env.HX2_API_KEY;
-  return new Response(null, { status: has ? 204 : 503, headers: { "x-hx2-env-check": has ? "1" : "0" } });
+}
 
