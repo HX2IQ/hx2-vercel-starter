@@ -45,15 +45,17 @@ async function waitForProof(taskId: string, timeoutMs = 12000) {
 }
 
 function authOk(req: Request) {
-  const auth =
+  const a =
     (req.headers.get("authorization") ||
       req.headers.get("x-hx2-authorization") ||
+      req.headers.get("x-hx2-Authorization") ||
       "").trim();
 
   const key = (process.env.HX2_API_KEY || "").trim();
-  const expected = `Bearer ${key}`;
+  if (!key) return false;
 
-  return !!key && auth === expected;
+  const token = a.replace(/^Bearer\s+/i, "").trim();
+  return token === key;
 }
 
 async function handle(taskId: string, wait: boolean) {
@@ -105,4 +107,5 @@ export async function OPTIONS() {
     headers: { Allow: "GET, POST, OPTIONS" },
   });
 }
+
 
