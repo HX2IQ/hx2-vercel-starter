@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Pool } from "pg";
-
-export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 declare global {
   // eslint-disable-next-line no-var
@@ -107,5 +106,7 @@ export async function OPTIONS() {
     headers: { Allow: "GET, POST, OPTIONS" },
   });
 }
+
+
 
 
