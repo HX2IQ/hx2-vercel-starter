@@ -103,6 +103,7 @@ export async function OPTIONS() {
 
 
 // --- TEMP DEBUG: env presence check (SAFE) ---
+// NOTE: deliberately NO auth here; it's a diagnostics probe only.
 export async function HEAD(req: Request) {
   const has = !!process.env.HX2_API_KEY;
   return new Response(null, {
@@ -110,4 +111,3 @@ export async function HEAD(req: Request) {
     headers: { "x-hx2-env-check": has ? "1" : "0" },
   });
 }
-
