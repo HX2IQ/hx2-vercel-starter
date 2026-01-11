@@ -20,7 +20,7 @@ const pool =
 globalThis.__ap2ProofPool = pool;
 
 export async function GET(req: Request) {
-  const deny = requireHx2Auth(req);
+  const deny = await requireHx2Auth(req);
   if (deny) return deny;
 
   const { searchParams } = new URL(req.url);
@@ -40,3 +40,4 @@ export async function GET(req: Request) {
 export async function OPTIONS() {
   return new Response(null, { status: 204, headers: { Allow: "GET, OPTIONS" } });
 }
+
