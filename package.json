@@ -7,7 +7,7 @@
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "husky install",
+    "prepare": "node -e \"const fs=require('fs'); if(fs.existsSync('.git')){require('child_process').execSync('npx husky install',{stdio:'inherit'})} else {console.log('no git; skip husky')}\"",
     "test": "echo \"no tests yet\""
   },
   "dependencies": {
