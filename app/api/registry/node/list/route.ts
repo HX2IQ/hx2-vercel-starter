@@ -7,7 +7,6 @@ export async function GET(req: Request) {
 
   const ids = (await kv.smembers("registry:nodes")) as string[] | null;
   const nodeIds = (ids ?? []).sort();
-
   return Response.json({ ok: true, nodeIds, count: nodeIds.length }, { status: 200 });
 }
 

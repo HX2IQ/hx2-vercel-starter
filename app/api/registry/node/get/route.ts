@@ -9,9 +9,7 @@ export async function GET(req: Request) {
   const id = (url.searchParams.get("id") || "").trim();
   if (!id) return Response.json({ ok: false, error: "missing_id" }, { status: 400 });
 
-  const key = `registry:node:${id}`;
-  const node = await kv.get(key);
-
+  const node = await kv.get(`registry:node:${id}`);
   if (!node) return Response.json({ ok: false, error: "not_found", id }, { status: 404 });
 
   return Response.json({ ok: true, id, node }, { status: 200 });
