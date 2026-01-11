@@ -61,24 +61,18 @@ async function handle(taskId: string, wait: boolean) {
   if (!taskId) {
     return NextResponse.json(
       { ok: false, status: 400, error: "missing_taskId", message: "Provide taskId." },
-      { status: 400, headers: { "Cache-Control": "no-store" } }
-    );
-  }
+      { status: 400, headers: { "Cache-Control": "no-store" };}
 
   const proof = wait ? await waitForProof(taskId, 12000) : await latestProof(taskId);
 
   if (!proof) {
     return NextResponse.json(
       { ok: true, taskId, state: "PENDING", found: false },
-      { status: 200, headers: { "Cache-Control": "no-store" } }
-    );
-  }
+      { status: 200, headers: { "Cache-Control": "no-store" };}
 
   return NextResponse.json(
     { ok: true, taskId, state: "DONE", found: true, proof },
-    { status: 200, headers: { "Cache-Control": "no-store" } }
-  );
-}
+    { status: 200, headers: { "Cache-Control": "no-store" };}
 
 export async function GET(req: NextRequest) {
   if (!authOk(req)) {
@@ -115,5 +109,5 @@ export async function OPTIONS() {
 // --- TEMP DEBUG: env presence check (SAFE) ---
 export async function HEAD(req: Request) {
   const has = !!process.env.HX2_API_KEY;
-  return new Response(null, { status: has ? 204 : 503, headers: { "x-hx2-env-check": has ? "1" : "0" } });
-}
+  return new Response(null, { status: has ? 204 : 503, headers: { "x-hx2-env-check": has ? "1" : "0" };}
+
