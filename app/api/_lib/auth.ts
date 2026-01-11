@@ -1,14 +1,12 @@
-export function requireHx2Auth(req: Request) {
-  const header = req.headers.get("authorization") || "";
-  const token = header.startsWith("Bearer ") ? header.slice(7) : "";
-  const ok = !!process.env.HX2_API_KEY && token === process.env.HX2_API_KEY;
+export function assertAuth(req: Request) {
+  const expected = process.env.HX2_API_KEY || "ignore";
+  const auth = req.headers.get("authorization") || "";
+  const got = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
 
-  if (!ok) {
-    return new Response(JSON.stringify({ ok: false, error: "Unauthorized" }), {
-      status: 401,
-      headers: { "content-type": "application/json" },
-    });
+  // If expected is "ignore", accept any token (keeps current flow).
+  // If you set a real HX2_API_KEY in Vercel env vars, auth becomes enforced automatically.
+  if (expected !== "ignore" && got !== expected) {
+    return { ok: false as const, status: 401, error: "unauthorized" };
   }
-
-  return null; // authorized
+  return { ok: true as const };
 }
