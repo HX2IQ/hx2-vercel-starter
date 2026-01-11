@@ -7,3 +7,13 @@ export function assertAuth(req: Request) {
   }
   return { ok: true as const };
 }
+
+ // --- compat export (required by ap2-proof routes) ---
+ // Minimal SAFE guard: checks Authorization header exists; customize later if needed.
+ export async function requireHx2Auth(req: Request) {
+   const h = req.headers.get("authorization") || req.headers.get("Authorization");
+   if (!h) {
+     return Response.json({ ok: false, error: "unauthorized" }, { status: 401 });
+   }
+   return null; // null means "allowed"
+ }
