@@ -17,7 +17,10 @@ async function proxyToGateway(req: Request) {
 
   const upstream = await fetch(target, {
     method: req.method,
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(process.env.AP2_GATEWAY_AUTH ? { "Authorization": process.env.AP2_GATEWAY_AUTH } : {}),
+    },
     // no body needed for status, but allow forward if present
     body: (req.method === "POST" || req.method === "PUT") ? await req.text() : undefined,
   });
@@ -35,3 +38,4 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   return proxyToGateway(req);
 }
+
