@@ -27,8 +27,15 @@ async function proxyToGateway(req: Request) {
 
   const text = await upstream.text();
   // If upstream returns JSON, pass-through; otherwise wrap
-  try { return json(JSON.parse(text), upstream.status); }
-  catch { return json({ ok: upstream.ok, status: upstream.status, raw: text }, upstream.status); }
+  try {
+    const r = json(JSON.parse(text), upstream.status);
+    r.headers.set("x-ap2-gateway-auth-present", process.env.AP2_GATEWAY_AUTH ? "true" : "false");
+    return r;
+  } catch {
+    const r = json({ ok: upstream.ok, status: upstream.status, raw: text }, upstream.status);
+    r.headers.set("x-ap2-gateway-auth-present", process.env.AP2_GATEWAY_AUTH ? "true" : "false");
+    return r;
+  }
 }
 
 export async function GET(req: Request) {
@@ -38,4 +45,5 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   return proxyToGateway(req);
 }
+
 
