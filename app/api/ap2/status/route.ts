@@ -1,3 +1,4 @@
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 function json(data: any, status = 200) {
@@ -45,6 +46,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   return proxyToGateway(req);
 }
+
 
 
 
