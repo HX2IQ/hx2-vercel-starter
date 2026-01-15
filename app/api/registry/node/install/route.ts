@@ -1,60 +1,36 @@
-import { kv } from "@vercel/kv";
-import { assertAuth } from "@/app/api/_lib/auth";
+import { NextResponse } from "next/server";
+import { redis } from "@/lib/redis";
 
-type NodePayload = {
-  command?: string;
-  mode?: string;
-  node?: {
-    id?: string;
-    displayName?: string;
-    type?: string;
-    version?: string;
-    owner?: boolean;
-    constraints?: Record<string, unknown>;
-    createdAt?: string;
-  };
-};
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-function nowISO() {
-  return new Date().toISOString();
+function bad(status: number, error: string, detail?: any) {
+  return NextResponse.json({ ok: false, error, ...(detail ? { detail } : {}) }, { status });
 }
 
 export async function POST(req: Request) {
-  const a = assertAuth(req);
-  if (!a.ok) return Response.json(a, { status: a.status });
-
-  let body: NodePayload;
   try {
-    body = await req.json();
+    const auth = req.headers.get("authorization") || "";
+    const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+
+    if (!process.env.HX2_API_KEY) return bad(500, "missing_server_key");
+    if (!token || token !== process.env.HX2_API_KEY) return bad(401, "unauthorized");
+
+    const body = await req.json().catch(() => null);
+    if (!body || typeof body !== "object") return bad(400, "bad_json");
+
+    const node = (body as any).node;
+    const nodeId = node?.id;
+    if (!nodeId || typeof nodeId !== "string") return bad(400, "missing_node_id");
+
+    const now = new Date().toISOString();
+    const record = { ...node, id: nodeId, updatedAt: now, createdAt: node.createdAt || now };
+
+    await redis.set(`hx2:registry:nodes:${nodeId}`, JSON.stringify(record));
+    await redis.sadd("hx2:registry:nodes:index", nodeId);
+
+    return NextResponse.json({ ok: true, installed: true, nodeId, ts: now }, { status: 200 });
   } catch (e: any) {
-    return Response.json({ ok: false, error: "bad_json", detail: String(e?.message ?? e) }, { status: 400 });
+    return bad(500, "internal_error", String(e?.message || e));
   }
-
-  const nodeId = body?.node?.id?.trim();
-  if (!nodeId) {
-    return Response.json({ ok: false, error: "missing_node_id" }, { status: 400 });
-  }
-
-  const key = `registry:node:${nodeId}`;
-  const setKey = `registry:nodes`;
-
-  const stored = {
-    ...body,
-    _meta: {
-      installedAt: nowISO(),
-      source: "registry.node.install",
-    },
-  };
-
-  await kv.set(key, stored);
-  await kv.sadd(setKey, nodeId);
-
-  return Response.json(
-    { ok: true, installed: true, nodeId, ts: nowISO() },
-    { status: 200 }
-  );
-}
-
-export async function GET() {
-  return Response.json({ ok: false, error: "method_not_allowed", allow: ["POST"] }, { status: 405 });
 }
