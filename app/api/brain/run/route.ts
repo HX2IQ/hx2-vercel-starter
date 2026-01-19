@@ -9,10 +9,21 @@ declare global {
   var __hx2Pool: Pool | undefined;
 }
 
+function getConn() {
+  return (
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL ||
+    process.env.POSTGRES_PRISMA_URL ||
+    ""
+  );
+}
+
+const conn = getConn();
+
 const pool =
   globalThis.__hx2Pool ??
   new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: conn,
     ssl: { rejectUnauthorized: false },
   });
 
@@ -40,51 +51,69 @@ async function waitForProof(taskId: string, timeoutMs = 12000) {
 }
 
 export async function POST(req: Request) {
-  const auth = req.headers.get("authorization") || "";
-  const expected = `Bearer ${process.env.HX2_API_KEY || ""}`;
-  if (!process.env.HX2_API_KEY || auth !== expected) {
-    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
-  }
+  try {
+    const auth = req.headers.get("authorization") || "";
+    const expected = `Bearer ${process.env.HX2_API_KEY || ""}`;
+    if (!process.env.HX2_API_KEY || auth !== expected) {
+      return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+    }
 
-  const origin = new URL(req.url).origin;
+    // Hard fail early if DB env missing in this runtime
+    if (!conn) {
+      return NextResponse.json(
+        { ok: false, error: "missing_db_env", hint: "Set DATABASE_URL (Production) and redeploy." },
+        { status: 500 }
+      );
+    }
 
-  // Body from caller = what AP2 will send to brain shell
-  const body = await req.json().catch(() => ({}));
+    // Quick DB check so we get a useful error if Neon/network is the issue
+    await pool.query("select 1 as ok");
 
-  const enqueueRes = await fetch(`${origin}/api/ap2/task/enqueue`, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: auth,
-    },
-    body: JSON.stringify({
-      taskType: "brain.run",
-      payload: body,
-      callbackUrl: `${origin}/api/ap2-proof`,
-    }),
-  });
+    const origin = new URL(req.url).origin;
 
-  const enqueueJson = await enqueueRes.json().catch(() => null);
-  if (!enqueueRes.ok || !enqueueJson?.task?.id) {
+    const body = await req.json().catch(() => ({}));
+
+    const enqueueRes = await fetch(`${origin}/api/ap2/task/enqueue`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: auth,
+      },
+      body: JSON.stringify({
+        taskType: "brain.run",
+        payload: body,
+        callbackUrl: `${origin}/api/ap2-proof`,
+      }),
+    });
+
+    const enqueueJson = await enqueueRes.json().catch(() => null);
+    if (!enqueueRes.ok || !enqueueJson?.task?.id) {
+      return NextResponse.json(
+        { ok: false, error: "enqueue_failed", details: enqueueJson },
+        { status: 500 }
+      );
+    }
+
+    const taskId: string = enqueueJson.task.id;
+    const proof = await waitForProof(taskId, 12000);
+
+    if (!proof) {
+      return NextResponse.json({
+        ok: true,
+        pending: true,
+        taskId,
+        note: "Task enqueued; proof not received within timeout",
+      });
+    }
+
+    return NextResponse.json({ ok: true, taskId, proof });
+  } catch (e: any) {
+    console.error("brain/run error:", e);
     return NextResponse.json(
-      { ok: false, error: "enqueue_failed", details: enqueueJson },
+      { ok: false, error: "internal_error", detail: e?.message || String(e) },
       { status: 500 }
     );
   }
-
-  const taskId: string = enqueueJson.task.id;
-  const proof = await waitForProof(taskId, 12000);
-
-  if (!proof) {
-    return NextResponse.json({
-      ok: true,
-      pending: true,
-      taskId,
-      note: "Task enqueued; proof not received within timeout",
-    });
-  }
-
-  return NextResponse.json({ ok: true, taskId, proof });
 }
 
 export async function OPTIONS() {
