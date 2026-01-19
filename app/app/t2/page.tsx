@@ -6,7 +6,13 @@ import React, { useState } from "react";
 export default function Page() {
   const [baseUrl, setBaseUrl] = useState("https://optinodeiq.com");
   const [token, setToken] = useState("");
-  const [payloadText, setPayloadText] = useState<string>("{\n  \"imageUrl\": \"https://example.com/booth.jpg\",\n  \"context\": \"Miami boat show\"\n}");
+  const [payloadText, setPayloadText] = useState(
+    JSON.stringify(
+      { imageUrl: "https://example.com/booth.jpg", context: "Miami boat show" },
+      null,
+      2
+    )
+  );
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<any>(null);
 
@@ -25,23 +31,27 @@ export default function Page() {
       return;
     }
 
-    const id = \\-\\;
+    const id = `${taskType}-${Math.floor(Date.now() / 1000)}`;
     const body = { taskType, id, payload };
 
     try {
       const base = baseUrl.replace(/\/$/, "");
-      const r = await fetch(\\https://optinodeiq.com/api/ap2/task/enqueue\, {
+      const r = await fetch(`${base}/api/ap2/task/enqueue`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { Authorization: \Bearer \\ } : {}),
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(body),
       });
 
       const text = await r.text();
       let json: any;
-      try { json = JSON.parse(text); } catch { json = { raw: text }; }
+      try {
+        json = JSON.parse(text);
+      } catch {
+        json = { raw: text };
+      }
 
       setResult(r.ok ? json : { ok: false, http: r.status, response: json });
     } catch (e: any) {
