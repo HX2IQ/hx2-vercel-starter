@@ -36,3 +36,6 @@ node_modules_old/
 tsconfig.json.bak*
 canonicalize-ap2.ps1
 ap2_status.json
+vercel_logs_*.txt
+vercel_build_fail.txt
+lib/*.bak*
