@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -53,7 +55,7 @@ export default function RetailHome() {
       {/* Hero background */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <NeuroNet />
+          {/* NeuroNet disabled for crash isolation */}
           <div className="absolute -top-40 left-1/2 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-gradient-to-r from-violet-600/30 via-cyan-500/20 to-emerald-500/20 blur-3xl" />
           <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         </div>
@@ -185,3 +187,4 @@ export default function RetailHome() {
     </main>
   );
 }
+

@@ -1,3 +1,4 @@
+"use client";
 export default function NeuroNet() {
   // Lightweight neuronet SVG background (no libs, fast, looks premium).
   return (
@@ -41,3 +42,4 @@ export default function NeuroNet() {
     </svg>
   );
 }
+
