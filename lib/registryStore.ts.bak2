@@ -1,13 +1,5 @@
 import { redisGet, redisSet } from "./redisSimple";
 
-
-
-
-import Redis from "ioredis";
-const redis = new Redis((process.env.REDIS_URL || process.env.HX2_REDIS_URL || "").trim(), {
-  maxRetriesPerRequest: 2,
-  enableReadyCheck: true,
-});
 export type RegistryNode = {
   id: string;
   type?: string;
@@ -57,9 +49,6 @@ export async function upsertNode(node: RegistryNode): Promise<{ ok: boolean; cou
   const ok = await saveNodes(nodes);
   return { ok, count: nodes.length };
 }
-
-
-
 
 
 

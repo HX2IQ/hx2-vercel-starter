@@ -1,12 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 
+function requireAuth(req: Request) {
+  const expected = (process.env.HX2_API_KEY || "").trim();
+  if (!expected) return { ok: false, status: 500, msg: "server missing HX2_API_KEY" };
+
+  const auth = req.headers.get("authorization") || "";
+  const m = auth.match(/^Bearer\s+(.+)$/i);
+  const token = m?.[1]?.trim();
+
+  if (!token || token !== expected) {
+    return { ok: false, status: 401, msg: "unauthorized" };
+  }
+  return { ok: true as const };
+}
+
 export async function POST(req: NextRequest) {
   const worker = process.env.AP2_WORKER_URL || "https://ap2-worker.optinodeiq.com";
-  const key = process.env.HX2_API_KEY || "";
+  const key = (process.env.AP2_GATEWAY_BEARER || "").trim();
 
   if (!key) {
     return NextResponse.json(
-      { ok: false, status: 500, error: "HX2_API_KEY missing on server" },
+      { ok: false, status: 500, error: "AP2_GATEWAY_BEARER missing on server" },
       { status: 500 }
     );
   }
@@ -33,3 +47,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, status: r.status, raw: text }, { status: r.status });
   }
 }
+
+
+
+
+
+

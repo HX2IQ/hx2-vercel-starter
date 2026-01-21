@@ -17,25 +17,20 @@ export async function GET(req: Request) {
     if (!expected) return bad(500, "missing_server_key");
     if (!token || token !== expected) return bad(401, "unauthorized");
 
-    const url = new URL(req.url);
-    const id = (url.searchParams.get("id") || url.searchParams.get("nodeId") || "").trim();
-    if (!id) return bad(400, "missing_id");
+    const ids = (await redis.smembers("hx2:registry:nodes:index")) || [];
+    const keys = ids.map((id: string) => `hx2:registry:nodes:${id}`);
+    const raw = keys.length ? await redis.mget(...keys) : [];
 
-    const raw = await redis.get(`hx2:registry:nodes:${id}`);
-    if (!raw) return bad(404, "not_found", { id });
-
-    let node: any = null;
-    try { node = JSON.parse(raw as any); } catch { return bad(500, "bad_record_json", { id }); }
+    const missing: string[] = [];
+    ids.forEach((id: string, i: number) => {
+      if (!raw[i]) missing.push(id);
+    });
 
     return NextResponse.json(
-      { ok: true, route: "registry.node.get", id, node, ts: new Date().toISOString() },
+      { ok: true, route: "registry.integrity", indexCount: ids.length, missingCount: missing.length, missing, ts: new Date().toISOString() },
       { status: 200 }
     );
   } catch (e: any) {
     return bad(500, "internal_error", String(e?.message || e));
   }
-}
-
-export async function POST() {
-  return NextResponse.json({ ok: false, error: "method_not_allowed", allow: ["GET"] }, { status: 405 });
 }
