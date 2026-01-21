@@ -1,174 +1,162 @@
 import Link from "next/link";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import NeuroNet from "./_components/NeuroNet";
 
-function Logo() {
-  // Inline SVG logo placeholder (clean + premium). Replace later with your real logo asset.
+function NavLink({ href, label }: { href: string; label: string }) {
   return (
-    <div className="flex items-center gap-3">
-      <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-black to-zinc-700 shadow-sm ring-1 ring-black/10 flex items-center justify-center">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M6 16.8c2.2-2.5 4.4-3.7 6.6-3.7 2.2 0 4.4 1.2 6.6 3.7" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-          <path d="M7 8.2c1.8 1.8 3.6 2.7 5.4 2.7 1.8 0 3.6-.9 5.4-2.7" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.85"/>
-        </svg>
-      </div>
-      <div className="leading-tight">
-        <div className="text-sm font-semibold tracking-tight text-zinc-900">OptinodeIQ</div>
-        <div className="text-xs text-zinc-500">Optimized Intelligence</div>
-      </div>
-    </div>
+    <Link className="text-sm text-white/80 hover:text-white transition" href={href}>
+      {label}
+    </Link>
   );
 }
 
-function Badge({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center rounded-full border border-zinc-200 bg-white/70 px-3 py-1 text-xs font-medium text-zinc-700 shadow-sm">
-      {children}
-    </span>
-  );
-}
-
-function FeatureCard({
-  title,
-  desc,
-}: {
-  title: string;
-  desc: string;
-}) {
-  return (
-    <div className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm transition hover:shadow-md">
-      <div className="text-base font-semibold text-zinc-900">{title}</div>
-      <div className="mt-2 text-sm leading-relaxed text-zinc-600">{desc}</div>
-    </div>
-  );
-}
-
-function PrimaryButton({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
+function PrimaryButton({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <Link
       href={href}
-      className="inline-flex items-center justify-center rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-black focus:outline-none focus:ring-2 focus:ring-zinc-900/20"
+      className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-violet-500 via-cyan-400 to-emerald-400 px-5 py-3 text-sm font-semibold text-zinc-950 shadow-lg shadow-cyan-500/20 hover:brightness-110 transition"
     >
       {children}
     </Link>
   );
 }
 
-function SecondaryButton({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
+function GhostButton({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <Link
       href={href}
-      className="inline-flex items-center justify-center rounded-2xl border border-zinc-200 bg-white px-5 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-zinc-900/10"
+      className="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-white/10 transition"
     >
       {children}
     </Link>
   );
 }
+
+function Card({ title, desc }: { title: string; desc: string }) {
+  return (
+    <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-sm backdrop-blur">
+      <div className="text-base font-semibold text-white">{title}</div>
+      <div className="mt-2 text-sm leading-relaxed text-white/70">{desc}</div>
+    </div>
+  );
+}
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 14 },
+  show: (i: number) => ({ opacity: 1, y: 0, transition: { delay: 0.06 * i, duration: 0.5 } }),
+};
 
 export default function RetailHome() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-zinc-50 to-white">
-      {/* Top nav */}
-      <header className="sticky top-0 z-40 border-b border-zinc-100 bg-white/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-          <Logo />
-          <nav className="hidden items-center gap-6 md:flex">
-            <Link className="text-sm text-zinc-700 hover:text-zinc-900" href="/retail/products">Products</Link>
-            <Link className="text-sm text-zinc-700 hover:text-zinc-900" href="/retail/pricing">Pricing</Link>
-            <Link className="text-sm text-zinc-700 hover:text-zinc-900" href="/retail/about">About</Link>
-            <Link className="text-sm text-zinc-700 hover:text-zinc-900" href="/retail/waitlist">Waitlist</Link>
-          </nav>
-          <div className="flex items-center gap-3">
-            <SecondaryButton href="/retail/pricing">See Pricing</SecondaryButton>
-            <PrimaryButton href="/retail/waitlist">Join Waitlist</PrimaryButton>
-          </div>
+    <main className="min-h-screen bg-[#070A12] text-white">
+      {/* Hero background */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0">
+          <NeuroNet />
+          <div className="absolute -top-40 left-1/2 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-gradient-to-r from-violet-600/30 via-cyan-500/20 to-emerald-500/20 blur-3xl" />
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         </div>
-      </header>
 
-      {/* Hero */}
-      <section className="mx-auto max-w-6xl px-4 pb-10 pt-12 md:pt-16">
-        <div className="flex flex-col gap-10 md:grid md:grid-cols-2 md:items-center">
-          <div>
-            <div className="flex flex-wrap gap-2">
-              <Badge>Retail Site: Live</Badge>
-              <Badge>Console: Locked + Operational</Badge>
-              <Badge>Nodes: Install → Ping → Describe</Badge>
-            </div>
+        {/* Nav */}
+        <header className="relative z-10">
+          <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5">
+            <Link href="/retail" className="flex items-center gap-3">
+              <Image src="/brand/optinodeiq-logo.svg" alt="OptinodeIQ" width={200} height={52} priority />
+            </Link>
 
-            <h1 className="mt-5 text-4xl font-semibold tracking-tight text-zinc-900 md:text-5xl">
-              A premium intelligence platform—
-              <span className="text-zinc-500"> built to ship fast</span>.
-            </h1>
+            <nav className="hidden items-center gap-6 md:flex">
+              <NavLink href="/retail/products" label="Products" />
+              <NavLink href="/retail/pricing" label="Pricing" />
+              <NavLink href="/retail/about" label="About" />
+              <NavLink href="/retail/progress" label="Progress" />
+            </nav>
 
-            <p className="mt-4 max-w-xl text-base leading-relaxed text-zinc-600">
-              OptinodeIQ is the customer-facing layer of HX2. Live retail UX now, wired endpoints now,
-              and capabilities turned on as we go—without breaking the site.
-            </p>
-
-            <div className="mt-7 flex flex-wrap gap-3">
-              <PrimaryButton href="/retail/products">Explore Products</PrimaryButton>
-              <SecondaryButton href="/retail/about">What is OptinodeIQ?</SecondaryButton>
-              <SecondaryButton href="/retail/waitlist">Get Early Access</SecondaryButton>
-            </div>
-
-            <div className="mt-6 flex flex-col gap-2 text-sm text-zinc-600">
-              <div className="flex items-center gap-2">
-                <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
-                <span>Production routes responding 200</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
-                <span>AP2 enqueue + callbacks working</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
-                <span>Node registry records visible via /describe</span>
-              </div>
+            <div className="flex items-center gap-3">
+              <GhostButton href="/retail/progress">Live Status</GhostButton>
+              <PrimaryButton href="/retail/waitlist">Join Waitlist</PrimaryButton>
             </div>
           </div>
+        </header>
 
-          {/* Right panel */}
-          <div className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm md:p-8">
-            <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold text-zinc-900">Live Progress</div>
-              <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">
-                Online
-              </span>
+        {/* Hero content */}
+        <div className="relative z-10 mx-auto max-w-6xl px-4 pb-16 pt-10 md:pt-16">
+          <div className="grid gap-10 md:grid-cols-2 md:items-center">
+            <div>
+              <motion.div initial="hidden" animate="show" variants={fadeUp} custom={1}
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-white/80"
+              >
+                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                Production online • Retail live • Wiring in real-time
+              </motion.div>
+
+              <motion.h1 initial="hidden" animate="show" variants={fadeUp} custom={2}
+                className="mt-5 text-4xl font-semibold tracking-tight md:text-5xl"
+              >
+                The premium customer layer for HX2 —
+                <span className="bg-gradient-to-r from-violet-400 via-cyan-300 to-emerald-300 bg-clip-text text-transparent"> built to ship fast</span>.
+              </motion.h1>
+
+              <motion.p initial="hidden" animate="show" variants={fadeUp} custom={3}
+                className="mt-4 max-w-xl text-base leading-relaxed text-white/75"
+              >
+                A real website customers can trust on day one — with a live progress dashboard, waitlist capture,
+                and capabilities wired in as nodes come online.
+              </motion.p>
+
+              <motion.div initial="hidden" animate="show" variants={fadeUp} custom={4}
+                className="mt-7 flex flex-wrap gap-3"
+              >
+                <PrimaryButton href="/retail/products">Explore Products</PrimaryButton>
+                <GhostButton href="/retail/pricing">See Pricing</GhostButton>
+                <GhostButton href="/retail/progress">Progress Dashboard</GhostButton>
+              </motion.div>
+
+              <motion.div initial="hidden" animate="show" variants={fadeUp} custom={5}
+                className="mt-8 grid gap-3 sm:grid-cols-2"
+              >
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div className="text-xs font-semibold text-white/70">Retail</div>
+                  <div className="mt-1 text-sm text-white">Home / Products / Pricing / About / Waitlist</div>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div className="text-xs font-semibold text-white/70">Nodes</div>
+                  <div className="mt-1 text-sm text-white">Scaffold → Register → Ping → Describe</div>
+                </div>
+              </motion.div>
             </div>
 
-            <div className="mt-5 grid gap-3">
-              <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-                <div className="text-xs font-semibold text-zinc-700">Retail</div>
-                <div className="mt-1 text-sm text-zinc-900">Home / Products / Pricing / About / Waitlist</div>
+            {/* Right panel */}
+            <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
+              className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl shadow-black/40 backdrop-blur md:p-8"
+            >
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">Live Progress</div>
+                <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-semibold text-emerald-300 ring-1 ring-emerald-400/20">
+                  Online
+                </span>
               </div>
-              <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-                <div className="text-xs font-semibold text-zinc-700">Node Lifecycle</div>
-                <div className="mt-1 text-sm text-zinc-900">Scaffold → Register → Ping → Describe</div>
-              </div>
-              <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-                <div className="text-xs font-semibold text-zinc-700">Next Up</div>
-                <div className="mt-1 text-sm text-zinc-900">Retail dashboard + waitlist wiring + product cards</div>
-              </div>
-            </div>
 
-            <div className="mt-6 flex flex-wrap gap-3">
-              <SecondaryButton href="/retail/pricing">Plans</SecondaryButton>
-              <PrimaryButton href="/retail/waitlist">Request Invite</PrimaryButton>
-            </div>
+              <div className="mt-5 grid gap-3">
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <div className="text-xs font-semibold text-white/70">What’s wired</div>
+                  <div className="mt-1 text-sm text-white">Waitlist capture • Progress checks • Live routes</div>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <div className="text-xs font-semibold text-white/70">Next</div>
+                  <div className="mt-1 text-sm text-white">Product cards + pricing tiers + invite flow</div>
+                </div>
+              </div>
 
-            <div className="mt-6 text-xs text-zinc-500">
-              This page is safe to ship publicly now. Features wire in behind stable routes.
-            </div>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <GhostButton href="/retail/progress">View Status</GhostButton>
+                <PrimaryButton href="/retail/waitlist">Request Invite</PrimaryButton>
+              </div>
+
+              <div className="mt-6 text-xs text-white/60">
+                Public-safe: Retail stays stable while backend features roll out behind it.
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -176,57 +164,21 @@ export default function RetailHome() {
       {/* Features */}
       <section className="mx-auto max-w-6xl px-4 pb-14">
         <div className="grid gap-4 md:grid-cols-3">
-          <FeatureCard
-            title="Retail-first UX"
-            desc="Clean customer pages now. No broken builds while you wire in core functionality."
-          />
-          <FeatureCard
-            title="Node-aware architecture"
-            desc="A consistent pattern: endpoints + registry + AP2 worker tasks—scales cleanly."
-          />
-          <FeatureCard
-            title="Ship safely"
-            desc="Public site stays stable. Console and admin stay locked, auditable, and controlled."
-          />
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="mx-auto max-w-6xl px-4 pb-16">
-        <div className="rounded-3xl border border-zinc-200 bg-zinc-900 px-6 py-10 text-white shadow-sm md:px-10">
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-            <div>
-              <div className="text-2xl font-semibold tracking-tight">Want early access?</div>
-              <div className="mt-2 text-sm text-white/80">
-                Join the waitlist and we’ll unlock features as they go live.
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href="/retail/waitlist"
-                className="inline-flex items-center justify-center rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-zinc-900 shadow-sm transition hover:bg-zinc-100"
-              >
-                Join Waitlist
-              </Link>
-              <Link
-                href="/retail/products"
-                className="inline-flex items-center justify-center rounded-2xl border border-white/20 bg-transparent px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-white/10"
-              >
-                Browse Products
-              </Link>
-            </div>
-          </div>
+          <Card title="Premium-first UX" desc="Looks legit now: color, depth, motion, and structure—customers won’t bounce." />
+          <Card title="Progress dashboard" desc="A live “is it working?” page so you can verify wiring without guessing." />
+          <Card title="Waitlist that saves" desc="Emails stored in Redis immediately—no fake forms, no dead buttons." />
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-100 bg-white">
+      <footer className="border-t border-white/10 bg-black/20">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-10 md:flex-row md:items-center md:justify-between">
-          <div className="text-sm text-zinc-600">© {new Date().getFullYear()} OptinodeIQ</div>
+          <div className="text-sm text-white/60">© {new Date().getFullYear()} OptinodeIQ</div>
           <div className="flex gap-6 text-sm">
-            <Link className="text-zinc-600 hover:text-zinc-900" href="/retail/about">About</Link>
-            <Link className="text-zinc-600 hover:text-zinc-900" href="/retail/pricing">Pricing</Link>
-            <Link className="text-zinc-600 hover:text-zinc-900" href="/retail/waitlist">Waitlist</Link>
+            <Link className="text-white/60 hover:text-white transition" href="/retail/about">About</Link>
+            <Link className="text-white/60 hover:text-white transition" href="/retail/pricing">Pricing</Link>
+            <Link className="text-white/60 hover:text-white transition" href="/retail/waitlist">Waitlist</Link>
+            <Link className="text-white/60 hover:text-white transition" href="/retail/progress">Progress</Link>
           </div>
         </div>
       </footer>
