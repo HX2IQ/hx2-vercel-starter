@@ -15,8 +15,25 @@ export function newTaskId(prefix: string) {
   return `${prefix}-${Date.now()}-${rand}`;
 }
 
+function normalizeBase(raw: string | undefined) {
+  const v = (raw || "").trim();
+
+  // If missing or clearly not a host/url, fall back to production base.
+  // (The long hex you’re seeing is likely a Vercel internal value.)
+  if (!v || /^[a-f0-9]{32,64}$/i.test(v)) return "https://optinodeiq.com";
+
+  // If already has scheme, keep it.
+  if (/^https?:\/\//i.test(v)) return v.replace(/\/+$/, "");
+
+  // If looks like a host (contains dot), add https://
+  if (v.includes(".")) return ("https://" + v).replace(/\/+$/, "");
+
+  // Otherwise fallback.
+  return "https://optinodeiq.com";
+}
+
 export async function enqueueAP2(taskType: string, payload: any) {
-  const base = (process.env.HX2_BASE_URL || "https://optinodeiq.com").replace(/\/+$/, "");
+  const base = normalizeBase(process.env.HX2_BASE_URL);
   const url = `${base}/api/ap2/task/enqueue`;
 
   const body = {
