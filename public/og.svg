@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1220"/>
+      <stop offset="45%" stop-color="#1E3A8A"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22D3EE"/>
+      <stop offset="100%" stop-color="#A78BFA"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <g opacity="0.18" stroke="url(#accent)" stroke-width="6" fill="none">
+    <path d="M140 420 C 260 260, 440 250, 560 360 C 670 460, 860 500, 1040 380"/>
+    <path d="M160 300 C 300 210, 450 190, 620 270 C 760 335, 900 360, 1040 320"/>
+    <path d="M180 500 C 340 460, 500 450, 640 480 C 780 510, 920 520, 1040 470"/>
+  </g>
+
+  <rect x="80" y="90" width="1040" height="450" rx="38" fill="#0B1220" opacity="0.35"/>
+
+  <text x="120" y="220" font-family="ui-sans-serif, system-ui, Segoe UI, Roboto, Arial" font-weight="800" font-size="64" fill="#FFFFFF">
+    Optinode
+  </text>
+  <text x="120" y="290" font-family="ui-sans-serif, system-ui, Segoe UI, Roboto, Arial" font-weight="800" font-size="64" fill="#FFFFFF">
+    Intelligence
+  </text>
+
+  <rect x="120" y="340" width="520" height="14" rx="7" fill="url(#accent)"/>
+
+  <text x="120" y="410" font-family="ui-sans-serif, system-ui, Segoe UI, Roboto, Arial" font-weight="600" font-size="28" fill="#D1D5DB">
+    Retail progress + node build dashboard (live wiring in progress)
+  </text>
+
+  <g transform="translate(860,140)">
+    <rect width="260" height="120" rx="26" fill="#0B1220" opacity="0.55"/>
+    <text x="130" y="78" text-anchor="middle" font-family="ui-sans-serif, system-ui, Segoe UI, Roboto, Arial" font-weight="900" font-size="64" fill="#FFFFFF">OI</text>
+  </g>
+</svg>
