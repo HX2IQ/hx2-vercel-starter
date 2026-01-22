@@ -51,7 +51,7 @@ const fadeUp = {
 
 export default function RetailHome() {
   return (
-    <main className="min-h-screen bg-[#070A12] text-white">
+    <main className="min-h-screen bg-black text-white">
       {/* Hero background */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
@@ -187,4 +187,5 @@ export default function RetailHome() {
     </main>
   );
 }
+
 
