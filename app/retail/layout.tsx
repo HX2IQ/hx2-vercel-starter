@@ -31,3 +31,4 @@ export default function RetailLayout({ children }: { children: React.ReactNode }
     </div>
   );
 }
+
