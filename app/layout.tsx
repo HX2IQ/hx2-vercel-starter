@@ -11,10 +11,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body data-tailwind-probe className="bg-black text-white">{children}</body>
     </html>
   )
 }
+
 
 
 
