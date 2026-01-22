@@ -3,4 +3,4 @@
 @tailwind utilities;
 
 html, body { height: 100%; }
-body { margin: 0; background: #00ff00 !important; }
+body { margin: 0; background: #ff00ff !important; }
