@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* tiny defaults so it looks premium even before components load */
+html, body { height: 100%; }
+body { margin: 0; }
