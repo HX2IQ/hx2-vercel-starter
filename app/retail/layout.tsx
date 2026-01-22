@@ -1,4 +1,4 @@
-import "../globals.css";
+import "../app/globals.css";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -70,3 +70,4 @@ export default function RetailLayout({ children }: { children: React.ReactNode }
     </div>
   );
 }
+
