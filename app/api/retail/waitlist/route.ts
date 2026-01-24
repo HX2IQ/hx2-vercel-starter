@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
-import { redis } from "@/lib/redis";
-
+import { getRedis } from "@lib/redis";
+const redis = getRedis();
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 function bad(status: number, error: string, detail?: any) {
   return NextResponse.json({ ok: false, error, ...(detail ? { detail } : {}) }, { status });
 }
-
 export async function POST(req: Request) {
+  if (!redis) return bad(500, "redis_not_configured");
   try {
     const body: any = await req.json().catch(() => ({}));
     const email = String(body?.email || "").trim().toLowerCase();
@@ -29,8 +29,8 @@ export async function POST(req: Request) {
     return bad(500, "internal_error", { message: String(e?.message || e) });
   }
 }
-
 export async function GET() {
+  if (!redis) return bad(500, "redis_not_configured");
   // lightweight count (safe for public)
   try {
     const count = await redis.scard("hx2:retail:waitlist:set");
