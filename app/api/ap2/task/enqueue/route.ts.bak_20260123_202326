@@ -33,43 +33,30 @@ export async function POST(req: NextRequest) {
   const worker = process.env.AP2_WORKER_URL || "https://ap2-worker.optinodeiq.com";
   const key = (process.env.AP2_GATEWAY_BEARER || "").trim();
   if (!key) {
-    return NextResponse.json({ ok: false, error: "AP2_GATEWAY_BEARER missing on server" }, { status: 500 });
+    return NextResponse.json(
+      { ok: false, error: "AP2_GATEWAY_BEARER missing on server" },
+      { status: 500 }
+    );
   }
 
   const { json: body } = await readJsonBody(req);
 
-  // Worker contract: requires taskType
-  const taskType =
-    body?.taskType ||
-    body?.task_type ||
-    body?.task ||
-    body?.command ||
-    body?.type ||
-    "";
-
-  if (!taskType) {
-    return NextResponse.json(
-      { ok: false, error: { code: "MISSING_TASK_TYPE", message: "taskType is required" } },
-      { status: 400 }
-    );
-  }
-
-  // Normalize payload for worker
-  const payload = body?.payload ?? body;
-
-  // Minimal receipt ID
+  // Minimal receipt
   const id =
     (globalThis.crypto as any)?.randomUUID?.() ||
     `${Date.now()}_${Math.random().toString(16).slice(2)}`;
 
-  // --- Redis metrics for /api/oi/status ---
+  // --- Redis enqueue metrics (for /api/oi/status) ---
   const redis = getRedis();
   if (redis) {
     try {
       await redis.incr("ap2:tasks:enqueued");
-      await redis.set("ap2:heartbeat", { ts: Date.now(), source: "vercel:/api/ap2/task/enqueue" }, { ex: 60 });
-
-      const receipt = { id, task: taskType, status: "enqueued", ts: Date.now() };
+      const receipt = {
+        id,
+        task: body?.task || body?.command || body?.type || "unknown",
+        status: "enqueued",
+        ts: Date.now(),
+      };
       await redis.lpush("ap2:tasks:recent", receipt);
       await redis.ltrim("ap2:tasks:recent", 0, 49);
     } catch {}
@@ -84,12 +71,13 @@ export async function POST(req: NextRequest) {
       "content-type": "application/json",
       authorization: `Bearer ${key}`,
     },
-    body: JSON.stringify({ taskType, payload }),
+    body: JSON.stringify(body ?? {}),
     cache: "no-store",
   });
 
   const json = await res.json().catch(() => null);
 
+  // If the worker call fails, reflect it (but we still recorded the enqueue attempt)
   if (!res.ok) {
     return NextResponse.json(
       { ok: false, error: "worker_enqueue_failed", status: res.status, detail: json },
@@ -99,5 +87,3 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ ok: true, id, worker: json }, { status: 200 });
 }
-
-

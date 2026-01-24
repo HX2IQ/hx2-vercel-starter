@@ -99,5 +99,3 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ ok: true, id, worker: json }, { status: 200 });
 }
-
-

@@ -1,0 +1,41 @@
+import { NextResponse } from "next/server";
+import { getRedis } from "@/lib/redis";
+const redis = getRedis();
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+function bad(status: number, error: string, detail?: any) {
+  return NextResponse.json({ ok: false, error, ...(detail ? { detail } : {}) }, { status });
+}
+export async function POST(req: Request) {
+  if (!redis) return bad(500, "redis_not_configured");
+  try {
+    const body: any = await req.json().catch(() => ({}));
+    const email = String(body?.email || "").trim().toLowerCase();
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return bad(400, "invalid_email");
+    }
+
+    const ts = new Date().toISOString();
+    const key = `hx2:retail:waitlist:${email}`;
+
+    // idempotent: store record and add to set
+    await redis.set(key, JSON.stringify({ email, ts }));
+    await redis.sadd("hx2:retail:waitlist:set", email);
+
+    return NextResponse.json({ ok: true, stored: true, email, ts });
+  } catch (e: any) {
+    return bad(500, "internal_error", { message: String(e?.message || e) });
+  }
+}
+export async function GET() {
+  if (!redis) return bad(500, "redis_not_configured");
+  // lightweight count (safe for public)
+  try {
+    const count = await redis.scard("hx2:retail:waitlist:set");
+    return NextResponse.json({ ok: true, count: Number(count || 0), ts: new Date().toISOString() });
+  } catch (e: any) {
+    return bad(500, "internal_error", { message: String(e?.message || e) });
+  }
+}

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getRedis } from "@/lib/redis";
+import { getRedis } from "../../../../lib/redis";
 
 function requireAuth(req: Request) {
   const expected = (process.env.HX2_API_KEY || "").trim();
@@ -99,5 +99,4 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ ok: true, id, worker: json }, { status: 200 });
 }
-
 

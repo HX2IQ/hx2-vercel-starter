@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getRedis } from "@/app/lib/redis";
+import { getRedis } from "@/lib/redis";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,19 +17,9 @@ async function readJsonBody(req: Request) {
 export async function POST(req: Request) {
   const { json: body } = await readJsonBody(req);
 
-  // --- Redis heartbeat (for /api/oi/status) ---
-  const redis = getRedis();
-  if (redis) {
-    try {
-      await redis.set(
-        "ap2:heartbeat",
-        { ts: Date.now(), source: "vercel:/api/ap2/status" },
-        { ex: 60 }
-      );
-    } catch {}
-  }
+  // TODO: plug your existing AP2 status logic here using `body`
+  // IMPORTANT: do NOT call req.json() or req.text() anywhere else.
 
-  // Keep response shape stable (you can swap in real AP2 status later)
   return NextResponse.json({
     ok: true,
     service: "ap2_status",
@@ -37,5 +27,4 @@ export async function POST(req: Request) {
     ts: new Date().toISOString(),
   });
 }
-
 
