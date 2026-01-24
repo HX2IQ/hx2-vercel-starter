@@ -9,7 +9,7 @@ export function getRedis() {
 }
 
 // Optional legacy export: `import { redis } from "@/lib/redis"`
-export const redis = getRedis();
+export const redis = getRedis() as unknown as Redis;
 
 export async function redisSafe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
   try { return await fn(); } catch { return fallback; }
