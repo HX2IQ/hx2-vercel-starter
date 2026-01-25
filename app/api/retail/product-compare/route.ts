@@ -20,6 +20,7 @@ type ProductKey =
   | "microfiber_only";
 
 const PRODUCT: Record<ProductKey, any> = {
+
   koenig: {
     key: "koenig",
     name: "Koenig Spray Polish",
@@ -57,6 +58,42 @@ const PRODUCT: Record<ProductKey, any> = {
     use_cases: ["Automotive windshields"],
     strengths: ["Strong hydrophobic effect"],
     cautions: ["Not a cleaner"]
+  },
+  clearview: {
+    key: "clearview",
+    name: "clearview (placeholder)",
+    notes: "TODO: fill details",
+    category: "placeholder"
+  },
+  windex: {
+    key: "windex",
+    name: "windex (placeholder)",
+    notes: "TODO: fill details",
+    category: "placeholder"
+  },
+  quickdetailer: {
+    key: "quickdetailer",
+    name: "quickdetailer (placeholder)",
+    notes: "TODO: fill details",
+    category: "placeholder"
+  },
+  ceramic_spray: {
+    key: "ceramic_spray",
+    name: "ceramic_spray (placeholder)",
+    notes: "TODO: fill details",
+    category: "placeholder"
+  },
+  soap_water: {
+    key: "soap_water",
+    name: "soap_water (placeholder)",
+    notes: "TODO: fill details",
+    category: "placeholder"
+  },
+  microfiber_only: {
+    key: "microfiber_only",
+    name: "microfiber_only (placeholder)",
+    notes: "TODO: fill details",
+    category: "placeholder"
   }
 };
 
