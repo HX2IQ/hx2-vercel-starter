@@ -1,16 +1,23 @@
+import CompareLeadCapture from "./CompareLeadCapture";
+
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 async function getData() {
-  const base =
-    process.env.NEXT_PUBLIC_BASE_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://optinodeiq.com");
+  try {
+    const base =
+      process.env.NEXT_PUBLIC_BASE_URL ||
+      process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000";
 
-  const r = await fetch(`${base}/api/retail/product-compare`, { cache: "no-store" });
-  const j = await r.json().catch(() => null);
-  return { ok: r.ok, status: r.status, data: j };
+    const r = await fetch(`${base}/api/retail/product-compare`, { cache: "no-store" });
+    const j = await r.json().catch(() => null);
+    return { ok: r.ok && !!j?.ok, status: r.status, data: j };
+  } catch (e: any) {
+    return { ok: false, status: 500, data: { ok: false, error: "fetch_failed", message: String(e?.message || e) } };
+  }
 }
 
-export default async function ComparePage() {
+export default async function Page() {
   const { ok, status, data } = await getData();
 
   return (
@@ -20,54 +27,23 @@ export default async function ComparePage() {
         Quick, plain-English comparison. (Public demo)
       </p>
 
-      {!ok ? (
-        <div style={{ padding: 16, border: "1px solid #ddd", borderRadius: 12 }}>
-          <b>API error</b>
-          <div>Status: {status}</div>
-          <pre style={{ whiteSpace: "pre-wrap", marginTop: 12 }}>{JSON.stringify(data, null, 2)}</pre>
+      <CompareLeadCapture />
+
+      <section style={{ padding: 16, border: "1px solid #ddd", borderRadius: 12 }}>
+        <div style={{ fontSize: 14, opacity: 0.75, marginBottom: 10 }}>
+          API: <code>/api/retail/product-compare</code> — Status: <b>{status}</b>
         </div>
-      ) : (
-        <div style={{ display: "grid", gap: 14 }}>
-          {(data?.products || []).map((p: any) => (
-            <div key={p.key} style={{ padding: 16, border: "1px solid #ddd", borderRadius: 12 }}>
-              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
-                <h2 style={{ fontSize: 18, margin: 0 }}>{p.name}</h2>
-                <span style={{ fontSize: 12, opacity: 0.7 }}>{p.category || ""}</span>
-              </div>
 
-              {p.one_liner ? <p style={{ marginTop: 10, marginBottom: 10 }}>{p.one_liner}</p> : null}
-
-              {Array.isArray(p.pros) && p.pros.length ? (
-                <>
-                  <div style={{ fontWeight: 600, marginTop: 10 }}>Pros</div>
-                  <ul style={{ marginTop: 6 }}>
-                    {p.pros.map((x: string, i: number) => <li key={i}>{x}</li>)}
-                  </ul>
-                </>
-              ) : null}
-
-              {Array.isArray(p.cons) && p.cons.length ? (
-                <>
-                  <div style={{ fontWeight: 600, marginTop: 10 }}>Cons</div>
-                  <ul style={{ marginTop: 6 }}>
-                    {p.cons.map((x: string, i: number) => <li key={i}>{x}</li>)}
-                  </ul>
-                </>
-              ) : null}
-
-              {p.best_for ? (
-                <p style={{ marginTop: 10, opacity: 0.9 }}>
-                  <b>Best for:</b> {p.best_for}
-                </p>
-              ) : null}
-            </div>
-          ))}
-
-          <div style={{ padding: 16, border: "1px dashed #bbb", borderRadius: 12 }}>
-            <b>Next:</b> Add “Email me the best choice” lead capture right on this page.
-          </div>
-        </div>
-      )}
+        {!ok ? (
+          <pre style={{ whiteSpace: "pre-wrap", margin: 0 }}>
+            {JSON.stringify(data, null, 2)}
+          </pre>
+        ) : (
+          <pre style={{ whiteSpace: "pre-wrap", margin: 0 }}>
+            {JSON.stringify(data, null, 2)}
+          </pre>
+        )}
+      </section>
     </main>
   );
 }
