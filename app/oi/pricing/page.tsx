@@ -4,21 +4,21 @@ export const dynamic = "force-dynamic";
 
 const tiers = [
   {
-    name: "Free Demo": "Public",
+    name: "Free Demo", tag: "Public",
     price: "$0",
     desc: "See real endpoints working with clean UI.",
     features: ["Product compare demo", "Public nodes directory", "Waitlist capture"],
     cta: { href: "/oi/compare", label: "View demo" },
   },
   {
-    name: "Retail Starter": "Soon",
+    name: "Retail Starter", tag: "Soon",
     price: "TBD",
     desc: "Lead capture + product pages + basic analytics.",
     features: ["Lead capture forms", "Product pages", "Simple conversion tracking"],
     cta: { href: "/oi/waitlist", label: "Get early access" },
   },
   {
-    name: "Enterprise OI": "Invite",
+    name: "Enterprise OI", tag: "Invite",
     price: "Custom",
     desc: "Full OI stack with worker + governance controls.",
     features: ["HX2/AP2 integration", "Audit logs", "Owner-only controls"],

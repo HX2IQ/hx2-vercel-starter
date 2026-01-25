@@ -4,19 +4,19 @@ export const dynamic = "force-dynamic";
 
 const products = [
   {
-    title: "Koenig Spray Polish": "Flagship",
+    title: "Koenig Spray Polish", tag: "Flagship",
     desc: "Multi-surface spray polish: glass, stainless, paint, RV, boats, and home windows.",
     bullets: ["Fast clean + shine", "Great for salt spray + water spots", "Retail-friendly demo"],
     cta: { href: "/oi/compare", label: "See compare demo" },
   },
   {
-    title: "Retail Lead Capture": "Live",
+    title: "Retail Lead Capture", tag: "Live",
     desc: "Email capture + Redis persistence. Built for speed and reliability.",
     bullets: ["Waitlist endpoint live", "Idempotent writes", "Works on optinodeoi.com"],
     cta: { href: "/oi/waitlist", label: "Join waitlist" },
   },
   {
-    title: "Public Nodes Directory": "Trust",
+    title: "Public Nodes Directory", tag: "Trust",
     desc: "Public-safe list of installed nodes so visitors can see what’s real and live.",
     bullets: ["Sanitized output", "Fast listing", "Builds credibility"],
     cta: { href: "/oi/nodes", label: "View nodes" },
@@ -43,7 +43,7 @@ export default function ProductsPage() {
             <Card
               key={p.title}
               title={p.title}
-              right={<span style={{ padding: "2px 10px", borderRadius: 999, fontSize: 12, background: "rgba(255,255,255,.12)" }}>{p.badge}</span>}
+              right={<span style={{ padding: "2px 10px", borderRadius: 999, fontSize: 12, background: "rgba(255,255,255,.12)" }}>{p.tag}</span>}
             >
               <div className="text-sm text-white/70 leading-relaxed">{p.desc}</div>
 
