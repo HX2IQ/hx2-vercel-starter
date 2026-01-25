@@ -8,7 +8,7 @@ export default function OIHomePage() {
       <div
         style={{
           border: "1px solid rgba(255,255,255,.10)",
-          background: "linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02))",
+          
           borderRadius: 22,
           padding: 24,
         }}
@@ -41,14 +41,7 @@ export default function OIHomePage() {
         <Card title="Protected engine">OI can be public confidently. Internal orchestration stays private.</Card>
       </Grid3>
 
-      <div
-        style={{
-          marginTop: 16,
-          border: "1px solid rgba(255,255,255,.10)",
-          background: "rgba(255,255,255,.02)",
-          borderRadius: 22,
-          padding: 18,
-        }}
+      <div style={{ border: "1px solid rgba(16,185,129,.22)", background: "rgba(0,0,0,.55)", boxShadow: "0 18px 60px rgba(0,0,0,.55)", borderRadius: 22, padding: 24, backdropFilter: "blur(10px)" }}>
       >
         <div style={{ fontWeight: 950, marginBottom: 8 }}>Quick links</div>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
@@ -61,3 +54,5 @@ export default function OIHomePage() {
     </main>
   );
 }
+
+
