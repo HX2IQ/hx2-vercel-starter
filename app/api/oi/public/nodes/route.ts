@@ -4,89 +4,49 @@ import { getRedis } from "@/lib/redis";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function safeJsonParse(s: any) {
+function bad(status: number, error: string, detail?: any) {
+  return NextResponse.json({ ok: false, error, ...(detail ? { detail } : {}) }, { status });
+}
+
+function safeParse(s: any) {
   if (typeof s !== "string") return s;
   try { return JSON.parse(s); } catch { return null; }
 }
 
-function isPublicNode(nodeId: string, node: any) {
-  // Allowlist rules (public-safe defaults)
-  const t = String(node?.type || "").toLowerCase();
-
-  // Explicit flag wins if present
-  const vis = String(node?.visibility || node?.public || "").toLowerCase();
-  if (vis === "public" || vis === "true") return true;
-
-  // Retail/OI node types
-  if (t.includes("retail")) return true;
-  if (t.includes("oi")) return true;
-
-  // Naming conventions
-  if (nodeId.startsWith("oi-")) return true;
-  if (nodeId.toLowerCase().includes("healthoi")) return true;
-
-  return false;
-}
-
-function pickPublicFields(nodeId: string, node: any) {
+// Public-safe projection ONLY
+function toPublic(node: any) {
+  if (!node || typeof node !== "object") return null;
   return {
-    id: nodeId,
-    type: node?.type ?? null,
-    version: node?.version ?? null,
-    name: node?.name ?? null,
-    description: node?.description ?? null,
-    // keep public-facing metadata only
-    tags: node?.tags ?? null,
-    updatedAt: node?.updatedAt ?? node?.ts ?? null,
+    id: String(node.id || ""),
+    type: node.type || null,
+    version: node.version || null,
+    description: node.description || null,
   };
 }
 
 export async function GET() {
   const redis = getRedis();
-  if (!redis) {
-    return NextResponse.json(
-      { ok: false, error: "redis_not_configured" },
-      { status: 500 }
-    );
-  }
-
-  // These are the common keys we’ve been using in this repo.
-  // If your registry uses a different key, we’ll adjust after a quick check.
-  const indexKey = "hx2:registry:nodes:index";
-  const recordPrefix = "hx2:registry:nodes:";
+  if (!redis) return bad(500, "redis_not_configured");
 
   try {
-    const ids = (await redis.smembers(indexKey)) as any[] || [];
+    // Registry index written by install route
+    const ids = (await redis.smembers("hx2:registry:nodes:index")) as any[] || [];
+    const limited = ids.slice(0, 200); // safety cap
 
-    const out: any[] = [];
-    for (const idAny of ids) {
-      const nodeId = String(idAny || "").trim();
-      if (!nodeId) continue;
-
-      const raw = await redis.get(`${recordPrefix}${nodeId}`);
-      const node = safeJsonParse(raw);
-
-      // If record is bad JSON, skip instead of breaking the page
-      if (!node || typeof node !== "object") continue;
-
-      if (isPublicNode(nodeId, node)) {
-        out.push(pickPublicFields(nodeId, node));
-      }
-    }
-
-    // Sort by id for stable display
-    out.sort((a, b) => String(a.id).localeCompare(String(b.id)));
+    const keys = limited.map((id) => `hx2:registry:nodes:${id}`);
+    const raws = keys.length ? await redis.mget(...(keys as any)) : [];
+    const nodes = (raws || [])
+      .map(safeParse)
+      .map(toPublic)
+      .filter(Boolean);
 
     return NextResponse.json({
       ok: true,
-      count: out.length,
-      nodes: out,
+      count: nodes.length,
+      nodes,
       ts: new Date().toISOString(),
     });
   } catch (e: any) {
-    return NextResponse.json(
-      { ok: false, error: "internal_error", detail: String(e?.message || e) },
-      { status: 500 }
-    );
+    return bad(500, "internal_error", { message: String(e?.message || e) });
   }
 }
