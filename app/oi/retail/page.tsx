@@ -1,82 +1,58 @@
+import { H1, P, Card, Grid2, Button } from "../_ui/ui";
+
 export const dynamic = "force-dynamic";
 
-function Card({
-  title,
-  desc,
-  href,
-  tag,
-}: {
-  title: string;
-  desc: string;
-  href: string;
-  tag?: string;
-}) {
+export default function OIRetailLanding() {
   return (
-    <a
-      href={href}
-      className="group rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition-colors"
-    >
-      <div className="flex items-start justify-between gap-3">
+    <div>
+      <div className="flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <div className="text-lg font-semibold">{title}</div>
-          <div className="mt-1 text-sm text-white/70">{desc}</div>
+          <H1>Retail Nodes</H1>
+          <P>Public-facing tools that convert visitors into leads, buyers, and repeat customers.</P>
         </div>
-        {tag ? (
-          <span className="shrink-0 rounded-full border border-white/15 bg-black/40 px-2.5 py-1 text-xs text-white/70">
-            {tag}
-          </span>
-        ) : null}
-      </div>
-      <div className="mt-4 text-sm font-semibold text-white/80 group-hover:text-white">
-        Open →
-      </div>
-    </a>
-  );
-}
-
-export default function OIRetailHub() {
-  return (
-    <div className="space-y-8">
-      <div>
-        <div className="text-xs text-white/60">Retail</div>
-        <h1 className="mt-2 text-3xl font-black tracking-tight">Retail Hub</h1>
-        <p className="mt-2 text-white/70 max-w-2xl">
-          This is the public launcher for retail nodes: waitlist, compare, and lead capture.
-        </p>
+        <Button href="/oi/waitlist">Get updates</Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card
-          title="Lead Capture"
-          desc="Capture a lead and store it (Redis)."
-          href="/oi/lead"
-          tag="Next: UI form"
-        />
-        <Card
-          title="Waitlist"
-          desc="Email capture endpoint + UI (working)."
-          href="/oi/waitlist"
-          tag="Live"
-        />
-        <Card
-          title="Product Compare"
-          desc="Public comparison demo (working)."
-          href="/oi/compare"
-          tag="Live"
-        />
-        <Card
-          title="Retail Site"
-          desc="Your retail pages (products, pricing, about)."
-          href="/retail"
-        />
-      </div>
+      <div className="mt-8">
+        <Grid2>
+          <Card title="Lead Capture" right="Live">
+            <div className="text-sm text-white/70 leading-relaxed">
+              Email capture with Redis persistence. Clean, fast, reliable.
+            </div>
+            <div className="mt-4 flex gap-2 flex-wrap">
+              <Button href="/oi/waitlist">Open waitlist</Button>
+              <Button href="/retail/waitlist" variant="ghost">Legacy retail page</Button>
+            </div>
+          </Card>
 
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-        <div className="text-sm font-semibold">What I recommend next</div>
-        <div className="mt-2 text-sm text-white/70">
-          Build a premium <b>lead capture UI</b> at <code className="text-white/85">/oi/lead</code> that posts into
-          <code className="text-white/85"> /api/retail/lead-capture</code>, with a polished thank-you state and dedupe.
-        </div>
+          <Card title="Product Compare" right="Live">
+            <div className="text-sm text-white/70 leading-relaxed">
+              Comparison endpoint + UI page for public demos and sales enablement.
+            </div>
+            <div className="mt-4 flex gap-2 flex-wrap">
+              <Button href="/oi/compare">Open compare</Button>
+              <Button href="/api/retail/product-compare" variant="ghost">View API</Button>
+            </div>
+          </Card>
+
+          <Card title="Public Nodes Directory" right="Live">
+            <div className="text-sm text-white/70 leading-relaxed">
+              Public list of installed nodes (sanitized). Helps build trust.
+            </div>
+            <div className="mt-4">
+              <Button href="/oi/nodes">View nodes</Button>
+            </div>
+          </Card>
+
+          <Card title="Next: Premium Product Pages" right="Queued">
+            <div className="text-sm text-white/70 leading-relaxed">
+              /oi/products (hero + product cards) + /oi/pricing (simple tiers) + testimonials.
+            </div>
+            <div className="mt-4">
+              <Button href="/oi/about" variant="ghost">About OI</Button>
+            </div>
+          </Card>
+        </Grid2>
       </div>
     </div>
   );
