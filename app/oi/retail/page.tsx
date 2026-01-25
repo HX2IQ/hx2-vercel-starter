@@ -49,7 +49,7 @@ export default function OIRetailHub() {
         <Card
           title="Lead Capture"
           desc="Capture a lead and store it (Redis)."
-          href="/retail/waitlist"
+          href="/oi/lead"
           tag="Next: UI form"
         />
         <Card
