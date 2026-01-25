@@ -1,111 +1,54 @@
 export const dynamic = "force-dynamic";
 
-function Tile({
-  title,
-  desc,
-  href,
-  badge,
-}: {
-  title: string;
-  desc: string;
-  href: string;
-  badge?: string;
-}) {
+function Tile({ href, title, desc }: { href: string; title: string; desc: string }) {
   return (
     <a
       href={href}
-      className="group rounded-2xl border border-white/10 bg-white/5 p-5 hover:bg-white/10 transition-colors"
+      className="rounded-3xl border border-white/10 bg-white/5 p-6 hover:bg-white/10 transition-colors"
     >
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <div className="text-lg font-semibold">{title}</div>
-          <div className="mt-1 text-sm text-white/70">{desc}</div>
-        </div>
-        {badge ? (
-          <span className="shrink-0 rounded-full border border-white/15 bg-black/40 px-2.5 py-1 text-xs text-white/70">
-            {badge}
-          </span>
-        ) : null}
-      </div>
-      <div className="mt-4 text-sm font-semibold text-white/80 group-hover:text-white">
-        Open →
-      </div>
+      <div className="text-lg font-extrabold">{title}</div>
+      <div className="mt-2 text-sm text-white/65 leading-relaxed">{desc}</div>
+      <div className="mt-4 text-xs text-white/45">Open →</div>
     </a>
   );
 }
 
 export default function OIHome() {
   return (
-    <div className="space-y-10">
-      <section className="rounded-3xl border border-white/10 bg-white/5 p-7 md:p-10">
-        <div className="max-w-2xl">
-          <div className="text-xs text-white/60">OptinodeOI</div>
-          <h1 className="mt-2 text-3xl md:text-4xl font-black tracking-tight">
-            Retail nodes that feel premium.
-          </h1>
-          <p className="mt-3 text-sm md:text-base text-white/70">
-            This is the public-facing OI experience. Clean pages, fast demos, and
-            lead capture that converts.
-          </p>
+    <div>
+      <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-white/10 to-white/5 p-8 md:p-12">
+        <div className="text-xs text-white/60">OptinodeOI</div>
+        <h1 className="mt-3 text-4xl md:text-5xl font-black tracking-tight">
+          Optimized Intelligence
+        </h1>
+        <p className="mt-4 max-w-3xl text-base md:text-lg text-white/75 leading-relaxed">
+          Retail-ready nodes that deliver clear outputs fast — built to feel premium, simple, and useful.
+        </p>
 
-          <div className="mt-6 flex flex-wrap gap-3">
-            <a
-              href="/oi/retail"
-              className="rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-black hover:bg-white/90 transition-colors"
-            >
-              Open Retail Hub
-            </a>
-            <a
-              href="/oi/waitlist"
-              className="rounded-xl border border-white/15 bg-black/30 px-4 py-2.5 text-sm font-semibold text-white/85 hover:text-white hover:bg-black/40 transition-colors"
-            >
-              Join Waitlist
-            </a>
-          </div>
+        <div className="mt-7 flex flex-col sm:flex-row gap-3">
+          <a
+            href="/oi/about"
+            className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-black/30 px-5 py-3 text-sm font-semibold text-white/85 hover:text-white hover:bg-black/40 transition-colors"
+          >
+            What is OI?
+          </a>
+          <a
+            href="/oi/lead"
+            className="inline-flex items-center justify-center rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black hover:bg-white/90 transition-colors"
+          >
+            Request access
+          </a>
         </div>
-      </section>
+      </div>
 
-      <section className="space-y-3">
-        <div className="flex items-end justify-between gap-4">
-          <h2 className="text-xl font-bold">Public demos</h2>
-          <div className="text-xs text-white/60">All public-safe routes</div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Tile
-            title="Retail Hub"
-            desc="Launcher for lead capture + demos."
-            href="/oi/retail"
-            badge="Primary"
-          />
-          <Tile
-            title="Product Compare"
-            desc="Plain-English product comparison demo."
-            href="/oi/compare"
-            badge="Live"
-          />
-          <Tile
-            title="Public Nodes"
-            desc="See currently installed public nodes."
-            href="/oi/nodes"
-          />
-          <Tile
-            title="Waitlist"
-            desc="Email capture that writes to Redis."
-            href="/oi/waitlist"
-            badge="Live"
-          />
-        </div>
-      </section>
-
-      <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
-        <div className="text-sm font-semibold">Next premium upgrades</div>
-        <ul className="mt-3 space-y-2 text-sm text-white/70 list-disc pl-5">
-          <li>Retail lead capture UI (conversion-first form + thank-you state)</li>
-          <li>Product compare UI polish (filters + “best for” tags)</li>
-          <li>Public nodes page polish (badges, grouping, links)</li>
-        </ul>
-      </section>
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Tile href="/oi/nodes" title="Nodes" desc="See what’s installed and publicly visible right now." />
+        <Tile href="/oi/compare" title="Product Compare" desc="Public demo comparison output (clear, fast, plain English)." />
+        <Tile href="/oi/waitlist" title="Waitlist" desc="Lightweight email signup that writes to Redis." />
+        <Tile href="/oi/lead" title="Lead Capture" desc="Capture + route requests to the right node." />
+        <Tile href="/oi/status" title="Status" desc="System health snapshot: base, worker, queue." />
+        <Tile href="/oi/about" title="About OI" desc="A clean explanation of what OI is and why it matters." />
+      </div>
     </div>
   );
 }
