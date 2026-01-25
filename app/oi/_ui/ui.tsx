@@ -1,46 +1,146 @@
-export function H1({ children }: { children: any }) {
-  return <h1 className="text-3xl md:text-4xl font-black tracking-tight">{children}</h1>;
-}
+import Link from "next/link";
 
-export function P({ children }: { children: any }) {
-  return <p className="text-white/70 leading-relaxed">{children}</p>;
-}
+export const dynamic = "force-dynamic";
 
-export function Section({ children }: { children: any }) {
-  return <section className="mt-8">{children}</section>;
-}
+export const ContainerStyle: React.CSSProperties = {
+  maxWidth: 1100,
+  margin: "0 auto",
+  padding: 24,
+  fontFamily: "system-ui, -apple-system, Segoe UI, Roboto",
+};
 
-export function Card({ title, children, right }: { title?: string; children: any; right?: any }) {
+export function TopNav() {
+  const items = [
+    { href: "/oi", label: "Home" },
+    { href: "/oi/about", label: "About" },
+    { href: "/oi/products", label: "Products" },
+    { href: "/oi/pricing", label: "Pricing" },
+    { href: "/oi/compare", label: "Compare" },
+    { href: "/oi/nodes", label: "Nodes" },
+    { href: "/oi/status", label: "Status" },
+    { href: "/oi/waitlist", label: "Waitlist" },
+  ];
+
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
-      {(title || right) && (
-        <div className="flex items-start justify-between gap-4 mb-4">
-          {title ? <div className="text-lg font-extrabold">{title}</div> : <div />}
-          {right ? <div className="text-xs text-white/45">{right}</div> : null}
-        </div>
-      )}
-      {children}
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, padding: "14px 0" }}>
+      <Link href="/oi" style={{ textDecoration: "none", color: "white", fontWeight: 950, letterSpacing: -0.2 }}>
+        Optinode OI
+      </Link>
+
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
+        {items.map((i) => (
+          <Link
+            key={i.href}
+            href={i.href}
+            style={{
+              textDecoration: "none",
+              color: "rgba(255,255,255,.82)",
+              fontSize: 13,
+              padding: "6px 10px",
+              borderRadius: 10,
+              border: "1px solid rgba(255,255,255,.08)",
+              background: "rgba(255,255,255,.02)",
+            }}
+          >
+            {i.label}
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
 
-export function Button({ href, children, variant = "primary" }: { href: string; children: any; variant?: "primary" | "ghost" }) {
-  const cls =
-    variant === "primary"
-      ? "inline-flex items-center justify-center rounded-xl bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-white/90 transition-colors"
-      : "inline-flex items-center justify-center rounded-xl border border-white/15 bg-black/30 px-4 py-2 text-sm font-semibold text-white/85 hover:text-white hover:bg-black/40 transition-colors";
-
+export function Pill({ text }: { text: string }) {
   return (
-    <a href={href} className={cls}>
-      {children}
-    </a>
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        padding: "6px 12px",
+        borderRadius: 999,
+        fontSize: 12,
+        border: "1px solid rgba(255,255,255,.10)",
+        background: "rgba(255,255,255,.04)",
+        color: "rgba(255,255,255,.88)",
+      }}
+    >
+      {text}
+    </span>
   );
 }
 
-export function Grid2({ children }: { children: any }) {
-  return <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">{children}</div>;
+export function H1({ children }: { children: any }) {
+  return (
+    <h1 style={{ fontSize: 42, margin: "8px 0 10px", fontWeight: 1000, letterSpacing: -0.7 }}>
+      {children}
+    </h1>
+  );
+}
+
+export function P({ children }: { children: any }) {
+  return <p style={{ margin: 0, opacity: 0.85, fontSize: 16, lineHeight: 1.75 }}>{children}</p>;
 }
 
 export function Grid3({ children }: { children: any }) {
-  return <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">{children}</div>;
+  return <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14, marginTop: 16 }}>{children}</div>;
+}
+
+export function Grid2({ children }: { children: any }) {
+  return <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginTop: 16 }}>{children}</div>;
+}
+
+export function Card({
+  title,
+  right,
+  children,
+}: {
+  title: string;
+  right?: any;
+  children: any;
+}) {
+  return (
+    <div
+      style={{
+        border: "1px solid rgba(255,255,255,.10)",
+        background: "rgba(255,255,255,.03)",
+        borderRadius: 18,
+        padding: 16,
+      }}
+    >
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10 }}>
+        <div style={{ fontWeight: 950 }}>{title}</div>
+        {right ? right : null}
+      </div>
+      <div style={{ opacity: 0.82, lineHeight: 1.65, fontSize: 13, marginTop: 8 }}>{children}</div>
+    </div>
+  );
+}
+
+export function CTA({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      style={{
+        display: "inline-flex",
+        textDecoration: "none",
+        color: "white",
+        fontWeight: 900,
+        fontSize: 13,
+        padding: "10px 12px",
+        borderRadius: 12,
+        border: "1px solid rgba(255,255,255,.12)",
+        background: "rgba(255,255,255,.06)",
+      }}
+    >
+      {label} →
+    </Link>
+  );
+}
+
+export function Chip({ text }: { text: string }) {
+  return (
+    <span style={{ padding: "2px 10px", borderRadius: 999, fontSize: 12, background: "rgba(255,255,255,.12)" }}>
+      {text}
+    </span>
+  );
 }
