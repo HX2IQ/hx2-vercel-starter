@@ -1,47 +1,81 @@
-import { H1, P, Card, Grid2, Button } from "../_ui/ui";
+import Link from "next/link";
+import { Hero, Pill } from "../_ui/shell";
 
 export const dynamic = "force-dynamic";
 
-export default function AboutOI() {
+function Card({ title, children }: { title: string; children: any }) {
+  return (
+    <div style={{
+      border: "1px solid rgba(255,255,255,.10)",
+      background: "rgba(255,255,255,.03)",
+      borderRadius: 18,
+      padding: 18
+    }}>
+      <div style={{ fontWeight: 900, fontSize: 14, marginBottom: 10 }}>{title}</div>
+      <div style={{ opacity: 0.82, lineHeight: 1.55, fontSize: 13 }}>{children}</div>
+    </div>
+  );
+}
+
+function CTA({ href, label, sub }: { href: string; label: string; sub: string }) {
+  return (
+    <Link href={href} style={{
+      display: "block",
+      borderRadius: 18,
+      padding: 18,
+      textDecoration: "none",
+      color: "white",
+      border: "1px solid rgba(255,255,255,.12)",
+      background: "linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.03))"
+    }}>
+      <div style={{ fontWeight: 950, fontSize: 14 }}>{label}</div>
+      <div style={{ marginTop: 6, fontSize: 12, opacity: 0.78 }}>{sub}</div>
+      <div style={{ marginTop: 10, fontSize: 12, opacity: 0.9 }}>Open →</div>
+    </Link>
+  );
+}
+
+export default function AboutPage() {
   return (
     <div>
-      <H1>What is OI?</H1>
-      <P>
-        <b className="text-white">OI = Optimized Intelligence.</b> It’s a clean, retail-friendly way to deliver “answers that act like tools.”
-        Simple inputs, clear outputs, no fluff — and each capability lives in a “node” you can turn on as you scale.
-      </P>
+      <Hero
+        title="What is OI?"
+        subtitle="OI (Optimized Intelligence) is a premium retail-facing layer: clean, public pages backed by real working endpoints — not mockups. It demonstrates capability while keeping the private intelligence engine protected."
+        right={<Pill>Public demo • Real endpoints • Premium UX</Pill>}
+      />
 
-      <div className="mt-6 flex gap-3">
-        <Button href="/oi/nodes" variant="ghost">See installed nodes</Button>
-        <Button href="/oi/lead">Request access</Button>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14, marginTop: 16 }}>
+        <Card title="1) Retail first">
+          OI is designed for public trust: simple pages, fast demos, and clear outcomes (compare, capture, directory).
+        </Card>
+        <Card title="2) Real data paths">
+          Every public page is backed by an API route so the system proves itself. If an endpoint breaks, the UI shows it.
+        </Card>
+        <Card title="3) IP-safe by design">
+          OI can demonstrate value without exposing internal logic, prompts, weights, or private orchestration details.
+        </Card>
       </div>
 
-      <Grid2>
-        <Card title="Retail Nodes (Public)">
-          <P>These are the pages customers can use right away: waitlist, lead capture, product compare, and more.</P>
-          <ul className="mt-4 list-disc pl-5 text-sm text-white/70 space-y-2">
-            <li>Fast</li>
-            <li>Simple</li>
-            <li>Premium UI</li>
-            <li>Public-safe outputs</li>
-          </ul>
-        </Card>
+      <div style={{ marginTop: 18 }}>
+        <div style={{ fontSize: 18, fontWeight: 950, marginBottom: 10 }}>Live demos</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
+          <CTA href="/oi/compare" label="Product Compare" sub="Plain-English comparison powered by /api/retail/product-compare" />
+          <CTA href="/oi/nodes" label="Public Nodes Directory" sub="Shows installed nodes (public-safe) via /api/oi/public/nodes" />
+          <CTA href="/oi/waitlist" label="Waitlist Capture" sub="Lead capture demo backed by /api/retail/waitlist" />
+        </div>
+      </div>
 
-        <Card title="Core Engine (Private)">
-          <P>The registry + worker system runs behind the scenes. Public pages never expose private internals.</P>
-          <ul className="mt-4 list-disc pl-5 text-sm text-white/70 space-y-2">
-            <li>Registry installs nodes</li>
-            <li>AP2 worker executes tasks</li>
-            <li>Redis stores lightweight state</li>
-          </ul>
-        </Card>
-      </Grid2>
-
-      <div className="mt-8 rounded-3xl border border-white/10 bg-gradient-to-b from-white/10 to-white/5 p-6">
-        <div className="text-sm font-extrabold">Why it matters</div>
-        <div className="mt-2 text-sm text-white/70 leading-relaxed">
-          Most “AI” feels like a chat toy. OI is built to feel like a <b className="text-white">product</b>:
-          predictable pages, consistent outputs, and nodes you can sell one-by-one.
+      <div style={{
+        marginTop: 18,
+        borderRadius: 22,
+        border: "1px solid rgba(255,255,255,.10)",
+        background: "rgba(255,255,255,.03)",
+        padding: 18
+      }}>
+        <div style={{ fontWeight: 950, fontSize: 16 }}>Positioning (short + premium)</div>
+        <div style={{ marginTop: 8, opacity: 0.82, fontSize: 13, lineHeight: 1.55 }}>
+          <b>OI</b> is the customer-facing layer. It’s what the world sees: clean pages that demonstrate real capability.
+          The private engine stays private. This makes OI deployable, brandable, and safe to scale.
         </div>
       </div>
     </div>
