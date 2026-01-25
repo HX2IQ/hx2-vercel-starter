@@ -4,48 +4,49 @@ import { getRedis } from "@/lib/redis";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+function ok(data: any) {
+  return NextResponse.json({ ok: true, ...data, ts: new Date().toISOString() });
+}
 function bad(status: number, error: string, detail?: any) {
   return NextResponse.json({ ok: false, error, ...(detail ? { detail } : {}) }, { status });
 }
 
-function safeParse(s: any) {
-  if (typeof s !== "string") return s;
-  try { return JSON.parse(s); } catch { return null; }
-}
-
-// Public-safe projection ONLY
-function toPublic(node: any) {
+function sanitize(node: any) {
   if (!node || typeof node !== "object") return null;
   return {
     id: String(node.id || ""),
-    type: node.type || null,
-    version: node.version || null,
-    description: node.description || null,
+    type: String(node.type || ""),
+    version: String(node.version || ""),
+    description: String(node.description || ""),
   };
 }
 
 export async function GET() {
   const redis = getRedis();
-  if (!redis) return bad(500, "redis_not_configured");
+  if (!redis) return ok({ nodes: [], note: "redis_not_configured" });
 
   try {
-    // Registry index written by install route
-    const ids = (await redis.smembers("hx2:registry:nodes:index")) as any[] || [];
-    const limited = ids.slice(0, 200); // safety cap
+    const ids = (await redis.smembers("hx2:registry:nodes:index").catch(() => [])) as any[];
+    const uniq = Array.from(new Set((ids || []).map(String))).filter(Boolean).sort();
 
-    const keys = limited.map((id) => `hx2:registry:nodes:${id}`);
-    const raws = keys.length ? await redis.mget(...(keys as any)) : [];
-    const nodes = (raws || [])
-      .map(safeParse)
-      .map(toPublic)
-      .filter(Boolean);
+    const nodes: any[] = [];
+    for (const id of uniq) {
+      const raw = await redis.get(`hx2:registry:nodes:${id}`).catch(() => null);
+      if (!raw) continue;
 
-    return NextResponse.json({
-      ok: true,
-      count: nodes.length,
-      nodes,
-      ts: new Date().toISOString(),
-    });
+      let parsed: any = null;
+      try {
+        parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+      } catch {
+        // skip bad json record
+        continue;
+      }
+
+      const s = sanitize(parsed);
+      if (s && s.id) nodes.push(s);
+    }
+
+    return ok({ count: nodes.length, nodes });
   } catch (e: any) {
     return bad(500, "internal_error", { message: String(e?.message || e) });
   }
