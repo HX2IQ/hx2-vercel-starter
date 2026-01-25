@@ -1,74 +1,58 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { H1, P, Card } from "../_ui/ui";
 
 export default function WaitlistPage() {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<null | { ok: boolean; message: string }>(null);
-  const [count, setCount] = useState<number | null>(null);
-
-  const base = useMemo(() => "", []);
-
-  async function refreshCount() {
-    setStatus(null);
-    const r = await fetch(`${base}/api/retail/waitlist`, { method: "GET" });
-    const j = await r.json().catch(() => ({}));
-    if (r.ok && j?.ok) setCount(Number(j.count ?? 0));
-  }
+  const [msg, setMsg] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   async function submit() {
-    setStatus(null);
-    const r = await fetch(`${base}/api/retail/waitlist`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-    const j = await r.json().catch(() => ({}));
-
-    if (r.ok && j?.ok) {
-      setStatus({ ok: true, message: "Added. Thank you!" });
+    setMsg(null);
+    setBusy(true);
+    try {
+      const r = await fetch("/api/retail/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data?.error || `HTTP ${r.status}`);
+      setMsg(`Added: ${data.email}`);
       setEmail("");
-      await refreshCount();
-    } else {
-      setStatus({ ok: false, message: j?.error || "Failed" });
+    } catch (e: any) {
+      setMsg(`Error: ${String(e?.message || e)}`);
+    } finally {
+      setBusy(false);
     }
   }
 
   return (
-    <main style={{ maxWidth: 720, margin: "0 auto", padding: 24, fontFamily: "system-ui, -apple-system, Segoe UI, Roboto" }}>
-      <h1 style={{ fontSize: 28, marginBottom: 8 }}>OI Waitlist</h1>
-      <p style={{ opacity: 0.8, marginTop: 0 }}>
-        Public lead capture demo (writes to Upstash via /api/retail/waitlist).
-      </p>
+    <div>
+      <H1>Join the Waitlist</H1>
+      <P>Get notified when new retail nodes go live.</P>
 
-      <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
-        <input
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@email.com"
-          style={{ flex: 1, padding: 12, borderRadius: 10, border: "1px solid rgba(0,0,0,.2)" }}
-        />
-        <button onClick={submit} style={{ padding: "12px 16px", borderRadius: 10, border: "1px solid rgba(0,0,0,.2)" }}>
-          Join
-        </button>
+      <div className="mt-6 max-w-xl">
+        <Card title="Email">
+          <div className="flex gap-2 flex-wrap">
+            <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="flex-1 min-w-[240px] rounded-xl bg-black/40 border border-white/15 px-3 py-2 text-sm outline-none focus:border-white/30"
+            />
+            <button
+              onClick={submit}
+              disabled={busy}
+              className="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-black disabled:opacity-60"
+            >
+              {busy ? "Saving..." : "Join"}
+            </button>
+          </div>
+          {msg ? <div className="mt-3 text-sm text-white/70">{msg}</div> : null}
+        </Card>
       </div>
-
-      <div style={{ marginTop: 12 }}>
-        <button onClick={refreshCount} style={{ padding: "10px 12px", borderRadius: 10, border: "1px solid rgba(0,0,0,.2)" }}>
-          Refresh Count
-        </button>
-        {count !== null ? <span style={{ marginLeft: 10, opacity: 0.85 }}>Current count: {count}</span> : null}
-      </div>
-
-      {status ? (
-        <div style={{ marginTop: 14, padding: 12, borderRadius: 10, border: "1px solid rgba(0,0,0,.12)" }}>
-          <b>{status.ok ? "OK" : "Error"}:</b> {status.message}
-        </div>
-      ) : null}
-
-      <div style={{ marginTop: 24, opacity: 0.7 }}>
-        <a href="/oi/retail" style={{ textDecoration: "underline" }}>Back to OI Retail</a>
-      </div>
-    </main>
+    </div>
   );
 }

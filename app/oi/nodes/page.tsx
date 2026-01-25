@@ -1,65 +1,68 @@
+import { H1, P, Card, Grid2, Button } from "../_ui/ui";
+
 export const dynamic = "force-dynamic";
 
 async function getData() {
-  const url =
-    process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}/api/oi/public/nodes`
-      : "http://localhost:3000/api/oi/public/nodes";
+  const base =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
+  const url = `${base}/api/oi/public/nodes`;
 
   const r = await fetch(url, { cache: "no-store" });
   const data = await r.json().catch(() => ({}));
   return { ok: r.ok, status: r.status, data };
 }
 
-function A({ href, children }: { href: string; children: any }) {
-  return <a href={href} style={{ color: "inherit", textDecoration: "underline" }}>{children}</a>;
-}
-
-export default async function OiNodesPage() {
+export default async function NodesPage() {
   const { ok, status, data } = await getData();
-  const nodes = Array.isArray(data?.nodes) ? data.nodes : [];
+  const nodes = data?.nodes || [];
 
   return (
-    <main style={{ maxWidth: 980, margin: "0 auto", padding: 24, fontFamily: "system-ui, -apple-system, Segoe UI, Roboto" }}>
-      <h1 style={{ fontSize: 28, marginBottom: 6 }}>Public OI Nodes</h1>
-      <p style={{ opacity: 0.85, marginTop: 0 }}>
-        Live list pulled from the registry (public-safe fields only).
-      </p>
-
-      <div style={{ display: "flex", gap: 14, marginTop: 10, marginBottom: 18, flexWrap: "wrap" }}>
-        <A href="/oi/status">OI Status</A>
-        <A href="/oi/compare">Product Compare</A>
-        <A href="/oi/waitlist">Waitlist</A>
+    <div>
+      <div className="flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <H1>Installed Nodes</H1>
+          <P>Public view of what’s live right now.</P>
+        </div>
+        <Button href="/oi/waitlist">Get updates</Button>
       </div>
 
       {!ok ? (
-        <div>
-          <b>Error:</b> {status}
-          <pre style={{ whiteSpace: "pre-wrap" }}>{JSON.stringify(data, null, 2)}</pre>
-        </div>
+        <Card title="Error" right={`HTTP ${status}`}>
+          <pre className="text-xs text-white/70 whitespace-pre-wrap">
+            {JSON.stringify(data, null, 2)}
+          </pre>
+        </Card>
+      ) : nodes.length === 0 ? (
+        <Card title="No nodes yet">
+          <P>If this is unexpected, the public nodes API may not be deployed on this domain.</P>
+        </Card>
       ) : (
-        <div>
-          <div style={{ marginBottom: 12, opacity: 0.9 }}>
-            Count: <b>{data?.count ?? nodes.length}</b>
-          </div>
-
-          <div style={{ display: "grid", gap: 10 }}>
-            {nodes.map((n: any) => (
-              <div key={n.id} style={{ border: "1px solid rgba(255,255,255,.15)", borderRadius: 14, padding: 14 }}>
-                <div style={{ fontWeight: 900, fontSize: 16 }}>{n.id}</div>
-                <div style={{ opacity: 0.85, marginTop: 4 }}>
-                  {n.type ? <span><b>type</b>: {n.type} &nbsp; </span> : null}
-                  {n.version ? <span><b>version</b>: {n.version}</span> : null}
-                </div>
-                {n.description ? <div style={{ opacity: 0.85, marginTop: 8 }}>{n.description}</div> : null}
+        <Grid2>
+          {nodes.map((n: any) => (
+            <Card
+              key={n.id}
+              title={n.name || n.id}
+              right={n.version ? `v${n.version}` : undefined}
+            >
+              <div className="text-sm text-white/70 leading-relaxed">
+                {n.description || "—"}
               </div>
-            ))}
-            {nodes.length === 0 ? (
-              <div style={{ opacity: 0.8 }}>No nodes found yet.</div>
-            ) : null}
-          </div>
-        </div>
+
+              <div className="mt-4 flex flex-wrap gap-2 text-xs">
+                <span className="rounded-full bg-white/10 px-3 py-1 text-white/70">
+                  {n.type || "node"}
+                </span>
+                {n.status ? (
+                  <span className="rounded-full bg-white/10 px-3 py-1 text-white/70">
+                    {n.status}
+                  </span>
+                ) : null}
+              </div>
+            </Card>
+          ))}
+        </Grid2>
       )}
-    </main>
+    </div>
   );
 }
