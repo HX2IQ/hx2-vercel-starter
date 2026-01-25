@@ -40,7 +40,7 @@ export default function PricingPage() {
       <div className="mt-8">
         <Grid3>
           {tiers.map((t) => (
-            <Card key={t.name} title={t.name} right={<span style={{ padding: "2px 10px", borderRadius: 999, fontSize: 12, background: "rgba(255,255,255,.12)" }}>{t.badge}</span>}>
+            <Card key={t.name} title={t.name} right={<span style={{ padding: "2px 10px", borderRadius: 999, fontSize: 12, background: "rgba(255,255,255,.12)" }}>{t.tag}</span>}>
               <div className="text-3xl font-extrabold">{t.price}</div>
               <div className="mt-2 text-sm text-white/70 leading-relaxed">{t.desc}</div>
 
