@@ -1,25 +1,22 @@
-import { H1, P, Card, Grid3, Button, Badge } from "../_ui/ui";
+import { H1, P, Card, Grid3, Button } from "../_ui/ui";
 
 export const dynamic = "force-dynamic";
 
 const products = [
   {
-    title: "Koenig Spray Polish",
-    badge: "Flagship",
+    title: "Koenig Spray Polish": "Flagship",
     desc: "Multi-surface spray polish: glass, stainless, paint, RV, boats, and home windows.",
     bullets: ["Fast clean + shine", "Great for salt spray + water spots", "Retail-friendly demo"],
     cta: { href: "/oi/compare", label: "See compare demo" },
   },
   {
-    title: "Retail Lead Capture",
-    badge: "Live",
+    title: "Retail Lead Capture": "Live",
     desc: "Email capture + Redis persistence. Built for speed and reliability.",
     bullets: ["Waitlist endpoint live", "Idempotent writes", "Works on optinodeoi.com"],
     cta: { href: "/oi/waitlist", label: "Join waitlist" },
   },
   {
-    title: "Public Nodes Directory",
-    badge: "Trust",
+    title: "Public Nodes Directory": "Trust",
     desc: "Public-safe list of installed nodes so visitors can see what’s real and live.",
     bullets: ["Sanitized output", "Fast listing", "Builds credibility"],
     cta: { href: "/oi/nodes", label: "View nodes" },
@@ -46,7 +43,7 @@ export default function ProductsPage() {
             <Card
               key={p.title}
               title={p.title}
-              right={<Badge>{p.badge}</Badge>}
+              right={<span style={{ padding: "2px 10px", borderRadius: 999, fontSize: 12, background: "rgba(255,255,255,.12)" }}>{p.badge}</span>}
             >
               <div className="text-sm text-white/70 leading-relaxed">{p.desc}</div>
 

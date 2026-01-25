@@ -1,27 +1,24 @@
-import { H1, P, Card, Grid3, Button, Badge } from "../_ui/ui";
+import { H1, P, Card, Grid3, Button } from "../_ui/ui";
 
 export const dynamic = "force-dynamic";
 
 const tiers = [
   {
-    name: "Free Demo",
-    badge: "Public",
+    name: "Free Demo": "Public",
     price: "$0",
     desc: "See real endpoints working with clean UI.",
     features: ["Product compare demo", "Public nodes directory", "Waitlist capture"],
     cta: { href: "/oi/compare", label: "View demo" },
   },
   {
-    name: "Retail Starter",
-    badge: "Soon",
+    name: "Retail Starter": "Soon",
     price: "TBD",
     desc: "Lead capture + product pages + basic analytics.",
     features: ["Lead capture forms", "Product pages", "Simple conversion tracking"],
     cta: { href: "/oi/waitlist", label: "Get early access" },
   },
   {
-    name: "Enterprise OI",
-    badge: "Invite",
+    name: "Enterprise OI": "Invite",
     price: "Custom",
     desc: "Full OI stack with worker + governance controls.",
     features: ["HX2/AP2 integration", "Audit logs", "Owner-only controls"],
@@ -43,7 +40,7 @@ export default function PricingPage() {
       <div className="mt-8">
         <Grid3>
           {tiers.map((t) => (
-            <Card key={t.name} title={t.name} right={<Badge>{t.badge}</Badge>}>
+            <Card key={t.name} title={t.name} right={<span style={{ padding: "2px 10px", borderRadius: 999, fontSize: 12, background: "rgba(255,255,255,.12)" }}>{t.badge}</span>}>
               <div className="text-3xl font-extrabold">{t.price}</div>
               <div className="mt-2 text-sm text-white/70 leading-relaxed">{t.desc}</div>
 
