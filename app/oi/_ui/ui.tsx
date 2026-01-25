@@ -137,6 +137,20 @@ export function CTA({ href, label }: { href: string; label: string }) {
   );
 }
 
+export function Button({
+  href,
+  label,
+  children,
+  variant,
+}: {
+  href: string;
+  label?: string;
+  children?: React.ReactNode;
+  variant?: string;
+}) {
+  const text = label ?? (typeof children === "string" ? children : undefined) ?? "Learn more";
+  return <CTA href={href} label={text} />;
+}
 export function Chip({ text }: { text: string }) {
   return (
     <span style={{ padding: "2px 10px", borderRadius: 999, fontSize: 12, background: "rgba(255,255,255,.12)" }}>
