@@ -12,7 +12,6 @@ export default function OIHomePage() {
           borderRadius: 22,
           padding: 24,
         }}
-      >
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
           <Pill text="Public retail layer" />
           <Pill text="Real endpoints live" />
@@ -42,7 +41,6 @@ export default function OIHomePage() {
       </Grid3>
 
       <div style={{ border: "1px solid rgba(16,185,129,.22)", background: "rgba(0,0,0,.55)", boxShadow: "0 18px 60px rgba(0,0,0,.55)", borderRadius: 22, padding: 24, backdropFilter: "blur(10px)" }}>
-      >
         <div style={{ fontWeight: 950, marginBottom: 8 }}>Quick links</div>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           <CTA href="/oi/products" label="Products" />
