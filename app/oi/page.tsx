@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Optimized Intelligence (OI) Hub | Optinode",
   description: "Explore Optimized Intelligence (OI): definitions, comparisons, methods, and practical guides for building repeatable decision systems.",
   alternates: { canonical: "/oi" },
-  openGraph: { url: "https://optinodeiq.com/oi/oi" },
+  openGraph: { url: "https://optinodeiq.com/oi" },
 };
 
 const items = [
