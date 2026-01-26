@@ -1,5 +1,10 @@
 import { H1, P, Card, Grid2, Button } from "../_ui/ui";
 
+export const metadata = {
+  alternates: { canonical: "/oi/retail" },
+  openGraph: { url: "https://optinodeiq.com/oi/retail" },
+};
+
 export const dynamic = "force-dynamic";
 
 export default function OIRetailLanding() {

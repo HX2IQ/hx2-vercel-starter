@@ -1,5 +1,10 @@
 import { H1, P, Card, Grid2, Button } from "../_ui/ui";
 
+export const metadata = {
+  alternates: { canonical: "/oi/nodes" },
+  openGraph: { url: "https://optinodeiq.com/oi/nodes" },
+};
+
 export const dynamic = "force-dynamic";
 
 async function getData() {

@@ -1,5 +1,10 @@
 import Link from "next/link";
 
+export const metadata = {
+  alternates: { canonical: "/oi/products" },
+  openGraph: { url: "https://optinodeiq.com/oi/products" },
+};
+
 export const dynamic = "force-dynamic";
 
 const products = [

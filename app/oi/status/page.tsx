@@ -1,5 +1,10 @@
 import { headers } from "next/headers";
 
+export const metadata = {
+  alternates: { canonical: "/oi/status" },
+  openGraph: { url: "https://optinodeiq.com/oi/status" },
+};
+
 export const dynamic = "force-dynamic";
 
 function getBaseUrl() {

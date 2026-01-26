@@ -1,17 +1,33 @@
-import type { ReactNode } from "react";
-import { ContainerStyle, TopNav } from "./_ui/ui";
+import type { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = {
+  metadataBase: new URL("https://optinodeiq.com"),
+  title: {
+    default: "Optinode OI — Optimized Intelligence",
+    template: "%s — Optinode OI",
+  },
+  description:
+    "Optinode OI (Optimized Intelligence) is a practical framework for building reliable, explainable decision systems—nodes, workflows, and automations that improve outcomes.",
 
-export default function OILayout({ children }: { children: ReactNode }) {
-  return (
-    <div style={ContainerStyle}>
-      <TopNav />
-      {children}
-      <div style={{ marginTop: 18, opacity: 0.6, fontSize: 12, lineHeight: 1.6 }}>
-        © {new Date().getFullYear()} Optinode. OI is the public retail layer. Internal engine remains private.
-      </div>
-    </div>
-  );
+  openGraph: {
+    type: "website",
+    title: "Optinode OI — Optimized Intelligence",
+    description:
+      "A practical framework for building reliable, explainable decision systems—nodes, workflows, and automations that improve outcomes.",
+    siteName: "Optinode OI",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Optinode OI — Optimized Intelligence",
+    description:
+      "A practical framework for building reliable, explainable decision systems—nodes, workflows, and automations that improve outcomes.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
+export default function OiLayout({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
 }
-

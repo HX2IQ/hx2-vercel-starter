@@ -1,3 +1,7 @@
+export const metadata = {
+  alternates: { canonical: "/oi/about" },
+  openGraph: { url: "https://optinodeiq.com/oi/about" },
+};
 export const dynamic = "force-dynamic";
 
 function Pill({ text }: { text: string }) {

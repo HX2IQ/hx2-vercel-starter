@@ -1,3 +1,7 @@
+export const metadata = {
+  alternates: { canonical: "/oi/lead" },
+  openGraph: { url: "https://optinodeiq.com/oi/lead" },
+};
 export const dynamic = "force-dynamic";
 
 const FOCUS = "outline-none focus:ring-2 focus:ring-white/30";
