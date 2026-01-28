@@ -1,142 +1,129 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
-// Avoid caching in edge/CDN layers
 export const dynamic = "force-dynamic";
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+async function fetchJsonWithTimeout(url: string, init: RequestInit, ms: number) {
+  const ac = new AbortController();
+  const t = setTimeout(() => ac.abort(), ms);
+  try {
+    const res = await fetch(url, { ...init, signal: ac.signal, cache: "no-store" as any });
+    const text = await res.text();
+    let json: any = null;
+    try { json = text ? JSON.parse(text) : null; } catch { json = { rawText: text }; }
+    return { ok: res.ok, status: res.status, json };
+  } finally {
+    clearTimeout(t);
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     // Parse body safely
     let body: any = {};
-    try {
-      body = await req.json();
-    } catch {
-      body = {};
-    }
+    try { body = await req.json(); } catch { body = {}; }
 
     const message = String(body?.message ?? "");
     const Base = process.env.NEXT_PUBLIC_BASE_URL || "https://optinodeiq.com";
     const HX2 = process.env.HX2_API_KEY;
 
+    // Optional: caller can ask us not to wait at all
+    const url = new URL(req.url);
+    const waitMs = Number(url.searchParams.get("waitMs") ?? "8000"); // default 8s
+    const pollEveryMs = 900;
+
     if (!HX2) {
-      return NextResponse.json(
-        { ok: false, error: "HX2_API_KEY not set on Vercel" },
-        { status: 500 }
-      );
+      return NextResponse.json({ ok: false, error: "HX2_API_KEY not set on Vercel" }, { status: 500 });
     }
 
-    // Enqueue AP2 task: brain.run -> /brain/run
-    const enqueueRes = await fetch(`${Base}/api/ap2/task/enqueue`, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "authorization": `Bearer ${HX2}`,
+    // 1) Enqueue
+    const enq = await fetchJsonWithTimeout(
+      `${Base}/api/ap2/task/enqueue`,
+      {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "authorization": `Bearer ${HX2}`,
+        },
+        body: JSON.stringify({
+          taskType: "brain.run",
+          mode: "SAFE",
+          payload: {
+            method: "POST",
+            path: "/brain/run",
+            body: { input: message }
+          }
+        }),
       },
-      body: JSON.stringify({
-        taskType: "brain.run",
-        mode: "SAFE",
-        payload: {
-          method: "POST",
-          path: "/brain/run",
-          body: { input: message }
-        }
-      }),
-      cache: "no-store",
-    });
+      10000 // 10s enqueue timeout
+    );
 
-    let enq: any = null;
-    try {
-      enq = await enqueueRes.json();
-    } catch {
-      enq = { ok: false, error: "enqueue returned non-JSON response" };
-    }
-
-    if (!enqueueRes.ok) {
+    if (!enq.ok) {
       return NextResponse.json(
-        { ok: false, error: "AP2 enqueue failed", httpStatus: enqueueRes.status, enq },
+        { ok: false, error: "AP2 enqueue failed", httpStatus: enq.status, enq: enq.json },
         { status: 502 }
       );
     }
 
-    const taskId = enq?.worker?.task?.id;
+    const taskId = (enq.json as any)?.worker?.task?.id;
     if (!taskId) {
-      return NextResponse.json(
-        { ok: false, error: "No taskId returned", enq },
-        { status: 500 }
-      );
+      return NextResponse.json({ ok: false, error: "No taskId returned", enq: enq.json }, { status: 500 });
     }
 
-    // Poll task status
+    // If caller wants fire-and-forget
+    if (waitMs <= 0) {
+      return NextResponse.json({ ok: true, taskId, pending: true });
+    }
+
+    // 2) Poll (short window only)
     const startedAt = Date.now();
     let lastStatus: any = null;
 
-    // Poll up to 60s
-    while (Date.now() - startedAt < 60000) {
-      const stRes = await fetch(
+    while (Date.now() - startedAt < waitMs) {
+      const st = await fetchJsonWithTimeout(
         `${Base}/api/ap2/task/status?taskId=${encodeURIComponent(taskId)}`,
-        {
-          headers: { "authorization": `Bearer ${HX2}` },
-          cache: "no-store",
-        }
+        { headers: { "authorization": `Bearer ${HX2}` } },
+        10000 // 10s per status call
       );
 
-      let st: any = null;
-      try {
-        st = await stRes.json();
-      } catch {
-        st = { ok: false, error: "status returned non-JSON response", httpStatus: stRes.status };
-      }
+      lastStatus = st.json;
 
-      lastStatus = st;
-
-      if (st?.state === "DONE") {
-        // Normalize the returned payload from worker
-        const data =
-          st?.result?.data ??
-          st?.result?.data?.data ??
-          st?.result?.result ??
-          st?.result ??
+      if ((st.json as any)?.state === "DONE") {
+        const raw =
+          (st.json as any)?.result?.data ??
+          (st.json as any)?.result?.data?.data ??
+          (st.json as any)?.result?.result ??
+          (st.json as any)?.result ??
           null;
 
         const reply =
-          data?.reply ??
-          data?.output_text ??
-          data?.text ??
-          data?.message ??
+          raw?.reply ??
+          raw?.output_text ??
+          raw?.text ??
+          raw?.message ??
           null;
 
-        // If the worker reported ok=false, propagate it cleanly
-        const ok = data?.ok !== false;
+        const ok = raw?.ok !== false;
 
-        return NextResponse.json({
-          ok,
-          taskId,
-          reply,
-          raw: data,
-        });
+        return NextResponse.json({ ok, taskId, reply, raw });
       }
 
-      // Slight backoff
-      await sleep(900);
+      await sleep(pollEveryMs);
     }
 
-    return NextResponse.json(
-      {
-        ok: false,
-        error: "Timeout waiting for brain.run",
-        taskId,
-        lastStatus,
-      },
-      { status: 504 }
-    );
+    // 3) Fast return if still pending
+    return NextResponse.json({
+      ok: true,
+      taskId,
+      pending: true,
+      note: "Still running; poll /api/ap2/task/status?taskId=... for completion.",
+      lastStatus,
+    });
   } catch (e: any) {
-    return NextResponse.json(
-      { ok: false, error: String(e?.message || e) },
-      { status: 500 }
-    );
+    return NextResponse.json({ ok: false, error: String(e?.message || e) }, { status: 500 });
   }
 }
