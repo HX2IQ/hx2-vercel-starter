@@ -57,7 +57,7 @@ export async function upsertNode(node: RegistryNode): Promise<{ ok: boolean; cou
   await redis.set(NODE_KEY(record.id), JSON.stringify(record));
   await redis.sadd(INDEX_KEY, record.id);
 
-  const count = await redisSafe(() => redis.scard<number>(INDEX_KEY) as any, 0);
+  const count = await redisSafe(() => redis.scard(INDEX_KEY) as any, 0);
   return { ok: true, count: Number(count) || 0 };
 }
 
@@ -66,3 +66,4 @@ export async function saveNodes(_nodes: RegistryNode[]): Promise<boolean> {
   // Intentionally deprecated: we store nodes by id + index set now.
   return true;
 }
+
