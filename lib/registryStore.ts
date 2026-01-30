@@ -1,13 +1,5 @@
-import { redisGet, redisSet } from "./redisSimple";
+import { getRedis, redisSafe } from "./redis";
 
-
-
-
-import Redis from "ioredis";
-const redis = new Redis((process.env.REDIS_URL || process.env.HX2_REDIS_URL || "").trim(), {
-  maxRetriesPerRequest: 2,
-  enableReadyCheck: true,
-});
 export type RegistryNode = {
   id: string;
   type?: string;
@@ -16,51 +8,61 @@ export type RegistryNode = {
   qidc?: string;
   description?: string;
   constraints?: Record<string, any>;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
-const KEY = "hx2:registry:nodes";
+const INDEX_KEY = "hx2:registry:nodes:index";
+const NODE_KEY  = (id: string) => `hx2:registry:nodes:${id}`;
 
-function getRedisUrl(): string | null {
-  const u = process.env.REDIS_URL || process.env.HX2_REDIS_URL;
-  return u && u.trim().length ? u.trim() : null;
+function requireRedis() {
+  const r = getRedis();
+  if (!r) throw new Error("Redis not configured: missing UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN");
+  return r;
 }
 
 export async function loadNodes(): Promise<RegistryNode[]> {
-  const ids = await redis.smembers("hx2:registry:nodes:index");
+  const redis = requireRedis();
+
+  const ids = await redisSafe(() => redis.smembers<string[]>(INDEX_KEY) as any, []);
   if (!ids || ids.length === 0) return [];
-  const keys = ids.map((id: string) => "hx2:registry:nodes:" + id);
-  const values = await redis.mget(...keys);
+
+  const keys = ids.map((id) => NODE_KEY(id));
+  const values = await redisSafe(() => redis.mget<any[]>(...keys) as any, []);
 
   return (values || [])
     .map((v: any) => {
       if (!v) return null;
-      try {
-        return typeof v === "string" ? JSON.parse(v) : v;
-      } catch {
-        return null;
+      if (typeof v === "string") {
+        try { return JSON.parse(v); } catch { return null; }
       }
+      // Upstash REST may already return objects depending on client version/usage
+      return v;
     })
     .filter(Boolean) as RegistryNode[];
 }
 
-export async function saveNodes(nodes: RegistryNode[]): Promise<boolean> {
-  const redisUrl = getRedisUrl();
-  if (!redisUrl) return false;
-  return await redisSet(redisUrl, KEY, JSON.stringify(nodes));
-}
-
+// Optional: keep these for code that still calls upsert/save
 export async function upsertNode(node: RegistryNode): Promise<{ ok: boolean; count: number }> {
-  const nodes = await loadNodes();
-  const idx = nodes.findIndex(n => n?.id === node.id);
-  if (idx >= 0) nodes[idx] = { ...nodes[idx], ...node };
-  else nodes.push(node);
-  const ok = await saveNodes(nodes);
-  return { ok, count: nodes.length };
+  const redis = requireRedis();
+
+  const now = new Date().toISOString();
+  const record: RegistryNode = {
+    ...node,
+    id: node.id,
+    createdAt: node.createdAt || now,
+    updatedAt: now,
+  };
+
+  await redis.set(NODE_KEY(record.id), JSON.stringify(record));
+  await redis.sadd(INDEX_KEY, record.id);
+
+  const count = await redisSafe(() => redis.scard<number>(INDEX_KEY) as any, 0);
+  return { ok: true, count: Number(count) || 0 };
 }
 
-
-
-
-
-
-
+// Legacy no-op (old single-key list). Kept so old imports don’t crash.
+export async function saveNodes(_nodes: RegistryNode[]): Promise<boolean> {
+  // Intentionally deprecated: we store nodes by id + index set now.
+  return true;
+}

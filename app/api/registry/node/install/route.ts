@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     const token = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
 
     
-    const expected = (process.env.HX2_API_KEY || "").trim();
+    const expected = (process.env.REGISTRY_SERVER_KEY || process.env.HX2_SERVER_KEY || process.env.HX2_API_KEY || "").trim();
 if (!expected) return bad(500, "missing_server_key");
     if (!token || token !== expected) return bad(401, "unauthorized", { stamp: BUILD_STAMP, gotLen: token.length, hasServerKey: !!process.env.HX2_API_KEY });
 
