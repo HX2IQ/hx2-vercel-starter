@@ -1,5 +1,9 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+
 import React, { useMemo, useState } from "react";
 
 type H2Signal = { key: string; level: "green" | "yellow" | "red" | "unknown"; note?: string };
@@ -172,3 +176,4 @@ export default function H2Page() {
     </div>
   );
 }
+
