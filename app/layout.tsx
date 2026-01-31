@@ -11,7 +11,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body data-tailwind-probe className="bg-black text-white">{children}</body>
+      <body className="bg-black text-white" style={{ backgroundColor: "#000" }}>{children}</body>
     </html>
   )
 }

@@ -1,0 +1,38 @@
+
+> build
+> prisma generate && next build
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+
+Γ£ö Generated Prisma Client (v6.19.1) to .\node_modules\@prisma\client in 75ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env.production.local, .env.local, .env
+
+   Creating an optimized production build ...
+ ΓÜá Compiled with warnings
+
+./app/api/node/ping/route.ts
+Attempted import error: 'listNodes' is not exported from '@/lib/registryStore' (imported as 'listNodes').
+
+Import trace for requested module:
+./app/api/node/ping/route.ts
+
+   Linting and checking validity of types ...
+Failed to compile.
+
+./app/api/node/ping/route.ts:2:10
+Type error: Module '"@/lib/registryStore"' has no exported member 'listNodes'.
+
+  1 | import { NextRequest, NextResponse } from "next/server";
+> 2 | import { listNodes } from "@/lib/registryStore";
+    |          ^
+  3 |
+  4 | export const runtime = "nodejs";
+  5 | export const dynamic = "force-dynamic";
+Next.js build worker exited with code: 1 and signal: null

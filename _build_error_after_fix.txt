@@ -1,0 +1,155 @@
+
+> build
+> prisma generate && next build
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Γöé  Update available 6.19.1 -> 7.3.0                       Γöé
+Γöé                                                         Γöé
+Γöé  This is a major update - please follow the guide at    Γöé
+Γöé  https://pris.ly/d/major-version-upgrade                Γöé
+Γöé                                                         Γöé
+Γöé  Run the following to update                            Γöé
+Γöé    npm i --save-dev prisma@latest                       Γöé
+Γöé    npm i @prisma/client@latest                          Γöé
+ΓööΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÿ
+
+Γ£ö Generated Prisma Client (v6.19.1) to .\node_modules\@prisma\client in 106ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env.production.local, .env.local, .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/69) ...
+   Generating static pages (17/69) 
+   Generating static pages (34/69) 
+   Generating static pages (51/69) 
+ Γ£ô Generating static pages (69/69)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                         Size     First Load JS
+Γöî Γùï /                                               211 B          87.5 kB
+Γö£ Γùï /_not-found                                     876 B          88.2 kB
+Γö£ Γùï /ap2-proof                                      1.53 kB        88.9 kB
+Γö£ ╞Æ /api/ap2-proof                                  0 B                0 B
+Γö£ ╞Æ /api/ap2-proof/events                           0 B                0 B
+Γö£ ╞Æ /api/ap2-proof/events/[id]                      0 B                0 B
+Γö£ ╞Æ /api/ap2/diagnostics                            0 B                0 B
+Γö£ ╞Æ /api/ap2/execute                                0 B                0 B
+Γö£ ╞Æ /api/ap2/logs/tail                              0 B                0 B
+Γö£ ╞Æ /api/ap2/redis/ping                             0 B                0 B
+Γö£ ╞Æ /api/ap2/status                                 0 B                0 B
+Γö£ ╞Æ /api/ap2/task/enqueue                           0 B                0 B
+Γö£ ╞Æ /api/ap2/task/status                            0 B                0 B
+Γö£ ╞Æ /api/brain/attach                               0 B                0 B
+Γö£ ╞Æ /api/brain/chat                                 0 B                0 B
+Γö£ ╞Æ /api/brain/health                               0 B                0 B
+Γö£ ╞Æ /api/brain/run                                  0 B                0 B
+Γö£ ╞Æ /api/brain/status                               0 B                0 B
+Γö£ ╞Æ /api/build                                      0 B                0 B
+Γö£ ╞Æ /api/chat/send                                  0 B                0 B
+Γö£ ╞Æ /api/chat/status                                0 B                0 B
+Γö£ ╞Æ /api/console/chat                               0 B                0 B
+Γö£ ╞Æ /api/console/execute                            0 B                0 B
+Γö£ ╞Æ /api/console/nodes/get                          0 B                0 B
+Γö£ ╞Æ /api/factcheck/verify                           0 B                0 B
+Γö£ ╞Æ /api/health                                     0 B                0 B
+Γö£ ╞Æ /api/health/score                               0 B                0 B
+Γö£ ╞Æ /api/hx2                                        0 B                0 B
+Γö£ Γùï /api/hx2_base                                   0 B                0 B
+Γö£ ╞Æ /api/hx2_registry                               0 B                0 B
+Γö£ ╞Æ /api/hx2/command                                0 B                0 B
+Γö£ Γùï /api/hx2/registry/integrity/deep                0 B                0 B
+Γö£ ╞Æ /api/node/ping                                  0 B                0 B
+Γö£ ╞Æ /api/nodes/[nodeId]/describe                    0 B                0 B
+Γö£ ╞Æ /api/nodes/demo-node-01/ping                    0 B                0 B
+Γö£ ╞Æ /api/oi/h2/status                               0 B                0 B
+Γö£ ╞Æ /api/oi/public/nodes                            0 B                0 B
+Γö£ ╞Æ /api/oi/status                                  0 B                0 B
+Γö£ ╞Æ /api/registry/integrity                         0 B                0 B
+Γö£ ╞Æ /api/registry/node/delete                       0 B                0 B
+Γö£ ╞Æ /api/registry/node/get                          0 B                0 B
+Γö£ ╞Æ /api/registry/node/install                      0 B                0 B
+Γö£ ╞Æ /api/registry/node/list                         0 B                0 B
+Γö£ ╞Æ /api/retail/lead-capture                        0 B                0 B
+Γö£ ╞Æ /api/retail/product-compare                     0 B                0 B
+Γö£ ╞Æ /api/retail/status                              0 B                0 B
+Γö£ ╞Æ /api/retail/waitlist                            0 B                0 B
+Γö£ ╞Æ /api/scaffold/execute                           0 B                0 B
+Γö£ ╞Æ /api/shop/find                                  0 B                0 B
+Γö£ ╞Æ /api/t2/analyze                                 0 B                0 B
+Γö£ Γùï /app                                            230 B          96.3 kB
+Γö£ Γùï /app/chat                                       1.99 kB          98 kB
+Γö£ Γùï /app/factcheck                                  1.6 kB         97.6 kB
+Γö£ Γùï /app/health                                     1.59 kB        97.6 kB
+Γö£ Γùï /app/shop                                       1.59 kB        97.6 kB
+Γö£ Γùï /app/t2                                         1.6 kB         97.6 kB
+Γö£ ╞Æ /chat                                           1.13 kB        88.5 kB
+Γö£ Γùï /console                                        3.05 kB        90.4 kB
+Γö£ ╞Æ /console/chat                                   0 B                0 B
+Γö£ Γùï /console/nodes                                  1.22 kB        88.5 kB
+Γö£ Γùï /oi                                             230 B          96.3 kB
+Γö£ ╞Æ /oi/about                                       210 B          87.5 kB
+Γö£ Γùï /oi/building-nodes-with-optimized-intelligence  210 B          87.5 kB
+Γö£ ╞Æ /oi/chat                                        0 B                0 B
+Γö£ ╞Æ /oi/compare                                     230 B          96.3 kB
+Γö£ ╞Æ /oi/h2                                          583 B          87.9 kB
+Γö£ Γùï /oi/how-optimized-intelligence-works            209 B          87.5 kB
+Γö£ ╞Æ /oi/lead                                        210 B          87.5 kB
+Γö£ ╞Æ /oi/nodes                                       230 B          96.3 kB
+Γö£ Γùï /oi/oi-decision-flows                           231 B          96.3 kB
+Γö£ Γùï /oi/oi-for-business-decisions                   230 B          96.3 kB
+Γö£ Γùï /oi/oi-for-crypto-and-markets                   211 B          87.5 kB
+Γö£ Γùï /oi/oi-for-ecommerce                            210 B          87.5 kB
+Γö£ Γùï /oi/oi-for-health-decisions                     230 B          96.3 kB
+Γö£ Γùï /oi/oi-for-home-improvement-decisions           231 B          96.3 kB
+Γö£ Γùï /oi/oi-for-market-decisions                     230 B          96.3 kB
+Γö£ Γùï /oi/oi-for-operations-and-sops                  211 B          87.5 kB
+Γö£ Γùï /oi/oi-for-parenting-decisions                  230 B          96.3 kB
+Γö£ Γùï /oi/oi-for-small-business                       211 B          87.5 kB
+Γö£ Γùï /oi/oi-for-tradeshow-leads                      230 B          96.3 kB
+Γö£ Γùï /oi/oi-framework-checklist                      228 B          96.3 kB
+Γö£ Γùï /oi/oi-node-library                             211 B          87.5 kB
+Γö£ Γùï /oi/oi-playbooks                                230 B          96.3 kB
+Γö£ Γùï /oi/oi-roadmap                                  211 B          87.5 kB
+Γö£ Γùï /oi/oi-verification-rules                       230 B          96.3 kB
+Γö£ Γùï /oi/oi-vs-business-intelligence                 211 B          87.5 kB
+Γö£ Γùï /oi/oi-vs-consulting                            210 B          87.5 kB
+Γö£ Γùï /oi/optimized-intelligence-framework            211 B          87.5 kB
+Γö£ Γùï /oi/optimized-intelligence-use-cases            210 B          87.5 kB
+Γö£ Γùï /oi/optimized-intelligence-vs-ai                210 B          87.5 kB
+Γö£ ╞Æ /oi/pricing                                     230 B          96.3 kB
+Γö£ ╞Æ /oi/products                                    230 B          96.3 kB
+Γö£ ╞Æ /oi/retail                                      230 B          96.3 kB
+Γö£ ╞Æ /oi/status                                      211 B          87.5 kB
+Γö£ Γùï /oi/waitlist                                    1.17 kB        97.2 kB
+Γö£ Γùï /oi/what-is-optimized-intelligence              211 B          87.5 kB
+Γö£ ╞Æ /retail                                         45 kB           141 kB
+Γö£ Γùï /retail__old__20260121_174020/progress          1.28 kB        88.6 kB
+Γö£ ╞Æ /retail/about                                   211 B          87.5 kB
+Γö£ ╞Æ /retail/pricing                                 211 B          87.5 kB
+Γö£ ╞Æ /retail/products                                211 B          87.5 kB
+Γö£ ╞Æ /retail/progress                                1.14 kB        97.2 kB
+Γö£ ╞Æ /retail/waitlist                                1.16 kB        97.2 kB
+Γö£ Γùï /robots.txt                                     0 B                0 B
+Γöö Γùï /sitemap.xml                                    0 B                0 B
++ First Load JS shared by all                       87.3 kB
+  Γö£ chunks/2117-d7de70208e94c6ed.js                 31.7 kB
+  Γö£ chunks/fd9d1056-04aed536ad36d283.js             53.6 kB
+  Γöö other shared chunks (total)                     1.95 kB
+
+
+╞Æ Middleware                                        26.5 kB
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+
