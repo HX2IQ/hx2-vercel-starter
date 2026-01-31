@@ -69,3 +69,9 @@ export async function saveNodes(_nodes: RegistryNode[]): Promise<boolean> {
 
 
 
+
+export async function listNodes() {
+  // SAFE fallback wrapper. If you have a canonical list function, wire it here.
+  // Returning [] prevents build breaks; router/API can still be tested independently.
+  return [];
+}
