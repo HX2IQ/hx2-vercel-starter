@@ -97,3 +97,12 @@ export async function seedDefaults(defaults: NodeRecord[]) {
   const seeded = defaults.map((n) => ({ ...n, createdAt: now, updatedAt: now }));
   await upstash("set", REGISTRY_KEY, JSON.stringify(seeded));
 }
+
+function getRedisClient() {
+  // NOTE: In local builds or CI, env vars may be missing. Return null and let callers fallback.
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  const url   = process.env.UPSTASH_REDIS_REST_URL;
+  if (!token || !url) return null;
+  return { token, url };
+}
+
