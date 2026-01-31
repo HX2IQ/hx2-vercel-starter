@@ -1,9 +1,8 @@
 /**
  * Persistent registry store (SAFE, infra-only).
- * Stores node registry in Redis under a single key.
+ * Uses Upstash Redis REST (no node redis dependency).
  * No brain logic; only config metadata.
  */
-import { createClient } from "redis";
 
 type Json = Record<string, any>;
 type NodeRecord = {
@@ -24,31 +23,47 @@ type NodeRecord = {
 
 const REGISTRY_KEY = "hx2:registry:nodes";
 
-let _client: ReturnType<typeof createClient> | null = null;
-
-function redisUrl() {
-  // Support either explicit REDIS_URL or Upstash-style URL env.
+function restUrl() {
   return (
-    process.env.REDIS_URL ||
-    process.env.UPSTASH_REDIS_REST_URL || // if you later swap to REST client
-    process.env.UPSTASH_REDIS_URL
+    process.env.UPSTASH_REDIS_REST_URL ||
+    process.env.REDIS_REST_URL ||
+    process.env.KV_REST_API_URL || // optional compatibility
+    ""
   );
 }
 
-async function getClient() {
-  if (_client) return _client;
-  const url = redisUrl();
-  if (!url) throw new Error("missing_redis_url");
-  const client = createClient({ url });
-  client.on("error", () => {});
-  await client.connect();
-  _client = client;
-  return client;
+function restToken() {
+  return (
+    process.env.UPSTASH_REDIS_REST_TOKEN ||
+    process.env.REDIS_REST_TOKEN ||
+    process.env.KV_REST_API_TOKEN || // optional compatibility
+    ""
+  );
+}
+
+async function upstash(cmd: string, ...args: (string | number)[]) {
+  const url = restUrl();
+  const token = restToken();
+  if (!url) throw new Error("missing_redis_rest_url");
+  if (!token) throw new Error("missing_redis_rest_token");
+
+  const full = `${url}/${cmd}/${args.map(a => encodeURIComponent(String(a))).join("/")}`;
+  const r = await fetch(full, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store",
+  });
+
+  // Upstash returns JSON like: { result: ... }
+  const j = await r.json().catch(() => ({} as any));
+  if (!r.ok) throw new Error(`redis_rest_http_${r.status}`);
+  return j;
 }
 
 export async function listNodes(): Promise<NodeRecord[]> {
-  const client = await getClient();
-  const raw = await client.get(REGISTRY_KEY);
+  const j = await upstash("get", REGISTRY_KEY);
+  const raw = j?.result;
+
   if (!raw) return [];
   try {
     const nodes = JSON.parse(raw);
@@ -60,7 +75,6 @@ export async function listNodes(): Promise<NodeRecord[]> {
 
 export async function upsertNode(node: NodeRecord): Promise<void> {
   const now = new Date().toISOString();
-  const client = await getClient();
   const nodes = await listNodes();
   const idx = nodes.findIndex((n) => n.id === node.id);
 
@@ -73,7 +87,7 @@ export async function upsertNode(node: NodeRecord): Promise<void> {
   if (idx >= 0) nodes[idx] = record;
   else nodes.push(record);
 
-  await client.set(REGISTRY_KEY, JSON.stringify(nodes));
+  await upstash("set", REGISTRY_KEY, JSON.stringify(nodes));
 }
 
 export async function seedDefaults(defaults: NodeRecord[]) {
@@ -81,6 +95,5 @@ export async function seedDefaults(defaults: NodeRecord[]) {
   if (nodes.length > 0) return;
   const now = new Date().toISOString();
   const seeded = defaults.map((n) => ({ ...n, createdAt: now, updatedAt: now }));
-  const client = await getClient();
-  await client.set(REGISTRY_KEY, JSON.stringify(seeded));
+  await upstash("set", REGISTRY_KEY, JSON.stringify(seeded));
 }
