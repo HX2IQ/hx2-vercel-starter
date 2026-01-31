@@ -1,51 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
+import { route as hx2Route } from "@/src/hx2/router";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-type Route = { path: string; method: "GET" | "POST"; auth?: boolean };
-
-function resolve(cmd: any): Route {
-  const c = String(cmd?.command || "").trim();
-
-  switch (c) {
-    // Core
-    case "hx2.status":
-      return { path: "/api/hx2_base", method: "GET", auth: true };
-
-    case "registry.list":
-      return { path: "/api/hx2_registry", method: "GET", auth: false };
-
-    // AP2
-    case "ap2.status":
-      return { path: "/api/ap2/status", method: "POST", auth: true };
-
-    case "ap2.enqueue":
-      return { path: "/api/ap2/task/enqueue", method: "POST", auth: true };
-
-    case "ap2.task.status":
-      return { path: "/api/ap2/task/status", method: "POST", auth: true };
-
-    // Brain (explicit)
-    case "brain.run":
-      return { path: "/api/brain/run", method: "POST", auth: true };
-
-    default:
-      return { path: "/api/hx2_unknown", method: "POST", auth: true };
-  }
-}
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
-    const route = resolve(body);
+    const r = hx2Route(body);
 
     const base =
       process.env.NEXT_PUBLIC_BASE_URL ||
       process.env.BASE_URL ||
       "https://optinodeiq.com";
 
-    const url = `${base.replace(/\/$/, "")}${route.path}`;
+    const url = `${base.replace(/\/$/, "")}${r.path}`;
 
     const auth =
       req.headers.get("authorization") ||
@@ -53,22 +22,23 @@ export async function POST(req: NextRequest) {
       "";
 
     const headers: Record<string, string> = {
+      "Content-Type": "application/json",
       "Cache-Control": "no-store",
     };
-    if (route.method !== "GET") headers["Content-Type"] = "application/json";
-    if (route.auth && auth) headers["Authorization"] = auth;
 
-    const r = await fetch(url, {
-      method: route.method,
+    if (r.auth && auth) headers["Authorization"] = auth;
+
+    const upstream = await fetch(url, {
+      method: r.method,
       headers,
-      body: route.method === "GET" ? undefined : JSON.stringify(body),
+      body: r.method === "POST" ? JSON.stringify(body) : undefined,
     });
 
-    const text = await r.text();
+    const text = await upstream.text();
     return new NextResponse(text, {
-      status: r.status,
+      status: upstream.status,
       headers: {
-        "Content-Type": r.headers.get("content-type") || "application/json",
+        "Content-Type": upstream.headers.get("content-type") || "application/json",
         "Cache-Control": "no-store",
       },
     });
@@ -79,4 +49,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-
