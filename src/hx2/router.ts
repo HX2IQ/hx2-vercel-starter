@@ -15,7 +15,11 @@ export function route(cmd: any): Route {
     case "registry.list":
       return { path: "/api/hx2_registry", method: "GET", auth: false };
 
-    case "registry.node.install":
+    
+
+    // Nodes
+    case "node.ping":
+      return { path: "/api/node/ping", method: "POST", auth: true };case "registry.node.install":
       return { path: "/api/registry/node/install", method: "POST", auth: true };
 
     // AP2
@@ -41,5 +45,6 @@ export function route(cmd: any): Route {
 // Back-compat aliases
 export const resolve = route;
 export const hx2Route = route;
+
 
 
