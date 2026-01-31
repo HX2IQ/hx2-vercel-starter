@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Always succeed for shell pings (prevents node_not_found for h2-oi)
+    // KEY FIX: do NOT require registry lookup for node.ping
     if (command === "node.ping") {
       return ok({
         mode: body.mode ?? "SAFE",
