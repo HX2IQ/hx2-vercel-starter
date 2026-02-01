@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "prepare": "node -e \"const fs=require('fs'); if(fs.existsSync('.git')){require('child_process').execSync('npx husky install',{stdio:'inherit'})} else {console.log('no git; skip husky')}\"",
-    "test": "echo \"no tests yet\""
+    "test": "echo \"no tests yet\"",
+    "h2:contract": "node scripts/h2_contract_test.mjs"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
