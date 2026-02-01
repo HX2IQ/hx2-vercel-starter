@@ -2,97 +2,190 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
-type Json = Record<string, any>;
+/**
+ * Minimal in-memory rate limiter (per-region/per-instance).
+ * Good enough for early production. Later swap to Upstash for global enforcement.
+ */
+type Bucket = { count: number; resetAt: number };
+const buckets = new Map<string, Bucket>();
 
-function ok(data: Json, status = 200) {
-  return NextResponse.json({ ok: true, ...data }, { status });
+const WINDOW_MS = 60_000;  // 1 minute
+const MAX_PER_WINDOW = 60; // 60 req/min per IP
+
+function getClientIp(req: NextRequest) {
+  const xff = req.headers.get("x-forwarded-for");
+  if (xff) return xff.split(",")[0].trim();
+  const realIp = req.headers.get("x-real-ip");
+  if (realIp) return realIp.trim();
+  return "unknown";
 }
-function bad(error: string, status = 400, extra: Json = {}) {
-  return NextResponse.json({ ok: false, error, ...extra }, { status });
+
+function rateLimit(ip: string) {
+  const now = Date.now();
+  const b = buckets.get(ip);
+  if (!b || now > b.resetAt) {
+    const nb = { count: 1, resetAt: now + WINDOW_MS };
+    buckets.set(ip, nb);
+    return { ok: true, remaining: MAX_PER_WINDOW - 1, resetAt: nb.resetAt };
+  }
+  b.count += 1;
+  buckets.set(ip, b);
+  return { ok: b.count <= MAX_PER_WINDOW, remaining: Math.max(0, MAX_PER_WINDOW - b.count), resetAt: b.resetAt };
 }
 
-function normQuery(q: any) {
-  if (typeof q !== "string") return "";
-  return q.trim().slice(0, 2000);
+function jsonNoCache(data: any, init?: ResponseInit) {
+  const res = NextResponse.json(data, init);
+  res.headers.set("Cache-Control", "private, no-cache, no-store, max-age=0, must-revalidate");
+  return res;
 }
 
-function buildOutput(query: string, mode: string) {
-  const lower = query.toLowerCase();
+type Body = { mode: "SAFE"; query: string };
 
-  // v1 contract: stable, UI-friendly
-  if (!query || lower === "status") {
-    return {
-      regime: "Calm",
-      summary: "H2 is online. SAFE contract v1. No external intel sources queried.",
-      signals: [
-        { key: "connectivity", level: "green", note: "API reachable" },
-        { key: "adapters", level: "yellow", note: "OSINT/web adapters disabled (SAFE)" }
-      ],
-      next_actions: [
-        "Wire /oi/h2 UI to POST /api/h2/run and render cards.",
-        "Add schema validation + rate limiting.",
-        "Add owner-only adapter toggles (web/osint) later."
-      ]
-    };
-  }
+function validateBody(x: any): { ok: true; body: Body } | { ok: false; message: string } {
+  if (!x || typeof x !== "object") return { ok: false, message: "Body must be a JSON object" };
+  if (x.mode !== "SAFE") return { ok: false, message: "mode must be SAFE" };
+  if (typeof x.query !== "string") return { ok: false, message: "query must be a string" };
 
-  // echo mode (useful for UI + debugging)
-  if (lower.startsWith("echo:")) {
-    const text = query.slice(5).trim();
-    return {
-      regime: "Calm",
-      summary: "Echo response (SAFE).",
-      signals: [{ key: "mode", level: "green", note: mode }],
-      echo: { text, length: text.length }
-    };
-  }
+  const q = x.query.trim();
+  if (!q) return { ok: false, message: "query is required" };
+  if (q.length > 500) return { ok: false, message: "query too long (max 500 chars)" };
 
-  // capabilities / adapters (future-proof contract)
-  if (lower === "caps" || lower === "capabilities") {
-    return {
-      regime: "Calm",
-      summary: "Capabilities (SAFE).",
-      adapters: {
-        web_search: false,
-        osint: false,
-        rss: false,
-        markets: false
-      }
-    };
-  }
+  return { ok: true, body: { mode: "SAFE", query: q } };
+}
 
-  // default placeholder for any other query
-  return {
-    regime: "Calm",
-    summary: "SAFE placeholder response contract. No external intel sources were queried.",
-    signals: [{ key: "mode", level: "green", note: mode }],
-    input_echo: query,
-    next_actions: ["Add adapters behind owner-only gating when ready."]
-  };
+export async function OPTIONS() {
+  // Minimal CORS-safe preflight; customize if you later need cross-origin calls.
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Methods": "POST,OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type,Authorization,X-HX2-Internal",
+      "Access-Control-Allow-Origin": "*",
+      "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate",
+    },
+  });
 }
 
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req);
+  const rl = rateLimit(ip);
+  if (!rl.ok) {
+    const retryAfterSec = Math.max(1, Math.ceil((rl.resetAt - Date.now()) / 1000));
+    const res = jsonNoCache(
+      { ok: false, service: "h2", endpoint: "/api/h2/run", error: { code: "rate_limited", message: "Too many requests" } },
+      { status: 429 }
+    );
+    res.headers.set("Retry-After", String(retryAfterSec));
+    res.headers.set("X-RateLimit-Limit", String(MAX_PER_WINDOW));
+    res.headers.set("X-RateLimit-Remaining", "0");
+    res.headers.set("X-RateLimit-Reset", String(rl.resetAt));
+    return res;
+  }
+
+  let raw: any = null;
   try {
-    const body: Json = await req.json().catch(() => ({}));
-    const mode = String(body.mode ?? "SAFE");
-    const query = normQuery(body.query ?? body.input?.query ?? body.q);
+    raw = await req.json();
+  } catch {
+    return jsonNoCache(
+      { ok: false, service: "h2", endpoint: "/api/h2/run", error: { code: "bad_json", message: "Invalid JSON body" } },
+      { status: 400 }
+    );
+  }
 
-    const output = buildOutput(query, mode);
+  const v = validateBody(raw);
+  if (!v.ok) {
+    return jsonNoCache(
+      { ok: false, service: "h2", endpoint: "/api/h2/run", error: { code: "bad_request", message: v.message } },
+      { status: 400 }
+    );
+  }
 
-    return ok({
+  const { query } = v.body;
+
+  // ---- H2 SAFE stub logic (keep it deterministic + no external calls) ----
+  if (query === "status") {
+    return jsonNoCache({
+      ok: true,
       service: "h2",
       endpoint: "/api/h2/run",
       result: {
         node: "h2-oi",
-        mode,
+        mode: "SAFE",
         input: { query },
-        output
+        output: {
+          regime: "Calm",
+          summary: "H2 is online. SAFE contract v1. No external intel sources queried.",
+          signals: [
+            { key: "connectivity", level: "green", note: "API reachable" },
+            { key: "adapters", level: "yellow", note: "OSINT/web adapters disabled (SAFE)" },
+          ],
+          next_actions: [
+            "Wire /oi/h2 UI to POST /api/h2/run and render cards.",
+            "Add schema validation + rate limiting.",
+            "Add owner-only adapter toggles (web/osint) later.",
+          ],
+        },
       },
-      ts: new Date().toISOString()
+      ts: new Date().toISOString(),
     });
-  } catch (e: any) {
-    return bad("h2_run_failed", 500, { message: e?.message ?? String(e) });
   }
+
+  if (query === "caps") {
+    return jsonNoCache({
+      ok: true,
+      service: "h2",
+      endpoint: "/api/h2/run",
+      result: {
+        node: "h2-oi",
+        mode: "SAFE",
+        input: { query },
+        output: {
+          regime: "Calm",
+          summary: "Capabilities (SAFE).",
+          adapters: { web_search: false, osint: false, rss: false, markets: false },
+        },
+      },
+      ts: new Date().toISOString(),
+    });
+  }
+
+  if (query.startsWith("echo:")) {
+    const text = query.slice("echo:".length).trim();
+    return jsonNoCache({
+      ok: true,
+      service: "h2",
+      endpoint: "/api/h2/run",
+      result: {
+        node: "h2-oi",
+        mode: "SAFE",
+        input: { query },
+        output: {
+          regime: "Calm",
+          summary: "Echo response (SAFE).",
+          signals: [{ key: "mode", level: "green", note: "SAFE" }],
+          echo: { text, length: text.length },
+        },
+      },
+      ts: new Date().toISOString(),
+    });
+  }
+
+  // default
+  return jsonNoCache({
+    ok: true,
+    service: "h2",
+    endpoint: "/api/h2/run",
+    result: {
+      node: "h2-oi",
+      mode: "SAFE",
+      input: { query },
+      output: {
+        regime: "Calm",
+        summary: "Unknown query (SAFE). Try: status | caps | echo:<text>",
+        signals: [{ key: "query", level: "yellow", note: "Unknown command" }],
+      },
+    },
+    ts: new Date().toISOString(),
+  });
 }
