@@ -68,20 +68,21 @@ export async function POST(req: Request) {
   });
 
   const enqueueJson = await enqueueRes.json().catch(() => null);
-    const taskId =
+
+  const taskIdRaw =
     enqueueJson?.task?.id ||
     enqueueJson?.worker?.task?.id ||
     enqueueJson?.worker?.id ||
     enqueueJson?.id;
 
-  if (!enqueueRes.ok || !taskId) {
+  if (!enqueueRes.ok || !taskIdRaw) {
     return NextResponse.json(
       { ok: false, error: "enqueue_failed", details: enqueueJson },
       { status: 500 }
     );
   }
 
-  const taskId: string = taskId as string;
+  const taskId: string = String(taskIdRaw);
   const proof = await waitForProof(taskId, 12000);
 
   if (!proof) {
@@ -99,6 +100,7 @@ export async function POST(req: Request) {
 export async function OPTIONS() {
   return new Response(null, { status: 204, headers: { Allow: "POST, OPTIONS" } });
 }
+
 
 
 
