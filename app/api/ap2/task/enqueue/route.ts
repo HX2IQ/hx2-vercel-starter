@@ -2,16 +2,25 @@ import { NextRequest, NextResponse } from "next/server";
 import { getRedis } from "@/lib/redis";
 
 function requireAuth(req: Request) {
-  const expected = (process.env.HX2_API_KEY || "").trim();
-  if (!expected) return { ok: false, status: 500, msg: "server missing HX2_API_KEY" };
+  const expectedApi = (process.env.HX2_API_KEY || "").trim();
+  const expectedOwner = (process.env.HX2_OWNER_KEY || "").trim();
+
+  if (!expectedApi && !expectedOwner) {
+    return { ok: false, status: 500, msg: "server missing HX2_API_KEY/HX2_OWNER_KEY" };
+  }
 
   const auth = req.headers.get("authorization") || "";
-  if (!isAuthorized(auth)) {
-    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+  const m = auth.match(/^Bearer\s+(.+)$/i);
+  const token = m?.[1]?.trim();
+
+  const ok =
+    (expectedApi && token === expectedApi) ||
+    (expectedOwner && token === expectedOwner);
+
+  if (!ok) {
+    return { ok: false, status: 401, msg: "unauthorized" };
   }
 
-;
-  }
   return { ok: true as const };
 }
 
@@ -99,6 +108,7 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ ok: true, id, worker: json }, { status: 200 });
 }
+
 
 
 
