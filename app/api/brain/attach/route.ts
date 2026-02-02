@@ -41,8 +41,8 @@ async function waitForProof(taskId: string, timeoutMs = 12000) {
 
 export async function POST(req: Request) {
   const auth = req.headers.get("authorization") || "";
-  const expected = `Bearer ${process.env.HX2_API_KEY || ""}`;
-  if (!process.env.HX2_API_KEY || auth !== expected) {
+  const expected = `Bearer ${process.env.HX2_OWNER_KEY || ""}`;
+  if (!process.env.HX2_OWNER_KEY || auth !== expected) {
     return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
   }
 
@@ -93,3 +93,4 @@ export async function POST(req: Request) {
 export async function OPTIONS() {
   return new Response(null, { status: 204, headers: { Allow: "POST, OPTIONS" } });
 }
+
