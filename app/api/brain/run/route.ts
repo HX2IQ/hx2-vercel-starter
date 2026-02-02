@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireOwner } from "@/lib/auth/owner";
 
 export const runtime = "nodejs";
 
@@ -14,7 +15,10 @@ function pickModel() {
 }
 
 export async function POST(req: NextRequest) {
-  try {
+  
+  const g = requireOwner(req);
+  if (!g.ok) return g.res;
+try {
     const { input, mode } = await req.json();
 
     if ((mode || "SAFE") !== "SAFE") {
