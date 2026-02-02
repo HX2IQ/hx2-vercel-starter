@@ -6,11 +6,11 @@ function requireAuth(req: Request) {
   if (!expected) return { ok: false, status: 500, msg: "server missing HX2_API_KEY" };
 
   const auth = req.headers.get("authorization") || "";
-  const m = auth.match(/^Bearer\s+(.+)$/i);
-  const token = m?.[1]?.trim();
+  if (!isAuthorized(auth)) {
+    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+  }
 
-  if (!token || token !== expected) {
-    return { ok: false, status: 401, msg: "unauthorized" };
+;
   }
   return { ok: true as const };
 }
@@ -99,5 +99,6 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ ok: true, id, worker: json }, { status: 200 });
 }
+
 
 
