@@ -143,7 +143,12 @@ export async function POST(req: NextRequest) {
         output: {
           regime: "Calm",
           summary: "Capabilities (SAFE).",
-          adapters: { web_search: false, osint: false, rss: false, markets: false },
+          adapters: {
+            web_search: false,
+            osint: false,
+            rss: false,
+            markets: false,
+          },
         },
       },
       ts: new Date().toISOString(),
@@ -189,3 +194,5 @@ export async function POST(req: NextRequest) {
     ts: new Date().toISOString(),
   });
 }
+
+
