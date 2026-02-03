@@ -61,7 +61,7 @@ export async function POST(req: Request) {
       payload: {
         method: "POST",
         path: "/brain/attach",
-        body: { version },
+            headers: forwardHeaders,body: { version },
       },
       callbackUrl: `${origin}/api/ap2-proof`,
     }),
@@ -100,6 +100,7 @@ export async function POST(req: Request) {
 export async function OPTIONS() {
   return new Response(null, { status: 204, headers: { Allow: "POST, OPTIONS" } });
 }
+
 
 
 
