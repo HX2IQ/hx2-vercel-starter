@@ -41,7 +41,19 @@ async function waitForProof(taskId: string, timeoutMs = 12000) {
 
 export async function POST(req: Request) {
   const auth = req.headers.get("authorization") || "";
-  const expected = `Bearer ${process.env.HX2_OWNER_KEY || ""}`;
+
+  // Forward auth to AP2/brainRun so it can pass through to brain-shell
+  const forwardHeaders: Record<string, string> = {
+    "content-type": "application/json",
+  };
+  const xb = req.headers.get("x-brain-owner-key") || "";
+  if (xb) forwardHeaders["x-brain-owner-key"] = xb;
+  if (auth) forwardHeaders["authorization"] = auth;
+  // If caller only uses Authorization: Bearer, also map to x-brain-owner-key for downstream
+  if (!forwardHeaders["x-brain-owner-key"] && auth.toLowerCase().startsWith("bearer ")) {
+    forwardHeaders["x-brain-owner-key"] = auth.slice(7);
+  }
+const expected = `Bearer ${process.env.HX2_OWNER_KEY || ""}`;
   if (!process.env.HX2_OWNER_KEY || auth !== expected) {
     return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
   }
@@ -61,7 +73,8 @@ export async function POST(req: Request) {
       payload: {
         method: "POST",
         path: "/brain/attach",
-            headers: forwardHeaders,body: { version },
+            headers: forwardHeaders,
+            body: { version },
       },
       callbackUrl: `${origin}/api/ap2-proof`,
     }),
@@ -100,6 +113,8 @@ export async function POST(req: Request) {
 export async function OPTIONS() {
   return new Response(null, { status: 204, headers: { Allow: "POST, OPTIONS" } });
 }
+
+
 
 
 
