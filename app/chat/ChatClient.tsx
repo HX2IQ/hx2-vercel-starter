@@ -199,15 +199,28 @@ export default function ChatClient() {
                           {children}
                         </a>
                       ),
-                      code: ({ inline, children }) => {
-                        if (inline) {
+                      code: ({ className, children, ...props }) => {
+                        const txt = String(children ?? "");
+                        const isBlock = (className && String(className).includes("language-")) || txt.includes("\n");
+
+                        if (!isBlock) {
                           return (
-                            <code style={{ padding: "2px 6px", borderRadius: 6, background: "#f3f4f6", border: "1px solid #e5e7eb", fontSize: 13 }}>
+                            <code
+                              style={{
+                                padding: "2px 6px",
+                                borderRadius: 6,
+                                background: "#f3f4f6",
+                                border: "1px solid #e5e7eb",
+                                fontSize: 13,
+                              }}
+                              {...props}
+                            >
                               {children}
                             </code>
                           );
                         }
-                        return <code style={{ fontSize: 13 }}>{children}</code>;
+
+                        return <code className={String(className || "")} {...props}>{children}</code>;
                       },
                       pre: ({ children }) => (
                         <pre style={{ margin: "0 0 12px 0", padding: 12, borderRadius: 10, background: "#f9fafb", border: "1px solid #e5e7eb", overflowX: "auto" }}>
@@ -295,3 +308,4 @@ export default function ChatClient() {
     </div>
   );
 }
+
