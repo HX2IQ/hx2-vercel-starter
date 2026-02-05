@@ -1,93 +1,49 @@
-import { NextResponse } from "next/server";
-import { Pool } from "pg";
+import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
-declare global {
-  // eslint-disable-next-line no-var
-  var __hx2Pool: Pool | undefined;
-}
-
-const pool =
-  globalThis.__hx2Pool ??
-  new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
-  });
-
-globalThis.__hx2Pool = pool;
-
-function sleep(ms: number) {
-  return new Promise((r) => setTimeout(r, ms));
-}
-
-async function waitForProof(taskId: string, timeoutMs = 8000) {
-  const started = Date.now();
-  while (Date.now() - started < timeoutMs) {
-    const { rows } = await pool.query(
-      `select id, received_at, task_id, payload
-       from ap2_proof_events
-       where task_id = $1
-       order by id desc
-       limit 1`,
-      [taskId]
-    );
-
-    if (rows.length) return rows[0];
-    await sleep(400);
-  }
-  return null;
-}
-
-export async function POST(req: Request) {
-  // Owner auth (same key you already use for /api/ap2/task/enqueue)
+function isAuthorized(req: NextRequest) {
   const auth = req.headers.get("authorization") || "";
-  const expected = `Bearer ${process.env.HX2_API_KEY || ""}`;
-  if (!process.env.HX2_API_KEY || auth !== expected) {
-    return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
-  }
+  const token = auth.toLowerCase().startsWith("bearer ") ? auth.slice(7).trim() : "";
+  const expected = process.env.HX2_API_KEY || "";
+  return Boolean(expected) && token === expected;
+}
 
-  const origin = new URL(req.url).origin;
+export async function POST(req: NextRequest) {
+  try {
+    if (!isAuthorized(req)) {
+      return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401, headers: { "cache-control": "no-store" } });
+    }
 
-  // Enqueue AP2 task
-  const enqueueRes = await fetch(`${origin}/api/ap2/task/enqueue`, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: auth,
-    },
-    body: JSON.stringify({
-      taskType: "brain.status",
-      payload: {},
-      callbackUrl: `${origin}/api/ap2-proof`,
-    }),
-  });
+    const body = await req.json().catch(() => ({}));
+    const Gateway = process.env.AP2_GATEWAY_URL || "https://ap2-worker.optinodeiq.com";
 
-  const enqueueJson = await enqueueRes.json().catch(() => null);
-  if (!enqueueRes.ok || !enqueueJson?.task?.id) {
+    // If your VPS brain status needs a log-key, you can forward it:
+    // const logKey = process.env.AP2_LOG_KEY || "";
+    // headers: { "content-type": "application/json", "x-ap2-log-key": logKey }
+
+    const r = await fetch(`${Gateway}/api/brain/status`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body || {}),
+    });
+
+    const text = await r.text();
+    return new NextResponse(text, {
+      status: r.status,
+      headers: { "content-type": r.headers.get("content-type") || "application/json", "cache-control": "no-store" },
+    });
+  } catch (e: any) {
     return NextResponse.json(
-      { ok: false, error: "enqueue_failed", details: enqueueJson },
-      { status: 500 }
+      { ok: false, error: "brain_status_proxy_failed", detail: String(e?.message || e) },
+      { status: 502, headers: { "cache-control": "no-store" } }
     );
   }
-
-  const taskId: string = enqueueJson.task.id;
-
-  // Wait briefly for the AP2 proof event
-  const proof = await waitForProof(taskId, 8000);
-  if (!proof) {
-    return NextResponse.json({
-      ok: true,
-      pending: true,
-      taskId,
-      note: "Task enqueued; proof not received within timeout",
-    });
-  }
-
-  return NextResponse.json({ ok: true, taskId, proof });
 }
 
 export async function OPTIONS() {
-  return new Response(null, { status: 204, headers: { Allow: "POST, OPTIONS" } });
+  return new NextResponse(null, {
+    status: 204,
+    headers: { "allow": "OPTIONS, POST", "cache-control": "no-store" },
+  });
 }

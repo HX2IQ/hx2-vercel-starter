@@ -1,41 +1,37 @@
-import { NextResponse } from "next/server";
-import { getRedis } from "@/app/lib/redis";
+import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
-async function readJsonBody(req: Request) {
-  const raw = await req.text(); // READ ONCE
-  if (!raw) return { raw: "", json: {} as any };
+export async function POST(req: NextRequest) {
   try {
-    return { raw, json: JSON.parse(raw) };
-  } catch {
-    return { raw, json: {} as any };
+    const body = await req.json().catch(() => ({}));
+
+    const Gateway =
+      process.env.AP2_GATEWAY_URL || "https://ap2-worker.optinodeiq.com";
+
+    const r = await fetch(`${Gateway}/api/ap2/status`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body || {}),
+    });
+
+    const text = await r.text();
+    return new NextResponse(text, {
+      status: r.status,
+      headers: { "content-type": r.headers.get("content-type") || "application/json", "cache-control": "no-store" },
+    });
+  } catch (e: any) {
+    return NextResponse.json(
+      { ok: false, error: "ap2_proxy_failed", detail: String(e?.message || e) },
+      { status: 502, headers: { "cache-control": "no-store" } }
+    );
   }
 }
 
-export async function POST(req: Request) {
-  const { json: body } = await readJsonBody(req);
-
-  // --- Redis heartbeat (for /api/oi/status) ---
-  const redis = getRedis();
-  if (redis) {
-    try {
-      await redis.set(
-        "ap2:heartbeat",
-        { ts: Date.now(), source: "vercel:/api/ap2/status" },
-        { ex: 60 }
-      );
-    } catch {}
-  }
-
-  // Keep response shape stable (you can swap in real AP2 status later)
-  return NextResponse.json({
-    ok: true,
-    service: "ap2_status",
-    received: body,
-    ts: new Date().toISOString(),
+// Optional: allow OPTIONS without 405 noise
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: { "allow": "OPTIONS, POST", "cache-control": "no-store" },
   });
 }
-
-
