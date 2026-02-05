@@ -4,89 +4,71 @@ import React, { useMemo, useState } from "react";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
-async function sleep(ms: number) {
-  return new Promise((r) => setTimeout(r, ms));
-}
-
-async function httpJson(url: string, init?: RequestInit) {
-  const res = await fetch(url, init);
+async function postJson(url: string, body: any) {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body ?? {}),
+  });
   const text = await res.text();
   let json: any = null;
-  try { json = text ? JSON.parse(text) : null; } catch {}
-  return { ok: res.ok, status: res.status, json, text };
+  try { json = JSON.parse(text); } catch { json = { raw: text }; }
+  return { ok: res.ok, status: res.status, json };
 }
 
-function extractReply(payload: any): string | null {
-  // Expected: { ok, taskId, found, state, result: { data: { reply } } }
-  const r = payload?.result?.data?.reply;
-  if (typeof r === "string" && r.length) return r;
-
-  // Sometimes nested differently (defensive):
-  const r2 = payload?.result?.data?.data?.reply;
-  if (typeof r2 === "string" && r2.length) return r2;
-
-  return null;
+async function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
 }
 
 export default function ChatClient() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
-  const [lastTaskId, setLastTaskId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const canSend = useMemo(() => !busy && input.trim().length > 0, [busy, input]);
+  const conversationId = useMemo(() => `convo_${Date.now()}`, []);
+  const canSend = !busy && input.trim().length > 0;
 
   async function send() {
-    setError(null);
     const text = input.trim();
-    if (!text) return;
+    if (!text || busy) return;
 
+    setError(null);
     setBusy(true);
     setInput("");
-
-    // Optimistic render user message
     setMessages((prev) => [...prev, { role: "user", content: text }]);
 
-    const ts = Date.now();
-    const body = {
-      conversationId: `convo_${ts}`,
+    // enqueue
+    const sendRes = await postJson("/api/chat/send", {
+      conversationId,
       messages: [{ role: "user", content: text }],
-      ts,
-    };
-
-    const sendRes = await httpJson("/api/chat/send", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(body),
+      ts: Date.now(),
     });
 
     const taskId = sendRes.json?.taskId;
     if (!sendRes.ok || !taskId) {
       setBusy(false);
-      setError(`Send failed: HTTP ${sendRes.status} ${sendRes.json?.error || sendRes.text || ""}`.trim());
+      setError(`Send failed: HTTP ${sendRes.status} ${sendRes.json?.error || ""}`.trim());
       return;
     }
 
-    setLastTaskId(taskId);
-
-    // Poll the proven status endpoint (GET)
+    // poll
+    const pollBody = { mode: "SAFE", taskId };
     for (let i = 0; i < 80; i++) {
-      const st = await httpJson(`/api/ap2/task/status?taskId=${encodeURIComponent(taskId)}`, { method: "GET" });
+      const st = await postJson("/api/chat/status", pollBody);
+      const state = String(st.json?.state || "").toUpperCase();
 
-      if (st.ok && st.json?.found) {
-        const state = String(st.json?.state || "").toUpperCase();
-        if (state === "DONE" || state === "COMPLETED") {
-          const reply = extractReply(st.json) || "(no reply)";
-          setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
-          setBusy(false);
-          return;
-        }
-        if (state === "ERROR" || state === "FAILED") {
-          setBusy(false);
-          setError(`Task ${taskId} failed: ${st.json?.error || "unknown_error"}`);
-          return;
-        }
+      if (st.json?.found && (state === "DONE" || state === "COMPLETED")) {
+        const reply = st.json?.result?.data?.reply ?? st.json?.result?.reply ?? "(no reply)";
+        setMessages((prev) => [...prev, { role: "assistant", content: String(reply) }]);
+        setBusy(false);
+        return;
+      }
+
+      if (st.json?.found && (state === "ERROR" || state === "FAILED")) {
+        setBusy(false);
+        setError(`Task failed: ${st.json?.error || st.json?.result?.error || "unknown_error"}`);
+        return;
       }
 
       await sleep(350);
@@ -97,13 +79,20 @@ export default function ChatClient() {
   }
 
   return (
-    <>
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, opacity: 0.85 }}>
-      <div style={{ fontSize: 12 }}>Opti Chat</div>
-      <a href="/opti" style={{ fontSize: 12, textDecoration: "underline" }}>What is Opti?</a>
-    </div>
     <div style={{ maxWidth: 920, margin: "0 auto", padding: 16 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, opacity: 0.85 }}>
+        <div style={{ fontSize: 12 }}>Opti Chat</div>
+        <a href="/opti" style={{ fontSize: 12, textDecoration: "underline" }}>What is Opti?</a>
+      </div>
+
       <h1 style={{ fontSize: 22, marginBottom: 12 }}>OI Chat</h1>
+
+      {error ? (
+        <div style={{ marginBottom: 10, padding: 10, border: "1px solid #f99", borderRadius: 10 }}>
+          <div style={{ fontSize: 12, opacity: 0.8 }}>Error</div>
+          <div style={{ whiteSpace: "pre-wrap" }}>{error}</div>
+        </div>
+      ) : null}
 
       <div style={{ border: "1px solid #ddd", borderRadius: 12, padding: 12, minHeight: 320 }}>
         {messages.length === 0 ? (
@@ -122,7 +111,7 @@ export default function ChatClient() {
       <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
         <input
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => setInput((e.target as HTMLInputElement).value)}
           onKeyDown={(e) => { if (e.key === "Enter" && canSend) send(); }}
           placeholder="Message…"
           style={{ flex: 1, padding: 10, borderRadius: 10, border: "1px solid #ddd" }}
@@ -130,16 +119,16 @@ export default function ChatClient() {
         <button
           onClick={send}
           disabled={!canSend}
-          style={{ padding: "10px 14px", borderRadius: 10, border: "1px solid #ddd", cursor: canSend ? "pointer" : "not-allowed" }}
+          style={{
+            padding: "10px 14px",
+            borderRadius: 10,
+            border: "1px solid #ddd",
+            cursor: canSend ? "pointer" : "not-allowed",
+          }}
         >
           Send
         </button>
       </div>
-
-      {error ? <div style={{ marginTop: 10, color: "crimson" }}>{error}</div> : null}
-      {lastTaskId ? <div style={{ marginTop: 10, fontSize: 12, color: "#666" }}>taskId: {lastTaskId}</div> : null}
     </div>
   );
 }
-
-
