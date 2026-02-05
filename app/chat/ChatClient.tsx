@@ -98,12 +98,10 @@ export default function ChatClient() {
 
   return (
     <>
-    <>
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10, opacity: 0.85 }}>
       <div style={{ fontSize: 12 }}>Opti Chat</div>
       <a href="/opti" style={{ fontSize: 12, textDecoration: "underline" }}>What is Opti?</a>
     </div>
-    </>
     <div style={{ maxWidth: 920, margin: "0 auto", padding: 16 }}>
       <h1 style={{ fontSize: 22, marginBottom: 12 }}>OI Chat</h1>
 
