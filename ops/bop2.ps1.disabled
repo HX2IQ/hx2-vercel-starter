@@ -1,0 +1,135 @@
+# BOP2 v1.1 — PowerShell-safe remote patch runner (SSH + base64 payload)
+# - Never lets PS parse bash.
+# - Uploads patch files safely.
+# - Runs remote verify gates (ports/status/chat) and prints proof.
+# - Designed for "no-nano", deterministic ops.
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+
+function New-Bop2BashB64 {
+  param([Parameter(Mandatory)] [string]$Bash)
+  return [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($Bash))
+}
+
+function Invoke-Bop2RemoteBash {
+  param(
+    [Parameter(Mandatory)] [string]$Vps,          # e.g. root@ap2-worker.optinodeiq.com
+    [Parameter(Mandatory)] [string]$Bash,         # bash script text
+    [int]$TimeoutSeconds = 180
+  )
+  $b64 = New-Bop2BashB64 -Bash $Bash
+
+  # IMPORTANT: the bash runs remotely; PS never parses its contents.
+  $remote = "bash -lc 'set -euo pipefail; echo $b64 | base64 -d | bash'"
+
+  $p = Start-Process -FilePath "ssh" -ArgumentList @($Vps, $remote) -NoNewWindow -PassThru -Wait -Timeout $TimeoutSeconds
+  if ($p.ExitCode -ne 0) { throw "BOP2_REMOTE_BASH_FAILED exit=$($p.ExitCode)" }
+}
+
+function Invoke-Bop2Upload {
+  param(
+    [Parameter(Mandatory)] [string]$Vps,
+    [Parameter(Mandatory)] [string]$LocalPath,
+    [Parameter(Mandatory)] [string]$RemoteDir
+  )
+  if (!(Test-Path $LocalPath)) { throw "Missing local file: $LocalPath" }
+  & scp $LocalPath "$Vps`:$RemoteDir/" | Out-Host
+  if ($LASTEXITCODE -ne 0) { throw "SCP_FAILED exit=$LASTEXITCODE" }
+}
+
+function Invoke-Bop2HealthGate {
+  param(
+    [Parameter(Mandatory)] [string]$Vps,
+    [string]$RemoteDir = "/opt/hx2/brain-shell",
+    [string]$StatusUrlDirect = "http://127.0.0.1:3801/brain/status",
+    [string]$StatusUrlProxy  = "http://127.0.0.1:3802/brain/status"
+  )
+
+  $bash = @"
+set -euo pipefail
+cd "$RemoteDir"
+
+echo "=== BOP2 HEALTH GATE ==="
+echo "PWD=$(pwd)"
+echo
+
+echo "=== LISTENERS (3801/3802) ==="
+ss -lntp | egrep ":3801|:3802" || true
+echo
+
+echo "=== STATUS DIRECT (3801) ==="
+curl -sS "$StatusUrlDirect" | cat; echo
+echo
+
+echo "=== STATUS PROXY (3802) ==="
+curl -sS "$StatusUrlProxy" | cat; echo
+echo
+"@
+
+  Invoke-Bop2RemoteBash -Vps $Vps -Bash $bash -TimeoutSeconds 120
+}
+
+function Invoke-Bop2RestartBrainShell {
+  param(
+    [Parameter(Mandatory)] [string]$Vps,
+    [string]$RemoteDir = "/opt/hx2/brain-shell",
+    [string]$Pm2Name = "hx2-brain-shell"
+  )
+
+  $bash = @"
+set -euo pipefail
+cd "$RemoteDir"
+echo "=== PM2 RESTART: $Pm2Name ==="
+pm2 restart "$Pm2Name" --update-env
+sleep 2
+pm2 show "$Pm2Name" || true
+"@
+  Invoke-Bop2RemoteBash -Vps $Vps -Bash $bash -TimeoutSeconds 180
+}
+
+function Invoke-Bop2SnapshotServerJs {
+  param(
+    [Parameter(Mandatory)] [string]$Vps,
+    [string]$RemoteDir = "/opt/hx2/brain-shell"
+  )
+
+  $bash = @"
+set -euo pipefail
+cd "$RemoteDir"
+ts=$(date +%s)
+cp -a server.js "server.js.snap_${ts}"
+echo "SNAP=server.js.snap_${ts}"
+sha256sum server.js | awk '{print "SHA256="$1}'
+"@
+  Invoke-Bop2RemoteBash -Vps $Vps -Bash $bash -TimeoutSeconds 120
+}
+
+function Invoke-Bop2PatchRunNodeScript {
+  param(
+    [Parameter(Mandatory)] [string]$Vps,
+    [Parameter(Mandatory)] [string]$RemoteDir,
+    [Parameter(Mandatory)] [string]$RemotePatchJsFile,
+    [string]$Pm2Name = "hx2-brain-shell"
+  )
+
+  $bash = @"
+set -euo pipefail
+cd "$RemoteDir"
+
+echo "=== APPLY PATCH: $RemotePatchJsFile ==="
+node "$RemotePatchJsFile" "$RemoteDir"
+echo
+
+echo "=== SYNTAX CHECK ==="
+node -c server.js
+echo "SYNTAX_OK"
+echo
+
+echo "=== RESTART ==="
+pm2 restart "$Pm2Name" --update-env
+sleep 2
+"@
+
+  Invoke-Bop2RemoteBash -Vps $Vps -Bash $bash -TimeoutSeconds 240
+}

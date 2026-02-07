@@ -22,7 +22,7 @@ export async function POST(req: Request) {
 
     // idempotent: store record and add to set
     await redis.set(key, JSON.stringify({ email, ts }));
-    await redis.sadd("hx2:retail:waitlist:set", email);
+    await redis.raw(`/sadd/${encodeURIComponent("hx2:retail:waitlist:set")}/${encodeURIComponent(email)}`);
 
     return NextResponse.json({ ok: true, stored: true, email, ts });
   } catch (e: any) {
@@ -33,9 +33,12 @@ export async function GET() {
   if (!redis) return bad(500, "redis_not_configured");
   // lightweight count (safe for public)
   try {
-    const count = await redis.scard("hx2:retail:waitlist:set");
+    const r = await redis.raw(`/scard/${encodeURIComponent("hx2:retail:waitlist:set")}`);
+    const count = r?.json?.result ?? 0;
     return NextResponse.json({ ok: true, count: Number(count || 0), ts: new Date().toISOString() });
   } catch (e: any) {
     return bad(500, "internal_error", { message: String(e?.message || e) });
   }
 }
+
+

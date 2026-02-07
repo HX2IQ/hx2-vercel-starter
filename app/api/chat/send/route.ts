@@ -1,129 +1,98 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+const VER = "v4-chat-send-debug-2026-02-07";
 
-function sleep(ms: number) {
-  return new Promise((r) => setTimeout(r, ms));
+function j(body: any, status = 200) {
+  return NextResponse.json(body, { status, headers: { "x-chat-route-version": VER } });
 }
 
-async function fetchJsonWithTimeout(url: string, init: RequestInit, ms: number) {
-  const ac = new AbortController();
-  const t = setTimeout(() => ac.abort(), ms);
+function coerceMessage(obj: any): string | null {
+  const msg =
+    obj?.message ??
+    obj?.text ??
+    obj?.input ??
+    obj?.prompt ??
+    obj?.content;
+
+  if (typeof msg === "string") return msg.trim() || null;
+  if (msg == null) return null;
+
   try {
-    const res = await fetch(url, { ...init, signal: ac.signal, cache: "no-store" as any });
-    const text = await res.text();
-    let json: any = null;
-    try { json = text ? JSON.parse(text) : null; } catch { json = { rawText: text }; }
-    return { ok: res.ok, status: res.status, json };
-  } finally {
-    clearTimeout(t);
+    const s = JSON.stringify(msg);
+    return s.trim() || null;
+  } catch {
+    return null;
   }
 }
 
 export async function POST(req: NextRequest) {
+  const ct = req.headers.get("content-type") || "";
+  const cl = req.headers.get("content-length") || "";
+
+  let jsonBody: any = null;
+  let formBody: any = null;
+  let textBody: string | null = null;
+
+  // IMPORTANT: Next.js Request body can only be consumed once.
+  // We choose the parser based on content-type.
   try {
-    // Parse body safely
-    let body: any = {};
-    try { body = await req.json(); } catch { body = {}; }
-
-    const message = String(body?.message ?? "");
-    const Base = process.env.NEXT_PUBLIC_BASE_URL || "https://optinodeiq.com";
-    const HX2 = process.env.HX2_API_KEY;
-
-    // Optional: caller can ask us not to wait at all
-    const url = new URL(req.url);
-    const waitMs = Number(url.searchParams.get("waitMs") ?? "8000"); // default 8s
-    const pollEveryMs = 900;
-
-    if (!HX2) {
-      return NextResponse.json({ ok: false, error: "HX2_API_KEY not set on Vercel" }, { status: 500 });
-    }
-
-    // 1) Enqueue
-    const enq = await fetchJsonWithTimeout(
-      `${Base}/api/ap2/task/enqueue`,
-      {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          "authorization": `Bearer ${HX2}`,
-        },
-        body: JSON.stringify({
-          taskType: "brain.run",
-          mode: "SAFE",
-          payload: {
-            method: "POST",
-            path: "/brain/run",
-            body: { input: message }
-          }
-        }),
-      },
-      10000 // 10s enqueue timeout
-    );
-
-    if (!enq.ok) {
-      return NextResponse.json(
-        { ok: false, error: "AP2 enqueue failed", httpStatus: enq.status, enq: enq.json },
-        { status: 502 }
-      );
-    }
-
-    const taskId = (enq.json as any)?.worker?.task?.id;
-    if (!taskId) {
-      return NextResponse.json({ ok: false, error: "No taskId returned", enq: enq.json }, { status: 500 });
-    }
-
-    // If caller wants fire-and-forget
-    if (waitMs <= 0) {
-      return NextResponse.json({ ok: true, taskId, pending: true });
-    }
-
-    // 2) Poll (short window only)
-    const startedAt = Date.now();
-    let lastStatus: any = null;
-
-    while (Date.now() - startedAt < waitMs) {
-      const st = await fetchJsonWithTimeout(
-        `${Base}/api/ap2/task/status?taskId=${encodeURIComponent(taskId)}`,
-        { headers: { "authorization": `Bearer ${HX2}` } },
-        10000 // 10s per status call
-      );
-
-      lastStatus = st.json;
-
-      if ((st.json as any)?.state === "DONE") {
-        const raw =
-          (st.json as any)?.result?.data ??
-          (st.json as any)?.result?.data?.data ??
-          (st.json as any)?.result?.result ??
-          (st.json as any)?.result ??
-          null;
-
-        const reply =
-          raw?.reply ??
-          raw?.output_text ??
-          raw?.text ??
-          raw?.message ??
-          null;
-
-        const ok = raw?.ok !== false;
-
-        return NextResponse.json({ ok, taskId, reply, raw });
+    if (ct.includes("application/json")) {
+      jsonBody = await req.json().catch(() => null);
+    } else if (ct.includes("application/x-www-form-urlencoded") || ct.includes("multipart/form-data")) {
+      const fd = await req.formData().catch(() => null);
+      if (fd) {
+        formBody = {};
+        for (const [k, v] of fd.entries()) formBody[k] = v;
       }
+    } else {
+      textBody = await req.text().catch(() => null);
+    }
+  } catch {
+    // fall through
+  }
 
-      await sleep(pollEveryMs);
+  const parsed_keys =
+    jsonBody && typeof jsonBody === "object" ? Object.keys(jsonBody) :
+    formBody && typeof formBody === "object" ? Object.keys(formBody) :
+    [];
+
+  const message =
+    coerceMessage(jsonBody) ??
+    coerceMessage(formBody) ??
+    (typeof textBody === "string" ? textBody.trim() : null);
+
+  if (!message) {
+    return j({
+      ok: false,
+      error: "Send failed: Missing 'message' (or equivalent) in request body.",
+      debug: {
+        content_type: ct,
+        content_length: cl,
+        parsed_keys,
+        json_type: jsonBody === null ? "null" : typeof jsonBody,
+        text_len: typeof textBody === "string" ? textBody.length : null
+      }
+    }, 400);
+  }
+
+  const Gateway = process.env.AP2_GATEWAY_URL || "https://ap2-worker.optinodeiq.com";
+
+  try {
+    const upstream = await fetch(`${Gateway}/brain/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    });
+
+    const data = await upstream.json().catch(() => ({}));
+
+    if (!upstream.ok) {
+      return j({ ok: false, forwarded: true, url: `${Gateway}/brain/chat`, upstream_status: upstream.status, data }, 502);
     }
 
-    // 3) Fast return if still pending
-    return NextResponse.json({
-      ok: true,
-      taskId,
-      pending: true,
-      note: "Still running; poll /api/ap2/task/status?taskId=... for completion.",
-      lastStatus,
-    });
+    return j({ ok: true, forwarded: true, url: `${Gateway}/brain/chat`, data }, 200);
   } catch (e: any) {
-    return NextResponse.json({ ok: false, error: String(e?.message || e) }, { status: 500 });
+    return j({ ok: false, error: e?.message || "unknown_error" }, 502);
   }
 }

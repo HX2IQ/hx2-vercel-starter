@@ -55,8 +55,7 @@ export async function POST(req: Request) {
 
     // Store by id, and index by email for de-dupe (idempotent-ish)
     await redis.set(`hx2:retail:lead:${id}`, JSON.stringify(record));
-    await redis.sadd("hx2:retail:leads:set", id);
-    await redis.set(`hx2:retail:leads:byEmail:${email}`, id);
+    await redis.raw(`/sadd/${encodeURIComponent("hx2:retail:leads:set")}/${encodeURIComponent(id)}`);await redis.set(`hx2:retail:leads:byEmail:${email}`, id);
 
     return NextResponse.json({ ok: true, stored: true, id, ts });
   } catch (e: any) {
@@ -69,9 +68,12 @@ export async function GET() {
 
   try {
     // Safe public metric: total leads (no PII returned)
-    const count = await redis.scard("hx2:retail:leads:set");
+    const r = await redis.raw(`/scard/${encodeURIComponent("hx2:retail:leads:set")}`);
+const count = r?.json?.result ?? 0;
     return NextResponse.json({ ok: true, count: Number(count || 0), ts: new Date().toISOString() });
   } catch (e: any) {
     return bad(500, "internal_error", { message: String(e?.message || e) });
   }
 }
+
+

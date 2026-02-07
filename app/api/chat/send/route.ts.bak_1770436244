@@ -1,0 +1,59 @@
+import { NextRequest, NextResponse } from "next/server";
+
+export const runtime = "nodejs";
+const VER = "v2-tolerant-2026-02-07";
+
+function coerceMessage(body: any): string | null {
+  const msg =
+    body?.message ??
+    body?.text ??
+    body?.input ??
+    body?.prompt ??
+    body?.content;
+
+  if (typeof msg === "string") return msg.trim() || null;
+  if (msg == null) return null;
+
+  try {
+    const s = JSON.stringify(msg);
+    return s.trim() || null;
+  } catch {
+    return null;
+  }
+}
+
+function j(body: any, status = 200) {
+  return NextResponse.json(body, { status, headers: { "x-chat-route-version": VER } });
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json().catch(() => ({}));
+    const message = coerceMessage(body);
+
+    if (!message) {
+      return j({ ok: false, error: "Send failed: Missing 'message' string in JSON body." }, 400);
+    }
+
+    const Gateway = process.env.AP2_GATEWAY_URL || "https://ap2-worker.optinodeiq.com";
+
+    const upstream = await fetch(`${Gateway}/brain/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    });
+
+    const data = await upstream.json().catch(() => ({}));
+
+    if (!upstream.ok) {
+      return j(
+        { ok: false, forwarded: true, url: `${Gateway}/brain/chat`, upstream_status: upstream.status, data },
+        502
+      );
+    }
+
+    return j({ ok: true, forwarded: true, url: `${Gateway}/brain/chat`, data }, 200);
+  } catch (e: any) {
+    return j({ ok: false, error: e?.message || "Unknown error" }, 500);
+  }
+}

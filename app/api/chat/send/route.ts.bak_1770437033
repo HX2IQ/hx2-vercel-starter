@@ -1,0 +1,140 @@
+import { NextRequest, NextResponse } from "next/server";
+
+export const runtime = "nodejs";
+const VER = "v4-single-read-2026-02-07";
+
+function j(body: any, status = 200) {
+  return NextResponse.json(body, { status, headers: { "x-chat-route-version": VER } });
+}
+
+function coerceFromObject(obj: any): string | null {
+  const msg =
+    obj?.message ??
+    obj?.text ??
+    obj?.input ??
+    obj?.prompt ??
+    obj?.content;
+
+  if (typeof msg === "string") return msg.trim() || null;
+  if (msg == null) return null;
+
+  try {
+    const s = JSON.stringify(msg);
+    return s.trim() || null;
+  } catch {
+    return null;
+  }
+}
+
+function safeSnippet(s: string, max = 220) {
+  const t = (s ?? "").toString();
+  if (!t) return "";
+  return t.length > max ? t.slice(0, max) + "…" : t;
+}
+
+export async function POST(req: NextRequest) {
+  const ct = (req.headers.get("content-type") || "").toLowerCase();
+
+  try {
+    // IMPORTANT: read body ONCE
+    let message: string | null = null;
+
+    if (ct.includes("multipart/form-data")) {
+      // multipart can be parsed directly; do NOT also read text/json
+      const form = await req.formData().catch(() => null);
+      const obj: any = {};
+      if (form) {
+        for (const [k, v] of form.entries()) {
+          obj[k] = typeof v === "string" ? v : "[file]";
+        }
+      }
+      message = coerceFromObject(obj);
+      if (!message && form) {
+        // fallback: if there's exactly one string field, use it
+        const strings = Array.from(form.entries()).filter(([, v]) => typeof v === "string") as [string, string][];
+        if (strings.length === 1) message = (strings[0][1] || "").trim() || null;
+      }
+
+      if (!message) {
+        return j(
+          {
+            ok: false,
+            error: "Send failed: Missing 'message' (or equivalent) in request body.",
+            debug: { content_type: ct, keys: form ? Array.from(form.keys()) : [] },
+          },
+          400
+        );
+      }
+    } else {
+      // For json/urlencoded/raw: read text ONCE, then parse based on content-type
+      const raw = await req.text().catch(() => "");
+
+      if (ct.includes("application/json")) {
+        try {
+          const obj = raw ? JSON.parse(raw) : {};
+          message = coerceFromObject(obj);
+        } catch {
+          // fall through to other parsing
+        }
+      }
+
+      if (!message && ct.includes("application/x-www-form-urlencoded")) {
+        try {
+          const params = new URLSearchParams(raw);
+          const obj: any = {};
+          for (const [k, v] of params.entries()) obj[k] = v;
+          message = coerceFromObject(obj);
+
+          // common single-field fallback
+          if (!message) {
+            const vals = Array.from(params.values()).map(v => (v || "").trim()).filter(Boolean);
+            if (vals.length === 1) message = vals[0];
+          }
+        } catch {
+          // ignore
+        }
+      }
+
+      // raw-text fallback: if still no message, treat body as message
+      if (!message) {
+        const t = (raw || "").trim();
+        message = t || null;
+      }
+
+      if (!message) {
+        return j(
+          {
+            ok: false,
+            error: "Send failed: Missing 'message' (or equivalent) in request body.",
+            debug: {
+              content_type: ct,
+              raw_snippet: safeSnippet(raw),
+            },
+          },
+          400
+        );
+      }
+    }
+
+    const Gateway = process.env.AP2_GATEWAY_URL || "https://ap2-worker.optinodeiq.com";
+
+    const upstream = await fetch(`${Gateway}/brain/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    });
+
+    const data = await upstream.json().catch(() => ({}));
+
+    if (!upstream.ok) {
+      return j(
+        { ok: false, forwarded: true, url: `${Gateway}/brain/chat`, upstream_status: upstream.status, data },
+        502
+      );
+    }
+
+    return j({ ok: true, forwarded: true, url: `${Gateway}/brain/chat`, data }, 200);
+  } catch (e: any) {
+    return j({ ok: false, error: e?.message || "Unknown error", debug: { content_type: ct } }, 500);
+  }
+}

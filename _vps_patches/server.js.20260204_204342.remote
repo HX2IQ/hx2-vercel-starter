@@ -1,0 +1,155 @@
+require("dotenv").config({ path: "/opt/hx2/brain-shell/.env.local", override: true });
+const express = require("express");
+const { OpenAI } = require("openai");
+const app = express();
+
+
+
+function __hx2_extract_msg(body) {
+  const _body = body || {};
+  const _in = _body.input || _body || {};
+  let msg = "";
+
+  if (typeof _in.message === "string") msg = _in.message;
+  else if (typeof _body.message === "string") msg = _body.message;
+  else if (Array.isArray(_in.messages)) {
+    const lastUser = [..._in.messages].reverse().find(m => (m && m.role === "user" && m.content != null));
+    if (lastUser) {
+      if (typeof lastUser.content === "string") msg = lastUser.content;
+      else if (Array.isArray(lastUser.content)) {
+        const part = lastUser.content.find(x => x && (x.type === "text") && typeof x.text === "string");
+        if (part) msg = part.text;
+      }
+    }
+  }
+
+  return String(msg || "").trim();
+}
+
+// Lazy init so SAFE mode can run without OPENAI_API_KEY
+let openai = null;
+function getOpenAI() {
+  if (openai) return openai;
+  const key = process.env.OPENAI_API_KEY;
+  if (!key) return null;
+  openai = new OpenAI({ apiKey: key });
+  return openai;
+}
+
+// Parse JSON bodies
+app.use(express.json({ limit: "1mb" }));
+
+const PORT = process.env.PORT || 3901;
+const BIND = process.env.BIND || "127.0.0.1";
+
+// Explicitly SAFE by default
+const allowAttach = String(process.env.ALLOW_BRAIN_ATTACH || "").toLowerCase() === "true";
+const ownerKey = process.env.BRAIN_OWNER_KEY || ""; // set in .env.local or PM2 env
+
+let brainAttached = false;
+let brainVersion = null;
+
+function isAuthorized(req) {
+  if (!ownerKey) return false;
+  const k1 = req.headers["x-brain-owner-key"];
+  const a  = req.headers["authorization"];
+  const k2 = (typeof a === "string" && a.toLowerCase().startsWith("beconst msg = __hx2_extract_msg(req.body);
+of k === "string" && k === ownerKey;
+}
+
+function status() {
+  return {
+    ok: true,
+    service: "hx2-brain-shell",
+    installed: true,
+    brain_attached: brainAttached,
+    brain_version: brainVersion,
+    allow_brain_attach: allowAttach,
+    ip_firewall: true,
+    mode: "SAFE",
+    timestamp: new Date().toISOString(),
+  };
+}
+
+app.get("/health", (_req, res) => res.json({ ok: true }));
+app.get("/brain/status", (_req, res) => res.json(status()));
+app.post("/brain/status", (_req, res) => res.json(status()));
+
+// Minimal RUN endpoint (infra-only): echo unless OpenAI key exists
+app.post("/brain/run", async (req, res) => {
+  try {
+    const msg = String(req.body?.input?.message ?? req.body?.message ?? req.body?.input ?? "");
+    const st = status();
+
+    const client = getOpenAI();
+    if (!client) {
+      return res.json({
+        ok: true,
+        reply: msg ? `Echo: ${msg}` : "Echo: (empty message)",
+        brain_attached: st.brain_attached,
+        brain_version: st.brain_version || null,
+        mode: st.mode,
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    const r = await client.responses.create({
+      model: process.env.OPENAI_MODEL || "gpt-5",
+      input: [{ role: "user", content: msg || "Say OK and the current UTC time." }],
+    });
+
+    const text =
+      (r.output_text) ||
+      (r.output && r.output[0] && r.output[0].content && r.output[0].content[0] && r.output[0].content[0].text) ||
+      "";
+
+    return res.json({
+      ok: true,
+      reply: text || "(no text)",
+      brain_attached: st.brain_attached,
+      brain_version: st.brain_version || null,
+      mode: st.mode,
+      timestamp: new Date().toISOString()
+    });
+  } catch (e) {
+    return res.status(500).json({ ok: false, error: String(e && e.message ? e.message : e) });
+  }
+});
+
+// OWNER-ONLY attach gate (still disabled unless ALLOW_BRAIN_ATTACH=true)
+app.post("/brain/attach", (req, res) => {
+  if (!allowAttach) return res.status(403).json({ ok: false, error: "attach disabled (ALLOW_BRAIN_ATTACH!=true)" });
+  if (!isAuthorized(req)) return res.status(401).json({ ok: false, error: "unauthorized" });
+
+  brainAttached = true;
+  brainVersion = (req.body && req.body.version) ? String(req.body.version) : "unknown";
+  return res.json({ ok: true, attached: true, brain_version: brainVersion });
+});
+
+app.post("/brain/detach", (req, res) => {
+  if (!allowAttach) return res.status(403).json({ ok: false, error: "detach disabled (ALLOW_BRAIN_ATTACH!=true)" });
+  if (!isAuthorized(req)) return res.status(401).json({ ok: false, error: "unauthorized" });
+
+  brainAttached = false;
+  brainVersion = null;
+  return res.json({ ok: true, attached: false });
+});
+
+// Minimal chat endpoint (infra-only): echoes back
+app.post("/brain/chat", (req, res) => {
+  const msg = String(req.body?.input?.message ?? req.body?.message ?? req.body?.input ?? "");
+  // DUPLICATE_REMOVED: const msg = (req.body && (req.body.message || req.body.input)) ? String(req.body.message || req.body.input) : "";
+  const st = status();
+  return res.json({
+    ok: true,
+    reply: msg ? `Echo: ${msg}` : "Echo: (empty message)",
+    brain_attached: st.brain_attached,
+    brain_version: st.brain_version || null,
+    mode: st.mode,
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.listen(PORT, BIND, () => {
+  console.log(`[hx2-brain-shell] listening on http://${BIND}:${PORT}`);
+});

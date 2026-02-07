@@ -1,0 +1,72 @@
+import { NextRequest, NextResponse } from "next/server";
+
+export const runtime = "nodejs";
+
+/**
+ * /api/chat/send
+ * - POST: accepts { message } and forwards to AP2 gateway (if configured),
+ *         otherwise returns a local ack so the pipe can be tested.
+ * - GET: simple health check.
+ */
+
+export async function GET() {
+  return NextResponse.json({ ok: true, route: "/api/chat/send", method: "GET", status: "healthy" });
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json().catch(() => ({}));
+    const message = typeof body?.message === "string" ? body.message : "";
+
+    if (!message) {
+      return NextResponse.json({ ok: false, error: "Missing 'message' string in JSON body." }, { status: 400 });
+    }
+
+    const gateway =
+      process.env.AP2_GATEWAY_URL ||
+      process.env.NEXT_PUBLIC_AP2_GATEWAY_URL ||
+      "https://ap2-worker.optinodeiq.com";
+
+    // If AP2 has a chat endpoint, forward. If it doesn't (yet), return local ACK.
+    // Try /brain/chat first, then /chat/send on the gateway as a fallback.
+    const candidates = [`${gateway}/brain/chat`, `${gateway}/chat/send`];
+
+    let lastErr: any = null;
+
+    for (const url of candidates) {
+      try {
+        const r = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message }),
+        });
+
+        const text = await r.text();
+        // Return whatever AP2 returns (JSON if possible, otherwise text).
+        try {
+          const data = JSON.parse(text);
+          return NextResponse.json({ ok: true, forwarded: true, url, data }, { status: 200 });
+        } catch {
+          return NextResponse.json({ ok: true, forwarded: true, url, text }, { status: 200 });
+        }
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+
+    // No gateway path worked — still prove POST is implemented.
+    return NextResponse.json(
+      {
+        ok: true,
+        forwarded: false,
+        note: "POST works locally, but gateway forward failed. Check AP2 endpoint paths and firewall.",
+        messageEcho: message,
+        gatewayTried: candidates,
+        error: lastErr ? String(lastErr) : "unknown",
+      },
+      { status: 200 }
+    );
+  } catch (err: any) {
+    return NextResponse.json({ ok: false, error: String(err?.message || err) }, { status: 500 });
+  }
+}

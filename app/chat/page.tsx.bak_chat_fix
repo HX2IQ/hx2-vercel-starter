@@ -1,0 +1,7 @@
+import ChatClient from "./ui/ChatClient";
+
+export const dynamic = "force-dynamic";
+
+export default function ChatPage() {
+  return <ChatClient />;
+}

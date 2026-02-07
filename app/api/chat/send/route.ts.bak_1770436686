@@ -1,0 +1,121 @@
+import { NextRequest, NextResponse } from "next/server";
+
+export const runtime = "nodejs";
+const VER = "v3-tolerant-json-form-text-2026-02-07";
+
+function j(body: any, status = 200) {
+  return NextResponse.json(body, {
+    status,
+    headers: { "x-chat-route-version": VER },
+  });
+}
+
+function coerceAnyToString(x: any): string | null {
+  if (typeof x === "string") return x.trim() || null;
+  if (x == null) return null;
+  try {
+    const s = JSON.stringify(x);
+    return s.trim() || null;
+  } catch {
+    return null;
+  }
+}
+
+function coerceFromObject(body: any): string | null {
+  const candidate =
+    body?.message ??
+    body?.text ??
+    body?.input ??
+    body?.prompt ??
+    body?.content ??
+    body?.data;
+
+  return coerceAnyToString(candidate);
+}
+
+async function extractMessage(req: NextRequest): Promise<{ message: string | null; debug: any }> {
+  const ct = (req.headers.get("content-type") || "").toLowerCase();
+  const debug: any = { content_type: ct };
+
+  // 1) JSON
+  try {
+    const body = await req.json();
+    debug.json_keys = body && typeof body === "object" ? Object.keys(body).slice(0, 20) : [];
+    const msg = coerceFromObject(body);
+    if (msg) return { message: msg, debug };
+  } catch {
+    debug.json_parse = "failed";
+  }
+
+  // 2) multipart/form-data
+  if (ct.includes("multipart/form-data") || ct.includes("application/x-www-form-urlencoded")) {
+    try {
+      const fd = await req.formData();
+      const keys = Array.from(fd.keys()).slice(0, 30);
+      debug.form_keys = keys;
+
+      const direct =
+        fd.get("message") ??
+        fd.get("text") ??
+        fd.get("input") ??
+        fd.get("prompt") ??
+        fd.get("content");
+
+      const msg = coerceAnyToString(direct);
+      if (msg) return { message: msg, debug };
+    } catch {
+      debug.form_parse = "failed";
+    }
+  }
+
+  // 3) raw text
+  try {
+    const raw = await req.text();
+    debug.raw_len = raw?.length ?? 0;
+    const msg = (raw || "").trim();
+    if (msg) return { message: msg, debug };
+  } catch {
+    debug.text_parse = "failed";
+  }
+
+  return { message: null, debug };
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const { message, debug } = await extractMessage(req);
+
+    if (!message) {
+      // Safe diagnostics: no body echo, just metadata
+      return j(
+        {
+          ok: false,
+          error: "Send failed: Missing 'message' (or equivalent) in request body.",
+          debug,
+        },
+        400
+      );
+    }
+
+    const Gateway = process.env.AP2_GATEWAY_URL || "https://ap2-worker.optinodeiq.com";
+
+    const upstream = await fetch(`${Gateway}/brain/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    });
+
+    const data = await upstream.json().catch(() => ({}));
+
+    if (!upstream.ok) {
+      return j(
+        { ok: false, forwarded: true, url: `${Gateway}/brain/chat`, upstream_status: upstream.status, data },
+        502
+      );
+    }
+
+    return j({ ok: true, forwarded: true, url: `${Gateway}/brain/chat`, data }, 200);
+  } catch (e: any) {
+    return j({ ok: false, error: e?.message || "Unknown error" }, 500);
+  }
+}
