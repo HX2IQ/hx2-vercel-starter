@@ -1,0 +1,566 @@
+"use client";
+
+import React, { useEffect, useMemo, useRef, useState } from "react";
+
+type Role = "user" | "assistant" | "system";
+
+type Msg = {
+  id: string;
+  role: Role;
+  content: string;
+  ts: number;
+};
+
+type Thread = {
+  id: string;
+  title: string;
+  createdAt: number;
+  updatedAt: number;
+  messages: Msg[];
+};
+
+const LS_KEY = "hx2.chat.threads.v1";
+
+function uid(prefix = "id") {
+  return `${prefix}_${Math.random().toString(16).slice(2)}_${Date.now().toString(16)}`;
+}
+
+function clampTitle(s: string) {
+  const t = s.trim().replace(/\s+/g, " ");
+  if (!t) return "New chat";
+  return t.length > 38 ? t.slice(0, 38) + "…" : t;
+}
+
+function safeJsonParse(text: string): any | null {
+  try { return JSON.parse(text); } catch { return null; }
+}
+
+// Very lightweight renderer: supports fenced code blocks + inline code + paragraphs.
+// (No dependencies, so the build is stable.)
+function renderContent(raw: string) {
+  // Split by ``` fences
+  const parts: Array<{ kind: "text" | "code"; lang?: string; value: string }> = [];
+  const re = /```([\w+-]*)\n([\s\S]*?)```/g;
+  let last = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(raw)) !== null) {
+    if (m.index > last) parts.push({ kind: "text", value: raw.slice(last, m.index) });
+    parts.push({ kind: "code", lang: (m[1] || "").trim(), value: (m[2] || "").replace(/\n$/, "") });
+    last = m.index + m[0].length;
+  }
+  if (last < raw.length) parts.push({ kind: "text", value: raw.slice(last) });
+
+  const nodes: React.ReactNode[] = [];
+  parts.forEach((p, i) => {
+    if (p.kind === "code") {
+      nodes.push(
+        <div key={`code_${i}`} className="mt-3 rounded-xl border border-white/10 bg-black/30 overflow-hidden">
+          <div className="flex items-center justify-between px-3 py-2 text-xs text-white/60 border-b border-white/10">
+            <div className="font-mono">{p.lang ? p.lang : "code"}</div>
+            <button
+              className="rounded-lg px-2 py-1 bg-white/5 hover:bg-white/10 text-white/80"
+              onClick={() => navigator.clipboard.writeText(p.value)}
+              type="button"
+              title="Copy code"
+            >
+              Copy
+            </button>
+          </div>
+          <pre className="p-3 text-xs leading-5 overflow-auto">
+            <code className="font-mono text-white/90 whitespace-pre">{p.value}</code>
+          </pre>
+        </div>
+      );
+    } else {
+      // Inline code `...`
+      const chunks: React.ReactNode[] = [];
+      const r2 = /`([^`]+)`/g;
+      let last2 = 0;
+      let m2: RegExpExecArray | null;
+      const text = p.value;
+      while ((m2 = r2.exec(text)) !== null) {
+        if (m2.index > last2) chunks.push(text.slice(last2, m2.index));
+        chunks.push(
+          <code
+            key={`ic_${i}_${m2.index}`}
+            className="px-1 py-0.5 rounded-md bg-white/10 border border-white/10 font-mono text-[12px]"
+          >
+            {m2[1]}
+          </code>
+        );
+        last2 = m2.index + m2[0].length;
+      }
+      if (last2 < text.length) chunks.push(text.slice(last2));
+
+      const paras = String(chunks.join("")).split(/\n{2,}/).map((para, idx) => para.trim()).filter(Boolean);
+      if (paras.length === 0) return;
+
+      // Re-render paragraphs but preserve inline-code (simple approach: keep original p.value rendering)
+      // We'll do line breaks + inline code by splitting on single newlines.
+      const lines = p.value.split("\n");
+      nodes.push(
+        <div key={`txt_${i}`} className="space-y-2">
+          {lines.map((ln, j) => {
+            // inline code again per-line
+            const lineChunks: React.ReactNode[] = [];
+            const r3 = /`([^`]+)`/g;
+            let last3 = 0;
+            let mm: RegExpExecArray | null;
+            while ((mm = r3.exec(ln)) !== null) {
+              if (mm.index > last3) lineChunks.push(ln.slice(last3, mm.index));
+              lineChunks.push(
+                <code
+                  key={`il_${i}_${j}_${mm.index}`}
+                  className="px-1 py-0.5 rounded-md bg-white/10 border border-white/10 font-mono text-[12px]"
+                >
+                  {mm[1]}
+                </code>
+              );
+              last3 = mm.index + mm[0].length;
+            }
+            if (last3 < ln.length) lineChunks.push(ln.slice(last3));
+            return (
+              <p key={`p_${i}_${j}`} className="text-sm leading-6 text-white/90 whitespace-pre-wrap">
+                {lineChunks}
+              </p>
+            );
+          })}
+        </div>
+      );
+    }
+  });
+
+  return nodes;
+}
+
+export default function ChatClient() {
+  const [threads, setThreads] = useState<Thread[]>([]);
+  const [activeId, setActiveId] = useState<string>("");
+  const [input, setInput] = useState<string>("");
+  const [busy, setBusy] = useState<boolean>(false);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+  const abortRef = useRef<AbortController | null>(null);
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const active = useMemo(() => threads.find(t => t.id === activeId) || null, [threads, activeId]);
+
+  function persist(next: Thread[]) {
+    setThreads(next);
+    try { localStorage.setItem(LS_KEY, JSON.stringify(next)); } catch {}
+  }
+
+  function ensureOneThread(next?: Thread[]) {
+    const arr = next ?? threads;
+    if (arr.length === 0) {
+      const t: Thread = { id: uid("thr"), title: "New chat", createdAt: Date.now(), updatedAt: Date.now(), messages: [] };
+      persist([t]);
+      setActiveId(t.id);
+      return t;
+    }
+    if (!activeId || !arr.some(t => t.id === activeId)) {
+      setActiveId(arr[0].id);
+      return arr[0];
+    }
+    return arr.find(t => t.id === activeId) || arr[0];
+  }
+
+  useEffect(() => {
+    const saved = (() => {
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        if (!raw) return null;
+        const j = JSON.parse(raw);
+        if (!Array.isArray(j)) return null;
+        return j as Thread[];
+      } catch {
+        return null;
+      }
+    })();
+
+    if (saved && saved.length) {
+      setThreads(saved);
+      setActiveId(saved[0].id);
+    } else {
+      const t: Thread = { id: uid("thr"), title: "New chat", createdAt: Date.now(), updatedAt: Date.now(), messages: [] };
+      setThreads([t]);
+      setActiveId(t.id);
+      try { localStorage.setItem(LS_KEY, JSON.stringify([t])); } catch {}
+    }
+    // focus input on load
+    setTimeout(() => inputRef.current?.focus(), 50);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    // auto-scroll on new messages
+    if (!listRef.current) return;
+    listRef.current.scrollTop = listRef.current.scrollHeight;
+  }, [active?.messages?.length]);
+
+  function newChat() {
+    const t: Thread = { id: uid("thr"), title: "New chat", createdAt: Date.now(), updatedAt: Date.now(), messages: [] };
+    const next = [t, ...threads];
+    persist(next);
+    setActiveId(t.id);
+    setError("");
+    setInput("");
+    setTimeout(() => inputRef.current?.focus(), 50);
+  }
+
+  function deleteThread(id: string) {
+    const next = threads.filter(t => t.id !== id);
+    persist(next);
+    setError("");
+    setTimeout(() => ensureOneThread(next), 0);
+  }
+
+  function renameThread(id: string) {
+    const t = threads.find(x => x.id === id);
+    if (!t) return;
+    const name = prompt("Rename chat", t.title);
+    if (name === null) return;
+    const next = threads.map(x => x.id === id ? { ...x, title: clampTitle(name), updatedAt: Date.now() } : x);
+    persist(next);
+  }
+
+  function stop() {
+    if (abortRef.current) abortRef.current.abort();
+    abortRef.current = null;
+    setBusy(false);
+  }
+
+  function updateThreadWithMessage(threadId: string, msg: Msg) {
+    const next = threads.map(t => {
+      if (t.id !== threadId) return t;
+      return { ...t, messages: [...t.messages, msg], updatedAt: Date.now() };
+    });
+    // If first user message, set title from it
+    const t = next.find(x => x.id === threadId);
+    if (t && t.messages.length === 1 && t.messages[0].role === "user") {
+      const titled = next.map(x => x.id === threadId ? { ...x, title: clampTitle(t.messages[0].content) } : x);
+      persist(titled);
+      return;
+    }
+    persist(next);
+  }
+
+  function updateLastAssistant(threadId: string, content: string) {
+    const next = threads.map(t => {
+      if (t.id !== threadId) return t;
+      const msgs = [...t.messages];
+      // update last assistant msg if exists, else append
+      for (let i = msgs.length - 1; i >= 0; i--) {
+        if (msgs[i].role === "assistant") {
+          msgs[i] = { ...msgs[i], content, ts: Date.now() };
+          return { ...t, messages: msgs, updatedAt: Date.now() };
+        }
+      }
+      msgs.push({ id: uid("msg"), role: "assistant", content, ts: Date.now() });
+      return { ...t, messages: msgs, updatedAt: Date.now() };
+    });
+    persist(next);
+  }
+
+  async function send(text: string) {
+    const thread = ensureOneThread();
+    const threadId = thread.id;
+
+    const trimmed = text.trim();
+    if (!trimmed || busy) return;
+
+    setError("");
+    setBusy(true);
+
+    // push user message immediately
+    updateThreadWithMessage(threadId, { id: uid("msg"), role: "user", content: trimmed, ts: Date.now() });
+
+    // clear input
+    setInput("");
+    setTimeout(() => inputRef.current?.focus(), 10);
+
+    // create abort controller
+    const ac = new AbortController();
+    abortRef.current = ac;
+
+    try {
+      const res = await fetch("/api/chat/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: trimmed, thread_id: threadId }),
+        signal: ac.signal,
+      });
+
+      const raw = await res.text();
+      const j = safeJsonParse(raw);
+
+      // Robustly accept several shapes:
+      // 1) { ok, data: { reply } }
+      // 2) { ok, reply }
+      // 3) upstream shapes { data: { data: { reply } } } etc
+      const reply =
+        j?.reply ??
+        j?.data?.reply ??
+        j?.data?.data?.reply ??
+        j?.data?.data?.data?.reply ??
+        j?.data?.reply ??
+        null;
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${raw.slice(0, 300)}`);
+      }
+      if (!reply || typeof reply !== "string") {
+        throw new Error("No reply returned from /api/chat/send (unexpected response shape).");
+      }
+
+      updateThreadWithMessage(threadId, { id: uid("msg"), role: "assistant", content: reply, ts: Date.now() });
+    } catch (e: any) {
+      if (e?.name === "AbortError") {
+        setError("Stopped.");
+      } else {
+        setError(e?.message || "Request failed.");
+        // drop a visible assistant error bubble
+        updateThreadWithMessage(threadId, {
+          id: uid("msg"),
+          role: "assistant",
+          content: `⚠️ ${e?.message || "Request failed."}`,
+          ts: Date.now(),
+        });
+      }
+    } finally {
+      abortRef.current = null;
+      setBusy(false);
+    }
+  }
+
+  function retryLast() {
+    const thread = active;
+    if (!thread) return;
+    // find last user message
+    const lastUser = [...thread.messages].reverse().find(m => m.role === "user");
+    if (!lastUser) return;
+    send(lastUser.content);
+  }
+
+  function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      send(input);
+    }
+  }
+
+  const modelLabel = "HX2 Brain (SAFE)";
+
+  return (
+    <div className="min-h-[calc(100vh-0px)] bg-gradient-to-b from-black via-zinc-950 to-black text-white">
+      <div className="flex h-screen">
+        {/* Sidebar */}
+        <div className={`border-r border-white/10 bg-black/40 ${sidebarOpen ? "w-[280px]" : "w-[60px]"} transition-all duration-200`}>
+          <div className="flex items-center justify-between p-3">
+            <button
+              type="button"
+              className="rounded-xl px-3 py-2 bg-white/5 hover:bg-white/10 text-sm"
+              onClick={() => setSidebarOpen(v => !v)}
+              title={sidebarOpen ? "Collapse" : "Expand"}
+            >
+              {sidebarOpen ? "≡" : "≡"}
+            </button>
+
+            {sidebarOpen && (
+              <button
+                type="button"
+                className="rounded-xl px-3 py-2 bg-white/10 hover:bg-white/15 text-sm"
+                onClick={newChat}
+                title="New chat"
+              >
+                + New
+              </button>
+            )}
+          </div>
+
+          {sidebarOpen && (
+            <div className="px-2 pb-3">
+              <div className="text-xs text-white/60 px-2 pb-2">Chats</div>
+              <div className="space-y-1 overflow-auto max-h-[calc(100vh-120px)] pr-1">
+                {threads.map(t => {
+                  const isActive = t.id === activeId;
+                  return (
+                    <div
+                      key={t.id}
+                      className={`group rounded-xl px-3 py-2 cursor-pointer border ${
+                        isActive ? "bg-white/10 border-white/15" : "bg-white/0 border-transparent hover:bg-white/5 hover:border-white/10"
+                      }`}
+                      onClick={() => setActiveId(t.id)}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="text-sm truncate">{t.title}</div>
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            type="button"
+                            className="text-xs px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10"
+                            onClick={(e) => { e.stopPropagation(); renameThread(t.id); }}
+                            title="Rename"
+                          >
+                            ✎
+                          </button>
+                          <button
+                            type="button"
+                            className="text-xs px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10"
+                            onClick={(e) => { e.stopPropagation(); deleteThread(t.id); }}
+                            title="Delete"
+                          >
+                            🗑
+                          </button>
+                        </div>
+                      </div>
+                      <div className="text-[11px] text-white/40 mt-1">
+                        {t.messages.length} msg{t.messages.length === 1 ? "" : "s"}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Main */}
+        <div className="flex-1 flex flex-col">
+          {/* Top bar */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/30">
+            <div className="flex items-center gap-3">
+              <div className="text-sm font-semibold">Chat</div>
+              <div className="text-xs text-white/60 rounded-full px-2 py-1 bg-white/5 border border-white/10">
+                {modelLabel}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                className="rounded-xl px-3 py-2 bg-white/5 hover:bg-white/10 text-sm"
+                onClick={retryLast}
+                disabled={!active?.messages?.some(m => m.role === "user") || busy}
+                title="Retry last user message"
+              >
+                ↻ Retry
+              </button>
+              {!busy ? (
+                <button
+                  type="button"
+                  className="rounded-xl px-3 py-2 bg-white/5 hover:bg-white/10 text-sm"
+                  onClick={newChat}
+                  title="New chat"
+                >
+                  + New
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="rounded-xl px-3 py-2 bg-red-500/30 hover:bg-red-500/40 border border-red-500/30 text-sm"
+                  onClick={stop}
+                  title="Stop"
+                >
+                  ■ Stop
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Messages */}
+          <div ref={listRef} className="flex-1 overflow-auto px-4 py-6">
+            <div className="mx-auto w-full max-w-3xl space-y-4">
+              {active?.messages?.length ? (
+                active.messages.map(m => (
+                  <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+                    <div className={`max-w-[90%] rounded-2xl px-4 py-3 border ${
+                      m.role === "user"
+                        ? "bg-white/10 border-white/10"
+                        : "bg-black/20 border-white/10"
+                    }`}>
+                      <div className="flex items-center justify-between gap-3 mb-2">
+                        <div className="text-[11px] text-white/50">
+                          {m.role === "user" ? "You" : m.role === "assistant" ? "HX2" : "System"}
+                        </div>
+                        <div className="flex gap-1">
+                          <button
+                            type="button"
+                            className="text-[11px] px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-white/70"
+                            onClick={() => navigator.clipboard.writeText(m.content)}
+                            title="Copy message"
+                          >
+                            Copy
+                          </button>
+                        </div>
+                      </div>
+
+                      <div>{renderContent(m.content)}</div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+                  <div className="text-lg font-semibold">Modern HX2 Chat</div>
+                  <div className="text-sm text-white/70 mt-2 leading-6">
+                    This UI is built to feel like a modern AI chat (threads, actions, strong composer),
+                    while routing through <code className="px-1 py-0.5 rounded bg-white/10 border border-white/10">/api/chat/send</code>.
+                  </div>
+                  <div className="text-sm text-white/60 mt-4">
+                    Try: <span className="text-white/80">“Who am I talking to?”</span>
+                  </div>
+                </div>
+              )}
+
+              {error && (
+                <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-100">
+                  {error}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Composer */}
+          <div className="border-t border-white/10 bg-black/30 px-4 py-4">
+            <div className="mx-auto w-full max-w-3xl">
+              <div className="rounded-2xl border border-white/10 bg-black/30 p-3">
+                <div className="flex items-end gap-3">
+                  <textarea
+                    ref={inputRef}
+                    className="flex-1 resize-none rounded-xl bg-black/30 border border-white/10 px-3 py-3 text-sm outline-none focus:border-white/20 min-h-[52px] max-h-[180px]"
+                    placeholder="Message HX2…  (Enter to send, Shift+Enter for newline)"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={onKeyDown}
+                    disabled={busy}
+                  />
+                  <button
+                    type="button"
+                    className={`rounded-xl px-4 py-3 text-sm border ${
+                      busy
+                        ? "bg-white/5 border-white/10 text-white/40 cursor-not-allowed"
+                        : "bg-white/10 hover:bg-white/15 border-white/15"
+                    }`}
+                    onClick={() => send(input)}
+                    disabled={busy || !input.trim()}
+                    title="Send"
+                  >
+                    {busy ? "…" : "Send"}
+                  </button>
+                </div>
+                <div className="flex items-center justify-between mt-2 text-[11px] text-white/50">
+                  <div>Vercel → <span className="text-white/70">/api/chat/send</span> → VPS → <span className="text-white/70">/brain/chat</span></div>
+                  <div>{busy ? "Thinking…" : "Ready"}</div>
+                </div>
+              </div>
+              <div className="text-[11px] text-white/35 mt-2">
+                Chats are stored locally in your browser (<span className="font-mono">localStorage</span>). No server-side thread storage yet.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
+

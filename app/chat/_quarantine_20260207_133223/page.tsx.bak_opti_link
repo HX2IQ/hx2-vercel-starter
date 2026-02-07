@@ -1,5 +1,7 @@
 import ChatClient from "./ChatClient";
 
-export default function ChatPage() {
+export const runtime = "nodejs";
+
+export default function Page() {
   return <ChatClient />;
 }

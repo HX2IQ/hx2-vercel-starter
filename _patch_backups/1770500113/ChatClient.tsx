@@ -124,7 +124,7 @@ export default function ChatClient() {
             <textarea
               ref={inputRef}
               className="hx2-input"
-              placeholder="Ask Opti"
+              placeholder="Ask ChatGPT"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={onKeyDown}
@@ -153,4 +153,3 @@ export default function ChatClient() {
     </div>
   );
 }
-
