@@ -33,9 +33,9 @@ export default function SystemBadge() {
     setSessionId(getSessionId());
   }, []);
 
-  const headers = useMemo(() => {
-    return sessionId ? { "x-hx2-session": sessionId } : {};
-  }, [sessionId]);
+  const headers = useMemo<Record<string, string>>(() => {
+  return sessionId ? { "x-hx2-session": sessionId } : {};
+}, [sessionId]);
 
   async function fetchJson(url: string) {
     const r = await fetch(url, { method: "GET", headers, cache: "no-store" });
