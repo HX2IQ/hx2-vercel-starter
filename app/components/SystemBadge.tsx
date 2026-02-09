@@ -33,8 +33,10 @@ export default function SystemBadge() {
     setSessionId(getSessionId());
   }, []);
 
-  const headers = useMemo<Record<string, string>>(() => {
-  return sessionId ? { "x-hx2-session": sessionId } : {};
+  const headers = useMemo(() => {
+  const h: Record<string, string> = {};
+  if (sessionId) h["x-hx2-session"] = sessionId;
+  return h;
 }, [sessionId]);
 
   async function fetchJson(url: string) {
