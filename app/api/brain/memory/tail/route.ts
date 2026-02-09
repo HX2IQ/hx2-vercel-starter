@@ -2,17 +2,24 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
-export async function GET(_req: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     const Gateway =
       process.env.AP2_GATEWAY_URL ||
       "https://ap2-worker.optinodeiq.com";
 
-    const url = `${Gateway}/brain/status`;
+    const n = req.nextUrl.searchParams.get("n") || "20";
+    const url = `${Gateway}/brain/memory/tail?n=${encodeURIComponent(n)}`;
+
+    // forward session header for isolation
+    const session = req.headers.get("x-hx2-session") || "";
 
     const r = await fetch(url, {
       method: "GET",
-      headers: { "Accept": "application/json" },
+      headers: {
+        "Accept": "application/json",
+        ...(session ? { "x-hx2-session": session } : {}),
+      },
       cache: "no-store",
     });
 
