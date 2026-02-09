@@ -1,5 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 
+function getMessageText(body: any): string {
+  if (!body) return "";
+  if (typeof body === "string") return body;
+  return (
+    body.message ??
+    body.text ??
+    body.input ??
+    body.prompt ??
+    body.content ??
+    ""
+  ).toString();
+}
 export const runtime = "nodejs";
 const VER = "v4-chat-send-debug-2026-02-07";
 
@@ -39,6 +51,37 @@ export async function POST(req: NextRequest) {
   try {
     if (ct.includes("application/json")) {
       jsonBody = await req.json().catch(() => null);
+      // --- Memory store intercept (SAFE) ---
+      const msgText = getMessageText(jsonBody);
+      const m = msgText.match(/^Store this exact fact to memory:\s*(.+)\s*$/i);
+      if (m && m[1]) {
+        const fact = m[1].trim();
+        const sessionHdr =
+          req.headers.get("x-hx2-session") ||
+          req.headers.get("X-HX2-SESSION") ||
+          "default";
+
+        const Gateway = process.env.AP2_GATEWAY_URL || "https://ap2-worker.optinodeiq.com";
+
+        const r2 = await fetch(`${Gateway}/brain/memory/append`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-hx2-session": sessionHdr,
+          },
+          body: JSON.stringify({ text: fact }),
+        });
+
+        const j2 = await r2.json().catch(() => ({}));
+        return NextResponse.json({
+          ok: true,
+          forwarded: true,
+          url: `${Gateway}/brain/memory/append`,
+          upstream_status: r2.status,
+          data: j2,
+        });
+      }
+      // --- end intercept ---
     } else if (ct.includes("application/x-www-form-urlencoded") || ct.includes("multipart/form-data")) {
       const fd = await req.formData().catch(() => null);
       if (fd) {
