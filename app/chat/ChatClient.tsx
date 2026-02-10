@@ -10,25 +10,47 @@ function uid() {
   return Math.random().toString(16).slice(2) + Date.now().toString(16);
 }
 
-export default function ChatClient() {
-  
-  // per-tab session id for memory isolation
-  function getSessionId(): string {
-    const key = "hx2_session_id";
-    const existing = sessionStorage.getItem(key);
-    if (existing) return existing;
-    const sid = "owner-ui-" + Math.random().toString(16).slice(2);
-    sessionStorage.setItem(key, sid);
-    return sid;
-  }
+function getSessionId(): string {
+  const key = "hx2_session_id";
+  const existing = sessionStorage.getItem(key);
+  if (existing) return existing;
+  const sid = "owner-ui-" + Math.random().toString(16).slice(2);
+  sessionStorage.setItem(key, sid);
+  return sid;
+}
 
+export default function ChatClient() {
   const [sessionId, setSessionId] = useState<string>("");
+  const [messages, setMessages] = useState<Msg[]>([
+    { id: uid(), role: "assistant", content: "Hi Dan — HX2 is online. What are we working on?" },
+  ]);
+  const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
+
+  const [debugOpen, setDebugOpen] = useState(false);
+  const [lastRaw, setLastRaw] = useState<any>(null);
+
+  const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const canSend = useMemo(() => input.trim().length > 0 && !sending, [input, sending]);
 
   useEffect(() => {
     setSessionId(getSessionId());
   }, []);
 
   useEffect(() => {
+    // auto-scroll
+    requestAnimationFrame(() => {
+      scrollerRef.current?.scrollTo({ top: scrollerRef.current.scrollHeight, behavior: "smooth" });
+    });
+  }, [messages.length]);
+
+  useEffect(() => {
+    // SpeechRecognition (Chrome/Android uses webkitSpeechRecognition)
     const AnyWin: any = window as any;
     const SR = AnyWin.SpeechRecognition || AnyWin.webkitSpeechRecognition;
     if (!SR) return;
@@ -51,29 +73,8 @@ export default function ChatClient() {
 
     recognitionRef.current = rec;
   }, []);
-const [messages, setMessages] = useState<Msg[]>([
-    { id: uid(), role: "assistant", content: "Hi Dan — HX2 is online. What are we working on?" },
-  ]);
-  const [input, setInput] = useState("");
-  const [sending, setSending] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [debugOpen, setDebugOpen] = useState(false);
-  const [lastRaw, setLastRaw] = useState<any>(null);
 
-  const scrollerRef = useRef<HTMLDivElement | null>(null);
-  const recognitionRef = useRef<any>(null);
-  const inputRef = useRef<HTMLTextAreaElement | null>(null);
-
-  const canSend = useMemo(() => input.trim().length > 0 && !sending, [input, sending]);
-
-  useEffect(() => {
-    // scroll to bottom on new messages
-    requestAnimationFrame(() => {
-      scrollerRef.current?.scrollTo({ top: scrollerRef.current.scrollHeight, behavior: "smooth" });
-    });
-  }, [messages.length]);
-
-    function toggleVoice() {
+  function toggleVoice() {
     const rec = recognitionRef.current;
     if (!rec) {
       alert("Voice input not supported in this browser.");
@@ -92,7 +93,7 @@ const [messages, setMessages] = useState<Msg[]>([
     }
   }
 
-async function send() {
+  async function send() {
     const text = input.trim();
     if (!text || sending) return;
 
@@ -103,18 +104,18 @@ async function send() {
     setMessages((m) => [...m, userMsg]);
 
     try {
+      const hdrs: Record<string, string> = { "Content-Type": "application/json" };
+      if (sessionId) hdrs["x-hx2-session"] = sessionId;
+
       const res = await fetch("/api/chat/send", {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...(sessionId ? { "x-hx2-session": sessionId } : {}) },
-        // IMPORTANT: keep this "message" key (your route supports it)
+        headers: hdrs,
         body: JSON.stringify({ message: text }),
       });
 
       const raw = await res.json().catch(() => ({}));
       setLastRaw({ status: res.status, headers: Object.fromEntries(res.headers.entries()), body: raw });
 
-      // Your /api/chat/send currently returns:
-      // { ok, forwarded, url, data: { ok, reply, ... } }
       const reply =
         raw?.reply ??
         raw?.data?.reply ??
@@ -143,14 +144,16 @@ async function send() {
 
   return (
     <div className="hx2-shell">
-      {/* Top app bar (mobile-like) */}
       <header className="hx2-topbar">
         <button className="hx2-iconbtn" aria-label="Menu" onClick={() => setDebugOpen((v) => !v)}>
           ☰
         </button>
+
         <div className="hx2-titlewrap">
-          <div className="hx2-title font-bold">Opti</div><div className="hx2-subtitle">Optimized Intelligence</div></div><div className="hx2-subtitle">Optimized Intelligence</div>
+          <div className="hx2-title">Opti</div>
+          <div className="hx2-subtitle">Optimized Intelligence</div>
         </div>
+
         <button
           className="hx2-iconbtn"
           aria-label="New chat"
@@ -160,7 +163,6 @@ async function send() {
         </button>
       </header>
 
-      {/* Scrollable chat area */}
       <main className="hx2-chat" ref={scrollerRef}>
         <div className="hx2-chat-inner">
           {messages.map((m) => (
@@ -174,10 +176,9 @@ async function send() {
         </div>
       </main>
 
-      {/* Composer */}
       <footer className="hx2-composer">
         <div className="hx2-composer-inner">
-          <button className="hx2-plus" aria-label="Add">
+          <button className="hx2-plus" aria-label="Add" type="button">
             +
           </button>
 
@@ -191,27 +192,23 @@ async function send() {
               onKeyDown={onKeyDown}
               rows={1}
             />
-            <button className="hx2-mic" aria-label="Voice" onClick={toggleVoice}>
+            <button className="hx2-mic" aria-label="Voice" type="button" onClick={toggleVoice}>
               {isRecording ? "⏺" : "🎤"}
             </button>
           </div>
 
-          <button className="hx2-send" onClick={send} disabled={!canSend} aria-label="Send">
+          <button className="hx2-send" onClick={send} disabled={!canSend} aria-label="Send" type="button">
             {sending ? "…" : "➤"}
           </button>
         </div>
 
-        {/* Collapsible debug like your current UI */}
         <div className="hx2-debug">
-          <button className="hx2-debug-toggle" onClick={() => setDebugOpen((v) => !v)}>
+          <button className="hx2-debug-toggle" onClick={() => setDebugOpen((v) => !v)} type="button">
             {debugOpen ? "▼ Debug" : "▶ Debug"}
           </button>
-          {debugOpen && (
-            <pre className="hx2-debugbox">{JSON.stringify(lastRaw, null, 2)}</pre>
-          )}
+          {debugOpen && <pre className="hx2-debugbox">{JSON.stringify(lastRaw, null, 2)}</pre>}
         </div>
       </footer>
     </div>
   );
 }
-
