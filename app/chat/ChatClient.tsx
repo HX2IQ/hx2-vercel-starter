@@ -27,15 +27,41 @@ export default function ChatClient() {
   useEffect(() => {
     setSessionId(getSessionId());
   }, []);
+
+  useEffect(() => {
+    const AnyWin: any = window as any;
+    const SR = AnyWin.SpeechRecognition || AnyWin.webkitSpeechRecognition;
+    if (!SR) return;
+
+    const rec = new SR();
+    rec.continuous = false;
+    rec.interimResults = true;
+    rec.lang = "en-US";
+
+    rec.onresult = (e: any) => {
+      let text = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        text += e.results[i][0]?.transcript || "";
+      }
+      if (text) setInput((v) => (v ? (v + " " + text) : text));
+    };
+
+    rec.onend = () => setIsRecording(false);
+    rec.onerror = () => setIsRecording(false);
+
+    recognitionRef.current = rec;
+  }, []);
 const [messages, setMessages] = useState<Msg[]>([
     { id: uid(), role: "assistant", content: "Hi Dan — HX2 is online. What are we working on?" },
   ]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const [debugOpen, setDebugOpen] = useState(false);
   const [lastRaw, setLastRaw] = useState<any>(null);
 
   const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const recognitionRef = useRef<any>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const canSend = useMemo(() => input.trim().length > 0 && !sending, [input, sending]);
@@ -47,7 +73,26 @@ const [messages, setMessages] = useState<Msg[]>([
     });
   }, [messages.length]);
 
-  async function send() {
+    function toggleVoice() {
+    const rec = recognitionRef.current;
+    if (!rec) {
+      alert("Voice input not supported in this browser.");
+      return;
+    }
+    try {
+      if (isRecording) {
+        rec.stop();
+        setIsRecording(false);
+      } else {
+        setIsRecording(true);
+        rec.start();
+      }
+    } catch {
+      setIsRecording(false);
+    }
+  }
+
+async function send() {
     const text = input.trim();
     if (!text || sending) return;
 
@@ -104,7 +149,7 @@ const [messages, setMessages] = useState<Msg[]>([
           ☰
         </button>
         <div className="hx2-titlewrap">
-          <div className="hx2-title font-bold">Opti</div><div className="hx2-subtitle">Optimized Intelligence</div>
+          <div className="hx2-title font-bold">Opti</div><div className="hx2-subtitle">Optimized Intelligence</div></div><div className="hx2-subtitle">Optimized Intelligence</div>
         </div>
         <button
           className="hx2-iconbtn"
@@ -146,8 +191,8 @@ const [messages, setMessages] = useState<Msg[]>([
               onKeyDown={onKeyDown}
               rows={1}
             />
-            <button className="hx2-mic" aria-label="Voice">
-              🎤
+            <button className="hx2-mic" aria-label="Voice" onClick={toggleVoice}>
+              {isRecording ? "⏺" : "🎤"}
             </button>
           </div>
 
