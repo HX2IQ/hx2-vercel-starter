@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import "./chat.css";
+import "./chat.css?v=1";
 
 type Role = "user" | "assistant" | "system";
 type Msg = { id: string; role: Role; content: string };
@@ -43,7 +43,11 @@ export default function ChatClient() {
   }, []);
 
   useEffect(() => {
-    // auto-scroll
+  autoGrow(inputRef.current);
+}, [input]);
+
+useEffect(() => {
+  // auto-scroll
     requestAnimationFrame(() => {
       scrollerRef.current?.scrollTo({ top: scrollerRef.current.scrollHeight, behavior: "smooth" });
     });
@@ -135,7 +139,14 @@ export default function ChatClient() {
     }
   }
 
-  function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+  function autoGrow(el: HTMLTextAreaElement | null) {
+  if (!el) return;
+  el.style.height = "0px";
+  const next = Math.min(el.scrollHeight, 180); // cap height (px)
+  el.style.height = next + "px";
+}
+
+function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       send();
@@ -188,7 +199,7 @@ export default function ChatClient() {
               className="hx2-input"
               placeholder="Ask Opti"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => { setInput(e.target.value); autoGrow(e.target as any); }}
               onKeyDown={onKeyDown}
               rows={1}
             />
