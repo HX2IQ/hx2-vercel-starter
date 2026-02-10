@@ -1,5 +1,6 @@
+import SystemBadge from "../components/SystemBadge";
 import ChatClient from "./ChatClient";
 
 export default function ChatPage() {
-  return <ChatClient />;
+  return (<><SystemBadge /><ChatClient /></>);
 }
