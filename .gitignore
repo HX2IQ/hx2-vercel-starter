@@ -49,3 +49,11 @@ hx2_kickstart/
 hx2_system.txt
 patch_*.mjs
 patch_add_*.mjs
+
+# HX2 local artifacts
+*.bak*
+build.log
+hx2_kickstart/
+hx2_system.txt
+patch_*.mjs
+server_*.js
