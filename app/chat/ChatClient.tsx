@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import "./chat.css?v=2";
+import "./chat.css";
 
 type Role = "user" | "assistant" | "system";
 type Msg = { id: string; role: Role; content: string };

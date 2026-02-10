@@ -291,3 +291,15 @@ html, body {
   opacity: 0.75;
   line-height: 1;
 }
+
+/* --- Auto-grow input like ChatGPT --- */
+.hx2-input{
+  height: auto;
+  max-height: 160px;
+  overflow-y: auto;
+  resize: none;
+  line-height: 20px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
