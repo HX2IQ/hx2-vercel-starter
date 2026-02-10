@@ -39,3 +39,13 @@ ap2_status.json
 vercel_logs_*.txt
 vercel_build_fail.txt
 lib/*.bak*
+# HX2 local backups / scratch
+*.bak
+*.bak_*
+*.bak.*
+build.log
+server_3805.js
+hx2_kickstart/
+hx2_system.txt
+patch_*.mjs
+patch_add_*.mjs
