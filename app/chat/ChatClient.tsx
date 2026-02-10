@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import "./chat.css?v=1";
+import "./chat.css?v=2";
 
 type Role = "user" | "assistant" | "system";
 type Msg = { id: string; role: Role; content: string };
@@ -156,9 +156,7 @@ function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
   return (
     <div className="hx2-shell">
       <header className="hx2-topbar">
-        <button className="hx2-iconbtn" aria-label="Menu" onClick={() => setDebugOpen((v) => !v)}>
-          ☰
-        </button>
+        <button className="hx2-iconbtn" aria-label="Menu">≡</button>
 
         <div className="hx2-titlewrap">
           <div className="hx2-title">Opti</div>
@@ -167,11 +165,7 @@ function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
 
         <button
           className="hx2-iconbtn"
-          aria-label="New chat"
-          onClick={() => setMessages([{ id: uid(), role: "assistant", content: "New chat started. What’s the goal?" }])}
-        >
-          ✎
-        </button>
+          aria-label="New chat">＋</button>
       </header>
 
       <main className="hx2-chat" ref={scrollerRef}>
@@ -189,7 +183,7 @@ function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
 
       <footer className="hx2-composer">
         <div className="hx2-composer-inner">
-          <button className="hx2-plus" aria-label="Add" type="button">
+          <button className="hx2-plus"  aria-label="Add" type="button" style={{ display: "none" }}>
             +
           </button>
 
