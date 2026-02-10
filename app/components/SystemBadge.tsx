@@ -85,7 +85,7 @@ export default function SystemBadge() {
   const badge = (ok: boolean | null) => ok === null ? "…" : ok ? "OK" : "FAIL";
 
   return (
-    <div className="fixed top-3 right-3 z-50 rounded-xl border bg-white/90 px-3 py-2 shadow-sm backdrop-blur">
+    <div className="fixed top-3 right-3 z-50 hidden sm:block max-w-[240px] rounded-xl border bg-white/90 px-3 py-2 shadow-sm backdrop-blur">
       <div className="text-xs font-semibold">System</div>
       <div className="mt-1 space-y-1 text-[11px] leading-4">
         <div>Brain: <span className="font-mono">{badge(okStatus)}</span></div>

@@ -284,3 +284,10 @@ html, body {
   word-break: break-word !important;
 }
 /* ===== end override ===== */
+
+
+.hx2-subtitle {
+  font-size: 11px;
+  opacity: 0.75;
+  line-height: 1;
+}

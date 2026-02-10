@@ -104,7 +104,7 @@ const [messages, setMessages] = useState<Msg[]>([
           ☰
         </button>
         <div className="hx2-titlewrap">
-          <div className="hx2-title">ChatGPT</div>
+          <div className="hx2-title font-bold">Opti</div><div className="hx2-subtitle">Optimized Intelligence</div>
         </div>
         <button
           className="hx2-iconbtn"
