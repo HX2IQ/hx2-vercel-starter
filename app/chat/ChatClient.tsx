@@ -11,7 +11,23 @@ function uid() {
 }
 
 export default function ChatClient() {
-  const [messages, setMessages] = useState<Msg[]>([
+  
+  // per-tab session id for memory isolation
+  function getSessionId(): string {
+    const key = "hx2_session_id";
+    const existing = sessionStorage.getItem(key);
+    if (existing) return existing;
+    const sid = "owner-ui-" + Math.random().toString(16).slice(2);
+    sessionStorage.setItem(key, sid);
+    return sid;
+  }
+
+  const [sessionId, setSessionId] = useState<string>("");
+
+  useEffect(() => {
+    setSessionId(getSessionId());
+  }, []);
+const [messages, setMessages] = useState<Msg[]>([
     { id: uid(), role: "assistant", content: "Hi Dan — HX2 is online. What are we working on?" },
   ]);
   const [input, setInput] = useState("");
@@ -44,7 +60,7 @@ export default function ChatClient() {
     try {
       const res = await fetch("/api/chat/send", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(sessionId ? { "x-hx2-session": sessionId } : {}) },
         // IMPORTANT: keep this "message" key (your route supports it)
         body: JSON.stringify({ message: text }),
       });
