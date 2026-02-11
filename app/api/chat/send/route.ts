@@ -1,141 +1,144 @@
 import { NextRequest, NextResponse } from "next/server";
 
-function getMessageText(body: any): string {
-  if (!body) return "";
-  if (typeof body === "string") return body;
-  return (
-    body.message ??
-    body.text ??
-    body.input ??
-    body.prompt ??
-    body.content ??
-    ""
-  ).toString();
-}
 export const runtime = "nodejs";
-const VER = "v4-chat-send-debug-2026-02-07";
 
-function j(body: any, status = 200) {
-  return NextResponse.json(body, { status, headers: { "x-chat-route-version": VER } });
+type WebSource = {
+  url: string;
+  title?: string;
+  fetched_at?: string;
+  excerpt?: string;
+};
+
+function wantsWeb(message: string): boolean {
+  const m = message.toLowerCase();
+  const triggers = [
+    "latest", "today", "yesterday", "tomorrow", "this week", "this month", "current",
+    "update", "news", "price", "stock", "crypto", "btc", "xrp", "earnings",
+    "ceo", "election", "poll", "schedule", "release", "outage", "downtime",
+    "law", "regulation", "court", "ruling", "inflation", "rate", "fed",
+  ];
+  return triggers.some(t => m.includes(t));
 }
 
-function coerceMessage(obj: any): string | null {
-  const msg =
-    obj?.message ??
-    obj?.text ??
-    obj?.input ??
-    obj?.prompt ??
-    obj?.content;
+async function webSearch(q: string, n = 3): Promise<Array<{ url: string; title: string }>> {
+  const r = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/web/search`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    cache: "no-store",
+    body: JSON.stringify({ q, n }),
+  });
+  const j = await r.json().catch(() => ({}));
+  if (!j?.ok || !Array.isArray(j?.results)) return [];
+  return j.results.slice(0, n);
+}
 
-  if (typeof msg === "string") return msg.trim() || null;
-  if (msg == null) return null;
+async function webFetch(url: string): Promise<WebSource | null> {
+  const r = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/web/fetch`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    cache: "no-store",
+    body: JSON.stringify({ url, max_bytes: 250000 }),
+  });
+  const j = await r.json().catch(() => ({}));
+  if (!j?.ok) return { url, fetched_at: new Date().toISOString(), excerpt: `Fetch failed (${j?.error || j?.status || "unknown"})` };
+  return {
+    url: j.url,
+    title: j.title,
+    fetched_at: j.fetched_at,
+    excerpt: j.excerpt,
+  };
+}
 
-  try {
-    const s = JSON.stringify(msg);
-    return s.trim() || null;
-  } catch {
-    return null;
-  }
+function buildWebContext(sources: WebSource[]): string {
+  if (!sources.length) return "";
+  const lines = sources.map((s, i) => {
+    const t = s.title ? ` — ${s.title}` : "";
+    const ex = s.excerpt ? `\nEXCERPT: ${s.excerpt}` : "";
+    return `SOURCE ${i + 1}: ${s.url}${t}\nFETCHED_AT: ${s.fetched_at || ""}${ex}`;
+  });
+  return `\n\n[WEB_CONTEXT]\nUse these sources for up-to-date facts. If you rely on a claim, cite the SOURCE number.\n\n${lines.join("\n\n")}\n`;
 }
 
 export async function POST(req: NextRequest) {
-  const ct = req.headers.get("content-type") || "";
-  const cl = req.headers.get("content-length") || "";
-
-  let jsonBody: any = null;
-  let formBody: any = null;
-  let textBody: string | null = null;
-
-  // IMPORTANT: Next.js Request body can only be consumed once.
-  // We choose the parser based on content-type.
   try {
-    if (ct.includes("application/json")) {
-      jsonBody = await req.json().catch(() => null);
-      // --- Memory store intercept (SAFE) ---
-      const msgText = getMessageText(jsonBody);
-      const m = msgText.match(/^Store this exact fact to memory:\s*(.+)\s*$/i);
-      if (m && m[1]) {
-        const fact = m[1].trim();
-        const sessionHdr =
-          req.headers.get("x-hx2-session") ||
-          req.headers.get("X-HX2-SESSION") ||
-          "default";
+    // tolerant body parsing: supports message/text/input/prompt/content
+    const body = await req.json().catch(() => ({} as any));
+    const msg =
+      body?.message ??
+      body?.text ??
+      body?.input ??
+      body?.prompt ??
+      body?.content ??
+      "";
 
-        const Gateway = process.env.AP2_GATEWAY_URL || "https://ap2-worker.optinodeiq.com";
-
-        const r2 = await fetch(`${Gateway}/brain/memory/append`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-hx2-session": sessionHdr,
-          },
-          body: JSON.stringify({ text: fact }),
-        });
-
-        const j2 = await r2.json().catch(() => ({}));
-        return NextResponse.json({
-          ok: true,
-          forwarded: true,
-          url: `${Gateway}/brain/memory/append`,
-          upstream_status: r2.status,
-          data: j2,
-        });
-      }
-      // --- end intercept ---
-    } else if (ct.includes("application/x-www-form-urlencoded") || ct.includes("multipart/form-data")) {
-      const fd = await req.formData().catch(() => null);
-      if (fd) {
-        formBody = {};
-        for (const [k, v] of fd.entries()) formBody[k] = v;
-      }
-    } else {
-      textBody = await req.text().catch(() => null);
+    const message = String(msg || "").trim();
+    if (!message) {
+      return NextResponse.json({ ok: false, error: "missing message" }, { status: 400 });
     }
-  } catch {
-    // fall through
-  }
 
-  const parsed_keys =
-    jsonBody && typeof jsonBody === "object" ? Object.keys(jsonBody) :
-    formBody && typeof formBody === "object" ? Object.keys(formBody) :
-    [];
+    const session = req.headers.get("x-hx2-session") || "";
 
-  const message =
-    coerceMessage(jsonBody) ??
-    coerceMessage(formBody) ??
-    (typeof textBody === "string" ? textBody.trim() : null);
+    const use_web = Boolean(body?.use_web);
+    const auto_web = wantsWeb(message);
+    const want_web = use_web || auto_web;
 
-  if (!message) {
-    return j({
-      ok: false,
-      error: "Send failed: Missing 'message' (or equivalent) in request body.",
-      debug: {
-        content_type: ct,
-        content_length: cl,
-        parsed_keys,
-        json_type: jsonBody === null ? "null" : typeof jsonBody,
-        text_len: typeof textBody === "string" ? textBody.length : null
+    // Optional explicit urls passed in
+    const explicitUrls: string[] = Array.isArray(body?.web_urls) ? body.web_urls.map((u: any) => String(u)) : [];
+
+    const sources: WebSource[] = [];
+
+    if (want_web) {
+      let urls = explicitUrls.filter(Boolean);
+
+      if (urls.length === 0) {
+        // search based on the user question
+        const found = await webSearch(message, 3);
+        urls = found.map(x => x.url);
       }
-    }, 400);
-  }
 
-  const Gateway = process.env.AP2_GATEWAY_URL || "https://ap2-worker.optinodeiq.com";
+      // fetch up to 2 pages (keep it fast)
+      const toFetch = urls.slice(0, 2);
+      for (const u of toFetch) {
+        const s = await webFetch(u);
+        if (s) sources.push(s);
+      }
+    }
 
-  try {
-    const upstream = await fetch(`${Gateway}/brain/chat`, {
+    const webContext = buildWebContext(sources);
+    const augmented = message + webContext;
+
+    const Gateway = process.env.AP2_GATEWAY_URL || "https://ap2-worker.optinodeiq.com";
+
+    // Forward to the brain/chat endpoint (SAFE)
+    const upstreamUrl = `${Gateway}/brain/chat`;
+
+    const hdrs: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    if (session) hdrs["x-hx2-session"] = session;
+
+    const upstream = await fetch(upstreamUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message }),
+      headers: hdrs,
+      cache: "no-store",
+      body: JSON.stringify({
+        message: augmented,
+        mode: body?.mode || "SAFE",
+      }),
     });
 
     const data = await upstream.json().catch(() => ({}));
 
-    if (!upstream.ok) {
-      return j({ ok: false, forwarded: true, url: `${Gateway}/brain/chat`, upstream_status: upstream.status, data }, 502);
-    }
-
-    return j({ ok: true, forwarded: true, url: `${Gateway}/brain/chat`, data }, 200);
+    // Maintain your current response shape, but add sources.
+    return NextResponse.json({
+      ok: upstream.ok,
+      forwarded: true,
+      url: upstreamUrl,
+      data,
+      sources,
+      web: { want_web, use_web, auto_web, explicit_urls: explicitUrls.length },
+    }, { status: 200 });
   } catch (e: any) {
-    return j({ ok: false, error: e?.message || "unknown_error" }, 502);
+    return NextResponse.json({ ok: false, error: String(e?.message || e) }, { status: 500 });
   }
 }

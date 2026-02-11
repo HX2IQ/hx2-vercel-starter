@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import "./chat.css";
+import "./chat.css?v=3";
 
 type Role = "user" | "assistant" | "system";
 type Msg = { id: string; role: Role; content: string };
@@ -19,13 +19,24 @@ function getSessionId(): string {
   return sid;
 }
 
+function autoGrow(el: HTMLTextAreaElement | null) {
+  if (!el) return;
+  el.style.height = "0px";
+  const next = Math.min(el.scrollHeight, 160); // cap so it doesn’t take over the screen
+  el.style.height = `${next}px`;
+}
+
 export default function ChatClient() {
   const [sessionId, setSessionId] = useState<string>("");
+
   const [messages, setMessages] = useState<Msg[]>([
     { id: uid(), role: "assistant", content: "Hi Dan — HX2 is online. What are we working on?" },
   ]);
+
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+
+  const [useWeb, setUseWeb] = useState(false);
 
   const [debugOpen, setDebugOpen] = useState(false);
   const [lastRaw, setLastRaw] = useState<any>(null);
@@ -38,14 +49,20 @@ export default function ChatClient() {
 
   const canSend = useMemo(() => input.trim().length > 0 && !sending, [input, sending]);
 
-  useEffect(() => {
-    setSessionId(getSessionId());
-  }, []);
+  useEffect(() => setSessionId(getSessionId()), []);
 
   useEffect(() => {
-  autoGrow(inputRef.current);
-}, [input]);
-useEffect(() => {
+    autoGrow(inputRef.current);
+  }, [input]);
+
+  useEffect(() => {
+    // auto-scroll to bottom on new message
+    requestAnimationFrame(() => {
+      scrollerRef.current?.scrollTo({ top: scrollerRef.current.scrollHeight, behavior: "smooth" });
+    });
+  }, [messages.length]);
+
+  useEffect(() => {
     // SpeechRecognition (Chrome/Android uses webkitSpeechRecognition)
     const AnyWin: any = window as any;
     const SR = AnyWin.SpeechRecognition || AnyWin.webkitSpeechRecognition;
@@ -106,7 +123,7 @@ useEffect(() => {
       const res = await fetch("/api/chat/send", {
         method: "POST",
         headers: hdrs,
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({ message: text, use_web: useWeb }),
       });
 
       const raw = await res.json().catch(() => ({}));
@@ -120,14 +137,9 @@ useEffect(() => {
         (typeof raw === "string" ? raw : null) ??
         "No reply.";
 
+      // Append assistant message normally
       const assistantMsg: Msg = { id: uid(), role: "assistant", content: String(reply) };
       setMessages((m) => [...m, assistantMsg]);
-
-      // Scroll to the TOP of the assistant message (not the bottom of the chat)
-      requestAnimationFrame(() => {
-        const el = document.getElementById(`msg-${assistantMsg.id}`);
-        el?.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
     } catch (e: any) {
       const assistantMsg: Msg = { id: uid(), role: "assistant", content: `Error: ${e?.message || "Request failed"}` };
       setMessages((m) => [...m, assistantMsg]);
@@ -137,38 +149,36 @@ useEffect(() => {
     }
   }
 
-  function autoGrow(el: HTMLTextAreaElement | null) {
-  if (!el) return;
-  el.style.height = "0px";
-  const next = Math.min(el.scrollHeight, 180); // cap height (px)
-  el.style.height = next + "px";
-}
-
-function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+  function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       send();
     }
   }
 
+  const sources = lastRaw?.body?.sources || lastRaw?.body?.data?.sources || [];
+
   return (
     <div className="hx2-shell">
       <header className="hx2-topbar">
-  <div className="hx2-brand">
-    <div className="hx2-brandname">Opti</div>
-    <div className="hx2-tagline">Optimized Intelligence</div>
-  </div>
+        <button className="hx2-iconbtn" aria-label="Menu" onClick={() => setDebugOpen((v) => !v)}>
+          ☰
+        </button>
 
-  <div className="hx2-top-actions">
-    <button className="hx2-iconbtn" type="button" onClick={() => setDebugOpen(v => !v)}>
-      Debug
-    </button>
-    <button className="hx2-iconbtn" type="button"
-      onClick={() => setMessages([{ id: uid(), role: "assistant", content: "New chat started. What’s the goal?" }])}>
-      New
-    </button>
-  </div>
-</header>
+        <div className="hx2-titlewrap">
+          <div className="hx2-title">Opti</div>
+          <div className="hx2-subtitle">Optimized Intelligence</div>
+        </div>
+
+        <button
+          className="hx2-pill"
+          aria-label="Toggle web"
+          onClick={() => setUseWeb((v) => !v)}
+          title="When ON, HX2 pulls fresh web sources when needed."
+        >
+          {useWeb ? "Web: ON" : "Web: OFF"}
+        </button>
+      </header>
 
       <main className="hx2-chat" ref={scrollerRef}>
         <div className="hx2-chat-inner">
@@ -185,8 +195,8 @@ function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
 
       <footer className="hx2-composer">
         <div className="hx2-composer-inner">
-          <button className="hx2-plus"  aria-label="Add" type="button" style={{ display: "none" }}>
-            +
+          <button className="hx2-iconbtn" aria-label="Voice" onClick={toggleVoice}>
+            {isRecording ? "■" : "🎤"}
           </button>
 
           <div className="hx2-inputwrap">
@@ -195,25 +205,42 @@ function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
               className="hx2-input"
               placeholder="Ask Opti"
               value={input}
-              onChange={(e) => { setInput(e.target.value); autoGrow(e.target as any); }}
+              onChange={(e) => {
+                setInput(e.target.value);
+                autoGrow(e.target as any);
+              }}
               onKeyDown={onKeyDown}
               rows={1}
             />
-            <button className="hx2-mic" aria-label="Voice" type="button" onClick={toggleVoice}>
-              {isRecording ? "⏺" : "🎤"}
-            </button>
           </div>
 
-          <button className="hx2-send" onClick={send} disabled={!canSend} aria-label="Send" type="button">
+          <button className="hx2-send" onClick={send} disabled={!canSend} aria-label="Send">
             {sending ? "…" : "➤"}
           </button>
         </div>
 
         <div className="hx2-debug">
-          <button className="hx2-debug-toggle" onClick={() => setDebugOpen((v) => !v)} type="button">
+          <button className="hx2-debug-toggle" onClick={() => setDebugOpen((v) => !v)}>
             {debugOpen ? "▼ Debug" : "▶ Debug"}
           </button>
-          {debugOpen && <pre className="hx2-debugbox">{JSON.stringify(lastRaw, null, 2)}</pre>}
+
+          {debugOpen && (
+            <>
+              {Array.isArray(sources) && sources.length > 0 && (
+                <div className="hx2-sources">
+                  <div className="hx2-sources-title">Sources</div>
+                  <ul className="hx2-sources-list">
+                    {sources.map((s: any, i: number) => (
+                      <li key={i}>
+                        <a href={s?.url} target="_blank" rel="noreferrer">{s?.title ? `${s.title} — ` : ""}{s?.url}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <pre className="hx2-debugbox">{JSON.stringify(lastRaw, null, 2)}</pre>
+            </>
+          )}
         </div>
       </footer>
     </div>
