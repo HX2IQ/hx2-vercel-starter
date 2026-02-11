@@ -63,7 +63,11 @@ export async function POST(req: NextRequest) {
   try {
     // tolerant body parsing: supports message/text/input/prompt/content
     const body = await req.json().catch(() => ({} as any));
-    const msg =
+    
+const wantWeb =
+  process.env.HX2_WEB_ENABLED === "true" &&
+  /today|latest|current|now|who won|score|price|news/i.test(String(body?.message || body?.text || body?.input || ""));
+const msg =
       body?.message ??
       body?.text ??
       body?.input ??
