@@ -72,7 +72,34 @@ const msg =
       body?.prompt ??
       body?.content ??
       "";
-    // web fetch intent heuristic (UI + API)
+    
+    // --- BRIDGE_MEMORY_APPEND v0.1 ---
+    try {
+      const hx2Session =
+        req.headers.get("x-hx2-session") ||
+        req.headers.get("X-Hx2-Session") ||
+        "";
+
+      const mm = /^Store this exact fact to memory:\s*(.+)\s*$/i.exec(String(msg || ""));
+      if (mm?.[1]) {
+        const fact = mm[1].trim();
+        const Up = process.env.AP2_GATEWAY_URL || "https://ap2-worker.optinodeiq.com";
+
+        await fetch(`${Up}/brain/memory/append`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            ...(hx2Session ? { "x-hx2-session": hx2Session } : {}),
+          } as any,
+          body: JSON.stringify({ text: fact }),
+        });
+      }
+    } catch (e) {
+      // swallow: never break chat if memory append fails
+    }
+    // --- /BRIDGE_MEMORY_APPEND ---
+
+// web fetch intent heuristic (UI + API)
     const wantWeb =
       process.env.HX2_WEB_ENABLED === "true" &&
       /today|latest|current|now|who won|score|price|news|headline|breaking|update/i.test(String(msg || ""));
