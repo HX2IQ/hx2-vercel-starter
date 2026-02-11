@@ -566,3 +566,8 @@ html, body {
 .hx2-row, .hx2-row-assistant, .hx2-row-user {
   align-items: flex-start !important;
 }
+/* Prevent message bubbles from becoming their own scroll containers */
+.hx2-bubble {
+  overflow: visible !important;
+  max-height: none !important;
+}

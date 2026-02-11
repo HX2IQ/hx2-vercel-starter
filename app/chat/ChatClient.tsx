@@ -45,15 +45,7 @@ export default function ChatClient() {
   useEffect(() => {
   autoGrow(inputRef.current);
 }, [input]);
-
 useEffect(() => {
-  // auto-scroll
-    requestAnimationFrame(() => {
-      scrollerRef.current?.scrollTo({ top: scrollerRef.current.scrollHeight, behavior: "smooth" });
-    });
-  }, [messages.length]);
-
-  useEffect(() => {
     // SpeechRecognition (Chrome/Android uses webkitSpeechRecognition)
     const AnyWin: any = window as any;
     const SR = AnyWin.SpeechRecognition || AnyWin.webkitSpeechRecognition;
@@ -130,6 +122,12 @@ useEffect(() => {
 
       const assistantMsg: Msg = { id: uid(), role: "assistant", content: String(reply) };
       setMessages((m) => [...m, assistantMsg]);
+
+      // Scroll to the TOP of the assistant message (not the bottom of the chat)
+      requestAnimationFrame(() => {
+        const el = document.getElementById(`msg-${assistantMsg.id}`);
+        el?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
     } catch (e: any) {
       const assistantMsg: Msg = { id: uid(), role: "assistant", content: `Error: ${e?.message || "Request failed"}` };
       setMessages((m) => [...m, assistantMsg]);
