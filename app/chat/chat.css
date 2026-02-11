@@ -528,3 +528,41 @@ html, body {
   20% { opacity: 1; }
   100% { opacity: 0.2; }
 }
+/* =========================================================
+   HX2 OVERRIDES (hard) — wins against earlier CSS
+   ========================================================= */
+
+/* Set base readable font across chat */
+.hx2-shell, .hx2-chat, .hx2-chat-inner {
+  font-size: 16px !important;
+  line-height: 1.55 !important;
+}
+
+/* Bubbles: ensure text starts at TOP (no flex sinking) */
+.hx2-bubble {
+  display: block !important;        /* kills flex bottom alignment */
+  text-align: left !important;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+  white-space: pre-wrap !important; /* keep line breaks */
+  word-break: break-word !important;
+}
+
+/* Assistant bubble slightly bigger (premium readability) */
+.hx2-bubble-assistant {
+  font-size: 17px !important;
+  line-height: 1.6 !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+}
+
+/* User bubble slightly smaller */
+.hx2-bubble-user {
+  font-size: 16px !important;
+  line-height: 1.55 !important;
+}
+
+/* If any row is flexing to bottom, force start */
+.hx2-row, .hx2-row-assistant, .hx2-row-user {
+  align-items: flex-start !important;
+}
