@@ -156,17 +156,21 @@ function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
   return (
     <div className="hx2-shell">
       <header className="hx2-topbar">
-        <button className="hx2-iconbtn" aria-label="Menu">≡</button>
+  <div className="hx2-brand">
+    <div className="hx2-brandname">Opti</div>
+    <div className="hx2-tagline">Optimized Intelligence</div>
+  </div>
 
-        <div className="hx2-titlewrap">
-          <div className="hx2-title">Opti</div>
-          <div className="hx2-subtitle">Optimized Intelligence</div>
-        </div>
-
-        <button
-          className="hx2-iconbtn"
-          aria-label="New chat">＋</button>
-      </header>
+  <div className="hx2-top-actions">
+    <button className="hx2-iconbtn" type="button" onClick={() => setDebugOpen(v => !v)}>
+      Debug
+    </button>
+    <button className="hx2-iconbtn" type="button"
+      onClick={() => setMessages([{ id: uid(), role: "assistant", content: "New chat started. What’s the goal?" }])}>
+      New
+    </button>
+  </div>
+</header>
 
       <main className="hx2-chat" ref={scrollerRef}>
         <div className="hx2-chat-inner">

@@ -303,3 +303,189 @@ html, body {
   padding-bottom: 12px;
 }
 
+
+/* PREMIUM_HEADER_V1 */
+.hx2-topbar{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.hx2-brand{
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+
+.hx2-brand-name{
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.3px;
+  color: #111111;
+  line-height: 1;
+}
+
+.hx2-brand-tag{
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(17,17,17,0.65);
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60vw;
+}
+
+.hx2-topbar-actions{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hx2-iconbtn{
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,0.10);
+  background: #ffffff;
+  color: #111111;              /* <-- fixes "only visible when highlighted" */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.hx2-iconbtn:active{
+  transform: scale(0.98);
+}
+
+/* Remove any old/empty “bubble” placeholders if they still exist */
+.hx2-leftbubble, .hx2-rightbubble, .hx2-bubble-empty{
+  display: none !important;
+}
+
+
+/* === PREMIUM HEADER OVERRIDES (stop-the-bleeding) === */
+.hx2-topbar{
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(0,0,0,.08);
+}
+
+.hx2-brand{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  line-height: 1.05;
+}
+
+.hx2-brandname{
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: #111111;
+}
+
+.hx2-tagline{
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(17,17,17,.65);
+  margin-top: 2px;
+}
+
+.hx2-top-actions{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.hx2-iconbtn{
+  appearance: none;
+  border: 1px solid rgba(0,0,0,.10);
+  background: rgba(0,0,0,.02);
+  color: #111111;
+  font-weight: 700;
+  padding: 8px 10px;
+  border-radius: 12px;
+}
+
+/* kill the "empty bubble" look if something else is styling buttons */
+.hx2-iconbtn:empty{
+  display:none !important;
+}
+
+/* === INPUT AUTOGROW + PREMIUM COMPOSER === */
+.hx2-input{
+  resize: none;
+  overflow: hidden;
+  line-height: 1.3;
+  min-height: 44px;
+  max-height: 160px;
+  padding: 10px 12px;
+  font-size: 16px;
+  color: #111111;
+}
+
+.hx2-input::placeholder{
+  color: rgba(17,17,17,.45);
+}
+
+.hx2-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  background: #fff;
+  border-bottom: 1px solid rgba(0,0,0,.08);
+}
+
+.hx2-brandname {
+  font-size: 22px;
+  font-weight: 800;
+  color: #111;
+}
+
+.hx2-tagline {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(17,17,17,.6);
+}
+
+.hx2-iconbtn {
+  border: 1px solid rgba(0,0,0,.1);
+  background: rgba(0,0,0,.03);
+  color: #111;
+  padding: 8px 10px;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.hx2-iconbtn:empty {
+  display: none !important;
+}
+
+.hx2-input {
+  resize: none;
+  overflow: hidden;
+  min-height: 44px;
+  max-height: 160px;
+}
