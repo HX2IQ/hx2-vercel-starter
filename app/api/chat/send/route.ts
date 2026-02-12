@@ -20,7 +20,7 @@ function wantsWeb(message: string): boolean {
   return triggers.some(t => m.includes(t));
 }
 
-async function webSearch(q: string, n = 3): Promise<Array<{ url: string; title: string }>> {
+async function webSearch(reqUrl: string, q: string, n = 3): Promise<Array<{ url: string; title: string }>> {
   const r = await fetch(__HX2_WEB_SEARCH_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -134,7 +134,7 @@ const message = String(msg || "").trim();
 
       if (urls.length === 0) {
         // search based on the user question
-        const found = await webSearch(message, 3);
+        const found = await webSearch(req.url, message, 3);
         urls = found.map(x => x.url);
       }
 
