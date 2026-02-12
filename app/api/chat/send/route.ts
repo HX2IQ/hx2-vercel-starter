@@ -20,16 +20,25 @@ function wantsWeb(message: string): boolean {
   return triggers.some(t => m.includes(t));
 }
 
-async function webSearch(reqUrl: string, q: string, n = 3): Promise<Array<{ url: string; title: string }>> {
-  const r = await fetch(__HX2_WEB_SEARCH_URL, {
+async function webSearch(reqUrl: string, q: string, n = 3): Promise<Array<{ url: string; title: string; snippet?: string; source?: string }>> {
+  const url = new URL("/api/web/search", reqUrl).toString();
+
+  const r = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     cache: "no-store",
     body: JSON.stringify({ q, n }),
   });
-  const j = await r.json().catch(() => ({}));
-  if (!j?.ok || !Array.isArray(j?.results)) return [];
-  return j.results.slice(0, n);
+
+  const j: any = await r.json().catch(() => null);
+  const results = Array.isArray(j?.results) ? j.results : [];
+
+  return results.slice(0, n).map((x: any) => ({
+    url: String(x?.url || ""),
+    title: String(x?.title || x?.name || ""),
+    snippet: x?.snippet ? String(x.snippet) : undefined,
+    source: x?.source ? String(x.source) : undefined,
+  })).filter((x: any) => x.url && x.title);
 }
 
 async function webFetch(url: string): Promise<WebSource | null> {
