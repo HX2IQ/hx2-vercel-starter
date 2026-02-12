@@ -72,13 +72,7 @@ const msg =
       body?.prompt ??
       body?.content ??
       "";
-const HX2_WEB_ENABLED = String(process.env.HX2_WEB_ENABLED || "").toLowerCase() === "true";
-const wantWeb =
-  HX2_WEB_ENABLED &&
-  /(\buse web\b|\btoday\b|\blatest\b|\bcurrent\b|\bnow\b|\bwho won\b|\bscore\b|\bprice\b|\bnews\b|\bheadline\b|\bbreaking\b)/i
-    .test(String(msg || body?.message || ""));
 
-    
     // --- BRIDGE_MEMORY_APPEND v0.1 ---
     try {
       const hx2Session =
@@ -105,32 +99,34 @@ const wantWeb =
     }
     // --- /BRIDGE_MEMORY_APPEND ---
 const message = String(msg || "").trim();
-
-    // --- WEB FLAGS (v0.1) ---
+    // --- WEB FLAGS (v0.2) ---
     const HX2_WEB_ENABLED = String(process.env.HX2_WEB_ENABLED || "").toLowerCase() === "true";
-    const explicitUrls = (message.match(/https?:\/\/\S+/g) || []);
+
+    // URLs typed in message
+    const msgUrls: string[] = (message.match(/https?:\/\/\S+/g) || []).map((u) => String(u));
+
+    // URLs explicitly passed by caller (optional)
+    const bodyUrls: string[] = Array.isArray((body as any)?.web_urls)
+      ? (body as any).web_urls.map((u: any) => String(u))
+      : [];
+
+    const explicitUrls: string[] = Array.from(new Set([...msgUrls, ...bodyUrls]));
+
     const wantsWeb =
       HX2_WEB_ENABLED &&
       /(\buse web\b|\btoday\b|\blatest\b|\bcurrent\b|\bnow\b|\bwho won\b|\bscore\b|\bprice\b|\bnews\b|\bheadline\b|\bbreaking\b|\bupdate\b)/i
         .test(message);
+
     const useWeb = wantsWeb || (explicitUrls.length > 0);
-    // --- /WEB FLAGS ---
-    if (!message) {
-      return NextResponse.json({ web: { want_web: wantsWeb, use_web: useWeb, auto_web: false, explicit_urls: explicitUrls.length }, ok: false, error: "missing message" }, { status: 400 });
+    // --- /WEB FLAGS ---    if (!message) {
+      return NextResponse.json({ web: { wantsWeb: wantsWeb, useWeb: useWeb, auto_web: false, explicit_urls: explicitUrls.length }, ok: false, error: "missing message" }, { status: 400 });
     }
 
     const session = req.headers.get("x-hx2-session") || "";
 
-    const use_web = Boolean(body?.use_web);
-    const auto_web = wantsWeb(message);
-    const want_web = use_web || auto_web;
-
-    // Optional explicit urls passed in
-    const explicitUrls: string[] = Array.isArray(body?.web_urls) ? body.web_urls.map((u: any) => String(u)) : [];
-
     const sources: WebSource[] = [];
 
-    if (want_web) {
+    if (wantsWeb) {
       let urls = explicitUrls.filter(Boolean);
 
       if (urls.length === 0) {
@@ -173,7 +169,7 @@ const message = String(msg || "").trim();
     const data = await upstream.json().catch(() => ({}));
 
     // Maintain your current response shape, but add sources.
-    return NextResponse.json({ web: { want_web: wantsWeb, use_web: useWeb, auto_web: false, explicit_urls: explicitUrls.length },
+    return NextResponse.json({ web: { wantsWeb: wantsWeb, useWeb: useWeb, auto_web: false, explicit_urls: explicitUrls.length },
       ok: upstream.ok,
       forwarded: true,
       url: upstreamUrl,
@@ -181,6 +177,6 @@ const message = String(msg || "").trim();
       sources,
     }, { status: 200 });
   } catch (e: any) {
-    return NextResponse.json({ web: { want_web: wantsWeb, use_web: useWeb, auto_web: false, explicit_urls: explicitUrls.length }, ok: false, error: String(e?.message || e) }, { status: 500 });
+    return NextResponse.json({ web: { wantsWeb: wantsWeb, useWeb: useWeb, auto_web: false, explicit_urls: explicitUrls.length }, ok: false, error: String(e?.message || e) }, { status: 500 });
   }
 }
