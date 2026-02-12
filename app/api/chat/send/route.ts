@@ -105,8 +105,18 @@ const wantWeb =
     }
     // --- /BRIDGE_MEMORY_APPEND ---
 const message = String(msg || "").trim();
+
+    // --- WEB FLAGS (v0.1) ---
+    const HX2_WEB_ENABLED = String(process.env.HX2_WEB_ENABLED || "").toLowerCase() === "true";
+    const explicitUrls = (message.match(/https?:\/\/\S+/g) || []);
+    const wantsWeb =
+      HX2_WEB_ENABLED &&
+      /(\buse web\b|\btoday\b|\blatest\b|\bcurrent\b|\bnow\b|\bwho won\b|\bscore\b|\bprice\b|\bnews\b|\bheadline\b|\bbreaking\b|\bupdate\b)/i
+        .test(message);
+    const useWeb = wantsWeb || (explicitUrls.length > 0);
+    // --- /WEB FLAGS ---
     if (!message) {
-      return NextResponse.json({ web: { want_web: wantsWeb, use_web: wantsWeb, auto_web: false, explicit_urls: 0 }, ok: false, error: "missing message" }, { status: 400 });
+      return NextResponse.json({ web: { want_web: wantsWeb, use_web: useWeb, auto_web: false, explicit_urls: explicitUrls.length }, ok: false, error: "missing message" }, { status: 400 });
     }
 
     const session = req.headers.get("x-hx2-session") || "";
@@ -163,7 +173,7 @@ const message = String(msg || "").trim();
     const data = await upstream.json().catch(() => ({}));
 
     // Maintain your current response shape, but add sources.
-    return NextResponse.json({ web: { want_web: wantsWeb, use_web: wantsWeb, auto_web: false, explicit_urls: 0 },
+    return NextResponse.json({ web: { want_web: wantsWeb, use_web: useWeb, auto_web: false, explicit_urls: explicitUrls.length },
       ok: upstream.ok,
       forwarded: true,
       url: upstreamUrl,
@@ -171,6 +181,6 @@ const message = String(msg || "").trim();
       sources,
     }, { status: 200 });
   } catch (e: any) {
-    return NextResponse.json({ web: { want_web: wantsWeb, use_web: wantsWeb, auto_web: false, explicit_urls: 0 }, ok: false, error: String(e?.message || e) }, { status: 500 });
+    return NextResponse.json({ web: { want_web: wantsWeb, use_web: useWeb, auto_web: false, explicit_urls: explicitUrls.length }, ok: false, error: String(e?.message || e) }, { status: 500 });
   }
 }
