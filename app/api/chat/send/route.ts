@@ -21,7 +21,7 @@ function wantsWeb(message: string): boolean {
 }
 
 async function webSearch(q: string, n = 3): Promise<Array<{ url: string; title: string }>> {
-  const r = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/web/search`, {
+  const r = await fetch(__HX2_WEB_SEARCH_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     cache: "no-store",
@@ -69,6 +69,7 @@ export async function POST(req: NextRequest) {  // --- WEB VARS (hoisted for ca
   try {
     // tolerant body parsing: supports message/text/input/prompt/content
     const body = await req.json().catch(() => ({} as any));
+const __HX2_WEB_SEARCH_URL = new URL("/api/web/search", req.url).toString();
 
 
 const msg =
