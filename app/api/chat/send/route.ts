@@ -72,6 +72,12 @@ const msg =
       body?.prompt ??
       body?.content ??
       "";
+const HX2_WEB_ENABLED = String(process.env.HX2_WEB_ENABLED || "").toLowerCase() === "true";
+const wantWeb =
+  HX2_WEB_ENABLED &&
+  /(\buse web\b|\btoday\b|\blatest\b|\bcurrent\b|\bnow\b|\bwho won\b|\bscore\b|\bprice\b|\bnews\b|\bheadline\b|\bbreaking\b)/i
+    .test(String(msg || body?.message || ""));
+
     
     // --- BRIDGE_MEMORY_APPEND v0.1 ---
     try {
@@ -98,16 +104,9 @@ const msg =
       // swallow: never break chat if memory append fails
     }
     // --- /BRIDGE_MEMORY_APPEND ---
-
-// web fetch intent heuristic (UI + API)
-    const wantWeb =
-      process.env.HX2_WEB_ENABLED === "true" &&
-      /today|latest|current|now|who won|score|price|news|headline|breaking|update/i.test(String(msg || ""));
-
-
-    const message = String(msg || "").trim();
+const message = String(msg || "").trim();
     if (!message) {
-      return NextResponse.json({ ok: false, error: "missing message" }, { status: 400 });
+      return NextResponse.json({ web: { want_web: wantsWeb, use_web: wantsWeb, auto_web: false, explicit_urls: 0 }, ok: false, error: "missing message" }, { status: 400 });
     }
 
     const session = req.headers.get("x-hx2-session") || "";
@@ -164,15 +163,14 @@ const msg =
     const data = await upstream.json().catch(() => ({}));
 
     // Maintain your current response shape, but add sources.
-    return NextResponse.json({
+    return NextResponse.json({ web: { want_web: wantsWeb, use_web: wantsWeb, auto_web: false, explicit_urls: 0 },
       ok: upstream.ok,
       forwarded: true,
       url: upstreamUrl,
       data,
       sources,
-      web: { want_web, use_web, auto_web, explicit_urls: explicitUrls.length },
     }, { status: 200 });
   } catch (e: any) {
-    return NextResponse.json({ ok: false, error: String(e?.message || e) }, { status: 500 });
+    return NextResponse.json({ web: { want_web: wantsWeb, use_web: wantsWeb, auto_web: false, explicit_urls: 0 }, ok: false, error: String(e?.message || e) }, { status: 500 });
   }
 }
