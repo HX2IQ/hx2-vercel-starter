@@ -1,5 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 
+/* WEB_SEARCH_HELPER v0.3 */
+type WebHit = { title: string; url: string; snippet?: string; source?: string; ts?: string };
+
+async function hx2WebSearch(reqUrl: string, q: string, n = 5): Promise<WebHit[]> {
+  const endpoint = new URL("/api/web/search", reqUrl).toString();
+  const r = await fetch(endpoint, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    cache: "no-store",
+    body: JSON.stringify({ q, n }),
+  });
+
+  const j: any = await r.json().catch(() => null);
+  const hits: WebHit[] = Array.isArray(j?.results) ? j.results : [];
+  return hits.slice(0, Math.max(1, n));
+}
+/* /WEB_SEARCH_HELPER v0.3 */
 export const runtime = "nodejs";
 
 type WebSource = {
@@ -58,7 +75,7 @@ async function webFetch(url: string): Promise<WebSource | null> {
   };
 }
 
-function buildWebContext(sources: WebSource[]): string {
+function buildWebContext(sources: sourcesFromWeb
   if (!sources.length) return "";
   const lines = sources.map((s, i) => {
     const t = s.title ? ` — ${s.title}` : "";
@@ -68,7 +85,20 @@ function buildWebContext(sources: WebSource[]): string {
   return `\n\n[WEB_CONTEXT]\nUse these sources for up-to-date facts. If you rely on a claim, cite the SOURCE number.\n\n${lines.join("\n\n")}\n`;
 }
 
-export async function POST(req: NextRequest) {  // --- WEB VARS (hoisted for catch) ---
+export async function POST(req: NextRequest) {  
+  // HX2_SOURCES_FROM_WEB v0.1
+  const sourcesFromWeb = (typeof webHits !== "undefined" && Array.isArray(webHits))
+    ? webHits
+        .map((h: any) => ({
+          title: String(h?.title || "").trim(),
+          url: String(h?.url || "").trim(),
+          ts: h?.ts ? String(h.ts) : undefined,
+          source: h?.source ? String(h.source) : "web",
+        }))
+        .filter((s: any) => s.url)
+    : [];
+  // /HX2_SOURCES_FROM_WEB v0.1
+  // --- WEB VARS (hoisted for catch) ---
   let HX2_WEB_ENABLED = false;
   let explicitUrls: string[] = [];
   let wantsWeb = false;
@@ -136,7 +166,7 @@ const message = String(msg || "").trim();
     }
 
     const session = req.headers.get("x-hx2-session") || "";
-    const sources: WebSource[] = [];
+    const sources: sourcesFromWeb
 
     if (useWeb) {
       let urls = explicitUrls.filter(Boolean);
