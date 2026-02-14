@@ -2,28 +2,29 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
-type WebResult = { title: string; url: string; snippet?: string; source?: string; ts?: string };
+type WebHit = { title: string; url: string; snippet?: string; source?: string; ts?: string };
+type WebSource = { url: string; title?: string; fetched_at?: string; excerpt?: string };
 
-type WebSource = {
-  url: string;
-  title?: string;
-  fetched_at?: string;
-  excerpt?: string;
-};
-
-// Keep this small: trigger web only when user asks for recency/news/facts
-function wantsWebSearch(message: string): boolean {
+function wantsWeb(message: string): boolean {
   const m = String(message || "").toLowerCase();
   const triggers = [
-    "use web", "browse", "search the web", "latest", "today", "yesterday", "tomorrow",
-    "current", "update", "news", "price", "stock", "crypto", "btc", "xrp",
-    "earnings", "ceo", "election", "poll", "schedule", "release",
-    "law", "regulation", "court", "ruling",
+    "latest","today","yesterday","tomorrow","this week","this month","current",
+    "update","news","price","stock","crypto","btc","xrp","earnings",
+    "ceo","election","poll","schedule","release","outage","downtime",
+    "law","regulation","court","ruling","inflation","rate","fed",
+    "use web"
   ];
   return triggers.some(t => m.includes(t));
 }
 
-async function hx2WebSearch(reqUrl: string, q: string, n = 5): Promise<WebResult[]> {
+function extractUrls(text: string): string[] {
+  const s = String(text || "");
+  const re = /https?:\/\/[^\s)>\]]+/gi;
+  const m = s.match(re) || [];
+  return Array.from(new Set(m.map(x => x.trim()))).filter(Boolean);
+}
+
+async function hx2WebSearch(reqUrl: string, q: string, n = 5): Promise<WebHit[]> {
   const endpoint = new URL("/api/web/search", reqUrl).toString();
   const r = await fetch(endpoint, {
     method: "POST",
@@ -31,36 +32,27 @@ async function hx2WebSearch(reqUrl: string, q: string, n = 5): Promise<WebResult
     cache: "no-store",
     body: JSON.stringify({ q, n }),
   });
-
   const j: any = await r.json().catch(() => null);
-  const hits: WebResult[] = Array.isArray(j?.results) ? j.results : [];
+  const hits: WebHit[] = Array.isArray(j?.results) ? j.results : [];
   return hits.slice(0, Math.max(1, n));
 }
 
-async function webFetch(baseUrl: string, url: string): Promise<WebSource> {
-  const endpoint = new URL("/api/web/fetch", baseUrl).toString();
-  const r = await fetch(endpoint, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    cache: "no-store",
-    body: JSON.stringify({ url, max_bytes: 250000 }),
-  });
-
-  const j: any = await r.json().catch(() => ({}));
-  if (!j?.ok) {
-    return {
+function normalizeSourcesFromHits(hits: WebHit[]): WebSource[] {
+  const fetched_at = new Date().toISOString();
+  const out: WebSource[] = [];
+  const seen = new Set<string>();
+  for (const h of hits || []) {
+    const url = String(h?.url || "").trim();
+    if (!url || seen.has(url)) continue;
+    seen.add(url);
+    out.push({
       url,
-      fetched_at: new Date().toISOString(),
-      excerpt: `Fetch failed (${j?.error || j?.status || "unknown"})`,
-    };
+      title: String(h?.title || "").trim() || undefined,
+      fetched_at,
+      excerpt: h?.snippet ? String(h.snippet).trim() : undefined,
+    });
   }
-
-  return {
-    url: String(j.url || url),
-    title: j.title ? String(j.title) : undefined,
-    fetched_at: j.fetched_at ? String(j.fetched_at) : undefined,
-    excerpt: j.excerpt ? String(j.excerpt) : undefined,
-  };
+  return out;
 }
 
 function buildWebContext(sources: WebSource[]): string {
@@ -71,26 +63,7 @@ function buildWebContext(sources: WebSource[]): string {
     const ex = s.excerpt ? `\nEXCERPT: ${s.excerpt}` : "";
     return `SOURCE ${i + 1}: ${s.url}${t}\nFETCHED_AT: ${fa}${ex}`;
   });
-
   return `\n\n[WEB_CONTEXT]\nUse these sources for up-to-date facts. If you rely on a claim, cite the SOURCE number.\n\n${lines.join("\n\n")}\n`;
-}
-
-// URL-only sources array returned to caller
-function normalizeSourcesFromWeb(hits: WebResult[]): Array<{ url: string; title?: string; ts?: string; source?: string }> {
-  const out: Array<{ url: string; title?: string; ts?: string; source?: string }> = [];
-  for (const h of hits || []) {
-    const url = String((h as any)?.url || "").trim();
-    if (!url) continue;
-    out.push({
-      url,
-      title: String((h as any)?.title || "").trim() || undefined,
-      ts: (h as any)?.ts ? String((h as any).ts) : undefined,
-      source: (h as any)?.source ? String((h as any).source) : undefined,
-    });
-  }
-  // de-dupe by url
-  const seen = new Set<string>();
-  return out.filter(s => (seen.has(s.url) ? false : (seen.add(s.url), true)));
 }
 
 export async function POST(req: NextRequest) {
@@ -108,101 +81,58 @@ export async function POST(req: NextRequest) {
 
   const message = String(msg || "");
 
-  const hx2Session =
-    req.headers.get("x-hx2-session") ||
-    req.headers.get("X-Hx2-Session") ||
-    "";
+  // decide web usage
+  const HX2_WEB_ENABLED = String(process.env.HX2_WEB_ENABLED || "true").toLowerCase() !== "false";
+  const explicitUrls = extractUrls(message);
+  const want_web = wantsWeb(message);
+  const use_web = HX2_WEB_ENABLED && (want_web || explicitUrls.length > 0);
 
-  const Gateway = process.env.AP2_GATEWAY_URL || "https://ap2-worker.optinodeiq.com";
-  const Base    = process.env.NEXT_PUBLIC_BASE_URL || new URL(req.url).origin;
-
-  // --- Memory bridge (optional, your existing behavior) ---
+  // --- web search (always populate sources[] when use_web true) ---
+  let webHits: WebHit[] = [];
+  let sources: WebSource[] = [];
   try {
-    const mm = /^Store this exact fact to memory:\s*(.+)\s*$/i.exec(message);
-    if (mm?.[1]) {
-      const fact = mm[1].trim();
-      await fetch(`${Gateway}/brain/memory/append`, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          ...(hx2Session ? { "x-hx2-session": hx2Session } : {}),
-        } as any,
-        body: JSON.stringify({ text: fact }),
-      }).catch(() => null);
+    if (use_web) {
+      const q = explicitUrls.length ? explicitUrls.join(" ") : message;
+      webHits = await hx2WebSearch(req.url, q, 5);
+      sources = normalizeSourcesFromHits(webHits);
     }
   } catch {
-    // best effort only
-  }
-  // --- /Memory bridge ---
-
-  // WEB pipeline
-  const want_web = wantsWebSearch(message);
-  const use_web  = want_web;
-
-  let webHits: WebResult[] = [];
-  let sourcesFromWeb: Array<{ url: string; title?: string; ts?: string; source?: string }> = [];
-  let webSources: WebSource[] = [];
-
-  if (use_web) {
-    try {
-      webHits = await hx2WebSearch(req.url, message, 5);
-      sourcesFromWeb = normalizeSourcesFromWeb(webHits);
-
-      // fetch up to 3 pages for excerpts/context
-      const toFetch = sourcesFromWeb.map(s => s.url).slice(0, 3);
-      for (const u of toFetch) {
-        const s = await webFetch(Base, u).catch(() => null);
-        if (s) webSources.push(s);
-      }
-    } catch {
-      webHits = [];
-      sourcesFromWeb = [];
-      webSources = [];
-    }
+    webHits = [];
+    sources = [];
   }
 
-  const web_context = use_web ? buildWebContext(webSources) : "";
+  // forward to brain
+  const Up = process.env.AP2_GATEWAY_URL || "https://ap2-worker.optinodeiq.com";
+  const hx2Session = req.headers.get("x-hx2-session") || req.headers.get("X-Hx2-Session") || "";
 
-  // Forward to brain/chat
-  const payload = {
-    message: message + web_context,
-    meta: {
-      web: {
-        want_web,
-        use_web,
-        explicit_urls: 0,
-      },
-      started_at,
-    },
-  };
+  const webContext = use_web ? buildWebContext(sources) : "";
+  const messageForBrain = message + webContext;
 
-  const r = await fetch(`${Gateway}/brain/chat`, {
+  const r = await fetch(`${Up}/brain/chat`, {
     method: "POST",
     headers: {
       "content-type": "application/json",
       ...(hx2Session ? { "x-hx2-session": hx2Session } : {}),
     } as any,
-    body: JSON.stringify(payload),
+    body: JSON.stringify({ message: messageForBrain }),
   });
 
-  const j: any = await r.json().catch(() => null);
+  const j = await r.json().catch(() => ({}));
+  const reply = String(j?.reply || j?.data?.reply || "");
 
   return NextResponse.json(
     {
       ok: true,
       forwarded: true,
-      url: `${Gateway}/brain/chat`,
-      data: j || { reply: "" },
-      web: { want_web, use_web, explicit_urls: 0 },
-      sources: sourcesFromWeb, // ✅ THIS is what your smoke test wants
+      url: `${Up}/brain/chat`,
       started_at,
+      data: { reply, raw: j },
+      sources,
+      web: { want_web, use_web, explicit_urls: explicitUrls.length },
     },
     {
       status: 200,
-      headers: {
-        "x-chat-route-version": "hx2-chat-send-clean-v1",
-        "cache-control": "no-store",
-      },
+      headers: { "x-chat-route-version": "hx2-chat-send-clean-v2-sources" },
     }
   );
 }
