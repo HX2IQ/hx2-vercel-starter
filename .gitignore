@@ -57,3 +57,5 @@ hx2_kickstart/
 hx2_system.txt
 patch_*.mjs
 server_*.js
+staging/
+docs/
