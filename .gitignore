@@ -59,3 +59,6 @@ patch_*.mjs
 server_*.js
 staging/
 docs/
+
+tools/route.chat.send.clean.ts
+
