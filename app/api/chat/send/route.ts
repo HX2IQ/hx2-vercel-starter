@@ -53,7 +53,7 @@ async function hx2WebSearch(reqUrl: string, q: string, n: number): Promise<WebHi
 
 export async function POST(req: NextRequest) {
   const startedAt = new Date().toISOString();
-  const xChatRouteVersion = "hx2-chat-send-clean-v3";
+  const xChatRouteVersion = "hx2-chat-send-clean-v3-v3-stamp-1771043614";
 
   // --- WEB VARS (hoisted for catch) ---
   let wantWeb = false;
