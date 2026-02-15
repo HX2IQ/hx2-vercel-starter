@@ -87,31 +87,36 @@ const useWeb = shouldUseWeb(String(msg || ""));
       search_url = u.toString();
 
       const sr = await fetch(u, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        cache: "no-store",
-        body: JSON.stringify({ q, n: 5 }),
-        redirect: "follow",
-      });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  cache: "no-store",
+  body: JSON.stringify({ q, n: 5 }),
+  redirect: "follow",
+});
 
-      search_status = sr.status;
-      search_content_type = sr.headers.get("content-type");
+search_status = sr.status;
+search_content_type = sr.headers.get("content-type") || null;
 
-      // Try JSON first; if it fails, capture the first chunk of text for diagnosis
-      let ws: WebSearchResponse | null = null;
-      try {
-        ws = (await sr.json()) as WebSearchResponse;
-      } catch {
-        const t = await sr.text().catch(() => "");
-        search_text_head = (t || "").slice(0, 180);
-        ws = {};
-      }
+let ws: any = null;
+let results: any[] = [];
+try {
+  ws = await sr.json();
+  ws_ok = !!ws?.ok;
+  results = Array.isArray(ws?.results) ? ws.results : [];
+  ws_results_n = results.length;
+} catch (e: any) {
+  ws_ok = false;
+  ws_results_n = 0;
+}
 
-      provider = ws?.provider || null;
-      ws_ok = typeof ws?.ok === "boolean" ? ws.ok : null;
+sent_q = q;
 
-      const results = Array.isArray(ws?.results) ? ws!.results! : [];
-      ws_results_n = results.length;
+const sources = results.map((r: any) => ({
+  title: r?.title || "",
+  url: r?.url || "",
+  excerpt: r?.snippet || "",
+  source: r?.source || "web",
+}));
 
       sources = results
         .map((r) => ({
