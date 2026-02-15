@@ -35,9 +35,8 @@ function buildWebContext(sources: WebSource[]): string {
 }
 
 export async function POST(req: NextRequest) {
-  const version = "hx2-chat-send-clean-v5";
+  const version = "hx2-chat-send-clean-v6";
   try {
-    // tolerant parse
     const body = await req.json().catch(() => ({} as any));
     const msg =
       body?.message ??
@@ -47,25 +46,52 @@ export async function POST(req: NextRequest) {
       body?.content ??
       "";
 
-    const origin = new URL(req.url).origin;
     const useWeb = shouldUseWeb(String(msg || ""));
     let sources: WebSource[] = [];
     let provider: string | null = null;
 
+    // --- debug ---
+    let search_url = "";
+    let search_status: number | null = null;
+    let search_content_type: string | null = null;
+    let search_text_head: string | null = null;
+    let ws_ok: boolean | null = null;
+    let ws_results_n: number | null = null;
+
     if (useWeb) {
-      // Use the SAME host that served this route (prevents env/base mismatch)
       const q = String(msg || "").replace(/^use web:\s*/i, "").trim() || String(msg || "");
-      const sr = await fetch(`${origin}/api/web/search`, {
+
+      // IMPORTANT: build URL from req.url (no origin string concat)
+      const u = new URL("/api/web/search", req.url);
+      search_url = u.toString();
+
+      const sr = await fetch(u, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         cache: "no-store",
         body: JSON.stringify({ q, n: 5 }),
+        redirect: "follow",
       });
 
-      const ws = (await sr.json().catch(() => ({}))) as WebSearchResponse;
-      provider = ws?.provider || null;
+      search_status = sr.status;
+      search_content_type = sr.headers.get("content-type");
 
-      const results = Array.isArray(ws?.results) ? ws.results : [];
+      // Try JSON first; if it fails, capture the first chunk of text for diagnosis
+      let ws: WebSearchResponse | null = null;
+      try {
+        ws = (await sr.json()) as WebSearchResponse;
+      } catch {
+        const t = await sr.text().catch(() => "");
+        search_text_head = (t || "").slice(0, 180);
+        ws = {};
+      }
+
+      provider = ws?.provider || null;
+      ws_ok = typeof ws?.ok === "boolean" ? ws.ok : null;
+
+      const results = Array.isArray(ws?.results) ? ws!.results! : [];
+      ws_results_n = results.length;
+
       sources = results
         .map((r) => ({
           url: String(r?.url || ""),
@@ -78,26 +104,23 @@ export async function POST(req: NextRequest) {
 
     const web_context = buildWebContext(sources);
 
-    // forward to brain
     const target = "https://ap2-worker.optinodeiq.com/brain/chat";
     const fr = await fetch(target, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "x-hx2-session": req.headers.get("x-hx2-session") || "" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-hx2-session": req.headers.get("x-hx2-session") || "",
+      },
       cache: "no-store",
       body: JSON.stringify({
         message: String(msg || "") + web_context,
-        web: {
-          use_web: useWeb,
-          provider,
-          sources_n: sources.length,
-        },
-        sources, // send to brain (optional)
+        web: { use_web: useWeb, provider, sources_n: sources.length },
+        sources,
       }),
     });
 
     const data = await fr.json().catch(() => ({}));
 
-    // IMPORTANT: always return our sources[] (do NOT let brain overwrite it)
     return NextResponse.json(
       {
         ok: true,
@@ -105,29 +128,26 @@ export async function POST(req: NextRequest) {
         url: target,
         data,
         sources,
-        web: { use_web: useWeb, provider, sources_n: sources.length },
-      },
-      {
-        status: 200,
-        headers: {
-          "x-chat-route-version": version,
-          "cache-control": "no-store",
+        web: {
+          use_web: useWeb,
+          provider,
+          sources_n: sources.length,
+          debug: {
+            search_url,
+            search_status,
+            search_content_type,
+            search_text_head,
+            ws_ok,
+            ws_results_n,
+          },
         },
-      }
+      },
+      { status: 200, headers: { "x-chat-route-version": version, "cache-control": "no-store" } }
     );
   } catch (e: any) {
     return NextResponse.json(
-      {
-        ok: false,
-        error: e?.message || String(e),
-      },
-      {
-        status: 500,
-        headers: {
-          "x-chat-route-version": version,
-          "cache-control": "no-store",
-        },
-      }
+      { ok: false, error: e?.message || String(e) },
+      { status: 500, headers: { "x-chat-route-version": version, "cache-control": "no-store" } }
     );
   }
 }
