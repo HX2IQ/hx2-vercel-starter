@@ -109,8 +109,8 @@ try {
   ws_ok = false;
   ws_results_n = 0;
 }
-
-sent_q = q;
+      let sent_q: string | null = null;
+      sent_q = q;
 sources = results
         .map((r) => ({
           url: String(r?.url || ""),
