@@ -55,6 +55,7 @@ function buildWebContext(sources: WebSource[]): string {
 
 export async function POST(req: NextRequest) {
   const version = "hx2-chat-send-clean-v6";
+  let sources: any[] = [];
   try {
     const body = await req.json().catch(() => ({} as any));
     const msg =
@@ -110,15 +111,7 @@ try {
 }
 
 sent_q = q;
-
-const sources = results.map((r: any) => ({
-  title: r?.title || "",
-  url: r?.url || "",
-  excerpt: r?.snippet || "",
-  source: r?.source || "web",
-}));
-
-      sources = results
+sources = results
         .map((r) => ({
           url: String(r?.url || ""),
           title: r?.title,
