@@ -2,70 +2,49 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
-type WebHit = { url?: string; title?: string; snippet?: string };
-type WebSource = { url: string; title?: string; fetched_at?: string; excerpt?: string };
+type WebResult = { url: string; title?: string; excerpt?: string; fetched_at?: string };
 
 function wantsWeb(message: string): boolean {
   const m = (message || "").toLowerCase();
-  if (m.includes("use web:") || m.includes("use the web") || m.includes("browse") || m.includes("search the web")) return true;
+  if (m.includes("use web:")) return true;
+
   const triggers = [
     "latest","today","yesterday","tomorrow","this week","this month","current",
-    "update","news","price","stock","crypto","btc","xrp","earnings","ceo",
-    "election","poll","schedule","release","outage","downtime","law","regulation",
-    "court","ruling","inflation","rate","fed"
+    "update","news","price","stock","crypto","btc","xrp","earnings",
+    "ceo","election","poll","schedule","release","outage","downtime",
+    "law","regulation","court","ruling","inflation","rate","fed"
   ];
   return triggers.some(t => m.includes(t));
 }
 
-function extractUrls(message: string): string[] {
-  const s = message || "";
-  const re = /\bhttps?:\/\/[^\s)]+/gi;
-  const hits = s.match(re) || [];
-  // de-dupe
-  const set = new Set(hits.map(x => x.trim()));
-  return Array.from(set);
-}
-
-function buildWebContext(sources: WebSource[]): string {
-  if (!Array.isArray(sources) || sources.length === 0) return "";
+function buildWebContext(sources: WebResult[]): string {
+  if (!sources || sources.length === 0) return "";
   const lines = sources.map((s, i) => {
     const t = s.title ? ` — ${s.title}` : "";
     const ex = s.excerpt ? `\nEXCERPT: ${s.excerpt}` : "";
-    const fa = s.fetched_at ? String(s.fetched_at) : "";
-    return `SOURCE ${i + 1}: ${s.url}${t}\nFETCHED_AT: ${fa}${ex}`;
+    return `SOURCE ${i + 1}: ${s.url}${t}\nFETCHED_AT: ${s.fetched_at || ""}${ex}`;
   });
   return `\n\n[WEB_CONTEXT]\nUse these sources for up-to-date facts. If you rely on a claim, cite the SOURCE number.\n\n${lines.join("\n\n")}\n`;
 }
 
-async function hx2WebSearch(reqUrl: string, q: string, n: number): Promise<WebHit[]> {
-  const origin = new URL(reqUrl).origin;
-  const r = await fetch(`${origin}/api/web/search`, {
+async function webSearch(reqUrl: string, q: string, n: number): Promise<{ results: WebResult[]; provider?: string }> {
+  const u = new URL("/api/web/search", reqUrl).toString();
+  const r = await fetch(u, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     cache: "no-store",
     body: JSON.stringify({ q, n }),
   });
-
   const j: any = await r.json().catch(() => ({}));
-  if (!j?.ok || !Array.isArray(j?.results)) return [];
-  return j.results as WebHit[];
+  const results: WebResult[] = Array.isArray(j?.results) ? j.results : [];
+  return { results, provider: j?.provider };
 }
 
 export async function POST(req: NextRequest) {
-  const startedAt = new Date().toISOString();
-  const xChatRouteVersion = "hx2-chat-send-clean-v3-v3-stamp-1771043614";
-
-  // --- WEB VARS (hoisted for catch) ---
-  let wantWeb = false;
-  let useWeb = false;
-  let explicitUrls: string[] = [];
-  let webHits: WebHit[] = [];
-  let sources: WebSource[] = [];
-  // --- /WEB VARS ---
-
+  const version = "hx2-chat-send-clean-v4";
   try {
-    const body: any = await req.json().catch(() => ({}));
-    const message =
+    const body = await req.json().catch(() => ({} as any));
+    const msg =
       body?.message ??
       body?.text ??
       body?.input ??
@@ -73,47 +52,37 @@ export async function POST(req: NextRequest) {
       body?.content ??
       "";
 
-    const msg = String(message || "");
-    wantWeb = wantsWeb(msg);
-    explicitUrls = extractUrls(msg);
-    useWeb = wantWeb || explicitUrls.length > 0;
+    const message = String(msg || "");
+    const useWeb = wantsWeb(message);
 
-    // 1) Seed sources[] from web/search when web is desired
+    // Seed sources deterministically from /api/web/search when web is requested
+    let sources: WebResult[] = [];
+    let provider: string | null = null;
+
     if (useWeb) {
-      webHits = await hx2WebSearch(req.url, msg, 5);
-
-      // Deterministic: always seed sources from hits (even without fetch)
-      sources = (webHits || [])
-        .map((h: WebHit) => ({
-          url: String(h?.url || "").trim(),
-          title: String(h?.title || "").trim() || undefined,
-          fetched_at: new Date().toISOString(),
-          excerpt: String((h as any)?.snippet || "").trim() || undefined,
-        }))
-        .filter(s => !!s.url);
-
-      // If user provided explicit URLs, include them too (dedupe)
-      for (const u of explicitUrls) {
-        if (!sources.some(s => s.url === u)) {
-          sources.push({ url: u, fetched_at: new Date().toISOString() });
-        }
+      try {
+        const ws = await webSearch(req.url, message, 5);
+        sources = ws.results.slice(0, 5);
+        provider = ws.provider || null;
+      } catch {
+        sources = [];
       }
     }
 
-    const web_context = buildWebContext(sources);
+    const web_context = useWeb ? buildWebContext(sources) : "";
+    const messageForBrain = message + web_context;
 
-    // 2) Forward to brain (unchanged contract: send message; add web_context for better grounding)
-    const target = process.env.AP2_GATEWAY_URL
-      ? `${process.env.AP2_GATEWAY_URL.replace(/\/+$/,"")}/brain/chat`
-      : "https://ap2-worker.optinodeiq.com/brain/chat";
+    const Gateway = process.env.AP2_GATEWAY_URL || "https://ap2-worker.optinodeiq.com";
+    const target = `${Gateway}/brain/chat`;
 
     const fr = await fetch(target, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       cache: "no-store",
       body: JSON.stringify({
-        message: msg + (web_context ? web_context : ""),
-        mode: "SAFE",
+        message: messageForBrain,
+        // lightweight debug for the worker (safe)
+        web: { use_web: useWeb, sources_n: sources.length, provider },
       }),
     });
 
@@ -125,34 +94,31 @@ export async function POST(req: NextRequest) {
         forwarded: true,
         url: target,
         data,
-        sources, // ✅ deterministic sources[] returned from web/search seeding
+        sources, // <— always returned when useWeb = true and search succeeded
         web: {
-          want_web: wantWeb,
           use_web: useWeb,
-          explicit_urls: explicitUrls.length,
-          web_hits_n: webHits?.length || 0,
-          sources_n: sources?.length || 0,
-          started_at: startedAt,
+          sources_n: sources.length,
+          provider,
         },
       },
-      { headers: { "x-chat-route-version": xChatRouteVersion } }
+      {
+        status: 200,
+        headers: {
+          "x-chat-route-version": version,
+          "cache-control": "no-store",
+        },
+      }
     );
   } catch (e: any) {
     return NextResponse.json(
+      { ok: false, error: String(e?.message || e || "unknown") },
       {
-        ok: false,
-        error: String(e?.message || e),
-        sources,
-        web: {
-          want_web: wantWeb,
-          use_web: useWeb,
-          explicit_urls: explicitUrls.length,
-          web_hits_n: webHits?.length || 0,
-          sources_n: sources?.length || 0,
-          started_at: startedAt,
+        status: 500,
+        headers: {
+          "x-chat-route-version": version,
+          "cache-control": "no-store",
         },
-      },
-      { status: 500, headers: { "x-chat-route-version": xChatRouteVersion } }
+      }
     );
   }
 }
