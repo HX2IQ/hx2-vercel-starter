@@ -55,8 +55,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({} as any));
 
-    const q = norm(body?.q);
-    if (!q) {
+    const q0 = norm(body?.q);`n    const q = sanitizeQuery(q0);`nif (!q) {
       return NextResponse.json(
         { ok: false, error: "missing q", started, version },
         { status: 400, headers: { "x-rss-scan-version": version, "cache-control": "no-store" } }
@@ -75,7 +74,8 @@ export async function POST(req: NextRequest) {
     const max_matches =
       Number.isFinite(Number(body?.max_matches)) ? Math.max(1, Math.min(200, Number(body.max_matches))) : 50;
 
-    // Pull normalized items from allowlisted feeds via existing route
+    const rank_mode = norm(body?.rank_mode || "relevance"); // relevance|recent
+// Pull normalized items from allowlisted feeds via existing route
     const knownUrl = new URL("/api/rss/known", req.url);
 
     const res = await fetch(knownUrl, {
@@ -120,6 +120,8 @@ export async function POST(req: NextRequest) {
         const url = norm((it as any)?.url || it?.link);
         const excerpt = norm((it as any)?.excerpt || it?.contentSnippet || it?.summary || it?.description);
         const published_at = norm((it as any)?.published_at || it?.pubDate || (it as any)?.date);
+        const published_ms = parseDate(published_at);
+
 
         const hay = (title + " " + excerpt).trim();
         const s = scoreText(hay, terms);
@@ -130,7 +132,7 @@ export async function POST(req: NextRequest) {
             feed_name,
             title,
             url,
-            published_at: published_at || null,
+            published_at: published_at || null,`n            published_ms: published_ms,
             excerpt: excerpt || null,
             score: s
           });
@@ -138,7 +140,11 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    matches.sort((a, b) => (b.score - a.score));
+    if (rank_mode === "recent") {
+      matches.sort((a, b) => ((b.published_ms ?? 0) - (a.published_ms ?? 0)) || (b.score - a.score));
+    } else {
+      matches.sort((a, b) => (b.score - a.score) || ((b.published_ms ?? 0) - (a.published_ms ?? 0)));
+    }
 
     const out = matches.slice(0, max_matches);
 
@@ -147,8 +153,7 @@ export async function POST(req: NextRequest) {
         ok: true,
         started,
         version,
-        q,
-        ids_used: ids && ids.length ? ids : null,
+        q_raw: q0,`n        q,`nids_used: ids && ids.length ? ids : null,
         n_items_per_feed,
         timeout_ms,
         feeds_n: data.feeds.length,
