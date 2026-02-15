@@ -81,7 +81,9 @@ const useWeb = shouldUseWeb(String(msg || ""));
     let ws_results_n: number | null = null;
 
     if (useWeb) {
-      const q = String(msg || "").replace(/^use web:\s*/i, "").trim() || String(msg || "");
+      let q = String(msg || "").replace(/^use web:\s*/i, "").trim() || String(msg || "");
+q = q.replace(/\s*cite\s+sources\.?\s*$/i, "").trim();
+q = q.replace(/[.?!].*$/, "").trim();
 
       // IMPORTANT: build URL from req.url (no origin string concat)
       const u = new URL("/api/web/search", req.url);
