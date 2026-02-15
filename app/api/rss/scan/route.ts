@@ -47,6 +47,40 @@ function scoreText(hay: string, terms: string[]): number {
   }
   return score;
 }
+function sanitizeQuery(input: string): string {
+  // Remove common prompt tails that break RSS/OpenSearch matching
+  let s = (input || "").trim();
+
+  // Strip "Cite sources." / "cite sources" / trailing punctuation noise
+  s = s.replace(/\b(cite\s+sources\.?|cite\s+source\.?)\b/ig, "").trim();
+
+  // Collapse whitespace
+  s = s.replace(/\s+/g, " ").trim();
+
+  // Remove trailing punctuation that often makes exact-match feeds return 0
+  s = s.replace(/[.?!]+$/g, "").trim();
+
+  return s;
+}
+function parseDate(s: string | null | undefined): number | null {
+  const v = (s || "").trim();
+  if (!v) return null;
+
+  // Native parse handles RFC822 + ISO8601
+  const t = Date.parse(v);
+  if (!Number.isNaN(t)) return t;
+
+  // Numeric fallback (seconds or ms)
+  const n = Number(v);
+  if (Number.isFinite(n)) {
+    if (n > 0 && n < 10000000000) return n * 1000;
+    if (n >= 10000000000) return n;
+  }
+
+  return null;
+}
+
+
 
 export async function POST(req: NextRequest) {
   const version = "hx2-rss-scan-v1";
@@ -55,7 +89,9 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({} as any));
 
-    const q0 = norm(body?.q);`n    const q = sanitizeQuery(q0);`nif (!q) {
+    const q0 = norm(body?.q);
+    const q = sanitizeQuery(q0);
+    if (!q) {
       return NextResponse.json(
         { ok: false, error: "missing q", started, version },
         { status: 400, headers: { "x-rss-scan-version": version, "cache-control": "no-store" } }
@@ -132,7 +168,8 @@ export async function POST(req: NextRequest) {
             feed_name,
             title,
             url,
-            published_at: published_at || null,`n            published_ms: published_ms,
+            published_at: published_at || null,
+        published_ms: published_ms,
             excerpt: excerpt || null,
             score: s
           });
@@ -153,7 +190,9 @@ export async function POST(req: NextRequest) {
         ok: true,
         started,
         version,
-        q_raw: q0,`n        q,`nids_used: ids && ids.length ? ids : null,
+        q_raw: q0,
+        q,
+        ids_used: ids && ids.length ? ids : null,
         n_items_per_feed,
         timeout_ms,
         feeds_n: data.feeds.length,
