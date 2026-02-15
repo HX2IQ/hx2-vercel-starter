@@ -12,6 +12,25 @@ type WebSource = {
   excerpt?: string;
 };
 
+
+function normalizeWebQuery(message: string): string {
+  let q = (message || "").trim();
+
+  // If user used "Use web:" prefix, prefer substring after it.
+  const m = q.match(/^\s*use\s+web\s*:\s*(.+)$/i);
+  if (m?.[1]) q = m[1].trim();
+
+  // Remove common "cite sources" instruction tails
+  q = q.replace(/\b(cite\s+sources?|cite)\b.*$/i, "").trim();
+
+  // Trim trailing punctuation
+  q = q.replace(/[.!,;:\s]+$/g, "").trim();
+
+  // Collapse whitespace
+  q = q.replace(/\s+/g, " ").trim();
+
+  return q;
+}
 function shouldUseWeb(message: string): boolean {
   const m = (message || "").toLowerCase();
   if (m.includes("use web:")) return true;
@@ -46,7 +65,9 @@ export async function POST(req: NextRequest) {
       body?.content ??
       "";
 
-    const useWeb = shouldUseWeb(String(msg || ""));
+    
+    const webQuery = normalizeWebQuery(msg);
+const useWeb = shouldUseWeb(String(msg || ""));
     let sources: WebSource[] = [];
     let provider: string | null = null;
 
@@ -133,7 +154,9 @@ export async function POST(req: NextRequest) {
           provider,
           sources_n: sources.length,
           debug: {
-            search_url,
+            
+          sent_q: webQuery,
+search_url,
             search_status,
             search_content_type,
             search_text_head,
