@@ -198,6 +198,7 @@ export async function POST(req: NextRequest) {
         feeds_n: data.feeds.length,
         scanned_items_n: scanned,
         matches_n: out.length,
+      rank_mode: rank_mode,
         matches: out
       },
       { status: 200, headers: { "x-rss-scan-version": version, "cache-control": "no-store" } }
