@@ -82,6 +82,12 @@ function buildWebContext(sources: WebSource[]): string {
 }
 
 export async function POST(req: NextRequest) {
+    // --- Web search locals (declare once; mutate later) ---
+    const web_n = 5;
+    const web_debug: Record<string, any> = {};
+    let sent_q: string | null = null;
+    // -----------------------------------------------------
+
   const version = "hx2-chat-send-clean-v6";
   let sources: any[] = [];
   try {
@@ -135,6 +141,7 @@ try {
   ws_ok = !!ws?.ok;
   results = Array.isArray(ws?.results) ? ws.results : [];
   ws_results_n = results.length;
+let sent_q: string | null = null;
 
 
   // If provider returns 0 results for question-style queries, retry once with a keyword fallback
@@ -145,7 +152,7 @@ try {
         const retryRes = await fetch(search_url, {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ q: retry_q, n: (web_n || 5) })
+          body: JSON.stringify({ q: retry_q, n: 5 })
         });
         const retryText = await retryRes.text();
         const retryJson = JSON.parse(retryText);
@@ -154,9 +161,9 @@ try {
           results = retryResults;
           ws_results_n = retryResults.length;
           // expose retry in debug if you keep a debug object
-          try { (web_debug as any).retry_q = retry_q; } catch {}
+          
         } else {
-          try { (web_debug as any).retry_q = retry_q; (web_debug as any).retry_results_n = 0; } catch {}
+          
         }
       } catch {
         try { (web_debug as any).retry_failed = true; } catch {}
@@ -166,8 +173,7 @@ try {
   ws_ok = false;
   ws_results_n = 0;
 }
-      let sent_q: canonicalizeWebQuery(string | null = null;)
-      sent_q = q;
+      sent_q = canonicalizeWebQuery(q);
 sources = results
         .map((r) => ({
           url: String(r?.url || ""),
@@ -190,7 +196,8 @@ sources = results
       cache: "no-store",
       body: JSON.stringify({
         message: String(msg || "") + web_context,
-        web: { use_web: useWeb, provider, sources_n: sources.length },
+        web: {
+use_web: useWeb, provider, sources_n: sources.length },
         sources,
       }),
     });
