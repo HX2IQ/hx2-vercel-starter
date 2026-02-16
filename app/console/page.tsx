@@ -1,394 +1,161 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
-type RunState = "IDLE" | "ENQUEUED" | "RUNNING" | "DONE" | "ERROR" | "NOOP";
-
-type RunRecord = {
-  id: string;              // taskId after enqueue; temp UI id before that
-  taskType: string;
-  payload: any;
-  createdAt: string;
-  state: RunState;
-  enqueueResponse?: any;
-  statusResponse?: any;
-  result?: any;
-  error?: string | null;
-  verify?: {
-    endpoint?: string | null;
-    before?: any;
-    after?: any;
-    applied?: boolean | null;
-    note?: string;
-  };
-};
-
-function sleep(ms: number) {
-  return new Promise((r) => setTimeout(r, ms));
-}
-
-async function httpJson(url: string, init?: RequestInit) {
-  const res = await fetch(url, init);
-  const text = await res.text().catch(() => "");
-  let json: any = null;
-  try {
-    json = JSON.parse(text);
-  } catch {
-    json = { ok: false, error: "bad_json", raw: text.slice(0, 500) };
-  }
-  return { ok: res.ok, status: res.status, json };
-}
-
-function badge(state: RunState) {
-  if (state === "ENQUEUED") return "🟡 ENQUEUED";
-  if (state === "RUNNING") return "🔵 RUNNING";
-  if (state === "DONE") return "🟢 DONE";
-  if (state === "NOOP") return "⚪ NO-OP";
-  if (state === "ERROR") return "🔴 ERROR";
-  return "⚪ IDLE";
-}
-
-function verifyEndpoint(taskType: string, payload: any) {
-  // Proof sources (add more as you expand console)
-  if (taskType === "demo-node-01.ping") return "/api/nodes/demo-node-01/ping";
-
-  // If/when you implement /api/nodes/[nodeId]/describe, you can verify via registry
-  if (taskType === "node.describe") {
-    const nodeId = payload?.nodeId || payload?.id;
-    if (!nodeId) return null;
-    return `/api/registry/node/get?id=${encodeURIComponent(nodeId)}`;
-  }
-
-  return null;
-}
+type Source = { url?: string; title?: string };
+type ChatResp = any;
 
 export default function ConsolePage() {
-  const presets = useMemo(() => {
-    return [
-      {
-        taskType: "ping",
-        label: "Ping AP2 Worker",
-        payload: {},
-        verify: null,
-      },
-      {
-        taskType: "demo-node-01.ping",
-        label: "Ping Demo Node 01 (HTTP Proof)",
-        payload: {},
-        verify: "/api/nodes/demo-node-01/ping",
-      },
-      {
-        taskType: "registry.node.list",
-        label: "Registry List (direct HTTP)",
-        payload: {},
-        verify: "/api/registry/node/list",
-      },
-      {
-        taskType: "node.describe",
-        label: "Describe Node (requires AP2 taskType + route)",
-        payload: { nodeId: "demo-node-01" },
-        verify: "/api/registry/node/get?id=demo-node-01",
-      },
-    ];
-  }, []);
+  const [msg, setMsg] = useState("");
+  const [useWeb, setUseWeb] = useState(false);
+  const [useRss, setUseRss] = useState(false);
+  const [rankMode, setRankMode] = useState<"recent" | "relevance">("recent");
+  const [loading, setLoading] = useState(false);
+  const [resp, setResp] = useState<ChatResp | null>(null);
+  const [err, setErr] = useState<string | null>(null);
 
-  const [taskType, setTaskType] = useState(presets[0].taskType);
-  const [payloadText, setPayloadText] = useState(JSON.stringify(presets[0].payload, null, 2));
-  const [runs, setRuns] = useState<RunRecord[]>([]);
-  const [busy, setBusy] = useState(false);
+  const endpoint = useMemo(() => (useRss ? "/api/rss/scan" : "/api/chat/send"), [useRss]);
 
-  function loadPreset(t: string) {
-    const p = presets.find((x) => x.taskType === t);
-    if (!p) return;
-    setTaskType(p.taskType);
-    setPayloadText(JSON.stringify(p.payload ?? {}, null, 2));
-  }
+  async function run() {
+    setErr(null);
+    setResp(null);
 
-  async function runTask() {
-    let payload: any = {};
+    const m = msg.trim();
+    if (!m) return;
+
+    setLoading(true);
     try {
-      payload = payloadText?.trim() ? JSON.parse(payloadText) : {};
+      if (useRss) {
+        // RSS scan directly (no “rss:” prefix dependency)
+        const body = {
+          q: m,
+          ids: ["bbc_top", "consortium", "grayzone", "mintpress"],
+          n_items_per_feed: 25,
+          max_matches: 20,
+          timeout_ms: 12000,
+          rank_mode: rankMode,
+        };
+        const r = await fetch(endpoint, {
+          method: "POST",
+          headers: { "content-type": "application/json", "cache-control": "no-cache" },
+          body: JSON.stringify(body),
+        });
+        const json = await r.json();
+        setResp(json);
+      } else {
+        // Chat send; keep it simple: use prefix to trigger web
+        const sendMsg = useWeb ? `Use web: ${m} Cite sources.` : m;
+        const r = await fetch(endpoint, {
+          method: "POST",
+          headers: { "content-type": "application/json", "cache-control": "no-cache" },
+          body: JSON.stringify({ message: sendMsg }),
+        });
+        const json = await r.json();
+        setResp(json);
+      }
     } catch (e: any) {
-      const rec: RunRecord = {
-        id: `ui_${Date.now()}`,
-        taskType,
-        payload: payloadText,
-        createdAt: new Date().toISOString(),
-        state: "ERROR",
-        error: "Payload JSON invalid",
-        result: { detail: String(e?.message || e) },
-      };
-      setRuns((prev) => [rec, ...prev]);
-      return;
+      setErr(e?.message || String(e));
+    } finally {
+      setLoading(false);
     }
-
-    setBusy(true);
-
-    const uiId = `ui_${Date.now()}`;
-    const createdAt = new Date().toISOString();
-
-    const proofUrl = verifyEndpoint(taskType, payload);
-
-    // add initial record
-    setRuns((prev) => [
-      {
-        id: uiId,
-        taskType,
-        payload,
-        createdAt,
-        state: "ENQUEUED",
-        verify: proofUrl ? { endpoint: proofUrl } : { endpoint: null, note: "No verification configured (completion != change)" },
-      },
-      ...prev,
-    ]);
-
-    // BEFORE proof snapshot
-    let before: any = null;
-    if (proofUrl) {
-      const beforeRes = await httpJson(proofUrl, { method: "GET" });
-      before = beforeRes.json;
-      setRuns((prev) =>
-        prev.map((r) => (r.id === uiId ? { ...r, verify: { ...(r.verify || {}), endpoint: proofUrl, before } } : r))
-      );
-    }
-
-    // ENQUEUE
-    const enqueueRes = await httpJson("/api/ap2/task/enqueue", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ taskType, mode: "SAFE", payload }),
-    });
-
-    if (!enqueueRes.ok) {
-      setRuns((prev) =>
-        prev.map((r) =>
-          r.id === uiId
-            ? { ...r, state: "ERROR", enqueueResponse: enqueueRes.json, error: enqueueRes.json?.error || "enqueue_failed" }
-            : r
-        )
-      );
-      setBusy(false);
-      return;
-    }
-
-    const realTaskId = enqueueRes.json?.task?.id || enqueueRes.json?.taskId;
-    if (!realTaskId) {
-      setRuns((prev) =>
-        prev.map((r) => (r.id === uiId ? { ...r, state: "ERROR", enqueueResponse: enqueueRes.json, error: "missing_task_id" } : r))
-      );
-      setBusy(false);
-      return;
-    }
-
-    // update record with real taskId
-    setRuns((prev) =>
-      prev.map((r) =>
-        r.id === uiId
-          ? { ...r, id: realTaskId, state: "RUNNING", enqueueResponse: enqueueRes.json }
-          : r
-      )
-    );
-
-    // POLL STATUS
-    const deadline = Date.now() + 30000;
-    let statusJson: any = null;
-
-    while (Date.now() < deadline) {
-      const st = await httpJson(`/api/ap2/task/status?taskId=${encodeURIComponent(realTaskId)}`, { method: "GET" });
-      statusJson = st.json;
-      const s = String(statusJson?.state || "").toUpperCase();
-
-      setRuns((prev) =>
-        prev.map((r) => (r.id === realTaskId ? { ...r, statusResponse: statusJson } : r))
-      );
-
-      if (s === "DONE" || s === "COMPLETED") {
-        setRuns((prev) =>
-          prev.map((r) =>
-            r.id === realTaskId
-              ? { ...r, state: "DONE", result: statusJson?.result, error: null }
-              : r
-          )
-        );
-        break;
-      }
-
-      if (s === "ERROR" || s === "FAILED") {
-        setRuns((prev) =>
-          prev.map((r) =>
-            r.id === realTaskId
-              ? { ...r, state: "ERROR", error: statusJson?.error || "task_failed", result: null }
-              : r
-          )
-        );
-        setBusy(false);
-        return;
-      }
-
-      await sleep(1200);
-    }
-
-    // AFTER proof snapshot
-    if (proofUrl) {
-      const afterRes = await httpJson(proofUrl, { method: "GET" });
-      const after = afterRes.json;
-
-      const beforeUpdated = before?.node?.updatedAt || before?.updatedAt;
-      const afterUpdated = after?.node?.updatedAt || after?.updatedAt;
-
-      const applied =
-        typeof beforeUpdated === "string" && typeof afterUpdated === "string"
-          ? beforeUpdated !== afterUpdated
-          : null;
-
-      setRuns((prev) =>
-        prev.map((r) =>
-          r.id === realTaskId
-            ? {
-                ...r,
-                verify: {
-                  endpoint: proofUrl,
-                  before,
-                  after,
-                  applied,
-                  note:
-                    applied === true
-                      ? "Verified change (updatedAt changed)"
-                      : applied === false
-                      ? "Verified NO-OP (updatedAt same)"
-                      : "Verified response (no diff rule)",
-                },
-                state: applied === false ? "NOOP" : r.state,
-              }
-            : r
-        )
-      );
-    }
-
-    setBusy(false);
   }
+
+  const sources: Source[] =
+    (resp?.sources as Source[]) ||
+    (resp?.data?.sources as Source[]) ||
+    [];
 
   return (
-    <div style={{ padding: 20, maxWidth: 1100, margin: "0 auto", fontFamily: "system-ui, Segoe UI, Arial" }}>
-      <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 10 }}>HX2 Console</h1>
+    <main style={{ maxWidth: 1100, margin: "24px auto", padding: "0 16px", fontFamily: "system-ui" }}>
+      <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 8 }}>HX2 Console</h1>
+      <p style={{ opacity: 0.75, marginTop: 0 }}>
+        Chat + Web + RSS from one screen (no PowerShell patch loops).
+      </p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "360px 1fr", gap: 16 }}>
-        <div style={{ border: "1px solid #ddd", borderRadius: 12, padding: 14 }}>
-          <div style={{ fontWeight: 700, marginBottom: 8 }}>Commands</div>
-          <select
-            value={taskType}
-            onChange={(e) => {
-              const v = e.target.value;
-              setTaskType(v);
-              loadPreset(v);
-            }}
-            style={{ width: "100%", padding: 10, borderRadius: 10, border: "1px solid #ccc" }}
-          >
-            {presets.map((p) => (
-              <option key={p.taskType} value={p.taskType}>
-                {p.label}
-              </option>
-            ))}
+      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center", margin: "14px 0" }}>
+        <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <input type="checkbox" checked={useWeb} onChange={(e) => setUseWeb(e.target.checked)} disabled={useRss} />
+          Use Web
+        </label>
+
+        <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <input type="checkbox" checked={useRss} onChange={(e) => setUseRss(e.target.checked)} />
+          Use RSS
+        </label>
+
+        <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          Rank
+          <select value={rankMode} onChange={(e) => setRankMode(e.target.value as any)} disabled={!useRss}>
+            <option value="recent">recent</option>
+            <option value="relevance">relevance</option>
           </select>
-
-          <div style={{ marginTop: 12, fontSize: 12, color: "#666" }}>
-            <div><b>TaskType:</b> {taskType}</div>
-            <div><b>Verification:</b> {verifyEndpoint(taskType, (() => { try { return JSON.parse(payloadText||"{}"); } catch { return {}; } })()) || "None"}</div>
-          </div>
-
-          <button
-            onClick={runTask}
-            disabled={busy}
-            style={{
-              marginTop: 12,
-              width: "100%",
-              padding: "10px 12px",
-              borderRadius: 12,
-              border: "1px solid #333",
-              background: busy ? "#eee" : "#111",
-              color: busy ? "#333" : "#fff",
-              cursor: busy ? "not-allowed" : "pointer",
-              fontWeight: 700,
-            }}
-          >
-            {busy ? "Running..." : "Run"}
-          </button>
-
-          <div style={{ marginTop: 12, fontSize: 12, color: "#555" }}>
-            ✅ <b>DONE</b> means task completed.<br />
-            🧾 <b>Proof panel</b> tells you if it actually changed anything.
-          </div>
-        </div>
-
-        <div style={{ border: "1px solid #ddd", borderRadius: 12, padding: 14 }}>
-          <div style={{ fontWeight: 700, marginBottom: 8 }}>Payload (JSON)</div>
-          <textarea
-            value={payloadText}
-            onChange={(e) => setPayloadText(e.target.value)}
-            spellCheck={false}
-            style={{
-              width: "100%",
-              minHeight: 210,
-              padding: 12,
-              borderRadius: 12,
-              border: "1px solid #ccc",
-              fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-              fontSize: 12,
-              lineHeight: 1.4,
-            }}
-          />
-        </div>
+        </label>
       </div>
 
-      <h2 style={{ marginTop: 18, fontSize: 16, fontWeight: 800 }}>Recent results</h2>
+      <textarea
+        value={msg}
+        onChange={(e) => setMsg(e.target.value)}
+        placeholder="Type your question…"
+        rows={4}
+        style={{ width: "100%", padding: 12, borderRadius: 10, border: "1px solid #ddd" }}
+      />
 
-      <div style={{ display: "grid", gap: 12 }}>
-        {runs.map((r) => (
-          <div key={r.id} style={{ border: "1px solid #ddd", borderRadius: 14, padding: 14 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-              <div>
-                <div style={{ fontWeight: 800 }}>{badge(r.state)} <span style={{ color: "#666", fontWeight: 600 }}>— {r.taskType}</span></div>
-                <div style={{ fontSize: 12, color: "#666" }}>taskId: {r.id}</div>
-                <div style={{ fontSize: 12, color: "#666" }}>created: {r.createdAt}</div>
-              </div>
-              {r.error ? <div style={{ color: "#b00020", fontWeight: 800 }}>{r.error}</div> : null}
-            </div>
+      <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+        <button
+          onClick={run}
+          disabled={loading}
+          style={{ padding: "10px 14px", borderRadius: 10, border: "1px solid #111", background: "#111", color: "white" }}
+        >
+          {loading ? "Running…" : "Run"}
+        </button>
 
-            <details style={{ marginTop: 10 }}>
-              <summary style={{ cursor: "pointer", fontWeight: 700 }}>Show details</summary>
-              <pre style={{ marginTop: 10, padding: 12, borderRadius: 12, background: "#f7f7f7", overflowX: "auto", fontSize: 12 }}>
-{JSON.stringify({
-  payload: r.payload,
-  enqueueResponse: r.enqueueResponse,
-  statusResponse: r.statusResponse,
-  result: r.result,
-}, null, 2)}
-              </pre>
-            </details>
-
-            <div style={{ marginTop: 10, padding: 12, borderRadius: 12, background: "#fafafa", border: "1px solid #eee" }}>
-              <div style={{ fontWeight: 800, marginBottom: 6 }}>Proof / Verification</div>
-              <div style={{ fontSize: 12, color: "#555" }}>
-                <div><b>Endpoint:</b> {r.verify?.endpoint || "None"}</div>
-                <div><b>Note:</b> {r.verify?.note || (r.verify?.endpoint ? "Snapshot taken" : "No verification configured (completion != change)")}</div>
-                {typeof r.verify?.applied === "boolean" ? (
-                  <div><b>Applied:</b> {r.verify?.applied ? "YES (changed)" : "NO (no-op)"} </div>
-                ) : null}
-              </div>
-
-              {r.verify?.before || r.verify?.after ? (
-                <details style={{ marginTop: 8 }}>
-                  <summary style={{ cursor: "pointer", fontWeight: 700, fontSize: 12 }}>Show before/after</summary>
-                  <pre style={{ marginTop: 8, padding: 10, borderRadius: 12, background: "#f7f7f7", overflowX: "auto", fontSize: 12 }}>
-{JSON.stringify({ before: r.verify?.before, after: r.verify?.after }, null, 2)}
-                  </pre>
-                </details>
-              ) : null}
-            </div>
-          </div>
-        ))}
-        {runs.length === 0 ? <div style={{ color: "#666" }}>No runs yet.</div> : null}
+        <button
+          onClick={() => { setMsg(""); setResp(null); setErr(null); }}
+          disabled={loading}
+          style={{ padding: "10px 14px", borderRadius: 10, border: "1px solid #ddd", background: "white" }}
+        >
+          Clear
+        </button>
       </div>
-    </div>
+
+      {err && (
+        <pre style={{ marginTop: 16, padding: 12, background: "#fff3f3", border: "1px solid #ffd1d1", borderRadius: 10 }}>
+          {err}
+        </pre>
+      )}
+
+      {resp && (
+        <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr", gap: 12 }}>
+          <section style={{ padding: 12, border: "1px solid #eee", borderRadius: 12 }}>
+            <div style={{ fontWeight: 700, marginBottom: 8 }}>Reply</div>
+            <pre style={{ whiteSpace: "pre-wrap", margin: 0 }}>
+              {resp?.reply ?? resp?.data?.reply ?? "(no reply field returned)"}
+            </pre>
+          </section>
+
+          <section style={{ padding: 12, border: "1px solid #eee", borderRadius: 12 }}>
+            <div style={{ fontWeight: 700, marginBottom: 8 }}>Sources ({sources.length})</div>
+            {sources.length ? (
+              <ul style={{ margin: 0, paddingLeft: 18 }}>
+                {sources.slice(0, 10).map((s, i) => (
+                  <li key={i}>
+                    <a href={s.url || "#"} target="_blank" rel="noreferrer">{s.title || s.url}</a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div style={{ opacity: 0.7 }}>(none)</div>
+            )}
+          </section>
+
+          <section style={{ padding: 12, border: "1px solid #eee", borderRadius: 12 }}>
+            <div style={{ fontWeight: 700, marginBottom: 8 }}>Raw JSON</div>
+            <pre style={{ whiteSpace: "pre-wrap", margin: 0 }}>
+              {JSON.stringify(resp, null, 2)}
+            </pre>
+          </section>
+        </div>
+      )}
+    </main>
   );
 }
