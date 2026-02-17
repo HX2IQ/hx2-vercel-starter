@@ -8,7 +8,8 @@ type RssMatch = {
   title?: string;
   url?: string;
   published_at?: string | null;
-  score?: number;
+  published_ms?: number | null;
+  score?: number | null;
   excerpt?: string | null;
 };
 
@@ -46,7 +47,9 @@ export default function HX2ConsolePage() {
   async function callJson(url: string, body?: any) {
     const res = await fetch(url, {
       method: body ? "POST" : "GET",
-      headers: body ? { "content-type": "application/json", "cache-control": "no-cache" } : { "cache-control": "no-cache" },
+      headers: body
+        ? { "content-type": "application/json", "cache-control": "no-cache" }
+        : { "cache-control": "no-cache" },
       body: body ? JSON.stringify(body) : undefined,
     });
     const text = await res.text();
@@ -55,9 +58,30 @@ export default function HX2ConsolePage() {
     return json;
   }
 
-  function getTopMatch(rssResp: any): RssMatch | null {
+  // IMPORTANT: "best match" should NOT be matches[0].
+  // We pick highest score; tie-break by recency when rankMode=recent.
+  function getBestMatch(rssResp: any): RssMatch | null {
     if (!rssResp?.ok || !Array.isArray(rssResp?.matches) || rssResp.matches.length < 1) return null;
-    return rssResp.matches[0] as RssMatch;
+
+    const list = rssResp.matches as RssMatch[];
+
+    let best: RssMatch | null = null;
+    for (const m of list) {
+      const s = Number(m.score ?? 0);
+      const p = Number(m.published_ms ?? 0);
+
+      if (!best) { best = m; continue; }
+
+      const bs = Number(best.score ?? 0);
+      const bp = Number(best.published_ms ?? 0);
+
+      if (s > bs) { best = m; continue; }
+
+      if (s === bs && rankMode === "recent") {
+        if (p > bp) { best = m; continue; }
+      }
+    }
+    return best;
   }
 
   async function run() {
@@ -74,9 +98,8 @@ export default function HX2ConsolePage() {
         return;
       }
 
-      // 1) RSS scan (optional)
       let rssResp: any = null;
-      let top: RssMatch | null = null;
+      let best: RssMatch | null = null;
 
       if (useRss) {
         const rssUrl = `${base}/api/rss/scan?ts=${ts()}`;
@@ -90,32 +113,29 @@ export default function HX2ConsolePage() {
         };
         rssResp = await callJson(rssUrl, rssBody);
         setRssJson(rssResp);
-        top = getTopMatch(rssResp);
+        best = getBestMatch(rssResp);
       }
 
-      // 2) Build a higher-signal chat message
-      // If RSS found something, ask specifically about the top match URL/title.
-      // This avoids generic "clarify" replies.
+      // Build high-signal chat message from BEST RSS match
       let finalMsg = m0;
 
-      if (top?.url) {
+      if (best?.url) {
         finalMsg =
           `Analyze this specific article and summarize key claims + implications:\n` +
-          `${top.title ? `Title: ${top.title}\n` : ""}` +
-          `URL: ${top.url}\n` +
-          `${top.published_at ? `Published: ${top.published_at}\n` : ""}` +
-          `\n` +
-          `Return: (1) 5-bullet summary (2) bias/angle assessment (3) 3 follow-up verification questions.`;
+          `${best.title ? `Title: ${best.title}\n` : ""}` +
+          `URL: ${best.url}\n` +
+          `${best.published_at ? `Published: ${best.published_at}\n` : ""}` +
+          `${(best.score ?? null) !== null ? `Score: ${best.score}\n` : ""}` +
+          `\nReturn: (1) 5-bullet summary (2) bias/angle assessment (3) 3 follow-up verification questions.`;
       }
 
-      // Web trigger (kept as explicit prefix because backend currently keys off it)
+      // Keep web explicit (backend trigger). But if web returns 0, it should not fabricate.
       if (useWeb) {
-        finalMsg = `Use web: ${finalMsg}\nCite sources.`;
+        finalMsg = `Use web: ${finalMsg}\nOnly cite from provided sources[]. If sources[] is empty, say web returned 0 results.`;
       }
 
       setFinalMessageSent(finalMsg);
 
-      // 3) Send to chat
       const chatUrl = `${base}/api/chat/send?ts=${ts()}`;
       const chatBody = { message: finalMsg };
       const chatResp = await callJson(chatUrl, chatBody);
@@ -131,16 +151,16 @@ export default function HX2ConsolePage() {
     }
   }
 
-  function promoteTopRssToMessage() {
-    const top = getTopMatch(rssJson);
-    if (top?.title) setMsg(top.title);
+  function promoteBestRssToMessage() {
+    const best = getBestMatch(rssJson);
+    if (best?.title) setMsg(best.title);
   }
 
   return (
     <div style={{ padding: 16, fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, sans-serif" }}>
       <h1 style={{ margin: "0 0 8px 0" }}>HX2 Console</h1>
       <div style={{ marginBottom: 12, opacity: 0.8 }}>
-        Operator console: RSS scan + “promote top match” into chat (high-signal).
+        Operator console: RSS scan + promote BEST match (score-first) into chat (high-signal).
       </div>
 
       <div style={{ display: "grid", gap: 8, maxWidth: 1050 }}>
@@ -193,8 +213,8 @@ export default function HX2ConsolePage() {
           <button onClick={run} disabled={busy} style={{ padding: "10px 14px", cursor: busy ? "not-allowed" : "pointer" }}>
             {busy ? "Running..." : "Run"}
           </button>
-          <button onClick={promoteTopRssToMessage} disabled={!rssJson?.ok} style={{ padding: "10px 14px" }}>
-            Promote Top RSS Title → Message
+          <button onClick={promoteBestRssToMessage} disabled={!rssJson?.ok} style={{ padding: "10px 14px" }}>
+            Promote BEST RSS Title → Message
           </button>
           {error ? <div style={{ color: "crimson" }}>{error}</div> : null}
         </div>
@@ -222,7 +242,7 @@ export default function HX2ConsolePage() {
         </div>
 
         <div style={{ marginTop: 8, opacity: 0.8 }}>
-          Try: “Iran war oil lobby summit” (RSS will likely top-hit Grayzone). Then chat will analyze that specific URL.
+          With your query “Iran war oil lobby summit”, BEST match should select Grayzone (score=9) and feed that URL into chat.
         </div>
       </div>
     </div>
