@@ -17,9 +17,9 @@ export default function HX2ConsolePage() {
 
   const [base, setBase] = useState(BaseDefault);
   const [msg, setMsg] = useState("");
+
   const [useWeb, setUseWeb] = useState(false);
-  const [useRss, setUseRss] = useState(false);
-  const [blendRssIntoChat, setBlendRssIntoChat] = useState(true);
+  const [useRss, setUseRss] = useState(true);
 
   const [rankMode, setRankMode] = useState<"recent" | "relevance">("recent");
   const [idsCsv, setIdsCsv] = useState("bbc_top,consortium,grayzone,mintpress");
@@ -28,9 +28,11 @@ export default function HX2ConsolePage() {
   const [timeoutMs, setTimeoutMs] = useState(12000);
 
   const [busy, setBusy] = useState(false);
-  const [chatJson, setChatJson] = useState<any>(null);
-  const [rssJson, setRssJson] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const [rssJson, setRssJson] = useState<any>(null);
+  const [chatJson, setChatJson] = useState<any>(null);
+  const [finalMessageSent, setFinalMessageSent] = useState<string>("");
 
   const ids = useMemo(() => {
     return idsCsv
@@ -39,22 +41,7 @@ export default function HX2ConsolePage() {
       .filter(Boolean);
   }, [idsCsv]);
 
-  function ts() {
-    return Date.now();
-  }
-
-  function fmtRssDigest(matches: RssMatch[], limit = 6) {
-    const top = (matches || []).slice(0, limit);
-    if (!top.length) return "";
-    const lines = top.map((m, i) => {
-      const t = (m.title || "").replace(/\s+/g, " ").trim();
-      const u = (m.url || "").trim();
-      const f = (m.feed_id || m.feed_name || "").trim();
-      const p = (m.published_at || "").trim();
-      return `${i + 1}. [${f}] ${t}${p ? ` (${p})` : ""}\n   ${u}`;
-    });
-    return `\n\n[RSS DIGEST | rank=${rankMode} | ids=${ids.join(",")}]\n${lines.join("\n")}\n`;
-  }
+  function ts() { return Date.now(); }
 
   async function callJson(url: string, body?: any) {
     const res = await fetch(url, {
@@ -68,11 +55,17 @@ export default function HX2ConsolePage() {
     return json;
   }
 
+  function getTopMatch(rssResp: any): RssMatch | null {
+    if (!rssResp?.ok || !Array.isArray(rssResp?.matches) || rssResp.matches.length < 1) return null;
+    return rssResp.matches[0] as RssMatch;
+  }
+
   async function run() {
     setBusy(true);
     setError(null);
-    setChatJson(null);
     setRssJson(null);
+    setChatJson(null);
+    setFinalMessageSent("");
 
     try {
       const m0 = (msg || "").trim();
@@ -81,10 +74,10 @@ export default function HX2ConsolePage() {
         return;
       }
 
-      let rssMatches: RssMatch[] = [];
+      // 1) RSS scan (optional)
       let rssResp: any = null;
+      let top: RssMatch | null = null;
 
-      // 1) Optional RSS scan
       if (useRss) {
         const rssUrl = `${base}/api/rss/scan?ts=${ts()}`;
         const rssBody = {
@@ -97,25 +90,33 @@ export default function HX2ConsolePage() {
         };
         rssResp = await callJson(rssUrl, rssBody);
         setRssJson(rssResp);
-        if (rssResp?.ok && Array.isArray(rssResp?.matches)) {
-          rssMatches = rssResp.matches as RssMatch[];
-        }
+        top = getTopMatch(rssResp);
       }
 
-      // 2) Chat
-      const chatUrl = `${base}/api/chat/send?ts=${ts()}`;
+      // 2) Build a higher-signal chat message
+      // If RSS found something, ask specifically about the top match URL/title.
+      // This avoids generic "clarify" replies.
       let finalMsg = m0;
 
-      // Web trigger (safe + backward compatible)
+      if (top?.url) {
+        finalMsg =
+          `Analyze this specific article and summarize key claims + implications:\n` +
+          `${top.title ? `Title: ${top.title}\n` : ""}` +
+          `URL: ${top.url}\n` +
+          `${top.published_at ? `Published: ${top.published_at}\n` : ""}` +
+          `\n` +
+          `Return: (1) 5-bullet summary (2) bias/angle assessment (3) 3 follow-up verification questions.`;
+      }
+
+      // Web trigger (kept as explicit prefix because backend currently keys off it)
       if (useWeb) {
         finalMsg = `Use web: ${finalMsg}\nCite sources.`;
       }
 
-      // Optional blend of RSS into chat context (no backend changes needed)
-      if (useRss && blendRssIntoChat) {
-        finalMsg = `${finalMsg}${fmtRssDigest(rssMatches)}`;
-      }
+      setFinalMessageSent(finalMsg);
 
+      // 3) Send to chat
+      const chatUrl = `${base}/api/chat/send?ts=${ts()}`;
       const chatBody = { message: finalMsg };
       const chatResp = await callJson(chatUrl, chatBody);
       setChatJson(chatResp);
@@ -130,21 +131,27 @@ export default function HX2ConsolePage() {
     }
   }
 
+  function promoteTopRssToMessage() {
+    const top = getTopMatch(rssJson);
+    if (top?.title) setMsg(top.title);
+  }
+
   return (
     <div style={{ padding: 16, fontFamily: "system-ui, -apple-system, Segoe UI, Roboto, sans-serif" }}>
       <h1 style={{ margin: "0 0 8px 0" }}>HX2 Console</h1>
-      <div style={{ marginBottom: 12, opacity: 0.8 }}>Control plane (Web + RSS + Blend) — client-side, low-risk.</div>
+      <div style={{ marginBottom: 12, opacity: 0.8 }}>
+        Operator console: RSS scan + “promote top match” into chat (high-signal).
+      </div>
 
-      <div style={{ display: "grid", gap: 8, maxWidth: 980 }}>
+      <div style={{ display: "grid", gap: 8, maxWidth: 1050 }}>
         <label style={{ display: "grid", gap: 4 }}>
           <div>Base URL</div>
           <input value={base} onChange={e => setBase(e.target.value)} style={{ padding: 8 }} />
         </label>
 
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
-          <label><input type="checkbox" checked={useWeb} onChange={e => setUseWeb(e.target.checked)} /> Use Web</label>
+          <label><input type="checkbox" checked={useWeb} onChange={e => setUseWeb(e.target.checked)} /> Use Web (explicit prefix)</label>
           <label><input type="checkbox" checked={useRss} onChange={e => setUseRss(e.target.checked)} /> Use RSS</label>
-          <label><input type="checkbox" checked={blendRssIntoChat} onChange={e => setBlendRssIntoChat(e.target.checked)} disabled={!useRss} /> Blend RSS into Chat</label>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
@@ -178,34 +185,44 @@ export default function HX2ConsolePage() {
         </div>
 
         <label style={{ display: "grid", gap: 4 }}>
-          <div>Message</div>
+          <div>Message (query seed)</div>
           <textarea value={msg} onChange={e => setMsg(e.target.value)} rows={4} style={{ padding: 8 }} />
         </label>
 
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <button onClick={run} disabled={busy} style={{ padding: "10px 14px", cursor: busy ? "not-allowed" : "pointer" }}>
             {busy ? "Running..." : "Run"}
           </button>
-          {error ? <div style={{ color: "crimson", paddingTop: 10 }}>{error}</div> : null}
+          <button onClick={promoteTopRssToMessage} disabled={!rssJson?.ok} style={{ padding: "10px 14px" }}>
+            Promote Top RSS Title → Message
+          </button>
+          {error ? <div style={{ color: "crimson" }}>{error}</div> : null}
+        </div>
+
+        <div>
+          <h3>Final message actually sent to chat</h3>
+          <pre style={{ whiteSpace: "pre-wrap", background: "#111", color: "#eee", padding: 12, borderRadius: 8 }}>
+            {finalMessageSent ? finalMessageSent : "(none yet)"}
+          </pre>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <div>
             <h3>RSS Response</h3>
-            <pre style={{ whiteSpace: "pre-wrap", background: "#111", color: "#eee", padding: 12, borderRadius: 8, minHeight: 240 }}>
+            <pre style={{ whiteSpace: "pre-wrap", background: "#111", color: "#eee", padding: 12, borderRadius: 8, minHeight: 260 }}>
               {rssJson ? JSON.stringify(rssJson, null, 2) : "(none)"}
             </pre>
           </div>
           <div>
             <h3>Chat Response</h3>
-            <pre style={{ whiteSpace: "pre-wrap", background: "#111", color: "#eee", padding: 12, borderRadius: 8, minHeight: 240 }}>
+            <pre style={{ whiteSpace: "pre-wrap", background: "#111", color: "#eee", padding: 12, borderRadius: 8, minHeight: 260 }}>
               {chatJson ? JSON.stringify(chatJson, null, 2) : "(none)"}
             </pre>
           </div>
         </div>
 
-        <div style={{ marginTop: 10, opacity: 0.8 }}>
-          Tip: Try “Who won the Super Bowl last Sunday?” with Web ON. Try “Iran war oil lobby summit” with RSS ON.
+        <div style={{ marginTop: 8, opacity: 0.8 }}>
+          Try: “Iran war oil lobby summit” (RSS will likely top-hit Grayzone). Then chat will analyze that specific URL.
         </div>
       </div>
     </div>
