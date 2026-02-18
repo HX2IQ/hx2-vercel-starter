@@ -28,6 +28,44 @@ function fallbackWebQuery(q: string) {
     .replace(/^(who|what|when|where|why|how)\s+/i, "")
     .trim();
 }
+type RssMatch = {
+  feed_id?: string;
+  feed_name?: string;
+  title?: string;
+  url?: string;
+  published_at?: string | null;
+  published_ms?: number | null;
+  score?: number | null;
+  excerpt?: string | null;
+};
+
+function pickBestRssMatch(matches: any, rankMode: "recent" | "relevance" = "recent"): RssMatch | null {
+  if (!Array.isArray(matches) || matches.length < 1) return null;
+
+  let best: RssMatch | null = null;
+  for (const m of matches as RssMatch[]) {
+    const s  = Number(m?.score ?? 0);
+    const pm = Number(m?.published_ms ?? 0);
+
+    if (!best) { best = m; continue; }
+
+    const bs  = Number(best?.score ?? 0);
+    const bpm = Number(best?.published_ms ?? 0);
+
+    if (s > bs) { best = m; continue; }
+    if (s === bs && rankMode === "recent" && pm > bpm) { best = m; continue; }
+  }
+  return best;
+}
+
+function shouldUseRssPromotion(rawMsg: string): boolean {
+  // Default ON unless user explicitly disables.
+  // You can later switch this to env-driven if you want.
+  const m = (rawMsg || "").toLowerCase();
+  if (m.includes("rss: off") || m.includes("use rss: off") || m.includes("rss off")) return false;
+  return true;
+}
+
 export const runtime = "nodejs";
 
 type WebSearchResult = { title?: string; url?: string; snippet?: string; source?: string };
@@ -92,13 +130,67 @@ export async function POST(req: NextRequest) {
   let sources: any[] = [];
   try {
     const body = await req.json().catch(() => ({} as any));
-    const msg =
-      body?.message ??
+  let msg =
+    body?.message ??
       body?.text ??
       body?.input ??
       body?.prompt ??
       body?.content ??
       "";
+  
+    const Base = process.env.NEXT_PUBLIC_BASE_URL || "https://optinodeiq.com";
+// === RSS_PROMOTION_BEGIN ===
+  // Promote best RSS match (score-first) into the brain prompt so responses are article-specific.
+  let rss_promo: any = null;
+  try {
+    const rawMsg = String(msg || "");
+    if (shouldUseRssPromotion(rawMsg)) {
+      const ts = Date.now();
+      const rssUrl = `${Base}/api/rss/scan?ts=${ts}`;
+      const idsDefault = ["bbc_top","consortium","grayzone","mintpress"];
+      const rssBody = {
+        q: rawMsg,
+        ids: idsDefault,
+        n_items_per_feed: 25,
+        max_matches: 20,
+        timeout_ms: 12000,
+        rank_mode: "recent"
+      };
+
+      const rssRes = await fetch(rssUrl, {
+        method: "POST",
+        headers: { "content-type": "application/json", "cache-control": "no-cache" },
+        body: JSON.stringify(rssBody)
+      });
+
+      const rssText = await rssRes.text();
+      let rssJson: any = null;
+      try { rssJson = JSON.parse(rssText); } catch { rssJson = { ok: false, error: "rss_non_json", text_head: rssText?.slice?.(0,200) }; }
+
+      const best = pickBestRssMatch(rssJson?.matches, "recent");
+      rss_promo = {
+        ok: !!rssJson?.ok,
+        matches_n: Array.isArray(rssJson?.matches) ? rssJson.matches.length : 0,
+        best: best ? { title: best.title, url: best.url, score: best.score, published_at: best.published_at, feed_id: best.feed_id } : null
+      };
+
+      if (best?.url) {
+        const inject =
+          `\n\n[RSS BEST MATCH]\n` +
+          `${best.title ? `Title: ${best.title}\n` : ""}` +
+          `URL: ${best.url}\n` +
+          `${best.published_at ? `Published: ${best.published_at}\n` : ""}` +
+          `${(best.score ?? null) !== null ? `Score: ${best.score}\n` : ""}` +
+          `\nInstruction: Analyze THIS article. Summarize key claims, assess bias/angle, and list 3 verification steps.\n`;
+
+        msg = rawMsg + inject;
+      }
+    }
+  } catch {
+    // swallow; RSS is an enhancer not a hard dependency
+  }
+  // === RSS_PROMOTION_END ===
+
 
     
     const webQuery = normalizeWebQuery(msg);
