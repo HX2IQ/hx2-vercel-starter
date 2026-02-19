@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { createTask, getTask } from "@/lib/ap2/tasks";\r
+import { createTask, getTask } from "@/lib/ap2/tasks";
 /**
  * Canonical HX2 ingress (AP2-first, Prisma-free).
  * Keeps the controller online while DB/schema work catches up.
@@ -10,6 +10,8 @@ export async function POST(req: NextRequest) {
   try { body = await req.json(); } catch {}
 
   const command = body?.command ?? body?.task ?? body?.action ?? null;
+
+
   const args = body?.args ?? body ?? {};
 
   // Helpers
@@ -105,3 +107,43 @@ export async function POST(req: NextRequest) {
       return err(command, "NOT_IMPLEMENTED", "Command not implemented in canonical hx2 route yet");
   }
 }
+async function ap2TaskStatusProxy(req: NextRequest, bodyAny: any) {
+  try {
+    const base = (process.env.AP2_WORKER_BASE_URL || process.env.AP2_WORKER_BASE || "https://ap2-worker.optinodeiq.com").trim();
+
+    // Accept taskId from body
+    const taskId = (bodyAny?.taskId ?? bodyAny?.id ?? "").toString().trim();
+    if (!taskId) {
+      return { ok: false, error: "missing_taskId", message: "Provide taskId." };
+    }
+
+    // Forward auth if present, otherwise use HX2_API_KEY
+    const incoming = req.headers.get("authorization") || "";
+    const k = (process.env.HX2_API_KEY || "").trim();
+    const auth = incoming || (k ? `Bearer ${k}` : "");
+
+    const url = `${base.replace(/\/+$/,"")}/api/ap2/task/status?taskId=${encodeURIComponent(taskId)}`;
+
+    const r = await fetch(url, {
+      method: "GET",
+      headers: {
+        ...(auth ? { authorization: auth } : {}),
+        "accept": "application/json"
+      },
+      cache: "no-store"
+    });
+
+    const text = await r.text();
+    let data: any = null;
+    try { data = text ? JSON.parse(text) : null; } catch { data = { ok: false, error: "BAD_JSON", http: r.status, text }; }
+
+    // Normalize return shape
+    if (!r.ok) {
+      return { ok: false, http: r.status, ...data };
+    }
+    return { ok: true, ...data };
+  } catch (e: any) {
+    return { ok: false, error: "ap2_task_status_proxy_failed", message: String(e?.message || e) };
+  }
+}
+
