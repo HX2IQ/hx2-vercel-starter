@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { createTask, getTask } from "@/lib/ap2/tasks";\r
 /**
  * Canonical HX2 ingress (AP2-first, Prisma-free).
  * Keeps the controller online while DB/schema work catches up.
