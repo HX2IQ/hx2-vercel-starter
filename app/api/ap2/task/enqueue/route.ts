@@ -1,114 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getRedis } from "@/lib/redis";
+import { createTask } from "@/lib/ap2/tasks";
 
-function requireAuth(req: Request) {
-  const expectedApi = (process.env.HX2_API_KEY || "").trim();
-  const expectedOwner = (process.env.HX2_OWNER_KEY || "").trim();
+export const runtime = "nodejs";
 
-  if (!expectedApi && !expectedOwner) {
-    return { ok: false, status: 500, msg: "server missing HX2_API_KEY/HX2_OWNER_KEY" };
-  }
-
-  const auth = req.headers.get("authorization") || "";
-  const m = auth.match(/^Bearer\s+(.+)$/i);
-  const token = m?.[1]?.trim();
-
-  const ok =
-    (expectedApi && token === expectedApi) ||
-    (expectedOwner && token === expectedOwner);
-
-  if (!ok) {
-    return { ok: false, status: 401, msg: "unauthorized" };
-  }
-
-  return { ok: true as const };
-}
-
-async function readJsonBody(req: NextRequest) {
-  const raw = await req.text(); // READ ONCE
-  if (!raw) return { raw: "", json: {} as any };
-  try {
-    return { raw, json: JSON.parse(raw) };
-  } catch {
-    return { raw, json: {} as any };
-  }
+function isAuthed(req: NextRequest) {
+  const h = req.headers.get("authorization") || "";
+  const token = h.toLowerCase().startsWith("bearer ") ? h.slice(7).trim() : "";
+  const ok = !!token && (
+    token === (process.env.HX2_API_KEY || "") ||
+    token === (process.env.AP2_API_KEY || "")
+  );
+  return ok;
 }
 
 export async function POST(req: NextRequest) {
-  // Auth gate (owner)
-  const auth = requireAuth(req);
-  if (!auth.ok) return NextResponse.json({ ok: false, error: auth.msg }, { status: auth.status });
+  try {
+    if (!isAuthed(req)) {
+      return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+    }
 
-  const worker = process.env.AP2_WORKER_URL || "https://ap2-worker.optinodeiq.com";
-  const key = (process.env.AP2_GATEWAY_BEARER || "").trim();
-  if (!key) {
-    return NextResponse.json({ ok: false, error: "AP2_GATEWAY_BEARER missing on server" }, { status: 500 });
+    const body = await req.json().catch(() => ({} as any));
+    const taskType = String(body?.taskType ?? body?.task ?? "unknown");
+    const payload  = body?.payload ?? {};
+    const note     = String(body?.note ?? "");
+
+    const task = await createTask(taskType, payload, note);
+
+    return NextResponse.json({
+      ok: true,
+      status: "ENQUEUED",
+      taskId: task.taskId,
+      task
+    });
+  } catch (e: any) {
+    return NextResponse.json({ ok: false, error: "enqueue_failed", message: String(e?.message || e) }, { status: 500 });
   }
-
-  const { json: body } = await readJsonBody(req);
-
-  // Worker contract: requires taskType
-  const taskType =
-    body?.taskType ||
-    body?.task_type ||
-    body?.task ||
-    body?.command ||
-    body?.type ||
-    "";
-
-  if (!taskType) {
-    return NextResponse.json(
-      { ok: false, error: { code: "MISSING_TASK_TYPE", message: "taskType is required" } },
-      { status: 400 }
-    );
-  }
-
-  // Normalize payload for worker
-  const payload = body?.payload ?? body;
-
-  // Minimal receipt ID
-  const id =
-    (globalThis.crypto as any)?.randomUUID?.() ||
-    `${Date.now()}_${Math.random().toString(16).slice(2)}`;
-
-  // --- Redis metrics for /api/oi/status ---
-  const redis = getRedis();
-  if (redis) {
-    try {
-      await redis.incr("ap2:tasks:enqueued");
-      await redis.set("ap2:heartbeat", { ts: Date.now(), source: "vercel:/api/ap2/task/enqueue" }, { ex: 60 });
-
-      const receipt = { id, task: taskType, status: "enqueued", ts: Date.now() };
-      await redis.lpush("ap2:tasks:recent", receipt);
-      await redis.ltrim("ap2:tasks:recent", 0, 49);
-    } catch {}
-  }
-
-  // Forward to AP2 worker gateway
-  const url = worker.replace(/\/+$/, "") + "/api/ap2/task/enqueue";
-
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${key}`,
-    },
-    body: JSON.stringify({ taskType, payload }),
-    cache: "no-store",
-  });
-
-  const json = await res.json().catch(() => null);
-
-  if (!res.ok) {
-    return NextResponse.json(
-      { ok: false, error: "worker_enqueue_failed", status: res.status, detail: json },
-      { status: 502 }
-    );
-  }
-
-  return NextResponse.json({ ok: true, id, worker: json }, { status: 200 });
 }
-
-
-
-
