@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { redis } from "@/lib/redis";
+import { getRedis } from "@/lib/redis";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,10 +17,12 @@ async function safeFetchJson(url: string) {
 }
 
 export async function GET(req: Request) {
-  const base = (process.env.HX2_BASE_URL || new URL(req.url).origin).replace(/\/+$/, "");
+  
+  const redis = getRedis();
+const base = (process.env.HX2_BASE_URL || new URL(req.url).origin).replace(/\/+$/, "");
 
   const [waitlistCount, demoDescribe] = await Promise.all([
-    redis.scard("hx2:retail:waitlist:set").catch(() => 0),
+    (redis ? redis.scard("hx2:retail:waitlist:set").catch(() => 0) : Promise.resolve(0)),
     safeFetchJson(`${base}/api/nodes/demo-node-01/describe`),
   ]);
 

@@ -1,16 +1,33 @@
 import { Redis } from "@upstash/redis";
 
-// Shared redis client for routes that import "@/lib/redis"
-export function getRedis() {
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+function trim(s?: string) {
+  return (s ?? "").trim();
+}
+
+function stripSlash(s: string) {
+  return s.replace(/\/+$/, "");
+}
+
+/**
+ * Lazy Redis accessor.
+ * IMPORTANT: Do NOT create Redis at module-load/build time.
+ * Call getRedis() inside request handlers only.
+ */
+export function getRedis(): Redis | null {
+  const url = stripSlash(trim(process.env.UPSTASH_REDIS_REST_URL));
+  const token = trim(process.env.UPSTASH_REDIS_REST_TOKEN);
+
   if (!url || !token) return null;
   return new Redis({ url, token });
 }
 
-// Optional legacy export: `import { redis } from "@/lib/redis"`
-export const redis = getRedis() as unknown as Redis;
-
+/**
+ * Safe wrapper for Redis calls.
+ */
 export async function redisSafe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
-  try { return await fn(); } catch { return fallback; }
+  try {
+    return await fn();
+  } catch {
+    return fallback;
+  }
 }
