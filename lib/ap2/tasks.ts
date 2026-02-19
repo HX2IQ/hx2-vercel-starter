@@ -1,76 +1,84 @@
 import { Redis } from "@upstash/redis";
 
-export type TaskState = "ENQUEUED" | "RUNNING" | "DONE" | "FAILED" | "UNKNOWN";
+export type Ap2TaskState = "ENQUEUED" | "RUNNING" | "DONE" | "FAILED";
 
-export type TaskRecord = {
+export type Ap2Task = {
   taskId: string;
   taskType: string;
   payload: any;
-  state: TaskState;
+  state: Ap2TaskState;
   createdAt: string;
   updatedAt: string;
   note?: string;
-  result?: any;
-  error?: any;
 };
 
-const mem = new Map<string, TaskRecord>();
+const redis = Redis.fromEnv();
 
-function nowIso() { return new Date().toISOString(); }
+/**
+ * Primary + legacy key support (stop-the-bleeding).
+ * We write ALL, and read in order until found.
+ */
+const keyPrimary = (taskId: string) => `ap2:task:${taskId}`;
+const keyLegacy1 = (taskId: string) => `hx2:task:${taskId}`;   // legacy guess
+const keyLegacy2 = (taskId: string) => `ap2:tasks:${taskId}`;  // legacy guess
+const queueKey   = () => `ap2:queue`;
 
-function makeId(prefix = "ap2t") {
-  const rnd = Math.random().toString(16).slice(2);
-  const ts  = Date.now().toString(16);
-  return `${prefix}_${ts}_${rnd}`;
+export function newTaskId() {
+  return `ap2t_${Date.now().toString(16)}_${Math.random().toString(16).slice(2, 10)}`;
 }
 
-function hasUpstashEnv() {
-  return !!(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN);
+async function writeAllKeys(task: Ap2Task) {
+  await redis.set(keyPrimary(task.taskId), task);
+  await redis.set(keyLegacy1(task.taskId), task);
+  await redis.set(keyLegacy2(task.taskId), task);
 }
 
-function getRedis(): Redis | null {
-  try {
-    if (!hasUpstashEnv()) return null;
-    return Redis.fromEnv();
-  } catch {
-    return null;
-  }
-}
+export async function createTask(taskType: string, payload: any, note?: string) {
+  const taskId = newTaskId();
+  const now = new Date().toISOString();
 
-function key(taskId: string) { return `ap2:task:${taskId}`; }
-
-export async function createTask(taskType: string, payload: any = {}, note?: string): Promise<TaskRecord> {
-  const taskId = makeId();
-  const t: TaskRecord = {
+  const task: Ap2Task = {
     taskId,
-    taskType: String(taskType || "unknown"),
+    taskType,
     payload: payload ?? {},
     state: "ENQUEUED",
-    createdAt: nowIso(),
-    updatedAt: nowIso(),
+    createdAt: now,
+    updatedAt: now,
     note
   };
 
-  const redis = getRedis();
-  if (redis) {
-    await redis.set(key(taskId), JSON.stringify(t));
-    await redis.lpush("ap2:queue", taskId);
-    return t;
-  }
+  await writeAllKeys(task);
+  await redis.lpush(queueKey(), taskId);
 
-  mem.set(taskId, t);
-  return t;
+  return task;
 }
 
-export async function getTask(taskId: string): Promise<TaskRecord | null> {
+export async function getTask(taskId: string) {
   if (!taskId) return null;
 
-  const redis = getRedis();
-  if (redis) {
-    const raw = await redis.get<string>(key(taskId));
-    if (!raw) return null;
-    try { return JSON.parse(raw) as TaskRecord; } catch { return null; }
-  }
+  // Try primary then legacy
+  const t1 = await redis.get<Ap2Task>(keyPrimary(taskId));
+  if (t1) return t1;
 
-  return mem.get(taskId) ?? null;
+  const t2 = await redis.get<Ap2Task>(keyLegacy1(taskId));
+  if (t2) return t2;
+
+  const t3 = await redis.get<Ap2Task>(keyLegacy2(taskId));
+  if (t3) return t3;
+
+  return null;
+}
+
+export async function touchTask(taskId: string, patch: Partial<Ap2Task>) {
+  const cur = await getTask(taskId);
+  if (!cur) return null;
+
+  const next: Ap2Task = {
+    ...cur,
+    ...patch,
+    updatedAt: new Date().toISOString()
+  };
+
+  await writeAllKeys(next);
+  return next;
 }
