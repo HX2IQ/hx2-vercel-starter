@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { redis } from "@/lib/redis";
+import { getRedis } from "@/lib/redis";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,7 +9,11 @@ function bad(status: number, error: string, detail?: any) {
 }
 
 export async function GET(req: Request) {
-  try {
+  
+  const redis = getRedis();
+
+  if (!redis) return bad(500, "redis_not_configured");
+try {
     const auth = req.headers.get("authorization") || req.headers.get("Authorization") || "";
     const token = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
     const expected = (process.env.HX2_API_KEY || "").trim();
@@ -40,5 +44,9 @@ export async function GET(req: Request) {
 }
 
 export async function POST() {
-  return NextResponse.json({ ok: false, error: "method_not_allowed", allow: ["GET"] }, { status: 405 });
+  
+  const redis = getRedis();
+
+  if (!redis) return bad(500, "redis_not_configured");
+return NextResponse.json({ ok: false, error: "method_not_allowed", allow: ["GET"] }, { status: 405 });
 }

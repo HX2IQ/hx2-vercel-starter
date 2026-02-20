@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { redis } from "@/lib/redis";
+import { getRedis } from "@/lib/redis";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -18,7 +18,11 @@ function authOk(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const a = authOk(req);
+  
+  const redis = getRedis();
+
+  if (!redis) return bad(500, "redis_not_configured");
+const a = authOk(req);
   if (!a.ok) return a.res;
 
   try {
@@ -38,5 +42,9 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
-  return NextResponse.json({ ok: false, error: "method_not_allowed", allow: ["POST"] }, { status: 405 });
+  
+  const redis = getRedis();
+
+  if (!redis) return bad(500, "redis_not_configured");
+return NextResponse.json({ ok: false, error: "method_not_allowed", allow: ["POST"] }, { status: 405 });
 }

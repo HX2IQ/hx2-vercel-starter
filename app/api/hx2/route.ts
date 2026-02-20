@@ -1,149 +1,147 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { createTask, getTask } from "@/lib/ap2/tasks";
-/**
- * Canonical HX2 ingress (AP2-first, Prisma-free).
- * Keeps the controller online while DB/schema work catches up.
- */
+export const runtime = "nodejs";
+
+function getCommand(body: any) {
+  return body?.command ?? body?.task ?? body?.action ?? null;
+}
+
+function getOrigin(req: NextRequest) {
+  // In Next.js route handlers, req.url is absolute
+  try { return new URL(req.url).origin; } catch { return ""; }
+}
+
+function getAuthHeader(req: NextRequest) {
+  const incoming = req.headers.get("authorization");
+  if (incoming && incoming.trim()) return incoming.trim();
+  const k = (process.env.HX2_API_KEY || "").trim();
+  if (k) return `Bearer ${k}`;
+  return "";
+}
+
+function jsonOk(command: any, data: any, headers?: Record<string,string>) {
+  return NextResponse.json({ ok: true, command, data }, { headers });
+}
+
+function jsonErr(command: any, error: string, message: string, extra?: any, status: number = 400, headers?: Record<string,string>) {
+  return NextResponse.json({ ok: false, error, message, extra }, { status, headers });
+}
+
 export async function POST(req: NextRequest) {
   let body: any = {};
   try { body = await req.json(); } catch {}
 
-  const command = body?.command ?? body?.task ?? body?.action ?? null;
+  const command = getCommand(body);
+  const headers = { "x-hx2-route-version": "hx2-ap2-proxy-v4" };
 
+  if (!command) return jsonErr(command, "missing_command", "Provide command.", null, 400, headers);
 
-  const args = body?.args ?? body ?? {};
+  // Basic checks
+  if (command === "ping" || command === "hx2.ping") {
+    return jsonOk(command, { pong: true }, headers);
+  }
 
-  // Helpers
-  const ok = (cmd: any, data: any) =>
-    NextResponse.json({ ok: true, command: cmd, data });
+  if (command === "env.check") {
+    const ap2 = (process.env.AP2_WORKER_BASE_URL || "").trim();
+    return jsonOk(command, {
+      AP2_WORKER_BASE_URL: ap2 || null,
+      hasAP2: !!ap2,
+      note: "AP2_WORKER_BASE_URL is used for worker status only. Task enqueue/status are proxied to same-origin /api/ap2/*.",
+    }, headers);
+  }
 
-  const err = (cmd: any, code: string, message: string, extra?: any) =>
-    NextResponse.json({ ok: false, command: cmd, error: { code, message, extra } }, { status: 400 });
+  // Worker status (this is the only thing that should hit ap2-worker)
+  if (command === "ap2.status") {
+    const workerBase = (process.env.AP2_WORKER_BASE_URL || "").trim();
+    if (!workerBase || !/^https?:\/\//i.test(workerBase)) {
+      return jsonErr(command, "missing_ap2_worker_base_url", "AP2_WORKER_BASE_URL is not set (or not http/https).", null, 500, headers);
+    }
 
-  if (!command) return err(command, "MISSING_COMMAND", "command is required");
-
-  // AP2-first minimal surface
-  switch (command) {
-    case "ping":
-    case "hx2.ping":
-      return ok(command, { pong: true });
-
-    case "env.check": {
-      const ap2 = process.env.AP2_WORKER_BASE_URL ?? null;
-      return ok(command, {
-        AP2_WORKER_BASE_URL: ap2,
-        hasAP2: !!ap2,
-        note:
-          "If AP2_WORKER_BASE_URL is null/empty here, set it in the SAME Vercel project that serves optinodeiq.com.",
+    const payload = body?.args ?? body ?? {};
+    try {
+      const res = await fetch(`${workerBase}/api/ap2/status`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
       });
+      const data = await res.json().catch(() => ({}));
+      return NextResponse.json(
+        { ok: res.ok, command, data: { workerBase, http: res.status, data } },
+        { status: res.ok ? 200 : 502, headers }
+      );
+    } catch (e: any) {
+      return jsonErr(command, "ap2_fetch_failed", "Failed to reach AP2 worker (/api/ap2/status).", String(e?.message ?? e), 502, headers);
     }
-
-    case "ap2.status": {
-      const workerBase = process.env.AP2_WORKER_BASE_URL;
-      if (!workerBase || typeof workerBase !== "string" || !/^https?:\/\//i.test(workerBase)) {
-        return NextResponse.json(
-          {
-            ok: false,
-            command,
-            error: {
-              code: "MISSING_AP2_WORKER_BASE_URL",
-              message:
-                "AP2_WORKER_BASE_URL is not set (or not http/https) in this Vercel project environment.",
-            },
-          },
-          { status: 500 }
-        );
-      }
-
-      try {
-        const res = await fetch(`${workerBase}/api/ap2/status`, {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify(args || {}),
-        });
-
-        const data = await res.json().catch(() => ({}));
-        return NextResponse.json(
-          { ok: res.ok, command, data: { workerBase, http: res.status, data } },
-          { status: res.ok ? 200 : 502 }
-        );
-      } catch (e: any) {
-        return NextResponse.json(
-          {
-            ok: false,
-            command,
-            error: {
-              code: "AP2_FETCH_FAILED",
-              message: "Failed to reach AP2 worker (/api/ap2/status).",
-              extra: String(e?.message ?? e),
-            },
-          },
-          { status: 502 }
-        );
-      }
-    }
-
-    case "ap2.task.enqueue": {
-      const taskType = args?.taskType ?? args?.type ?? null;
-      if (!taskType) return err(command, "MISSING_TASK_TYPE", "taskType is required");
-
-      try {
-        const mod = await import("../../../lib/ap2Queue");
-        const task = await mod.enqueueTask(taskType, args?.payload ?? {});
-        return ok(command, task);
-      } catch (e: any) {
-        return err(command, "ENQUEUE_FAILED", "enqueueTask failed", String(e?.message ?? e));
-      }
-    }
-
-    case "ap2.task.status":
-      return ok(command, { taskId: args?.taskId ?? null, state: "UNKNOWN", note: "Stubbed until DB model exists" });
-
-    case "ap2.task.list":
-      return ok(command, { tasks: [], note: "Stubbed until DB model exists" });
-
-    default:
-      return err(command, "NOT_IMPLEMENTED", "Command not implemented in canonical hx2 route yet");
   }
-}
-async function ap2TaskStatusProxy(req: NextRequest, bodyAny: any) {
-  try {
-    const base = (process.env.AP2_WORKER_BASE_URL || process.env.AP2_WORKER_BASE || "https://ap2-worker.optinodeiq.com").trim();
 
-    // Accept taskId from body
-    const taskId = (bodyAny?.taskId ?? bodyAny?.id ?? "").toString().trim();
-    if (!taskId) {
-      return { ok: false, error: "missing_taskId", message: "Provide taskId." };
+  // ------------------------------------------------------------
+  // AP2 task wrapper: SAME-ORIGIN Vercel routes (authoritative)
+  // ------------------------------------------------------------
+  if (command === "ap2.task.enqueue") {
+    const origin = getOrigin(req);
+    if (!origin) return jsonErr(command, "no_origin", "Could not determine request origin.", null, 500, headers);
+
+    const auth = getAuthHeader(req);
+    if (!auth) return jsonErr(command, "missing_auth", "HX2_API_KEY not set and no Authorization header provided.", null, 500, headers);
+
+    const taskType = body?.taskType ?? body?.type ?? body?.args?.taskType ?? null;
+    const payload  = body?.payload ?? body?.args?.payload ?? {};
+    const note     = body?.note ?? body?.args?.note ?? "";
+
+    try {
+      const res = await fetch(`${origin}/api/ap2/task/enqueue`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "authorization": auth,
+        },
+        body: JSON.stringify({ mode: body?.mode ?? "SAFE", taskType, payload, note }),
+      });
+
+      const data = await res.json().catch(() => ({} as any));
+
+      // Normalize taskId no matter what shape comes back
+      const taskId =
+        data?.taskId ??
+        data?.task?.taskId ??
+        data?.task?.id ??
+        data?.data?.taskId ??
+        null;
+
+      return jsonOk(command, { ...data, taskId }, headers);
+    } catch (e: any) {
+      return jsonErr(command, "enqueue_proxy_failed", "Failed proxying to /api/ap2/task/enqueue.", String(e?.message ?? e), 502, headers);
     }
-
-    // Forward auth if present, otherwise use HX2_API_KEY
-    const incoming = req.headers.get("authorization") || "";
-    const k = (process.env.HX2_API_KEY || "").trim();
-    const auth = incoming || (k ? `Bearer ${k}` : "");
-
-    const url = `${base.replace(/\/+$/,"")}/api/ap2/task/status?taskId=${encodeURIComponent(taskId)}`;
-
-    const r = await fetch(url, {
-      method: "GET",
-      headers: {
-        ...(auth ? { authorization: auth } : {}),
-        "accept": "application/json"
-      },
-      cache: "no-store"
-    });
-
-    const text = await r.text();
-    let data: any = null;
-    try { data = text ? JSON.parse(text) : null; } catch { data = { ok: false, error: "BAD_JSON", http: r.status, text }; }
-
-    // Normalize return shape
-    if (!r.ok) {
-      return { ok: false, http: r.status, ...data };
-    }
-    return { ok: true, ...data };
-  } catch (e: any) {
-    return { ok: false, error: "ap2_task_status_proxy_failed", message: String(e?.message || e) };
   }
-}
 
+  if (command === "ap2.task.status") {
+    const origin = getOrigin(req);
+    if (!origin) return jsonErr(command, "no_origin", "Could not determine request origin.", null, 500, headers);
+
+    const auth = getAuthHeader(req);
+    if (!auth) return jsonErr(command, "missing_auth", "HX2_API_KEY not set and no Authorization header provided.", null, 500, headers);
+
+    const taskId =
+      body?.taskId ??
+      body?.id ??
+      body?.args?.taskId ??
+      body?.args?.id ??
+      null;
+
+    if (!taskId) return jsonErr(command, "missing_taskId", "Provide taskId.", null, 400, headers);
+
+    try {
+      const res = await fetch(`${origin}/api/ap2/task/status?taskId=${encodeURIComponent(String(taskId))}`, {
+        method: "GET",
+        headers: { "authorization": auth },
+      });
+
+      const data = await res.json().catch(() => ({} as any));
+      return jsonOk(command, data, headers);
+    } catch (e: any) {
+      return jsonErr(command, "status_proxy_failed", "Failed proxying to /api/ap2/task/status.", String(e?.message ?? e), 502, headers);
+    }
+  }
+
+  return jsonErr(command, "not_implemented", "Command not implemented in hx2 route.", null, 400, headers);
+}

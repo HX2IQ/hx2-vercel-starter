@@ -1,0 +1,153 @@
+> [debug] [2026-02-18T23:39:37.928Z] Found config in file "C:\Users\ezdet\hx2-vercel-starter\vercel.json"
+Vercel CLI 50.4.4
+> [debug] [2026-02-18T23:39:37.936Z] user supplied a possible target for deployment or an extension
+> [debug] [2026-02-18T23:39:37.961Z] failed to find extension command with name "vercel---prod"
+> [debug] [2026-02-18T23:39:37.993Z] Setting target to production
+> [debug] [2026-02-18T23:39:38.054Z] Found ".git\config" - detected "C:\Users\ezdet\hx2-vercel-starter" as repo root
+> [debug] [2026-02-18T23:39:38.095Z] Spinner invoked (Retrieving projectΓÇª) with a 1000ms delay
+> [debug] [2026-02-18T23:39:38.097Z] Valid access token, skipping token refresh.
+> [debug] [2026-02-18T23:39:38.097Z] Valid access token, skipping token refresh.
+> [debug] [2026-02-18T23:39:38.118Z] #1 ΓåÆ GET https://api.vercel.com/teams/team_RHfUgy0HnivhFce1n709KmPA?teamId=team_RHfUgy0HnivhFce1n709KmPA
+> [debug] [2026-02-18T23:39:38.122Z] #2 ΓåÆ GET https://api.vercel.com/v9/projects/prj_K33GKY9G7Lcbh0cZDntnaEuQRJq1?teamId=team_RHfUgy0HnivhFce1n709KmPA
+> [debug] [2026-02-18T23:39:38.576Z] #1 ΓåÉ 200 OK: sfo1::zfh7h-1771457978520-8212f49ebff9 [457ms]
+> [debug] [2026-02-18T23:39:38.608Z] #2 ΓåÉ 200 OK: sfo1::tlrrs-1771457978528-99e1699a3e47 [486ms]
+> [debug] [2026-02-18T23:39:38.807Z] Spinner invoked (Deploying dan-clarks-projects-ff1ac1ad/optinodeiq) with a 0ms delay
+[client-debug] 2026-02-18T23:39:38.808Z Creating deployment...
+[client-debug] 2026-02-18T23:39:38.808Z Provided 'path' is a directory.
+[client-debug] 2026-02-18T23:39:38.811Z Found 26 rules in .vercelignore
+[client-debug] 2026-02-18T23:39:38.812Z Building file tree...
+[client-debug] 2026-02-18T23:39:38.852Z Found 452 files in the specified directory
+[client-debug] 2026-02-18T23:39:38.895Z Yielding a 'hashes-calculated' event with 435 hashes
+> [debug] [2026-02-18T23:39:38.897Z] Valid access token, skipping token refresh.
+> [debug] [2026-02-18T23:39:38.898Z] #3 ΓåÆ GET https://api.vercel.com/v9/projects/optinodeiq?teamId=team_RHfUgy0HnivhFce1n709KmPA
+> [debug] [2026-02-18T23:39:39.064Z] #3 ΓåÉ 200 OK: sfo1::tlrrs-1771457978991-5df769ac7568 [166ms]
+[client-debug] 2026-02-18T23:39:39.070Z Using provided API URL: https://api.vercel.com
+[client-debug] 2026-02-18T23:39:39.070Z Using provided user agent: vercel 50.4.4 node-v22.20.0 win32 (x64)
+[client-debug] 2026-02-18T23:39:39.071Z Setting platform version to harcoded value 2
+[client-debug] 2026-02-18T23:39:39.071Z Creating the deployment and starting upload...
+[client-debug] 2026-02-18T23:39:39.073Z Determining necessary files for upload...
+[client-debug] 2026-02-18T23:39:39.074Z Creating deployment
+[client-debug] 2026-02-18T23:39:39.088Z Sending deployment creation API request
+[client-debug] 2026-02-18T23:39:39.375Z Deployment response: {"error":{"code":"missing_files","message":"Missing files","missing":["33d95009d626d4ba670200c3345d8f660264fa09"]}}
+[client-debug] 2026-02-18T23:39:39.375Z Error: Deployment request status is 400
+[client-debug] 2026-02-18T23:39:39.376Z 1 files are required to upload
+[client-debug] 2026-02-18T23:39:39.376Z Yielding a 'file-count' event
+> [debug] [2026-02-18T23:39:39.376Z] Total files 435, 1 changed
+> [debug] [2026-02-18T23:39:39.377Z] Spinner invoked (Uploading [--------------------] (0.0B/1.7KB)) with a 0ms delay
+[client-debug] 2026-02-18T23:39:39.377Z Building an upload list...
+[client-debug] 2026-02-18T23:39:39.379Z Starting upload
+[client-debug] 2026-02-18T23:39:39.380Z POST https://api.vercel.com/v2/files?teamId=team_RHfUgy0HnivhFce1n709KmPA
+> [debug] [2026-02-18T23:39:39.384Z] Spinner invoked (Uploading [====================] (1.7KB/1.7KB)) with a 0ms delay
+[client-debug] 2026-02-18T23:39:39.714Z DONE in 334ms: POST https://api.vercel.com/v2/files?teamId=team_RHfUgy0HnivhFce1n709KmPA
+[client-debug] 2026-02-18T23:39:39.714Z File 33d95009d626d4ba670200c3345d8f660264fa09 (C:\Users\ezdet\hx2-vercel-starter\vercel_build_debug.log) uploaded
+[client-debug] 2026-02-18T23:39:39.714Z Yielding a 'file-uploaded' event
+> [debug] [2026-02-18T23:39:39.714Z] Uploaded: C:\Users\ezdet\hx2-vercel-starter\vercel_build_debug.log (1.72KB)
+[client-debug] 2026-02-18T23:39:39.714Z All files uploaded
+[client-debug] 2026-02-18T23:39:39.714Z Yielding a 'all-files-uploaded' event
+[client-debug] 2026-02-18T23:39:39.714Z Starting deployment creation
+[client-debug] 2026-02-18T23:39:39.714Z Creating deployment
+[client-debug] 2026-02-18T23:39:39.717Z Sending deployment creation API request
+[client-debug] 2026-02-18T23:39:41.480Z Deployment response: {"alias":["optinodeiq-dan-clarks-projects-ff1ac1ad.vercel.app","optinodeiq-dan-7062-dan-clarks-projects-ff1ac1ad.vercel.app"],"aliasAssigned":false,"automaticAliases":["optinodeiq-dan-clarks-projects-ff1ac1ad.vercel.app","optinodeiq-dan-7062-dan-clarks-projects-ff1ac1ad.vercel.app"],"bootedAt":1771457980336,"buildingAt":1771457980336,"buildSkipped":false,"createdAt":1771457980336,"creator":{"uid":"xv7SmwEwSIEMWTDI1zbm47su","username":"dan-7062"},"id":"dpl_73SryU3DZ27ZZNYZjYuJ4cu2ZAjd","name":"optinodeiq","meta":{"githubCommitAuthorName":"HX2IQ","githubCommitAuthorEmail":"ezdetailer@gmail.com","githubCommitMessage":"fix(console): choose BEST RSS match by score (tie-break recency)","githubCommitOrg":"HX2IQ","githubCommitRef":"main","githubCommitRepo":"hx2-vercel-starter","githubCommitSha":"9a4c6fa80d05d333ad4f3dc41fac61768327e720","githubDeployment":"1","githubOrg":"HX2IQ","githubRepo":"hx2-vercel-starter","gitDirty":"1"},"originCacheRegion":"iad1","project":{"id":"prj_K33GKY9G7Lcbh0cZDntnaEuQRJq1","name":"optinodeiq","framework":"nextjs"},"public":false,"readyState":"INITIALIZING","regions":["iad1"],"source":"cli","status":"INITIALIZING","target":"production","team":{"id":"team_RHfUgy0HnivhFce1n709KmPA","name":"Dan Clark's projects","slug":"dan-clarks-projects-ff1ac1ad"},"type":"LAMBDAS","url":"optinodeiq-lyutdj570-dan-clarks-projects-ff1ac1ad.vercel.app","version":2,"previewCommentsEnabled":true,"oidcTokenClaims":{"sub":"owner:dan-clarks-projects-ff1ac1ad:project:optinodeiq:environment:production","iss":"https://oidc.vercel.com/dan-clarks-projects-ff1ac1ad","scope":"owner:dan-clarks-projects-ff1ac1ad:project:optinodeiq:environment:production","aud":"https://vercel.com/dan-clarks-projects-ff1ac1ad","owner":"dan-clarks-projects-ff1ac1ad","owner_id":"team_RHfUgy0HnivhFce1n709KmPA","project":"optinodeiq","project_id":"prj_K33GKY9G7Lcbh0cZDntnaEuQRJq1","environment":"production","plan":"pro"},"nodeVersion":"22.x","lambdas":[{"id":"bld_pfpm05efe","createdAt":1771457981102,"entrypoint":".","readyState":"READY","readyStateAt":1771457981102,"output":[]}],"aliasAssignedAt":null,"build":{"env":[]},"builds":[],"createdIn":"sfo1","env":[],"functions":null,"inspectorUrl":"https://vercel.com/dan-clarks-projects-ff1ac1ad/optinodeiq/73SryU3DZ27ZZNYZjYuJ4cu2ZAjd","isInConcurrentBuildsQueue":false,"isInSystemBuildsQueue":true,"ownerId":"team_RHfUgy0HnivhFce1n709KmPA","plan":"pro","projectId":"prj_K33GKY9G7Lcbh0cZDntnaEuQRJq1","projectSettings":{"buildCommand":null,"devCommand":null,"framework":"nextjs","commandForIgnoringBuildStep":null,"installCommand":null,"outputDirectory":null,"speedInsights":{"id":"1AMWrBwM1ylR1mCaFlJ4Vmy87Od","hasData":false},"webAnalytics":{"id":"5FY4LBrFm6ixRGuxFW3DNyELr"},"nodeVersion":"22.x"},"routes":[{"src":"^/src/app/api/(.*)$","dest":"/src/app/api/$1","headers":{"Access-Control-Allow-Origin":"https://optinodeiq.com","Access-Control-Allow-Methods":"GET,POST,OPTIONS","Access-Control-Allow-Headers":"Content-Type,Authorization,X-HX2-Internal"}}],"integrations":{"status":"ready","startedAt":1771457980256,"completedAt":1771457980256},"config":{"version":1,"secureComputePrimaryRegion":null,"secureComputeFallbackRegion":null,"functionTimeout":300,"functionType":"fluid","functionMemoryType":"standard","isUsingActiveCPU":true,"resourceConfig":{"buildQueue":{"configuration":"SKIP_NAMESPACE_QUEUE"},"elasticConcurrency":"PROJECT_SETTING"}}}
+[client-debug] 2026-02-18T23:39:41.481Z Deployment created
+[client-debug] 2026-02-18T23:39:41.481Z Yielding a 'created' event
+Inspect: https://vercel.com/dan-clarks-projects-ff1ac1ad/optinodeiq/73SryU3DZ27ZZNYZjYuJ4cu2ZAjd [3s]
+Production: https://optinodeiq-lyutdj570-dan-clarks-projects-ff1ac1ad.vercel.app [3s]
+> [debug] [2026-02-18T23:39:41.484Z] Valid access token, skipping token refresh.
+> [debug] [2026-02-18T23:39:41.484Z] Spinner invoked (Building...) with a 0ms delay
+> [debug] [2026-02-18T23:39:41.486Z] #4 ΓåÆ GET https://api.vercel.com/v2/user
+[client-debug] 2026-02-18T23:39:41.487Z Waiting for deployment to be ready...
+[client-debug] 2026-02-18T23:39:41.489Z Waiting for builds and the deployment to complete...
+> [debug] [2026-02-18T23:39:41.654Z] #4 ΓåÉ 200 OK: sfo1::tlrrs-1771457981584-0ddd0a1dfa74 [167ms]
+> [debug] [2026-02-18T23:39:41.658Z] Valid access token, skipping token refresh.
+> [debug] [2026-02-18T23:39:41.661Z] #5 ΓåÆ GET https://api.vercel.com/v3/now/deployments/dpl_73SryU3DZ27ZZNYZjYuJ4cu2ZAjd/events?direction=forward&follow=1&format=lines&teamId=team_RHfUgy0HnivhFce1n709KmPA
+[client-debug] 2026-02-18T23:39:43.184Z Deployment state changed to BUILDING
+[client-debug] 2026-02-18T23:39:43.184Z Yielding a 'building' event
+> [debug] [2026-02-18T23:39:43.184Z] Spinner invoked (Building...) with a 0ms delay
+> [debug] [2026-02-18T23:39:44.945Z] #5 ΓåÉ 200 OK: sfo1::tlrrs-1771457981752-240990084bb7 [3.28s]
+> [debug] [2026-02-18T23:39:44.947Z] Spinner invoked (Building: Running build in Washington, D.C., USA (East) ΓÇô iad1) with a 0ms delay
+> [debug] [2026-02-18T23:39:44.948Z] Spinner invoked (Building: Build machine configuration: 4 cores, 8 GB) with a 0ms delay
+> [debug] [2026-02-18T23:39:44.948Z] Spinner invoked (Building: Retrieving list of deployment files...) with a 0ms delay
+> [debug] [2026-02-18T23:39:44.948Z] Spinner invoked (Building: Downloading 452 deployment files...) with a 0ms delay
+> [debug] [2026-02-18T23:39:47.006Z] Spinner invoked (Building: Restored build cache from previous deployment (36nyJThHAdySP1JA2aTdG9K7AJTy)) with a 0ms delay
+> [debug] [2026-02-18T23:39:47.007Z] Spinner invoked (Building: Running "vercel build") with a 0ms delay
+> [debug] [2026-02-18T23:39:48.045Z] Spinner invoked (Building: Vercel CLI 50.18.2) with a 0ms delay
+> [debug] [2026-02-18T23:39:48.045Z] Spinner invoked (Building: Installing dependencies...) with a 0ms delay
+> [debug] [2026-02-18T23:39:50.117Z] Spinner invoked (Building: > postinstall) with a 0ms delay
+> [debug] [2026-02-18T23:39:50.117Z] Spinner invoked (Building: > prisma generate) with a 0ms delay
+> [debug] [2026-02-18T23:39:51.144Z] Spinner invoked (Building: Environment variables loaded from .env) with a 0ms delay
+> [debug] [2026-02-18T23:39:51.144Z] Spinner invoked (Building: Prisma schema loaded from prisma/schema.prisma) with a 0ms delay
+> [debug] [2026-02-18T23:39:51.145Z] Spinner invoked (Building: Γ£ö Generated Prisma Client (v6.19.1) to ./node_modules/@prisma/client in 110ms) with a 0ms delay
+> [debug] [2026-02-18T23:39:51.145Z] Spinner invoked (Building: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)) with a 0ms delay
+> [debug] [2026-02-18T23:39:51.145Z] Spinner invoked (Building: Tip: Interested in query caching in just a few lines of code? Try Accelerate today! https://pris.ly/tip-3-accelerate) with a 0ms delay
+> [debug] [2026-02-18T23:39:51.145Z] Spinner invoked (Building: > prepare) with a 0ms delay
+> [debug] [2026-02-18T23:39:51.145Z] Spinner invoked (Building: > node -e "const fs=require('fs'); if(fs.existsSync('.git')){require('child_process').execSync('npx husky install',{stdio:'inherit'})} else {console.log('no git; skip husky')}") with a 0ms delay
+> [debug] [2026-02-18T23:39:51.146Z] Spinner invoked (Building: no git; skip husky) with a 0ms delay
+> [debug] [2026-02-18T23:39:51.146Z] Spinner invoked (Building: changed 1 package in 3s) with a 0ms delay
+> [debug] [2026-02-18T23:39:51.146Z] Spinner invoked (Building: 246 packages are looking for funding) with a 0ms delay
+> [debug] [2026-02-18T23:39:51.146Z] Spinner invoked (Building: run `npm fund` for details) with a 0ms delay
+> [debug] [2026-02-18T23:39:51.146Z] Spinner invoked (Building: Detected Next.js version: 14.2.35) with a 0ms delay
+> [debug] [2026-02-18T23:39:51.146Z] Spinner invoked (Building: Running "npm run build") with a 0ms delay
+> [debug] [2026-02-18T23:39:51.147Z] Spinner invoked (Building: > build) with a 0ms delay
+> [debug] [2026-02-18T23:39:51.147Z] Spinner invoked (Building: > prisma generate && next build) with a 0ms delay
+> [debug] [2026-02-18T23:39:52.182Z] Spinner invoked (Building: Environment variables loaded from .env) with a 0ms delay
+> [debug] [2026-02-18T23:39:52.182Z] Spinner invoked (Building: Prisma schema loaded from prisma/schema.prisma) with a 0ms delay
+> [debug] [2026-02-18T23:39:52.182Z] Spinner invoked (Building: ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ) with a 0ms delay
+> [debug] [2026-02-18T23:39:52.182Z] Spinner invoked (Building: Γöé  Update available 6.19.1 -> 7.4.0                       Γöé) with a 0ms delay
+> [debug] [2026-02-18T23:39:52.182Z] Spinner invoked (Building: Γöé                                                         Γöé) with a 0ms delay
+> [debug] [2026-02-18T23:39:52.182Z] Spinner invoked (Building: Γöé  This is a major update - please follow the guide at    Γöé) with a 0ms delay
+> [debug] [2026-02-18T23:39:52.182Z] Spinner invoked (Building: Γöé  https://pris.ly/d/major-version-upgrade                Γöé) with a 0ms delay
+> [debug] [2026-02-18T23:39:52.182Z] Spinner invoked (Building: Γöé                                                         Γöé) with a 0ms delay
+> [debug] [2026-02-18T23:39:52.182Z] Spinner invoked (Building: Γöé  Run the following to update                            Γöé) with a 0ms delay
+> [debug] [2026-02-18T23:39:52.183Z] Spinner invoked (Building: Γöé    npm i --save-dev prisma@latest                       Γöé) with a 0ms delay
+> [debug] [2026-02-18T23:39:52.183Z] Spinner invoked (Building: Γöé    npm i @prisma/client@latest                          Γöé) with a 0ms delay
+> [debug] [2026-02-18T23:39:52.183Z] Spinner invoked (Building: ΓööΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÿ) with a 0ms delay
+> [debug] [2026-02-18T23:39:52.183Z] Spinner invoked (Building: Γ£ö Generated Prisma Client (v6.19.1) to ./node_modules/@prisma/client in 55ms) with a 0ms delay
+> [debug] [2026-02-18T23:39:52.183Z] Spinner invoked (Building: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)) with a 0ms delay
+> [debug] [2026-02-18T23:39:52.183Z] Spinner invoked (Building: Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints) with a 0ms delay
+> [debug] [2026-02-18T23:39:52.183Z] Spinner invoked (Building: Γû▓ Next.js 14.2.35) with a 0ms delay
+> [debug] [2026-02-18T23:39:52.183Z] Spinner invoked (Building: - Environments: .env) with a 0ms delay
+> [debug] [2026-02-18T23:39:52.183Z] Spinner invoked (Building: Creating an optimized production build ...) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.612Z] Spinner invoked (Building: Failed to compile.) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.613Z] Spinner invoked (Building: ./app/api/chat/send/route.ts) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.613Z] Spinner invoked (Building: Error:) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.613Z] Spinner invoked (Building: x `let` cannot be used as an identifier in strict mode) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.613Z] Spinner invoked (Building: ,-[/vercel/path0/app/api/chat/send/route.ts:131:1]) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.613Z] Spinner invoked (Building: 131 |   let sources: any[] = [];) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.613Z] Spinner invoked (Building: 132 |   try {) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.613Z] Spinner invoked (Building: 133 |     const body = await req.json().catch(() => ({} as any));) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.613Z] Spinner invoked (Building: 134 |     let=) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.613Z] Spinner invoked (Building: :     ^^^) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.613Z] Spinner invoked (Building: 135 |       body?.message ??) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.614Z] Spinner invoked (Building: 136 |       body?.text ??) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.614Z] Spinner invoked (Building: 136 |       body?.input ??) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.614Z] Spinner invoked (Building: `----) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.614Z] Spinner invoked (Building: Caused by:) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.614Z] Spinner invoked (Building: Syntax Error) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.614Z] Spinner invoked (Building: Import trace for requested module:) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.614Z] Spinner invoked (Building: ./app/api/chat/send/route.ts) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.614Z] Spinner invoked (Building: > Build failed because of webpack errors) with a 0ms delay
+> [debug] [2026-02-18T23:40:04.614Z] Spinner invoked (Building: Error: Command "npm run build" exited with 1) with a 0ms delay
+[client-debug] 2026-02-18T23:40:07.465Z Yielding a 'error' event
+> [debug] [2026-02-18T23:40:07.470Z] Error: Error: Command "npm run build" exited with 1
+Error: Command "npm run build" exited with 1
+    at Now.handleDeploymentError (file:///C:/Users/ezdet/AppData/Roaming/npm/node_modules/vercel/dist/index.js:154026:16)
+    at processDeployment (file:///C:/Users/ezdet/AppData/Roaming/npm/node_modules/vercel/dist/index.js:153764:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Now.create (file:///C:/Users/ezdet/AppData/Roaming/npm/node_modules/vercel/dist/index.js:153921:28)
+    at async createDeploy (file:///C:/Users/ezdet/AppData/Roaming/npm/node_modules/vercel/dist/index.js:154172:12)
+    at async deploy_default (file:///C:/Users/ezdet/AppData/Roaming/npm/node_modules/vercel/dist/index.js:155087:22)
+    at async main18 (file:///C:/Users/ezdet/AppData/Roaming/npm/node_modules/vercel/dist/index.js:192801:19)
+> [debug] [2026-02-18T23:40:07.470Z] handling error: Error: Command "npm run build" exited with 1
+    at Now.handleDeploymentError (file:///C:/Users/ezdet/AppData/Roaming/npm/node_modules/vercel/dist/index.js:154026:16)
+    at processDeployment (file:///C:/Users/ezdet/AppData/Roaming/npm/node_modules/vercel/dist/index.js:153764:34)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Now.create (file:///C:/Users/ezdet/AppData/Roaming/npm/node_modules/vercel/dist/index.js:153921:28)
+    at async createDeploy (file:///C:/Users/ezdet/AppData/Roaming/npm/node_modules/vercel/dist/index.js:154172:12)
+    at async deploy_default (file:///C:/Users/ezdet/AppData/Roaming/npm/node_modules/vercel/dist/index.js:155087:22)
+    at async main18 (file:///C:/Users/ezdet/AppData/Roaming/npm/node_modules/vercel/dist/index.js:192801:19)
+Error: Command "npm run build" exited with 1
+> [debug] [2026-02-18T23:40:08.266Z] Vercel CLI 50.4.4
+
+> [debug] [2026-02-18T23:40:08.610Z] Telemetry event tracked
+> [debug] [2026-02-18T23:40:08.636Z] Telemetry subprocess exited with code 0
+https://optinodeiq-lyutdj570-dan-clarks-projects-ff1ac1ad.vercel.app
