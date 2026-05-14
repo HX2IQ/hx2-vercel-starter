@@ -5,6 +5,7 @@ Write-Host "== HX2 MASTER BUILD GUARD ==" -ForegroundColor Cyan
 Write-Host ""
 
 $guards = @(
+  ".\tools\bootstrap\validate-hx2-bootstrap.ps1",
   ".\tools\owner-console-layout-guard.ps1",
   ".\tools\owner-console-panel-order-guard.ps1",
   ".\tools\guard-hx2-grand-design.ps1",
@@ -29,4 +30,5 @@ foreach ($guard in $guards) {
 
 Write-Host ""
 Write-Host "ALL HX2 GUARDS PASSED" -ForegroundColor Green
+
 
