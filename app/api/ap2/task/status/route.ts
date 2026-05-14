@@ -1,58 +1,44 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getTask } from "@/lib/ap2/tasks";
 
 export const runtime = "nodejs";
-const ROUTE_VERSION = "ap2-task-status-v3";
 
-function envDbg() {
-  return {
-    hasUpstashUrl: !!process.env.UPSTASH_REDIS_REST_URL,
-    hasUpstashToken: !!process.env.UPSTASH_REDIS_REST_TOKEN
-  };
-}
-
-function isAuthed(req: NextRequest) {
-  const want = (process.env.HX2_API_KEY || "").trim();
-  if (!want) return true;
-  const got = req.headers.get("authorization") || "";
-  return got === `Bearer ${want}`;
+function j(status: number, obj: any) {
+  return NextResponse.json(obj, { status, headers: { "x-chat-route-version": "ap2-status-forward-v1" } });
 }
 
 export async function GET(req: NextRequest) {
   try {
-    if (!isAuthed(req)) {
-      return NextResponse.json(
-        { envDbg: envDbg(), ok: false, error: "unauthorized" },
-        { status: 401, headers: { "x-ap2-route-version": ROUTE_VERSION } }
-      );
+    const taskId = req.nextUrl.searchParams.get("taskId") || "";
+    if (!taskId) return j(400, { ok: false, error: "taskId is required" });
+
+    const Gateway = (process.env.AP2_GATEWAY_URL || "https://ap2-worker.optinodeiq.com").replace(/\/+$/, "");
+    const url = `${Gateway}/api/ap2/task/status?taskId=${encodeURIComponent(taskId)}`;
+
+    const controller = new AbortController();
+    const t = setTimeout(() => controller.abort(), 8000);
+
+    const r = await fetch(url, {
+      method: "GET",
+      headers: { "accept": "application/json" },
+      signal: controller.signal
+    }).finally(() => clearTimeout(t));
+
+    const ct = r.headers.get("content-type") || "";
+    const text = await r.text();
+
+    if (!ct.includes("application/json")) {
+      return j(502, { ok: false, error: "Gateway returned non-JSON", http: r.status, contentType: ct, bodyFirst300: text.slice(0, 300) });
     }
 
-    const url = new URL(req.url);
-    const taskId = String(url.searchParams.get("taskId") || url.searchParams.get("id") || "").trim();
+    let data: any = null;
+    try { data = JSON.parse(text); } catch { data = { raw: text }; }
 
-    if (!taskId) {
-      return NextResponse.json(
-        { envDbg: envDbg(), ok: false, error: "missing_taskId", message: "Provide taskId." },
-        { status: 400, headers: { "x-ap2-route-version": ROUTE_VERSION } }
-      );
-    }
-
-    const task = await getTask(taskId);
-    if (!task) {
-      return NextResponse.json(
-        { envDbg: envDbg(), ok: false, error: "TASK_NOT_FOUND", taskId },
-        { status: 404, headers: { "x-ap2-route-version": ROUTE_VERSION } }
-      );
-    }
-
-    return NextResponse.json(
-      { envDbg: envDbg(), ok: true, taskId, state: task.state ?? "UNKNOWN", task },
-      { headers: { "x-ap2-route-version": ROUTE_VERSION } }
-    );
+    return NextResponse.json(data, {
+      status: r.status,
+      headers: { "x-chat-route-version": "ap2-status-forward-v1" }
+    });
   } catch (e: any) {
-    return NextResponse.json(
-      { envDbg: envDbg(), ok: false, error: "status_failed", message: String(e?.message || e) },
-      { status: 500, headers: { "x-ap2-route-version": ROUTE_VERSION } }
-    );
+    const msg = (e?.name === "AbortError") ? "Gateway status timeout" : (e?.message || String(e));
+    return j(504, { ok: false, error: msg });
   }
 }

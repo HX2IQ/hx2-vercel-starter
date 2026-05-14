@@ -1,0 +1,27 @@
+HX2_FULL_BRAIN_ACTIVE
+
+1. Brief Title  
+Iran Faces Intensified Attacks Driving Civil Unrest Amid Regional Tensions
+
+2. Primary Signal  
+- Direct catalyst (bbc_world, confidence 0.85): Iranian urban centers including Tehran and Karaj have endured 10 consecutive days of attacks attributed to Israel and the United States, resulting in widespread infrastructure impact such as power outages and severe civilian distress expressed as exhaustion and inability to sleep.
+
+3. Supporting Context  
+- Narrative support (zerohedge, confidence 0.60): Japan’s incremental militarization near Taiwan (deploying surface-to-air missile systems on Yonaguni Island) signals rising East Asian strategic militarization, reflecting heightened regional security posturing but is not a direct kinetic escalation.
+
+4. Implications  
+- The sustained attacks on Iran’s population centers and critical infrastructure elevate the risk of domestic destabilization and possible retaliatory measures by Tehran, with potential for spillover effects into broader Middle East regional security.  
+- The cumulative pressure on Iranian civilian infrastructure signals increased kinetic escalation with explicit US-Israel operational involvement.  
+- Japan’s military deployments mark shifting strategic balances in East Asia but currently remain a lower immediacy kinetic threat compared to Iranian conflict dynamics.
+
+5. Confidence  
+- Moderate to high confidence on Iranian escalation evidence due to tier 1 direct catalyst source.  
+- Lower confidence on broader regional strategic recalibrations due to tier 3 narrative support and indirect nature.
+
+6. Monitoring Priorities  
+- Track further infrastructure disruption and Iranian military or proxy retaliations.  
+- Monitor civilian unrest levels and government stability indicators within Iran.  
+- Observe evolving military deployments and joint exercises by regional actors in East Asia, especially in proximity to Taiwan and contested zones.  
+- Confirm any expansion or escalation of kinetic actions beyond intelligence-confirmed attacks.
+
+Summary: The clearest geopolitical signal is the sustained, kinetic punishment campaign against Iran’s urban infrastructure causing civilian distress, heightening risk of direct conflict escalation or regional destabilization. Supporting but lower-certainty is Japan’s military move near Taiwan indicating evolving regional strategic tensions.

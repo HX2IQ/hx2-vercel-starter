@@ -1,0 +1,23 @@
+HX2_FULL_BRAIN_ACTIVE
+
+1. Brief Title  
+Disruptive Attacks in Iran Amid Regional Tensions
+
+2. Primary Signal  
+- Direct catalyst: Confirmed Israeli and US attacks over 10 days have targeted Iranian urban centers (Tehran, Karaj), causing widespread power outages and civilian distress (bbc_world, confidence 0.85).
+
+3. Supporting Context  
+- Narrative support: Japan's deployment of advanced missile defenses near Taiwan signals broader regional security realignments in East Asia, though this remains a lower-confidence analytical narrative (zerohedge, confidence 0.60).
+
+4. Implications  
+- Iran faces significant internal instability risk from sustained kinetic strikes disrupting critical infrastructure, increasing potential for escalation or retaliatory measures.  
+- Civilian population disruption may pressure Iranian leadership toward either de-escalation or asymmetric retaliation.  
+- The East Asian maritime security environment is intensifying, but direct links to Iran attacks are not evidenced here; maintain separation of regional flashpoints.
+
+5. Confidence  
+- Moderate: High confidence in Iran attacks as a direct catalyst; lower confidence on East Asia narrative support limits broader geopolitical synthesis.
+
+6. Monitoring Priorities  
+- Track Iranian government and proxy group responses for signs of kinetic escalation or strategic retaliation.  
+- Monitor power and infrastructure impacts to assess civilian unrest or regime stability pressures.  
+- Watch for further military deployments or diplomatic moves in East Asia as background trend without over-attribution to Iranian events.

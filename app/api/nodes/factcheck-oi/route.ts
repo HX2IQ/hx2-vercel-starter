@@ -12,14 +12,21 @@ export async function GET() {
   return ok({ service: "factcheck-oi", methods: ["GET", "POST"] });
 }
 
-// This is what AP2 worker needs
+// Accept both:
+// 1) { mode, command, statement, context }
+// 2) { mode, command, input: { statement, context, ... } }
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
 
-  // Minimal SAFE response for smoketest (no web fetch yet)
-  // Expected shape from worker: { mode, command, input:{statement,context,ts} }
-  const statement = body?.input?.statement ?? null;
-  const context   = body?.input?.context ?? null;
+  const statement =
+    body?.statement ??
+    body?.input?.statement ??
+    null;
+
+  const context =
+    body?.context ??
+    body?.input?.context ??
+    null;
 
   return ok({
     service: "factcheck-oi",

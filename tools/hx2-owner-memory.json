@@ -1,0 +1,34 @@
+﻿{
+    "project":  "HX2",
+    "current_phase":  "Phase 2 Master Orchestrator",
+    "current_priority":  "Improve master chat intelligence, routing, reliability",
+    "last_successful_deploy":  "passed",
+    "known_blockers":  [
+
+                       ],
+    "active_priorities":  [
+                              "master chat quality",
+                              "health answer quality",
+                              "safe deploy velocity",
+                              "benchmark automation"
+                          ],
+    "hot_files":  [
+                      "app/api/hx2/chat-master/route.ts",
+                      "app/api/hx2/_lib/general-llm.ts",
+                      "app/api/hx2/_lib/cheap-local.ts",
+                      "package.json"
+                  ],
+    "do_not_micro_patch":  [
+                               "chat-master/route.ts",
+                               "general-llm.ts",
+                               "package.json"
+                           ],
+    "recent_wins":  [
+                        "deploy pipeline improved",
+                        "roadmap gate added",
+                        "benchmarking active"
+                    ],
+    "next_sprint":  "Continue Phase 2.8: DEV2 compiler integration into sprint workflow and faster feature-pack execution",
+    "updated_utc":  "2026-05-08T00:42:14Z",
+    "last_commit":  "09b5cb6"
+}

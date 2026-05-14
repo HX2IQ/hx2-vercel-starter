@@ -1,0 +1,26 @@
+HX2_FULL_BRAIN_ACTIVE
+
+**Brief Title:** Assessment of Potential Linkage Between Iran Attacks and Taiwan/Japan Military Movements
+
+**Primary Signal:**  
+- Iranian cities (Tehran, Karaj) have suffered sustained attacks attributed to Israel and the US, causing civilian exhaustion and infrastructure disruption, including power outages. (Direct catalyst: bbc_world, confidence 0.85)
+
+**Supporting Context:**  
+- Japan is advancing strategic deployments near Taiwan, including surface-to-air missile systems on Yonaguni Island, signaling concerns over regional security in the Taiwan Strait. (Narrative support: zerohedge, confidence 0.60)  
+- No direct intelligence currently confirms operational or strategic coordination between the Iran attacks and Japan's Taiwan-related military posture.
+
+**Implications:**  
+- The Iran attacks represent a kinetic escalation focused on Middle East geopolitical fault lines, with high potential for regional spillover and retaliatory risk concentrated within Iran and its immediate neighborhood.  
+- Japan’s moves reflect a separate, regionally focused effort to counter Chinese influence in East Asia, primarily defensive and strategic rather than kinetic at present.  
+- Given separation by region, actors, and immediate objectives, these should be treated as distinct theaters without confirmed operational linkage.  
+- However, broader US/ally alignment in containing Iran and Chinese regional ambitions could mean parallel escalation pressures coexist, though remain compartmentalized for now.
+
+**Confidence:** Moderate-to-high on separation of theaters due to strong direct evidence for Iran incidents and only narrative-level insight on Japan, with no direct cross-confirmation.
+
+**Monitoring Priorities:**  
+- Watch for any cross-theater strategic communications or intelligence leaks suggesting synchronization or escalation spillover beyond regional scopes.  
+- Track allied and adversary diplomatic moves linking Middle East and East Asia security postures.  
+- Monitor Iranian proxy activity potentially reacting to Israel/US strikes with broader geopolitical signaling.  
+- Follow Japan/Taiwan military posture changes for shifts toward kinetic engagement or expanded multilateral deployments.
+
+Summary: Current intelligence sustains Iran and Taiwan/Japan developments as separate escalation theaters without confirmed linkage. Broader geopolitical alignments could align motivations but lack direct operational convergence at this stage.

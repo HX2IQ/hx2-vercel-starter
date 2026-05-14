@@ -1,0 +1,143 @@
+{
+  "ok": true,
+  "taskId": "ap2t_19cfdd5c7e1_b692afec",
+  "node_target": "H2",
+  "used_intelligence_prefetch": true,
+  "weak_context": true,
+  "conflict_detected": true,
+  "conflict_notes": [
+    "institutional anchor is being supplemented by alternative/narrative source",
+    "confirmed geopolitical reporting is mixed with lower-tier strategic interpretation"
+  ],
+  "anchor_source": "bbc_world",
+  "anchor_title": "'I just want to be able to sleep': Attacks in Iran rock cities and cut power",
+  "anchor_ts": "2026-03-10T23:38:15.085Z",
+  "supporting_sources": [
+    {
+      "source": "zerohedge",
+      "title": "Japan's Strategic Awakening"
+    }
+  ],
+  "intel_cluster_count": 2,
+  "intel_clusters": [
+    {
+      "cluster_key": "url:bbc.com/news/cev7llekwllo",
+      "count": 1,
+      "representative_title": "'I just want to be able to sleep': Attacks in Iran rock cities and cut power",
+      "representative_source": "bbc_world",
+      "member_sources": [
+        "bbc_world"
+      ],
+      "member_titles": [
+        "'I just want to be able to sleep': Attacks in Iran rock cities and cut power"
+      ],
+      "_cluster_score": 12
+    },
+    {
+      "cluster_key": "url:zerohedge.com/geopolitical/japans-strategic-awakening",
+      "count": 1,
+      "representative_title": "Japan's Strategic Awakening",
+      "representative_source": "zerohedge",
+      "member_sources": [
+        "zerohedge"
+      ],
+      "member_titles": [
+        "Japan's Strategic Awakening"
+      ],
+      "_cluster_score": 8
+    }
+  ],
+  "catalyst_summary": {
+    "direct_catalysts": [
+      {
+        "source": "bbc_world",
+        "title": "'I just want to be able to sleep': Attacks in Iran rock cities and cut power"
+      }
+    ],
+    "indirect_backdrop": [],
+    "narrative_support": [
+      {
+        "source": "zerohedge",
+        "title": "Japan's Strategic Awakening"
+      }
+    ]
+  },
+  "diversity_summary": {
+    "sources": [
+      "bbc_world",
+      "zerohedge"
+    ],
+    "categories": [
+      "geopolitics",
+      "macro_narrative"
+    ],
+    "catalyst_labels": [
+      "direct_catalyst",
+      "narrative_support"
+    ]
+  },
+  "source_memory_summary": [
+    {
+      "source": "bbc_world",
+      "title": "'I just want to be able to sleep': Attacks in Iran rock cities and cut power",
+      "reliability_adjustment": 7
+    },
+    {
+      "source": "zerohedge",
+      "title": "Japan's Strategic Awakening",
+      "reliability_adjustment": -1
+    }
+  ],
+  "selected_intel_count": 2,
+  "selected_intel": [
+    {
+      "id": "ap2t_19cda1d8884_303341d7",
+      "type": "rss.fetch",
+      "title": "'I just want to be able to sleep': Attacks in Iran rock cities and cut power",
+      "summary": "Iranians in Tehran and Karaj tell the BBC they are exhausted and struggling to sleep after 10 days of Israeli and US attacks.",
+      "url": "https://www.bbc.com/news/articles/cev7llekwllo?at_medium=RSS&at_campaign=rss",
+      "source": "bbc_world",
+      "category": "geopolitics",
+      "tier": 1,
+      "confidence": 0.85,
+      "node_targets": [
+        "H2"
+      ],
+      "ts": "2026-03-10T23:38:15.085Z",
+      "_score": 48,
+      "catalyst_label": "direct_catalyst"
+    },
+    {
+      "id": "ap2t_19cda933376_e078bbc0",
+      "type": "rss.fetch",
+      "title": "Japan's Strategic Awakening",
+      "summary": "Japan's Strategic Awakening Authored by Lamont Colucci via The Epoch Times (emphasis ours), Japan’s strategic awakening is no longer theoretical—it’s unfolding in real time. In recent weeks, Tokyo confirmed plans to deploy advanced surface-to-air missile systems on Yonaguni Island, Japan’s westernmost inhabited territory and only about 70 miles from Taiwan. The deployment is part of a broader effort to strengthen de…",
+      "url": "https://www.zerohedge.com/geopolitical/japans-strategic-awakening",
+      "source": "zerohedge",
+      "feed_title": null,
+      "category": "macro_narrative",
+      "tier": 3,
+      "confidence": 0.6,
+      "node_targets": [
+        "X2",
+        "H2"
+      ],
+      "ts": "2026-03-11T01:46:46.689Z",
+      "_score": 19,
+      "catalyst_label": "narrative_support"
+    }
+  ],
+  "result": {
+    "ok": true,
+    "called": "http://127.0.0.1:3805/brain/chat",
+    "data": {
+      "ok": true,
+      "reply": "HX2_FULL_BRAIN_ACTIVE\n\n1. Brief Title  \nSustained Attacks Strain Iranian Urban Centers Amid Emerging Regional Security Shifts  \n\n2. Primary Signal  \n- Direct catalyst (bbc_world, confidence 0.85): Persistent Israeli and US attacks lasting over 10 days are significantly disrupting life in Iranian cities Tehran and Karaj, causing power outages and widespread civilian distress.  \n\n3. Supporting Context  \n- Narrative support (zerohedge, confidence 0.60): Japan is enhancing defensive posture close to Taiwan through deployment of advanced missile systems on Yonaguni Island, signaling shifting strategic dynamics in East Asia.  \n\n4. Implications  \n- The prolonged kinetic pressure on Iran raises risks of escalation through Iranian retaliatory measures, potential infrastructure sabotage, or regional proxy activations.  \n- Civilian hardship in Iran may pressure domestic institutions, possibly affecting regime stability or decision-making calculus toward de-escalation or escalation.  \n- The Japanese missile deployment, while lower confidence and narrative in nature, points to heightened regional security tensions that could intersect with US strategic interests in Asia, indirectly affecting US-Iran conflict dynamics.  \n- Spillover risk remains localized for now, with intensified conflict within Iran most probable, but broader geopolitical linkages merit observation.  \n\n5. Confidence  \n- Moderate overall, anchored by high-confidence direct reporting on Iranian attacks and supported by lower-tier strategic narrative on Japan’s regional posture.  \n- Causative links between Japan’s actions and Iran’s conflict status remain speculative and low confidence.  \n\n6. Monitoring Priorities  \n- Track Iranian military and proxy responses for escalation or retaliation indicators.  \n- Monitor civilian infrastructure disruptions and public sentiment in Iran for signs of societal strain.  \n- Observe US and Israeli military messaging and operational tempo for intensification or de-escalation signals.  \n- Follow developments related to Japan’s missile deployments for shifts in Indo-Pacific security alliances that could impact regional stability.",
+      "brain_attached": true,
+      "brain_version": "hx2-brain-shell-v0.4-memory",
+      "mode": "SAFE"
+    },
+    "brain_attached": true,
+    "brain_version": "hx2-brain-shell-v0.4-memory"
+  }
+}

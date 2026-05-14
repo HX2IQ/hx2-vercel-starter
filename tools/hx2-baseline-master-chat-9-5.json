@@ -1,0 +1,16 @@
+{
+  "baseline_name": "HX2 Master Chat Benchmark 9.5",
+  "date": "2026-05-02",
+  "average_score": 9.5,
+  "passed": "6/6",
+  "overall_passed": true,
+  "scores": {
+    "General": 10,
+    "Knowledge": 9,
+    "Health": 9,
+    "Business": 10,
+    "Parenting": 9,
+    "Builder": 10
+  },
+  "rule": "Any future sprint that drops average below 9.0 or causes any failed category should be reviewed before continuing."
+}

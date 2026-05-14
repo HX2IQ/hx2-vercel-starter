@@ -1,0 +1,107 @@
+[9:27 PM, 4/24/2026] Dan Clark: PS C:\Users\ezdet\hx2-vercel-starter> $File = "tools\bootstrap\copy-hx2-bootstrap.ps1"
+PS C:\Users\ezdet\hx2-vercel-starter> New-Item -ItemType Directory -Force -Path (Split-Path $File) | Out-Null
+PS C:\Users\ezdet\hx2-vercel-starter>
+PS C:\Users\ezdet\hx2-vercel-starter> @'
+>> $ErrorActionPreference = "Stop"
+>>
+>> $BootstrapFile = "tools\bootstrap\hx2-node-os-v1.txt"
+>>
+>> if (!(Test-Path $BootstrapFile)) {
+>>   throw "Bootstrap file not found: $BootstrapFile"
+>> }
+>>
+>> $content = Get-Content $BootstrapFile -Raw
+>>
+>> if (-not (Get-Command Set-Clipboard -ErrorAction SilentlyContinue)) {
+>>   throw "Set-Clipboard not available. Use PowerShell 5+ or 7+."
+>> }
+>>
+>> $content | Set-Clipboard
+>>
+>> Write-Host ""
+>> Write-Host "HX2 bootstrap copied to clipboard.…
+[9:29 PM, 4/24/2026] Dan Clark: HX2 NODE OS v1 CHECKPOINT BOOTSTRAP — DEV2 VERIFIED
+
+Repo:
+C:\Users\ezdet\hx2-vercel-starter
+Branch:
+fix/ap2-enqueue-tcp
+
+Current state:
+HX2 Node OS v1 slice is working and verified.
+
+Confirmed live nodes:
+1. ah3
+   - label: Advanced Health Intelligence 3
+   - route: /api/hx2/nodes/ah3
+   - status: active_v1_2
+   - enabled: true
+   - dry_run_only: false
+
+2. ph1
+   - label: Product Hygiene Intelligence 1
+   - route: /api/hx2/nodes/ph1
+   - status: active_v1
+   - enabled: true
+   - dry_run_only: false
+
+3. qa1
+   - label: Quality Assurance Intelligence 1
+   - route: /api/hx2/nodes/qa1
+   - status: active_v1
+   - enabled: true
+   - dry_run_only: false
+
+Verified dashboard:
+- total_nodes: 3
+- healthy_nodes: 3
+- warning_nodes: 0
+
+Core endpoints working:
+- /api/hx2/execute
+- /api/hx2/registry/preview
+- /api/hx2/registry/consistency
+- /api/hx2/registry/detail?node_id=<node_id>
+
+Important architecture rules:
+- Vercel is read-only.
+- Registry writes happen locally only.
+- Node routes stay thin.
+- Logic belongs in app/api/hx2/_lib/<node>.ts.
+- Registry file must remain array-shaped:
+  app/api/hx2/registry/nodes.json
+- Use ConvertTo-Json -AsArray when writing registry from PowerShell.
+- Backups must not be written inside app/ or Next.js may compile them.
+
+DEV2 tools now available:
+- tools/dev2-create-generic-node.ps1
+- tools/dev2-node-create-smoke.ps1
+- tools/dev2-node-lifecycle.ps1
+- tools/dev2-node-registry-dashboard.ps1
+- tools/dev2-node-activation-toggle.ps1
+- tools/dev2-remove-generic-node.ps1
+
+Templates:
+- tools/templates/hx2-node-helper.template.txt
+- tools/templates/hx2-node-route.template.txt
+
+Known solved bugs:
+- PowerShell bool binding issue fixed by object params + conversion.
+- Registry single-object collapse fixed using ConvertTo-Json -AsArray.
+- Lifecycle argument passing fixed using hashtable splatting.
+- Registry detail production file-check false positives fixed by runtime probing.
+- Template .ts build error fixed by renaming templates to .txt.
+- Node remover backup compile issue fixed by moving backups outside app/.
+
+Last verified dashboard:
+ah3 active_v1_2 ok
+ph1 active_v1 ok
+qa1 active_v1 ok
+3/3 healthy, 0 warnings.
+
+Recommended next move:
+Build Node OS v1 checkpoint report or begin Node OS v1.1:
+- add generic node metadata contract
+- add category/tags/capabilities to registry
+- add node router intent mapping
+- improve QA1 into a real QA evaluator

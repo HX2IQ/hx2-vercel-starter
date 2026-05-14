@@ -62,3 +62,30 @@ docs/
 
 tools/route.chat.send.clean.ts
 
+
+# HX2 local diagnostics / backups
+tools/_dev_backups/
+tools/_latest-build-diagnostic.txt
+*.broken_*
+*.bak_*
+
+# HX2 generated benchmark artifacts
+tools/benchmark-history/
+tools/hx2-last-benchmark.json
+tools/dev2/runs/
+
+# DEV2 generated sprint reports
+tools/dev2/sprint-reports/
+tools/last-build-error.log
+
+# DEV2 autopsy/log artifacts - may contain secrets
+tools/_autopsy/
+tools/dev2/runs/
+tools/dev2/sprint-reports/
+
+
+# DEV2 autopsy/log artifacts - may contain secrets
+tools/_autopsy/
+tools/dev2/runs/
+tools/dev2/sprint-reports/
+

@@ -1,0 +1,42 @@
+{
+  "version": "o2-policy-v1",
+  "states": {
+    "green": {
+      "description": "System healthy and eligible for standard postflight/release actions",
+      "allow": ["observe", "summarize", "recommend", "run_postflight"],
+      "deny": ["self_patch_production", "owner_only_release_override"]
+    },
+    "degraded": {
+      "description": "System partially healthy; manual review recommended before risky actions",
+      "allow": ["observe", "summarize", "recommend", "run_smoke_only"],
+      "deny": ["run_postflight", "self_patch_production", "owner_only_release_override"]
+    },
+    "blocked": {
+      "description": "Critical issues present; no autonomous action beyond reporting",
+      "allow": ["observe", "summarize", "recommend"],
+      "deny": ["run_postflight", "run_smoke_only", "self_patch_production", "owner_only_release_override"]
+    }
+  },
+  "rules": {
+    "blocked_if": [
+      "endpoint_health_failures > 0",
+      "regression_failed = true",
+      "staging_count > 0",
+      "incomplete_count > 0"
+    ],
+    "degraded_if": [
+      "autopsy_count > 0",
+      "baseline_freshness = stale",
+      "release_note_freshness = stale",
+      "last_postflight_status = stale",
+      "x2_anchor_stable = false",
+      "h2_anchor_stable = false"
+    ],
+    "green_if": [
+      "endpoint_health_failures = 0",
+      "regression_failed = false",
+      "staging_count = 0",
+      "incomplete_count = 0"
+    ]
+  }
+}

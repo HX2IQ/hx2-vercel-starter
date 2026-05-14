@@ -1,0 +1,23 @@
+HX2_FULL_BRAIN_ACTIVE
+
+1. Brief Title  
+Escalating Urban Attacks in Iran and Emerging Japan Defense Measures
+
+2. Primary Signal  
+- Sustained Israeli and U.S. attacks have rocked Iranian cities Tehran and Karaj for 10 days, causing widespread power disruptions and civilian exhaustion. (Direct catalyst: bbc_world, confidence 0.85)
+
+3. Supporting Context  
+- Japan's recent deployment of advanced surface-to-air missile systems to Yonaguni Island marks a tangible strategic shift focused on regional defense near Taiwan. (Narrative support: zerohedge, confidence 0.60)
+
+4. Implications  
+- The attacks in Iranian urban centers may signal an intensification of kinetic retaliation risks within the Middle East, risking broader instability and infrastructure disruption. Civilian distress adds pressure for government response or escalation.  
+- Japan’s missile deployment reflects heightened regional tensions in East Asia, potentially indicating an anticipatory posture toward Taiwan Strait contingencies, though this is interpretive and less immediately kinetic.
+
+5. Confidence  
+- Moderate confidence overall, anchored by high-tier direct catalyst on Iranian attacks but tempered by lower-tier narrative on Japanese defense moves.  
+- The Iranian attacks present confirmed kinetic escalation risk; the Japan signal is less concrete and should be treated cautiously.
+
+6. Monitoring Priorities  
+- Track further attack patterns or state responses inside Iran for signs of escalation or retaliation beyond infrastructure disruption.  
+- Monitor Japanese defense deployments and any coordinated regional security announcements related to China-Taiwan tensions.  
+- Watch for spillover risks from Middle East destabilization or bids for regional power projection shifts in East Asia.

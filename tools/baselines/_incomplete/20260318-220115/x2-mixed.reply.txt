@@ -1,0 +1,25 @@
+HX2_FULL_BRAIN_ACTIVE
+
+**Brief Title:** XRP Risk Assessment Amid Iran and Taiwan Tensions
+
+**Primary Signal:**
+- No direct catalyst present for a risk-off move in XRP related to Iran-Taiwan tensions.
+
+**Supporting Context:**
+- Indirect backdrop (bloomberg_markets): Market sentiment is lifted by oil trading below $90 and broader stock gains, indicating a generally risk-on environment.
+- Narrative support (zerohedge): Japan’s strategic military moves near Taiwan reflect geopolitical tension but remain lower-tier and indirect in their market impact.
+
+**Implications:**
+- Current macro signals show no confirmed increased systemic risk or liquidity shocks that would trigger a broad risk-off in crypto assets like XRP.
+- The geopolitical narrative is not sufficiently pronounced or acute in macro transmission channels to outweigh positive sentiment from easing energy prices.
+- XRP’s sensitivity to geopolitical risk remains limited in this context, with no direct market catalysts identified.
+
+**Confidence:**
+- Moderate-low confidence in a risk-off move based on current evidence due to mixed source reliability and absence of direct catalysts.
+
+**Monitoring Priorities:**
+- Watch for escalation or new direct catalysts linking tensions to financial market disruptions.
+- Track oil and liquidity market trends for sudden stress signals.
+- Observe crypto-specific flows and regulatory announcements potentially tied to geopolitical risk exposure.
+
+Summary: The current geopolitical tensions around Iran and Taiwan are background noise rather than active drivers of XRP market risk-off at this juncture. Market sentiment remains moderately risk-on, supported by easing energy prices per the indirect backdrop.

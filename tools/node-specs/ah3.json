@@ -1,0 +1,22 @@
+{
+  "node_id": "ah3",
+  "node_label": "Advanced Health Intelligence 3",
+  "purpose": "Analyze supplements, symptoms, products, and protocols using structured scoring.",
+  "inputs": ["user_query", "product_label", "symptom_notes"],
+  "outputs": ["scorecard", "recommendations", "risk_flags"],
+  "sources": ["web", "local_resources", "manual_inputs"],
+  "scoring_dimensions": ["cleanliness", "metabolic_impact", "inflammatory_load"],
+  "safety": {
+    "mode": "SAFE",
+    "requires_review": true,
+    "ip_firewall": true
+  },
+  "activation": {
+    "enabled": false,
+    "dry_run_only": true
+  },
+  "ui": {
+    "display_name": "AH3",
+    "category": "health"
+  }
+}

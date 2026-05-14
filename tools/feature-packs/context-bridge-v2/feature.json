@@ -1,0 +1,18 @@
+{
+  "type": "hx2",
+  "smoke": "npm run hx2:smoke",
+  "commit_message": "Add context bridge v2",
+  "name": "Context Bridge v2",
+  "created_at": "2026-04-30T10:02:02",
+  "slug": "context-bridge-v2",
+  "checklist": [
+    "Define feature purpose",
+    "List files touched",
+    "Create backup/snapshot",
+    "Apply patch",
+    "Run build",
+    "Run smoke",
+    "Deploy only if green",
+    "Commit clean feature"
+  ]
+}

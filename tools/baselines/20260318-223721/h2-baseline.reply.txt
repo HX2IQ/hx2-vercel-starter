@@ -1,0 +1,26 @@
+HX2_FULL_BRAIN_ACTIVE
+
+1. Brief Title: Escalating Attacks in Iran Amid Regional Tensions
+
+2. Primary Signal:
+- Direct catalyst: Confirmed Israeli and US attacks in Iranian cities (Tehran, Karaj) persist beyond 10 days, causing civilian unrest and widespread power disruptions. (source=bbc_world | tier=1 | confidence=0.85)
+
+3. Supporting Context:
+- Narrative support: Japan’s strategic defense posture is intensifying with recent deployment of advanced missile systems near Taiwan, indicating rising East Asian security concerns. (source=zerohedge | tier=3 | confidence=0.60)
+
+4. Implications:
+- Iranian civilian hardship and urban infrastructure disruption risk fueling internal instability and potential Iranian state retaliatory measures.
+- Prolonged Israeli-US strikes on Iranian urban targets elevate prospects of kinetic escalation or asymmetric strikes in the region.
+- Japan’s defensive moves suggest regional spillover dynamics, potentially affecting US-China-Taiwan triangular tensions but currently unrelated to Iran events.
+  
+5. Confidence:
+- Moderate given high-confidence confirmation of Iran strikes combined with lower-tier, indirect narrative regarding Japan.
+- No direct evidence of Iranian military retaliation or explicit expansion of conflict beyond urban attacks at this stage.
+
+6. Monitoring Priorities:
+- Iranian military and proxy force mobilization or retaliation signals.
+- Changes in Israeli or US strike tempo or targets within Iran.
+- Civilian unrest escalation or infrastructure collapse in Tehran/Karaj.
+- Regional state responses to Japan’s missile deployment near Taiwan and any direct spillover effects on Middle East alliances or alignments.
+
+Summary: The strongest geopolitical signal is sustained kinetic urban strikes in Iran with direct civilian impact, raising risk of escalation and instability. The emerging Japan defense posture is a lower-confidence, indirect context emphasizing broader global security tensions but not directly tied to Iran at present.

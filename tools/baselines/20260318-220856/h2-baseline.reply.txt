@@ -1,0 +1,25 @@
+HX2_FULL_BRAIN_ACTIVE
+
+1. Brief Title  
+Escalating Unrest and Potential Regional Instability in Iran Amid Proxy Attacks
+
+2. Primary Signal  
+- Direct catalyst (bbc_world, 0.85 confidence): Recurrent Israeli and US attacks in Tehran and Karaj have caused widespread disruption, including power outages, triggering civilian exhaustion and unrest after ten days of sustained strikes.
+
+3. Supporting Context  
+- Narrative support (zerohedge, 0.60 confidence): Japan is actively deploying advanced air defenses near the Taiwan strait, signifying a regional strategic shift, but this remains an indirect and lower-confidence signal unrelated to the Iran situation.
+
+4. Implications  
+- The confirmed kinetic disruption in major Iranian cities risks further destabilizing internal security and possibly accelerating retaliatory actions by Iran or affiliated proxies.  
+- Infrastructure attacks causing power outages increase civilian distress and can fuel anti-Western sentiment, raising risks of broader regional spillover if Iranian leadership opts for escalation.  
+- The Japan context points to a progressively tense Asia-Pacific security environment but has limited bearing on the Middle East conflict dynamics today.
+
+5. Confidence  
+Moderate-high confidence on the Iran kinetic escalation and social fallout (bbc_world direct catalyst).  
+Lower confidence on broader strategic realignments from Japan (zerohedge narrative support) with no direct causal link to the Iran events.
+
+6. Monitoring Priorities  
+- Any Iranian state or proxy military responses to ongoing attacks, especially cross-border or asymmetric missile/terrorist operations.  
+- Iranian internal stability indicators: protests, security clampdowns, critical infrastructure failures.  
+- Regional alliances' diplomatic and military posturing around Iran and Israel/US activities.  
+- Developments in Japan and Taiwan that may reflect wider shifts in US-aligned strategic defense, to gauge global tension interplay but secondary to Middle East kinetic risk now.

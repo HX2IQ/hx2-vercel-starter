@@ -1,10 +1,24 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import "./chat.css?v=3";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import "./chat.css?v=18";
 
 type Role = "user" | "assistant" | "system";
-type Msg = { id: string; role: Role; content: string };
+type MsgSource = {
+  title?: string;
+  url?: string;
+  source?: string;
+};
+
+type Msg = {
+  id: string;
+  role: Role;
+  content: string;
+  createdAt: string;
+  sources?: MsgSource[];
+};
 
 function uid() {
   return Math.random().toString(16).slice(2) + Date.now().toString(16);
@@ -14,7 +28,7 @@ function getSessionId(): string {
   const key = "hx2_session_id";
   const existing = sessionStorage.getItem(key);
   if (existing) return existing;
-  const sid = "owner-ui-" + Math.random().toString(16).slice(2);
+  const sid = "hx2-" + Math.random().toString(16).slice(2);
   sessionStorage.setItem(key, sid);
   return sid;
 }
@@ -22,48 +36,171 @@ function getSessionId(): string {
 function autoGrow(el: HTMLTextAreaElement | null) {
   if (!el) return;
   el.style.height = "0px";
-  const next = Math.min(el.scrollHeight, 160); // cap so it doesn’t take over the screen
+  const next = Math.min(el.scrollHeight, 180);
   el.style.height = `${next}px`;
+}
+
+function extractSourcesFromPayload(payload: any): MsgSource[] {
+  const out: MsgSource[] = [];
+
+  const autoData = payload?.data?.auto_retrieval_data;
+  const isYouTube = String(autoData?.source || "").toLowerCase() === "youtube";
+
+  if (isYouTube) {
+    const ytSeen = new Set<string>();
+
+    const chosen = autoData?.chosen_video;
+    if (chosen?.url) {
+      const url = String(chosen.url).trim();
+      if (url) {
+        ytSeen.add(url);
+        out.push({
+          title: String(chosen?.title || "").trim(),
+          url,
+          source: "youtube",
+        });
+      }
+    }
+
+    const ytResults = Array.isArray(autoData?.search?.results) ? autoData.search.results : [];
+    for (const r of ytResults) {
+      const score = Number(r?._score || 0);
+      const url = String(r?.url || "").trim();
+      const title = String(r?.title || "").trim();
+
+      if (!url || !title) continue;
+      if (ytSeen.has(url)) continue;
+      if (score < 12) continue;
+
+      ytSeen.add(url);
+      out.push({
+        title,
+        url,
+        source: "youtube",
+      });
+
+      if (out.length >= 3) break;
+    }
+
+    return out;
+  }
+
+  const fetchedPages = autoData?.fetched_pages;
+  if (Array.isArray(fetchedPages)) {
+    for (const p of fetchedPages) {
+      const title = String(p?.title || "").trim();
+      const url = String(p?.url || "").trim();
+      const source = String(p?.source || "fetched_page").trim();
+      if (title || url) out.push({ title, url, source });
+    }
+  }
+
+  const results = autoData?.results;
+  if (Array.isArray(results)) {
+    for (const r of results.slice(0, 5)) {
+      const title = String(r?.title || "").trim();
+      const url = String(r?.url || "").trim();
+      const source = String(r?.source || autoData?.provider || "search").trim();
+      if (title || url) out.push({ title, url, source });
+    }
+  }
+
+  const direct = payload?.sources || payload?.data?.sources;
+  if (Array.isArray(direct)) {
+    for (const s of direct) {
+      const title = String(s?.title || "").trim();
+      const url = String(s?.url || "").trim();
+      const source = String(s?.source || "").trim();
+      if (title || url) out.push({ title, url, source });
+    }
+  }
+
+  const seen = new Set<string>();
+  return out.filter((x) => {
+    const key = `${x.title || ""}|${x.url || ""}|${x.source || ""}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).slice(0, 5);
+}
+
+function getHostname(url?: string): string {
+  try {
+    return url ? new URL(url).hostname.replace(/^www\./, "") : "";
+  } catch {
+    return "";
+  }
+}
+
+function getFaviconUrl(url?: string, source?: string): string {
+  if (String(source || "").toLowerCase() === "youtube") {
+    return "https://www.youtube.com/s/desktop/fe7d0c56/img/favicon_32x32.png";
+  }
+
+  const host = getHostname(url);
+  return host ? `https://www.google.com/s2/favicons?domain=${host}&sz=64` : "";
 }
 
 export default function ChatClient() {
   const [sessionId, setSessionId] = useState<string>("");
-
-  const [messages, setMessages] = useState<Msg[]>([
-    { id: uid(), role: "assistant", content: "Hi Dan — HX2 is online. What are we working on?" },
-  ]);
-
+  const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
-
-  const [useWeb, setUseWeb] = useState(false);
-
   const [debugOpen, setDebugOpen] = useState(false);
   const [lastRaw, setLastRaw] = useState<any>(null);
-
   const [isRecording, setIsRecording] = useState(false);
-  const recognitionRef = useRef<any>(null);
 
+  const recognitionRef = useRef<any>(null);
+  const abortRef = useRef<AbortController | null>(null);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const canSend = useMemo(() => input.trim().length > 0 && !sending, [input, sending]);
 
-  useEffect(() => setSessionId(getSessionId()), []);
+  useEffect(() => {
+    setSessionId(getSessionId());
+
+    const saved = localStorage.getItem("hx2_chat_messages");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMessages(parsed);
+          return;
+        }
+      } catch {}
+    }
+
+    setMessages([
+      {
+        id: uid(),
+        role: "assistant",
+        content: "## Opti is online\n\nAsk me to reason, build, inspect, activate, execute, or retrieve sources.",
+        createdAt: new Date().toISOString(),
+      },
+    ]);
+  }, []);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem("hx2_chat_messages", JSON.stringify(messages));
+    }
+  }, [messages]);
 
   useEffect(() => {
     autoGrow(inputRef.current);
   }, [input]);
 
   useEffect(() => {
-    // auto-scroll to bottom on new message
     requestAnimationFrame(() => {
-      scrollerRef.current?.scrollTo({ top: scrollerRef.current.scrollHeight, behavior: "smooth" });
+      scrollerRef.current?.scrollTo({
+        top: scrollerRef.current.scrollHeight,
+        behavior: "smooth",
+      });
     });
-  }, [messages.length]);
+  }, [messages.length, sending]);
 
   useEffect(() => {
-    // SpeechRecognition (Chrome/Android uses webkitSpeechRecognition)
     const AnyWin: any = window as any;
     const SR = AnyWin.SpeechRecognition || AnyWin.webkitSpeechRecognition;
     if (!SR) return;
@@ -78,7 +215,9 @@ export default function ChatClient() {
       for (let i = e.resultIndex; i < e.results.length; i++) {
         text += e.results[i][0]?.transcript || "";
       }
-      if (text) setInput((v) => (v ? (v + " " + text) : text));
+      if (text) {
+        setInput(text.trim());
+      }
     };
 
     rec.onend = () => setIsRecording(false);
@@ -90,14 +229,16 @@ export default function ChatClient() {
   function toggleVoice() {
     const rec = recognitionRef.current;
     if (!rec) {
-      alert("Voice input not supported in this browser.");
+      alert("Voice input is not supported in this browser.");
       return;
     }
+
     try {
       if (isRecording) {
         rec.stop();
         setIsRecording(false);
       } else {
+        setInput("");
         setIsRecording(true);
         rec.start();
       }
@@ -106,44 +247,184 @@ export default function ChatClient() {
     }
   }
 
+  function clearChat() {
+    const fresh: Msg[] = [
+      {
+        id: uid(),
+        role: "assistant",
+        content: "## Opti cleared the chat\n\nWhat would you like to do next?",
+        createdAt: new Date().toISOString(),
+      },
+    ];
+    setMessages(fresh);
+    localStorage.setItem("hx2_chat_messages", JSON.stringify(fresh));
+    setLastRaw(null);
+  }
+
+  function copyMessage(content: string) {
+    navigator.clipboard.writeText(content).catch(() => {});
+  }
+
+  function stopRequest() {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setSending(false);
+  }
+
   async function send() {
     const text = input.trim();
     if (!text || sending) return;
 
+    const userMsg: Msg = {
+      id: uid(),
+      role: "user",
+      content: text,
+      createdAt: new Date().toISOString(),
+    };
+
+    const assistantId = uid();
+    const assistantMsg: Msg = {
+      id: assistantId,
+      role: "assistant",
+      content: "",
+      createdAt: new Date().toISOString(),
+    };
+
+    setMessages((m) => [...m, userMsg, assistantMsg]);
     setInput("");
     setSending(true);
 
-    const userMsg: Msg = { id: uid(), role: "user", content: text };
-    setMessages((m) => [...m, userMsg]);
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     try {
-      const hdrs: Record<string, string> = { "Content-Type": "application/json" };
+      const hdrs: Record<string, string> = {
+        "Content-Type": "application/json",
+        "x-hx2-stream": "1",
+      };
       if (sessionId) hdrs["x-hx2-session"] = sessionId;
 
-      const res = await fetch("/api/chat/send", {
+      const res = await fetch("/api/hx2/chat", {
         method: "POST",
         headers: hdrs,
-        body: JSON.stringify({ message: text, use_web: useWeb }),
+        body: JSON.stringify({
+          message: text,
+          stream: true,
+          conversation_context: messages.slice(-8).map((m) => ({
+            role: m.role,
+            content: m.content
+          }))
+        }),
+        signal: controller.signal,
       });
 
-      const raw = await res.json().catch(() => ({}));
-      setLastRaw({ status: res.status, headers: Object.fromEntries(res.headers.entries()), body: raw });
+      if (!res.ok || !res.body) {
+        const raw = await res.json().catch(() => ({}));
+        const extractedSources = extractSourcesFromPayload(raw);
+        setLastRaw({ status: res.status, body: raw });
 
-      const reply =
-        raw?.reply ??
-        raw?.data?.reply ??
-        raw?.data?.message ??
-        raw?.message ??
-        (typeof raw === "string" ? raw : null) ??
-        "No reply.";
+        setMessages((m) =>
+          m.map((msg) =>
+            msg.id === assistantId
+              ? {
+                  ...msg,
+                  content: raw?.error || raw?.reply || "Request failed.",
+                  sources: extractedSources,
+                }
+              : msg
+          )
+        );
+        return;
+      }
 
-      // Append assistant message normally
-      const assistantMsg: Msg = { id: uid(), role: "assistant", content: String(reply) };
-      setMessages((m) => [...m, assistantMsg]);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let finalReply = "";
+      let finalData: any = null;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split("\n\n");
+        buffer = parts.pop() || "";
+
+        for (const part of parts) {
+          const line = part.split("\n").find((x) => x.startsWith("data: "));
+          if (!line) continue;
+
+          let evt: any = null;
+          try {
+            evt = JSON.parse(line.slice(6));
+          } catch {
+            continue;
+          }
+
+          if (evt?.type === "delta") {
+            finalReply += String(evt.delta || "");
+            setMessages((m) =>
+              m.map((msg) =>
+                msg.id === assistantId ? { ...msg, content: finalReply } : msg
+              )
+            );
+          }
+
+          if (evt?.type === "done") {
+            finalReply = String(evt.reply || finalReply || "");
+            finalData = evt?.data || null;
+
+            setMessages((m) =>
+              m.map((msg) =>
+                msg.id === assistantId ? { ...msg, content: finalReply || "No reply." } : msg
+              )
+            );
+          }
+
+          if (evt?.type === "error") {
+            const errText = String(evt.error || "Request failed.");
+            finalReply = errText;
+
+            setMessages((m) =>
+              m.map((msg) =>
+                msg.id === assistantId ? { ...msg, content: errText } : msg
+              )
+            );
+          }
+        }
+      }
+
+      const finalPayload = {
+        status: 200,
+        body: {
+          reply: finalReply,
+          data: finalData,
+        },
+      };
+
+      setLastRaw(finalPayload);
+
+      const extractedSources = extractSourcesFromPayload(finalPayload.body);
+
+      setMessages((m) =>
+        m.map((msg) =>
+          msg.id === assistantId ? { ...msg, sources: extractedSources } : msg
+        )
+      );
     } catch (e: any) {
-      const assistantMsg: Msg = { id: uid(), role: "assistant", content: `Error: ${e?.message || "Request failed"}` };
-      setMessages((m) => [...m, assistantMsg]);
+      const message =
+        e?.name === "AbortError"
+          ? "Request stopped."
+          : `Error: ${e?.message || "Request failed"}`;
+
+      setMessages((m) =>
+        m.map((msg) =>
+          msg.id === assistantId ? { ...msg, content: message } : msg
+        )
+      );
     } finally {
+      abortRef.current = null;
       setSending(false);
       requestAnimationFrame(() => inputRef.current?.focus());
     }
@@ -161,33 +442,79 @@ export default function ChatClient() {
   return (
     <div className="hx2-shell">
       <header className="hx2-topbar">
-        <button className="hx2-iconbtn" aria-label="Menu" onClick={() => setDebugOpen((v) => !v)}>
-          ☰
-        </button>
-
-        <div className="hx2-titlewrap">
+        <div className="hx2-brand">
           <div className="hx2-title">Opti</div>
           <div className="hx2-subtitle">Optimized Intelligence</div>
         </div>
 
-        <button
-          className="hx2-pill"
-          aria-label="Toggle web"
-          onClick={() => setUseWeb((v) => !v)}
-          title="When ON, HX2 pulls fresh web sources when needed."
-        >
-          {useWeb ? "Web: ON" : "Web: OFF"}
-        </button>
+        <div className="hx2-top-actions">
+
+          <button className="hx2-pill" onClick={clearChat}>Clear</button>
+          <button className="hx2-pill" onClick={() => setDebugOpen((v) => !v)}>
+            {debugOpen ? "Hide Debug" : "Debug"}
+          </button>
+        </div>
       </header>
 
       <main className="hx2-chat" ref={scrollerRef}>
         <div className="hx2-chat-inner">
           {messages.map((m) => (
-            <div key={m.id} className={`hx2-row ${m.role === "user" ? "hx2-row-user" : "hx2-row-assistant"}`}>
-              <div className={`hx2-bubble ${m.role === "user" ? "hx2-bubble-user" : "hx2-bubble-assistant"}`}>
-                {m.content}
+            <section key={m.id} className={`hx2-message ${m.role === "user" ? "hx2-message-user" : "hx2-message-assistant"}`}>
+              <div className="hx2-message-meta">
+                <span className="hx2-role">{m.role === "user" ? "You" : "Opti"}</span>
+                <button className="hx2-copy" onClick={() => copyMessage(m.content)}>Copy</button>
               </div>
-            </div>
+              <div className="hx2-message-body markdown-body">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    h1: ({children}) => <h1 className="hx2-md-h1">{children}</h1>,
+                    h2: ({children}) => <h2 className="hx2-md-h2">{children}</h2>,
+                    h3: ({children}) => <h3 className="hx2-md-h3">{children}</h3>,
+                    p: ({children}) => <p className="hx2-md-p">{children}</p>,
+                    ul: ({children}) => <ul className="hx2-md-ul">{children}</ul>,
+                    ol: ({children}) => <ol className="hx2-md-ol">{children}</ol>,
+                    li: ({children}) => <li className="hx2-md-li">{children}</li>,
+                    strong: ({children}) => <strong className="hx2-md-strong">{children}</strong>,
+                    code: ({children}) => <code className="hx2-md-code">{children}</code>,
+                    pre: ({children}) => <pre className="hx2-md-pre">{children}</pre>,
+                    blockquote: ({children}) => <blockquote className="hx2-md-blockquote">{children}</blockquote>,
+                  }}
+                >
+                  {m.content || (m.role === "assistant" && sending ? "…" : "")}
+                </ReactMarkdown>
+
+                {m.role === "assistant" && Array.isArray(m.sources) && m.sources.length > 0 && (
+                  <div className="hx2-source-chips">
+                    {m.sources.slice(0, 5).map((s, i) => {
+                      const host = getHostname(s.url);
+                      const icon = getFaviconUrl(s.url, s.source);
+                      return (
+                        <a
+                          key={i}
+                          className="hx2-source-chip"
+                          href={s.url || "#"}
+                          target="_blank"
+                          rel="noreferrer"
+                          title={s.title || host || "Source"}
+                        >
+                          {icon ? (
+                            <img className="hx2-source-chip-icon" src={icon} alt="" />
+                          ) : (
+                            <span className="hx2-source-chip-icon hx2-source-chip-icon-fallback">•</span>
+                          )}
+                          <span className="hx2-source-chip-label">
+                            {s.source === "youtube"
+                              ? (s.title || "YouTube")
+                              : (host || s.title || "Source")}
+                          </span>
+                        </a>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </section>
           ))}
           <div className="hx2-spacer" />
         </div>
@@ -207,42 +534,69 @@ export default function ChatClient() {
               value={input}
               onChange={(e) => {
                 setInput(e.target.value);
-                autoGrow(e.target as any);
+                autoGrow(e.target as HTMLTextAreaElement);
               }}
               onKeyDown={onKeyDown}
               rows={1}
             />
           </div>
 
-          <button className="hx2-send" onClick={send} disabled={!canSend} aria-label="Send">
-            {sending ? "…" : "➤"}
-          </button>
-        </div>
-
-        <div className="hx2-debug">
-          <button className="hx2-debug-toggle" onClick={() => setDebugOpen((v) => !v)}>
-            {debugOpen ? "▼ Debug" : "▶ Debug"}
-          </button>
-
-          {debugOpen && (
-            <>
-              {Array.isArray(sources) && sources.length > 0 && (
-                <div className="hx2-sources">
-                  <div className="hx2-sources-title">Sources</div>
-                  <ul className="hx2-sources-list">
-                    {sources.map((s: any, i: number) => (
-                      <li key={i}>
-                        <a href={s?.url} target="_blank" rel="noreferrer">{s?.title ? `${s.title} — ` : ""}{s?.url}</a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              <pre className="hx2-debugbox">{JSON.stringify(lastRaw, null, 2)}</pre>
-            </>
+          {sending ? (
+            <button className="hx2-send hx2-stop" onClick={stopRequest}>Stop</button>
+          ) : (
+            <button className="hx2-send" onClick={send} disabled={!canSend}>Send</button>
           )}
         </div>
+
+        {Array.isArray(sources) && sources.length > 0 && (
+          <div className="hx2-sources">
+            <div className="hx2-sources-title">Sources</div>
+            <ul className="hx2-sources-list">
+              {sources.map((s: any, i: number) => (
+                <li key={i}>
+                  <a href={s?.url} target="_blank" rel="noreferrer">
+                    {s?.title ? `${s.title} — ` : ""}
+                    {s?.url}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {debugOpen && (
+          <div className="hx2-debug">
+            <pre className="hx2-debugbox">{JSON.stringify(lastRaw, null, 2)}</pre>
+          </div>
+        )}
       </footer>
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

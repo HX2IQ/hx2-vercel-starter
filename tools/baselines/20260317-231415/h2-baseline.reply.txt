@@ -1,0 +1,26 @@
+HX2_FULL_BRAIN_ACTIVE
+
+1. Brief Title  
+Escalating Urban Attacks in Iran Amid Rising Regional Tensions
+
+2. Primary Signal  
+- Direct catalyst from bbc_world (confidence 0.85): Sustained Israeli and US attacks over 10 days have disrupted urban life in Tehran and Karaj, including significant power outages and civilian exhaustion.  
+
+3. Supporting Context  
+- Narrative support from zerohedge (confidence 0.60): Japan is accelerating regional defense postures by deploying surface-to-air missile systems near Taiwan, reflecting broader East Asian security recalibrations, though this is interpretive and less validated.
+
+4. Implications  
+- The attacks in Iranian cities represent confirmed kinetic escalation with direct civilian infrastructure disruption, increasing risk of Iranian retaliation or proxy escalations in the Near East.  
+- Urban power cuts and public unrest could pressure Iranian authorities internally, potentially complicating regime stability or provoking harsher security crackdowns.  
+- The regional spillover risk remains concentrated in the Middle East, with this urban targeting signaling an intensified phase of covert and overt conflict.  
+- Japan’s defense moves have strategic relevance but lack direct linkage to the Iranian events and should be monitored as separate regional security dynamics.
+
+5. Confidence  
+- Moderate to high confidence in the Iranian attacks as a primary geopolitical signal (bbc_world direct catalyst).  
+- Lower confidence in Japan’s strategic posture shift as a current geopolitical driver—classified as supportive narrative only.
+
+6. Monitoring Priorities  
+- Further developments on Iranian urban infrastructure targeting and any signs of immediate Iranian or proxy armed response.  
+- Iranian regime statements or mobilization indicative of escalation posture.  
+- Broader Middle East flashpoints for secondary spillover effects.  
+- Updates on Japanese defense deployments for potential shifts in East Asia security dynamics but treated independently from Middle East escalation.

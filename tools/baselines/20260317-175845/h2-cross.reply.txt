@@ -1,0 +1,24 @@
+HX2_FULL_BRAIN_ACTIVE
+
+**Brief Title:** Assessment of Potential Linkage Between Iran Attacks and Taiwan-Adjacent Japanese Deployments
+
+**Primary Signal:**  
+Iranians in Tehran and Karaj report exhaustion after 10 days of Israeli and US attacks causing city disruptions and power cuts (Direct catalyst: bbc_world, confidence 0.85).
+
+**Supporting Context:**  
+Japan’s recent deployment of advanced SAM systems to Yonaguni Island near Taiwan is unfolding amid regional tensions but lacks direct, confirmed linkage to the Iran attacks (Narrative support: zerohedge, confidence 0.60).
+
+**Implications:**  
+- Current evidence supports treating these developments as separate theaters with distinct operational drivers.  
+- The Iran strikes represent direct kinetic escalation involving US/Israeli coercion within the Middle East.  
+- The Japanese military moves reflect regional deterrence and preparedness amid East Asian security dynamics, particularly concerning Taiwan’s proximity.  
+- No confirmed state-level coordination or escalation pattern explicitly connecting these signals has emerged from higher-tier sources.  
+- Indirect strategic competition among global powers may underlie both, but causality or linkage remains low confidence.
+
+**Confidence:**  
+Moderate to low for cross-theater escalation linkage due to absence of robust, corroborated geopolitical reporting tying the two sets of events.
+
+**Monitoring Priorities:**  
+- Track authoritative intelligence or diplomatic signals indicating coordination or spillover between Middle East conflict and East Asia security posture.  
+- Watch for escalation in military activity or state statements linking US/Israeli-Iran tensions with Japan/Taiwan defense moves.  
+- Maintain separate analytic streams unless stronger evidence arises for integrated escalation narrative.

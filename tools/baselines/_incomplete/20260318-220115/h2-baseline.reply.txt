@@ -1,0 +1,25 @@
+HX2_FULL_BRAIN_ACTIVE
+
+1. Brief Title  
+Iran Under Sustained Israeli-US Attacks, Domestic Unrest Intensifies
+
+2. Primary Signal  
+- Direct catalyst from bbc_world (confidence 0.85): Confirmed Israeli and US attacks have rocked Tehran and Karaj for 10 days, disrupting power and causing widespread civilian exhaustion and insomnia.
+
+3. Supporting Context  
+- Narrative support from zerohedge (confidence 0.60): Japan’s strategic military posture is shifting with deployment of advanced anti-air missile systems close to Taiwan, reflecting broader regional security recalibrations.
+
+4. Implications  
+- Iran faces immediate internal destabilization risks due to persistent kinetic strikes impacting civilian infrastructure, raising escalation and retaliation potential.  
+- Domestic disorder and power outages could strain regime control and provoke wider regional spillover if response intensifies.  
+- Japan’s evolving air defense posture signals rising regional security tensions in East Asia, but this remains background context relative to active Iranian conflict.  
+- No direct evidence links Japan’s moves to Iranian events, so causal linkage remains low confidence.
+
+5. Confidence  
+Moderate-high on Iran-specific kinetic escalation due to tier-1, high-confidence direct reporting.  
+Low-moderate on Japan-related implications given tier-3, narrative role source and indirect relation.
+
+6. Monitoring Priorities  
+- Continued reporting on Iran’s internal unrest, infrastructure targeting, and Iranian retaliatory actions.  
+- Any escalation signals involving regional allies or proxies linked to the Iran-US/Israel conflict.  
+- Developments in Japan’s defense deployments and their effect on East Asian geopolitical tensions as background risk.

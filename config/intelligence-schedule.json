@@ -1,0 +1,37 @@
+[
+  {
+    "id": "bbc_world_10m",
+    "enabled": true,
+    "task": "rss.fetch",
+    "every_minutes": 10,
+    "payload": { "source": "bbc_world", "limit": 5 }
+  },
+  {
+    "id": "bloomberg_markets_15m",
+    "enabled": true,
+    "task": "rss.fetch",
+    "every_minutes": 15,
+    "payload": { "source": "bloomberg_markets", "limit": 5 }
+  },
+  {
+    "id": "coindesk_10m",
+    "enabled": true,
+    "task": "rss.fetch",
+    "every_minutes": 10,
+    "payload": { "source": "coindesk", "limit": 5 }
+  },
+  {
+    "id": "wiki_recent_changes_5m",
+    "enabled": true,
+    "task": "rss.fetch",
+    "every_minutes": 5,
+    "payload": { "source": "wikipedia_recent_changes", "limit": 5 }
+  },
+  {
+    "id": "nasa_breaking_30m",
+    "enabled": true,
+    "task": "rss.fetch",
+    "every_minutes": 30,
+    "payload": { "source": "nasa_breaking", "limit": 5 }
+  }
+]

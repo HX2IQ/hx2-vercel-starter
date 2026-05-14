@@ -1,0 +1,180 @@
+[
+  {
+    "id": "reuters_world",
+    "title": "Reuters World",
+    "url": "https://www.reutersagency.com/feed/?best-topics=world&post_type=best",
+    "category": "geopolitics",
+    "tier": 1,
+    "confidence": 0.9,
+    "node_targets": [
+      "H2"
+    ],
+    "enabled": false,
+    "note": "Disabled: source returned 404 during v1 validation"
+  },
+  {
+    "id": "ap_world",
+    "title": "AP World",
+    "url": "https://apnews.com/hub/world-news?outputType=xml",
+    "category": "geopolitics",
+    "tier": 1,
+    "confidence": 0.9,
+    "node_targets": [
+      "H2"
+    ],
+    "enabled": false,
+    "note": "Disabled: malformed XML during v1 validation"
+  },
+  {
+    "id": "bbc_world",
+    "title": "BBC World",
+    "url": "http://feeds.bbci.co.uk/news/world/rss.xml",
+    "category": "geopolitics",
+    "tier": 1,
+    "confidence": 0.85,
+    "node_targets": [
+      "H2"
+    ]
+  },
+  {
+    "id": "bloomberg_markets",
+    "title": "Bloomberg Markets",
+    "url": "https://feeds.bloomberg.com/markets/news.rss",
+    "category": "macro",
+    "tier": 1,
+    "confidence": 0.9,
+    "node_targets": [
+      "X2"
+    ]
+  },
+  {
+    "id": "coindesk",
+    "title": "CoinDesk",
+    "url": "https://www.coindesk.com/arc/outboundfeeds/rss/",
+    "category": "crypto",
+    "tier": 2,
+    "confidence": 0.8,
+    "node_targets": [
+      "X2"
+    ]
+  },
+  {
+    "id": "mit_tech_review",
+    "title": "MIT Technology Review",
+    "url": "https://www.technologyreview.com/feed/",
+    "category": "technology",
+    "tier": 2,
+    "confidence": 0.85,
+    "node_targets": [
+      "O2",
+      "AP2"
+    ]
+  },
+  {
+    "id": "ars_technica",
+    "title": "Ars Technica",
+    "url": "http://feeds.arstechnica.com/arstechnica/index",
+    "category": "technology",
+    "tier": 2,
+    "confidence": 0.8,
+    "node_targets": [
+      "O2",
+      "AP2"
+    ]
+  },
+  {
+    "id": "supreme_court",
+    "title": "Supreme Court Slip Opinions",
+    "url": "https://www.supremecourt.gov/feeds/slipopinions.xml",
+    "category": "legal",
+    "tier": 2,
+    "confidence": 0.95,
+    "node_targets": [
+      "L2"
+    ]
+  },
+  {
+    "id": "sec_press_releases",
+    "title": "SEC Press Releases",
+    "url": "https://www.sec.gov/news/pressreleases.rss",
+    "category": "legal",
+    "tier": 2,
+    "confidence": 0.95,
+    "node_targets": [
+      "L2",
+      "X2"
+    ]
+  },
+  {
+    "id": "nasa_breaking",
+    "title": "NASA Breaking News",
+    "url": "https://www.nasa.gov/rss/dyn/breaking_news.rss",
+    "category": "science",
+    "tier": 1,
+    "confidence": 0.9,
+    "node_targets": [
+      "H2",
+      "X2"
+    ]
+  },
+  {
+    "id": "spaceweather",
+    "title": "SpaceWeather",
+    "url": "https://spaceweather.com/rss_feed.xml",
+    "category": "space_weather",
+    "tier": 2,
+    "confidence": 0.75,
+    "node_targets": [
+      "H2",
+      "X2"
+    ]
+  },
+  {
+    "id": "unlimited_hangout",
+    "title": "Unlimited Hangout",
+    "url": "https://unlimitedhangout.com/feed/",
+    "category": "investigative",
+    "tier": 3,
+    "confidence": 0.6,
+    "node_targets": [
+      "H2",
+      "C2"
+    ]
+  },
+  {
+    "id": "zerohedge",
+    "title": "ZeroHedge",
+    "url": "https://feeds.feedburner.com/zerohedge/feed",
+    "category": "macro_narrative",
+    "tier": 3,
+    "confidence": 0.6,
+    "node_targets": [
+      "X2",
+      "H2"
+    ]
+  },
+  {
+    "id": "wikipedia_recent_changes",
+    "title": "Wikipedia Recent Changes",
+    "url": "https://en.wikipedia.org/w/index.php?title=Special:RecentChanges&feed=rss",
+    "category": "narrative_shift",
+    "tier": 2,
+    "confidence": 0.7,
+    "node_targets": [
+      "H2",
+      "C2"
+    ]
+  },
+  {
+    "id": "consortium_news",
+    "title": "Consortium News",
+    "url": "https://consortiumnews.com/feed/",
+    "category": "investigative_geopolitics",
+    "tier": 3,
+    "confidence": 0.65,
+    "node_targets": [
+      "H2",
+      "L2"
+    ]
+  }
+]

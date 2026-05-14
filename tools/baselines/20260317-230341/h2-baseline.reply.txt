@@ -1,0 +1,25 @@
+HX2_FULL_BRAIN_ACTIVE
+
+1. Brief Title  
+Escalating Infrastructure Attacks in Iran Amid Regional Tensions
+
+2. Primary Signal  
+- Direct catalyst: Confirmed Israeli and US attacks over the past 10 days have targeted Iranian urban centers Tehran and Karaj, causing widespread power outages and civilian distress. (bbc_world, confidence 0.85)
+
+3. Supporting Context  
+- Narrative support: Japan’s strategic military upgrades including advanced missile deployments near Taiwan signal rising regional defense posturing but bear indirect relation to the Iran escalation. (zerohedge, confidence 0.60)  
+- Mixed confidence due to narrative framing and indirect relevance.
+
+4. Implications  
+- The sustained kinetic attacks on Iran’s critical urban infrastructure represent a notable escalation that risks further destabilization inside Iran.  
+- Civilian disruptions and widespread power outages may increase internal unrest or provoke Iranian retaliatory actions against Israel or US interests directly or via proxies.  
+- Japan’s military posture reflects broader East Asian regional security drills but currently is a separate theater with limited spillover risk to the Iran conflict zone.  
+- Given mixed source confidence and limited data, the immediate kinetic escalation remains focused on Iran’s internal destabilization and tension with Israel/US.
+
+5. Confidence  
+Moderate: High confidence in direct attacks on Iran and infrastructure disruption; lower confidence in regional nexus or escalation spillover due to narrative source limitations.
+
+6. Monitoring Priorities  
+- Further verification of attack scope, Iranian internal security responses, and potential retaliatory strikes.  
+- Signs of escalation beyond infrastructure sabotage, including military exchanges or proxy actions in neighboring countries.  
+- Developments in Japanese regional deployments as a broader security posture indicator, without conflating with Iran conflict dynamics.

@@ -1,0 +1,14 @@
+{
+  "baseline_name": "HX2 Master Chat Benchmark with Router Regression",
+  "average_minimum": 9.0,
+  "required_passed": "7/7",
+  "must_not_contain": [
+    "Incomplete input detail",
+    "Baseline fallback",
+    "No specific actions returned"
+  ],
+  "required_regression_tests": [
+    "HealthRouter: Does AGE garlic have side effects?"
+  ],
+  "rule": "Any future sprint that drops average below 9.0 or causes any failed category should be reviewed before continuing."
+}

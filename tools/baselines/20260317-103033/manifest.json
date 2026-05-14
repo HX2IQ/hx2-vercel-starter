@@ -1,0 +1,15 @@
+{
+  "created_at": "2026-03-17T10:31:56",
+  "out_dir": "C:\\Users\\ezdet\\hx2-vercel-starter\\tools\\baselines\\20260317-103033",
+  "files": [
+    "brain-status.json",
+    "h2-baseline.json",
+    "h2-baseline.reply.txt",
+    "h2-cross.json",
+    "h2-cross.reply.txt",
+    "x2-baseline.json",
+    "x2-baseline.reply.txt",
+    "x2-mixed.json",
+    "x2-mixed.reply.txt"
+  ]
+}
