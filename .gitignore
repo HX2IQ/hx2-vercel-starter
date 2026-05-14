@@ -94,3 +94,6 @@ tools/dev2/sprint-reports/
 tools/_autopsy/*.tmp
 tools/_autopsy/*.cache
 tools/_autopsy/*.bak
+
+tools/_autopsy/**
+!tools/_autopsy/.gitkeep
