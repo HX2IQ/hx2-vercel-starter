@@ -79,13 +79,18 @@ tools/dev2/sprint-reports/
 tools/last-build-error.log
 
 # DEV2 autopsy/log artifacts - may contain secrets
-tools/_autopsy/
+
 tools/dev2/runs/
 tools/dev2/sprint-reports/
 
 
 # DEV2 autopsy/log artifacts - may contain secrets
-tools/_autopsy/
+
 tools/dev2/runs/
 tools/dev2/sprint-reports/
 
+
+# DEV2 autopsy runtime artifacts
+tools/_autopsy/*.tmp
+tools/_autopsy/*.cache
+tools/_autopsy/*.bak
