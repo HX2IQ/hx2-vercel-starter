@@ -25,7 +25,7 @@ PS C:\Users\ezdet\hx2-vercel-starter> @'
 Repo:
 C:\Users\ezdet\hx2-vercel-starter
 Branch:
-fix/ap2-enqueue-tcp
+fix/ap2-enqueue-clean
 
 Current state:
 HX2 Node OS v1 slice is working and verified.
