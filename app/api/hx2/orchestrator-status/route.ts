@@ -43,10 +43,7 @@ export async function GET() {
       ap2_gateway_configured: !!process.env.AP2_GATEWAY_URL,
     };
 
-    const checks = {
-      ...critical_checks,
-      ...optional_checks,
-    };
+    const checks = { ...critical_checks, ...optional_checks };
 
     const healthy = Object.values(checks).filter(Boolean).length;
     const total = Object.keys(checks).length;
@@ -93,4 +90,3 @@ export async function GET() {
     );
   }
 }
-

@@ -809,6 +809,11 @@ function OrchestratorStatusPanel({ status }: { status: any }) {
       : severity === "degraded"
       ? "border-amber-700 bg-amber-950 text-amber-200"
       : "border-red-800 bg-red-950 text-red-200";
+    severity === "healthy"
+      ? "border-emerald-800 bg-emerald-950 text-emerald-200"
+      : severity === "degraded"
+      ? "border-amber-700 bg-amber-950 text-amber-200"
+      : "border-red-800 bg-red-950 text-red-200";
   const ok = status?.ok === true && healthy === total && missingRoutes.length === 0;
 
   return (
@@ -828,6 +833,10 @@ function OrchestratorStatusPanel({ status }: { status: any }) {
         <StatCard title="Healthy Checks" value={healthy} />
         <StatCard title="Total Checks" value={total} />
         <StatCard title="Status" value={ok ? "Ready" : "Partial"} />
+        <div className={`rounded-2xl border p-4 ${severityTone}`}>
+          <div className="text-sm opacity-80">Severity</div>
+          <div className="mt-2 text-2xl font-semibold capitalize">{severity}</div>
+        </div>
         <div className={`rounded-2xl border p-4 ${severityTone}`}>
           <div className="text-sm opacity-80">Severity</div>
           <div className="mt-2 text-2xl font-semibold capitalize">{severity}</div>
@@ -1392,6 +1401,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
