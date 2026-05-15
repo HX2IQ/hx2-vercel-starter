@@ -646,6 +646,24 @@ function SystemSnapshotHeader({
   const orchSeverity = String(orch?.severity || "unknown");
   const orchReadiness = Number(orch?.readiness_percent ?? 0);
   const orchCritical = Number(orch?.critical_readiness_percent ?? 0);
+  const orchMissingCritical = Array.isArray(orch?.missing_critical) ? orch.missing_critical : [];
+  const orchMissingOptional = Array.isArray(orch?.missing_optional) ? orch.missing_optional : [];
+
+  const remediationMap: Record<string, string> = {
+    redis_configured: "Configure Upstash Redis environment variables.",
+    ap2_gateway_configured: "Verify AP2_GATEWAY_URL is configured.",
+    chat_master_route: "Restore /api/hx2/chat-master route.",
+    router_route: "Restore /api/hx2/router route.",
+    execute_route: "Restore /api/hx2/execute route.",
+    owner_console: "Restore owner console page.",
+    registry_preview_route: "Restore registry preview route.",
+    memory_status_route: "Restore brain memory status route."
+  };
+
+  const remediationItems = [...orchMissingCritical, ...orchMissingOptional].map((key: string) => ({
+    key,
+    action: remediationMap[key] || "Review this missing orchestration check."
+  }));
 
   const snapshotTone =
     orchSeverity === "healthy"
@@ -656,10 +674,10 @@ function SystemSnapshotHeader({
 
   const orchestrationRecommendation =
     orchSeverity === "healthy"
-      ? "System operational"
+      ? `System operational — readiness ${orchReadiness}%, critical ${orchCritical}%.`
       : orchSeverity === "degraded"
-      ? "Review optional orchestration services"
-      : "Immediate orchestration attention required";
+      ? `Review optional orchestration services — readiness ${orchReadiness}%, missing optional ${orchMissingOptional.length}.`
+      : `Immediate orchestration attention required — readiness ${orchReadiness}%, missing critical ${orchMissingCritical.length}.`;
 
   return (
     <div className={`mt-6 rounded-2xl border p-5 ${snapshotTone}`}>
@@ -682,6 +700,17 @@ function SystemSnapshotHeader({
           }
         </div>
       </div>
+
+      {remediationItems.length > 0 ? (
+        <div className="mt-4 rounded-xl border border-amber-700 bg-amber-950 p-4 text-sm text-amber-200">
+          <div className="font-semibold">Recommended Remediation</div>
+          <ul className="mt-2 list-disc space-y-1 pl-5">
+            {remediationItems.map((item) => (
+              <li key={item.key}>{item.key}: {item.action}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       <div className="mt-4 grid gap-3 md:grid-cols-3 xl:grid-cols-9">
         <StatCard title="Benchmark" value={benchmarkScore} />
@@ -1426,6 +1455,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
