@@ -837,10 +837,6 @@ function OrchestratorStatusPanel({ status }: { status: any }) {
           <div className="text-sm opacity-80">Severity</div>
           <div className="mt-2 text-2xl font-semibold capitalize">{severity}</div>
         </div>
-        <div className={`rounded-2xl border p-4 ${severityTone}`}>
-          <div className="text-sm opacity-80">Severity</div>
-          <div className="mt-2 text-2xl font-semibold capitalize">{severity}</div>
-        </div>
         <StatCard title="Missing" value={missingRoutes.length} />
         <div className={`rounded-2xl border p-4 ${readinessTone}`}>
           <div className="text-sm opacity-80">Readiness</div>
