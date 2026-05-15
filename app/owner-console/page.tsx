@@ -260,6 +260,21 @@ async function getEnvironmentStatus() {
     return { ok: false, error: err?.message || String(err), configured: {}, environment: {} };
   }
 }
+
+async function getOrchestratorStatus() {
+  const base =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    "https://optinodeiq.com";
+
+  try {
+    const res = await fetch(`${base}/api/hx2/orchestrator-status`, { cache: "no-store" });
+    if (!res.ok) return { ok: false, error: `HTTP ${res.status}`, orchestrator: null };
+    return await res.json();
+  } catch (err: any) {
+    return { ok: false, error: err?.message || String(err), orchestrator: null };
+  }
+}
 function Card({ title, value }: { title: string; value: string }) {
   return (
     <div className="rounded-2xl border border-slate-700 bg-slate-900 p-4 shadow-sm">
@@ -761,6 +776,43 @@ function GuardStatusPanel({ guardStatus }: { guardStatus: any }) {
     </div>
   );
 }
+
+function OrchestratorStatusPanel({ status }: { status: any }) {
+  const orchestrator = status?.orchestrator || {};
+  const checks = orchestrator?.checks || {};
+  const total = orchestrator?.total_checks ?? Object.keys(checks).length;
+  const healthy = orchestrator?.healthy_checks ?? Object.values(checks).filter(Boolean).length;
+  const ok = status?.ok === true && healthy === total;
+
+  return (
+    <div className="mt-4 rounded-2xl border border-slate-700 bg-slate-900 p-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-semibold">HX2 Orchestrator Status</h2>
+          <p className="mt-1 text-sm text-slate-400">Centralized orchestration readiness and routing foundation visibility.</p>
+        </div>
+        <div className={`rounded-xl border px-4 py-2 text-sm ${ok ? "border-emerald-800 bg-emerald-950 text-emerald-200" : "border-amber-700 bg-amber-950 text-amber-200"}`}>
+          {ok ? "Ready" : "Review Needed"}
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-3 md:grid-cols-4">
+        <StatCard title="Phase" value={orchestrator?.phase || "unknown"} />
+        <StatCard title="Healthy Checks" value={healthy} />
+        <StatCard title="Total Checks" value={total} />
+        <StatCard title="Status" value={ok ? "Ready" : "Partial"} />
+      </div>
+
+      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {Object.keys(checks).map((key) => (
+          <div key={key} className={`rounded-xl border px-4 py-3 text-sm ${checks[key] ? "border-emerald-800 bg-emerald-950 text-emerald-200" : "border-amber-700 bg-amber-950 text-amber-200"}`}>
+            {key}: {checks[key] ? "true" : "false"}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 function BenchmarkStatusPanel({ benchmark }: { benchmark: any }) {
   const summary = benchmark?.summary || {};
   const results = Array.isArray(benchmark?.results) ? benchmark.results : [];
@@ -916,6 +968,7 @@ export default async function OwnerConsolePage() {
   const o2ActionsData = await getO2Actions();
   const baselineDetailData = await getLatestBaselineDetail();
   const benchmarkData = await getLatestBenchmark();
+  const orchestratorStatusData = await getOrchestratorStatus();
   const guardStatusData = await getGuardStatus();
   const environmentStatusData = await getEnvironmentStatus();
   const actionHistoryData = await getActionHistory();
@@ -972,6 +1025,8 @@ export default async function OwnerConsolePage() {
         </div>
 
         <BenchmarkStatusPanel benchmark={benchmarkData} />
+
+        <OrchestratorStatusPanel status={orchestratorStatusData} />
 
         <GuardStatusPanel guardStatus={guardStatusData} />
 
@@ -1285,6 +1340,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
