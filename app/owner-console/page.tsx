@@ -784,12 +784,24 @@ function OrchestratorStatusPanel({ status }: { status: any }) {
   const healthy = orchestrator?.healthy_checks ?? Object.values(checks).filter(Boolean).length;
   const missingRoutes = Array.isArray(orchestrator?.missing_routes) ? orchestrator.missing_routes : [];
   const readiness = Number(orchestrator?.readiness_percent ?? (total > 0 ? Math.round((healthy / total) * 100) : 0));
+  const criticalReadiness = Number(orchestrator?.critical_readiness_percent ?? readiness);
+  const optionalReadiness = Number(orchestrator?.optional_readiness_percent ?? readiness);
+  const missingCritical = Array.isArray(orchestrator?.missing_critical) ? orchestrator.missing_critical : [];
+  const missingOptional = Array.isArray(orchestrator?.missing_optional) ? orchestrator.missing_optional : [];
   const readinessTone =
     readiness >= 90
       ? "border-emerald-800 bg-emerald-950 text-emerald-200"
       : readiness >= 70
       ? "border-amber-700 bg-amber-950 text-amber-200"
       : "border-red-800 bg-red-950 text-red-200";
+  const criticalTone =
+    criticalReadiness === 100
+      ? "border-emerald-800 bg-emerald-950 text-emerald-200"
+      : "border-red-800 bg-red-950 text-red-200";
+  const optionalTone =
+    optionalReadiness >= 70
+      ? "border-emerald-800 bg-emerald-950 text-emerald-200"
+      : "border-amber-700 bg-amber-950 text-amber-200";
   const ok = status?.ok === true && healthy === total && missingRoutes.length === 0;
 
   return (
@@ -814,6 +826,16 @@ function OrchestratorStatusPanel({ status }: { status: any }) {
           <div className="text-sm opacity-80">Readiness</div>
           <div className="mt-2 text-2xl font-semibold">{readiness}%</div>
         </div>
+        <div className={`rounded-2xl border p-4 ${criticalTone}`}>
+          <div className="text-sm opacity-80">Critical Readiness</div>
+          <div className="mt-2 text-2xl font-semibold">{criticalReadiness}%</div>
+        </div>
+        <div className={`rounded-2xl border p-4 ${optionalTone}`}>
+          <div className="text-sm opacity-80">Optional Readiness</div>
+          <div className="mt-2 text-2xl font-semibold">{optionalReadiness}%</div>
+        </div>
+        <StatCard title="Missing Critical" value={missingCritical.length} />
+        <StatCard title="Missing Optional" value={missingOptional.length} />
       </div>
 
       {missingRoutes.length > 0 ? (
@@ -1359,6 +1381,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
