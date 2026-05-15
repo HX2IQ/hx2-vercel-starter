@@ -654,6 +654,13 @@ function SystemSnapshotHeader({
       ? "border-amber-700 bg-amber-950/40"
       : "border-red-800 bg-red-950/40";
 
+  const orchestrationRecommendation =
+    orchSeverity === "healthy"
+      ? "System operational"
+      : orchSeverity === "degraded"
+      ? "Review optional orchestration services"
+      : "Immediate orchestration attention required";
+
   return (
     <div className={`mt-6 rounded-2xl border p-5 ${snapshotTone}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -1419,6 +1426,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
