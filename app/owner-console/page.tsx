@@ -746,6 +746,8 @@ function SystemSnapshotHeader({
         <StatCard title="Orch Severity" value={orchSeverity} />
         <StatCard title="Orch Ready" value={`${orchReadiness}%`} />
         <StatCard title="Orch Critical" value={`${orchCritical}%`} />
+        <StatCard title="Critical Fixes" value={criticalRemediationItems.length} />
+        <StatCard title="Optional Fixes" value={optionalRemediationItems.length} />
       </div>
     </div>
   );
@@ -1479,6 +1481,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
