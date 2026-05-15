@@ -61,6 +61,13 @@ export async function GET() {
     const critical_readiness_percent = percent(critical_checks);
     const optional_readiness_percent = percent(optional_checks);
 
+    const severity =
+      critical_readiness_percent < 100
+        ? "critical"
+        : readiness_percent < 80
+        ? "degraded"
+        : "healthy";
+
     return NextResponse.json({
       ok: true,
       orchestrator: {
@@ -73,6 +80,7 @@ export async function GET() {
         readiness_percent,
         critical_readiness_percent,
         optional_readiness_percent,
+        severity,
         critical_checks,
         optional_checks,
         checks,
@@ -85,3 +93,4 @@ export async function GET() {
     );
   }
 }
+

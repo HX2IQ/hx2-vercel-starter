@@ -784,6 +784,7 @@ function OrchestratorStatusPanel({ status }: { status: any }) {
   const healthy = orchestrator?.healthy_checks ?? Object.values(checks).filter(Boolean).length;
   const missingRoutes = Array.isArray(orchestrator?.missing_routes) ? orchestrator.missing_routes : [];
   const readiness = Number(orchestrator?.readiness_percent ?? (total > 0 ? Math.round((healthy / total) * 100) : 0));
+  const severity = String(orchestrator?.severity || "unknown");
   const criticalReadiness = Number(orchestrator?.critical_readiness_percent ?? readiness);
   const optionalReadiness = Number(orchestrator?.optional_readiness_percent ?? readiness);
   const missingCritical = Array.isArray(orchestrator?.missing_critical) ? orchestrator.missing_critical : [];
@@ -802,6 +803,12 @@ function OrchestratorStatusPanel({ status }: { status: any }) {
     optionalReadiness >= 70
       ? "border-emerald-800 bg-emerald-950 text-emerald-200"
       : "border-amber-700 bg-amber-950 text-amber-200";
+  const severityTone =
+    severity === "healthy"
+      ? "border-emerald-800 bg-emerald-950 text-emerald-200"
+      : severity === "degraded"
+      ? "border-amber-700 bg-amber-950 text-amber-200"
+      : "border-red-800 bg-red-950 text-red-200";
   const ok = status?.ok === true && healthy === total && missingRoutes.length === 0;
 
   return (
@@ -821,6 +828,10 @@ function OrchestratorStatusPanel({ status }: { status: any }) {
         <StatCard title="Healthy Checks" value={healthy} />
         <StatCard title="Total Checks" value={total} />
         <StatCard title="Status" value={ok ? "Ready" : "Partial"} />
+        <div className={`rounded-2xl border p-4 ${severityTone}`}>
+          <div className="text-sm opacity-80">Severity</div>
+          <div className="mt-2 text-2xl font-semibold capitalize">{severity}</div>
+        </div>
         <StatCard title="Missing" value={missingRoutes.length} />
         <div className={`rounded-2xl border p-4 ${readinessTone}`}>
           <div className="text-sm opacity-80">Readiness</div>
@@ -1381,6 +1392,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
