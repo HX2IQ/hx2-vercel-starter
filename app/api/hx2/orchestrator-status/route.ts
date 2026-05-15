@@ -31,12 +31,18 @@ export async function GET() {
     const healthy = Object.values(checks).filter(Boolean).length;
     const total = Object.keys(checks).length;
 
+    const missing_routes =
+      Object.entries(checks)
+        .filter(([_, value]) => !value)
+        .map(([key]) => key);
+
     return NextResponse.json({
       ok: true,
       orchestrator: {
         phase: "phase3_visibility",
         healthy_checks: healthy,
         total_checks: total,
+        missing_routes,
         checks,
       },
     });
@@ -47,3 +53,4 @@ export async function GET() {
     );
   }
 }
+
