@@ -626,6 +626,7 @@ function SystemSnapshotHeader({
   memory,
   activeNodes,
   checks,
+  orchestrator,
 }: {
   benchmark: any;
   chatMaster: any;
@@ -633,6 +634,7 @@ function SystemSnapshotHeader({
   memory: any;
   activeNodes: any;
   checks: any[];
+  orchestrator: any;
 }) {
   const benchmarkScore = benchmark?.summary?.AverageScore ?? "unknown";
   const chatOk = chatMaster?.ok === true;
@@ -640,9 +642,20 @@ function SystemSnapshotHeader({
   const memoryOk = memory?.ok === true;
   const nodeCount = activeNodes?.count ?? (Array.isArray(activeNodes?.nodes) ? activeNodes.nodes.length : 0);
   const failingChecks = Array.isArray(checks) ? checks.filter((x) => !x.ok).length : 0;
+  const orch = orchestrator?.orchestrator || {};
+  const orchSeverity = String(orch?.severity || "unknown");
+  const orchReadiness = Number(orch?.readiness_percent ?? 0);
+  const orchCritical = Number(orch?.critical_readiness_percent ?? 0);
+
+  const snapshotTone =
+    orchSeverity === "healthy"
+      ? "border-emerald-800 bg-emerald-950/40"
+      : orchSeverity === "degraded"
+      ? "border-amber-700 bg-amber-950/40"
+      : "border-red-800 bg-red-950/40";
 
   return (
-    <div className="mt-6 rounded-2xl border border-slate-700 bg-slate-900 p-5">
+    <div className={`mt-6 rounded-2xl border p-5 ${snapshotTone}`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="text-lg font-semibold">System Snapshot</h2>
@@ -653,17 +666,26 @@ function SystemSnapshotHeader({
             ? "border-emerald-800 bg-emerald-950 text-emerald-200"
             : "border-amber-700 bg-amber-950 text-amber-200"
         }`}>
-          {chatOk && ap2Ok && memoryOk && failingChecks === 0 ? "Operational" : "Review Needed"}
+          {
+            orchSeverity === "healthy" && chatOk && ap2Ok && memoryOk && failingChecks === 0
+              ? "Operational"
+              : orchSeverity === "degraded"
+              ? "Degraded"
+              : "Critical"
+          }
         </div>
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-3 xl:grid-cols-6">
+      <div className="mt-4 grid gap-3 md:grid-cols-3 xl:grid-cols-9">
         <StatCard title="Benchmark" value={benchmarkScore} />
         <StatCard title="Chat-Master" value={chatOk ? "Online" : "Issue"} />
         <StatCard title="AP2" value={ap2Ok ? "Online" : "Issue"} />
         <StatCard title="Memory" value={memoryOk ? "Online" : "Issue"} />
         <StatCard title="Active Nodes" value={nodeCount} />
         <StatCard title="Endpoint Fails" value={failingChecks} />
+        <StatCard title="Orch Severity" value={orchSeverity} />
+        <StatCard title="Orch Ready" value={`${orchReadiness}%`} />
+        <StatCard title="Orch Critical" value={`${orchCritical}%`} />
       </div>
     </div>
   );
@@ -1064,7 +1086,7 @@ export default async function OwnerConsolePage() {
 
         <ControlHubPanel />
 
-        <SystemSnapshotHeader benchmark={benchmarkData} chatMaster={chatMasterHealthData} ap2={ap2QueueData} memory={memoryStatusData} activeNodes={activeNodesData} checks={checks} />
+        <SystemSnapshotHeader benchmark={benchmarkData} chatMaster={chatMasterHealthData} ap2={ap2QueueData} memory={memoryStatusData} activeNodes={activeNodesData} checks={checks} orchestrator={orchestratorStatusData} />
 
         <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           <WarningBadge label="Staging Folder" active={hasStaging} />
@@ -1397,6 +1419,11 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
+
+
+
+
 
 
 
