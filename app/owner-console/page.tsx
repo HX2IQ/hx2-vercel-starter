@@ -660,10 +660,17 @@ function SystemSnapshotHeader({
     memory_status_route: "Restore brain memory status route."
   };
 
-  const remediationItems = [...orchMissingCritical, ...orchMissingOptional].map((key: string) => ({
+  const criticalRemediationItems = orchMissingCritical.map((key: string) => ({
     key,
-    action: remediationMap[key] || "Review this missing orchestration check."
+    action: remediationMap[key] || "Review this missing critical orchestration check."
   }));
+
+  const optionalRemediationItems = orchMissingOptional.map((key: string) => ({
+    key,
+    action: remediationMap[key] || "Review this missing optional orchestration check."
+  }));
+
+  const remediationItems = [...criticalRemediationItems, ...optionalRemediationItems];
 
   const snapshotTone =
     orchSeverity === "healthy"
@@ -704,11 +711,28 @@ function SystemSnapshotHeader({
       {remediationItems.length > 0 ? (
         <div className="mt-4 rounded-xl border border-amber-700 bg-amber-950 p-4 text-sm text-amber-200">
           <div className="font-semibold">Recommended Remediation</div>
-          <ul className="mt-2 list-disc space-y-1 pl-5">
-            {remediationItems.map((item) => (
-              <li key={item.key}>{item.key}: {item.action}</li>
-            ))}
-          </ul>
+
+          {criticalRemediationItems.length > 0 ? (
+            <div className="mt-3 rounded-lg border border-red-800 bg-red-950 p-3 text-red-200">
+              <div className="font-semibold">Critical Remediation</div>
+              <ul className="mt-2 list-disc space-y-1 pl-5">
+                {criticalRemediationItems.map((item) => (
+                  <li key={item.key}>{item.key}: {item.action}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          {optionalRemediationItems.length > 0 ? (
+            <div className="mt-3 rounded-lg border border-amber-700 bg-amber-950 p-3 text-amber-200">
+              <div className="font-semibold">Optional Remediation</div>
+              <ul className="mt-2 list-disc space-y-1 pl-5">
+                {optionalRemediationItems.map((item) => (
+                  <li key={item.key}>{item.key}: {item.action}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
         </div>
       ) : null}
 
@@ -1455,6 +1479,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
