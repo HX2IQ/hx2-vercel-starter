@@ -782,7 +782,8 @@ function OrchestratorStatusPanel({ status }: { status: any }) {
   const checks = orchestrator?.checks || {};
   const total = orchestrator?.total_checks ?? Object.keys(checks).length;
   const healthy = orchestrator?.healthy_checks ?? Object.values(checks).filter(Boolean).length;
-  const ok = status?.ok === true && healthy === total;
+  const missingRoutes = Array.isArray(orchestrator?.missing_routes) ? orchestrator.missing_routes : [];
+  const ok = status?.ok === true && healthy === total && missingRoutes.length === 0;
 
   return (
     <div className="mt-4 rounded-2xl border border-slate-700 bg-slate-900 p-5">
@@ -801,7 +802,14 @@ function OrchestratorStatusPanel({ status }: { status: any }) {
         <StatCard title="Healthy Checks" value={healthy} />
         <StatCard title="Total Checks" value={total} />
         <StatCard title="Status" value={ok ? "Ready" : "Partial"} />
+        <StatCard title="Missing" value={missingRoutes.length} />
       </div>
+
+      {missingRoutes.length > 0 ? (
+        <div className="mt-4 rounded-xl border border-amber-700 bg-amber-950 p-4 text-sm text-amber-200">
+          Missing orchestrator checks: {missingRoutes.join(", ")}
+        </div>
+      ) : null}
 
       <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {Object.keys(checks).map((key) => (
@@ -1340,6 +1348,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
