@@ -783,6 +783,13 @@ function OrchestratorStatusPanel({ status }: { status: any }) {
   const total = orchestrator?.total_checks ?? Object.keys(checks).length;
   const healthy = orchestrator?.healthy_checks ?? Object.values(checks).filter(Boolean).length;
   const missingRoutes = Array.isArray(orchestrator?.missing_routes) ? orchestrator.missing_routes : [];
+  const readiness = Number(orchestrator?.readiness_percent ?? (total > 0 ? Math.round((healthy / total) * 100) : 0));
+  const readinessTone =
+    readiness >= 90
+      ? "border-emerald-800 bg-emerald-950 text-emerald-200"
+      : readiness >= 70
+      ? "border-amber-700 bg-amber-950 text-amber-200"
+      : "border-red-800 bg-red-950 text-red-200";
   const ok = status?.ok === true && healthy === total && missingRoutes.length === 0;
 
   return (
@@ -803,6 +810,10 @@ function OrchestratorStatusPanel({ status }: { status: any }) {
         <StatCard title="Total Checks" value={total} />
         <StatCard title="Status" value={ok ? "Ready" : "Partial"} />
         <StatCard title="Missing" value={missingRoutes.length} />
+        <div className={`rounded-2xl border p-4 ${readinessTone}`}>
+          <div className="text-sm opacity-80">Readiness</div>
+          <div className="mt-2 text-2xl font-semibold">{readiness}%</div>
+        </div>
       </div>
 
       {missingRoutes.length > 0 ? (
@@ -1348,6 +1359,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 

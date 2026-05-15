@@ -36,6 +36,9 @@ export async function GET() {
         .filter(([_, value]) => !value)
         .map(([key]) => key);
 
+    const readiness_percent =
+      total > 0 ? Math.round((healthy / total) * 100) : 0;
+
     return NextResponse.json({
       ok: true,
       orchestrator: {
@@ -43,6 +46,7 @@ export async function GET() {
         healthy_checks: healthy,
         total_checks: total,
         missing_routes,
+        readiness_percent,
         checks,
       },
     });
@@ -53,4 +57,5 @@ export async function GET() {
     );
   }
 }
+
 
