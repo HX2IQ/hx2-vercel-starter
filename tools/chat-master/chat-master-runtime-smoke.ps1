@@ -15,6 +15,8 @@ $required = @(
   "POST",
   "routeChatMasterIntent",
   "decision",
+  "execution",
+  "CHAT_MASTER_EXECUTION_MAP",
   "routed",
   "NextResponse.json",
   "message",
@@ -39,3 +41,4 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CHAT MASTER RUNTIME SMOKE PASSED" -ForegroundColor Green
+
