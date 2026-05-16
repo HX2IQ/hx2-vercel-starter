@@ -11,7 +11,8 @@ $guards = @(
   ".\tools\guard-hx2-grand-design.ps1",
   ".\tools\guard-hx2-syntax.ps1",
   ".\tools\hx2-benchmark-guard.ps1",
-  ".\tools\orchestrator\orchestrator-status-guard.ps1"
+  ".\tools\orchestrator\orchestrator-status-guard.ps1",
+  ".\tools\owner-console\orchestrator-panel-guard.ps1"
 )
 
 foreach ($guard in $guards) {
@@ -31,6 +32,7 @@ foreach ($guard in $guards) {
 
 Write-Host ""
 Write-Host "ALL HX2 GUARDS PASSED" -ForegroundColor Green
+
 
 
 
