@@ -305,6 +305,21 @@ async function getChatMasterIntents() {
     return { ok: false, error: err?.message || String(err), chat_master_intents: null };
   }
 }
+
+async function getChatMasterExecutionMap() {
+  const base =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    "https://optinodeiq.com";
+
+  try {
+    const res = await fetch(`${base}/api/hx2/chat-master-execution-map`, { cache: "no-store" });
+    if (!res.ok) return { ok: false, error: `HTTP ${res.status}`, execution_map: {}, intents: [] };
+    return await res.json();
+  } catch (err: any) {
+    return { ok: false, error: err?.message || String(err), execution_map: {}, intents: [] };
+  }
+}
 function Card({ title, value }: { title: string; value: string }) {
   return (
     <div className="rounded-2xl border border-slate-700 bg-slate-900 p-4 shadow-sm">
@@ -1002,6 +1017,36 @@ function GuardStatusPanel({ guardStatus }: { guardStatus: any }) {
 
 
 
+
+function ChatMasterExecutionMapPanel({ data }: { data: any }) {
+  const map = data?.execution_map || {};
+  const intents = data?.intents || Object.keys(map || {});
+
+  return (
+    <div className="mt-4 rounded-2xl border border-slate-700 bg-slate-900 p-5">
+      <div>
+        <h2 className="text-lg font-semibold">Chat Master Execution Map</h2>
+        <p className="mt-1 text-sm text-slate-400">Current intent-to-node routing targets.</p>
+      </div>
+
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <StatCard title="Map Status" value={data?.ok ? "Available" : "Issue"} />
+        <StatCard title="Intent Count" value={intents.length} />
+        <StatCard title="Routing Targets" value={Object.keys(map).length} />
+      </div>
+
+      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {intents.map((intent: string) => (
+          <div key={intent} className="rounded-xl border border-slate-700 bg-slate-950 p-4">
+            <div className="font-mono text-sm text-cyan-300">{intent}</div>
+            <div className="mt-2 text-sm text-white">Node: {map?.[intent]?.node || "unknown"}</div>
+            <div className="mt-1 text-xs text-slate-400">{map?.[intent]?.description || "No description"}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 function ChatMasterIntentsPanel({ data }: { data: any }) {
   const intents = data?.chat_master_intents?.intents || [];
   const status = data?.chat_master_intents?.status || "unknown";
@@ -1318,6 +1363,7 @@ export default async function OwnerConsolePage() {
   const orchestratorStatusData = await getOrchestratorStatus();
   const chatMasterStatusData = await getChatMasterStatus();
   const chatMasterIntentsData = await getChatMasterIntents();
+  const chatMasterExecutionMapData = await getChatMasterExecutionMap();
   const guardStatusData = await getGuardStatus();
   const environmentStatusData = await getEnvironmentStatus();
   const actionHistoryData = await getActionHistory();
@@ -1380,6 +1426,8 @@ export default async function OwnerConsolePage() {
         <ChatMasterStatusPanel status={chatMasterStatusData} />
 
         <ChatMasterIntentsPanel data={chatMasterIntentsData} />
+
+        <ChatMasterExecutionMapPanel data={chatMasterExecutionMapData} />
 
         <QuickCommandsPanel />
 
@@ -1697,6 +1745,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
