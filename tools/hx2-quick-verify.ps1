@@ -6,6 +6,10 @@ Write-Host ""
 Write-Host "== HX2 QUICK VERIFY ==" -ForegroundColor Cyan
 Write-Host ""
 
+if (Test-Path ".\tools\hx2-local-env-check.ps1") {
+  powershell -ExecutionPolicy Bypass -File .\tools\hx2-local-env-check.ps1
+}
+
 $guards = @(
   ".\tools\guard-hx2-syntax.ps1",
   ".\tools\orchestrator\hx2-orchestrator-guard-bundle.ps1",
@@ -38,4 +42,5 @@ $overall.Stop()
 
 Write-Host ""
 Write-Host ("HX2 QUICK VERIFY PASSED ({0} ms total)" -f $overall.ElapsedMilliseconds) -ForegroundColor Green
+
 
