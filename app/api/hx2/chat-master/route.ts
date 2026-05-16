@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { routeChatMasterIntent } from "../_lib/chat-master-router";
+import { CHAT_MASTER_EXECUTION_MAP } from "../contracts/chat-master-execution-map";
 
 export const runtime = "nodejs";
 
@@ -17,11 +18,17 @@ export async function POST(req: NextRequest) {
     const decision =
       routeChatMasterIntent(input);
 
+    const execution =
+      CHAT_MASTER_EXECUTION_MAP[
+        decision.intent
+      ];
+
     return NextResponse.json({
       ok: true,
       input,
       routed: true,
-      decision
+      decision,
+      execution
     });
 
   } catch (err: any) {
@@ -34,3 +41,4 @@ export async function POST(req: NextRequest) {
 
   }
 }
+
