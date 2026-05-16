@@ -105,3 +105,15 @@ Build Node OS v1 checkpoint report or begin Node OS v1.1:
 - add category/tags/capabilities to registry
 - add node router intent mapping
 - improve QA1 into a real QA evaluator
+
+Current validation workflow:
+- Rapid iteration: npm run hx2:quick
+- Full guard before commit: npm run hx2:guard
+- Full build verification: npm run hx2:verify
+- Timing report: npm run hx2:timing
+- Environment check: npm run hx2:env
+- Orchestrator guard: npm run hx2:orchestrator:guard
+- Orchestrator report: npm run hx2:orchestrator:report
+
+Current clean branch:
+fix/ap2-enqueue-clean
