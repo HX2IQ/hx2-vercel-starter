@@ -651,6 +651,14 @@ function BuildModesPanel() {
       purpose: "Orchestrator-only validation"
     },
     {
+      name: "hx2:chat-master:guard",
+      purpose: "Chat Master validation"
+    },
+    {
+      name: "hx2:chat-master:report",
+      purpose: "Chat Master readiness report"
+    },
+    {
       name: "hx2:timing",
       purpose: "Measure validation speed"
     },
@@ -1635,6 +1643,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
