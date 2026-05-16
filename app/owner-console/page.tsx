@@ -620,6 +620,60 @@ function ControlHubPanel() {
 }
 
 
+
+function BuildModesPanel() {
+  const modes = [
+    {
+      name: "hx2:quick",
+      purpose: "Fast iteration validation"
+    },
+    {
+      name: "hx2:guard",
+      purpose: "Full system guard validation"
+    },
+    {
+      name: "hx2:orchestrator:guard",
+      purpose: "Orchestrator-only validation"
+    },
+    {
+      name: "hx2:timing",
+      purpose: "Measure validation speed"
+    },
+    {
+      name: "hx2:env",
+      purpose: "Local environment visibility"
+    }
+  ];
+
+  return (
+    <div className="mt-6 rounded-2xl border border-slate-700 bg-slate-900 p-5">
+      <div>
+        <h2 className="text-lg font-semibold">Build Modes</h2>
+        <p className="mt-1 text-sm text-slate-400">
+          Recommended validation workflows by development stage.
+        </p>
+      </div>
+
+      <div className="mt-4 space-y-2">
+        {modes.map((mode) => (
+          <div
+            key={mode.name}
+            className="rounded-xl border border-slate-700 bg-slate-950 p-3"
+          >
+            <div className="font-mono text-cyan-300">
+              npm run {mode.name}
+            </div>
+
+            <div className="mt-1 text-sm text-slate-400">
+              {mode.purpose}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function QuickCommandsPanel() {
   const commands = [
     "npm run hx2:quick",
@@ -1210,6 +1264,8 @@ export default async function OwnerConsolePage() {
 
         <QuickCommandsPanel />
 
+        <BuildModesPanel />
+
         <GuardStatusPanel guardStatus={guardStatusData} />
 
         <EnvironmentStatusPanel envStatus={environmentStatusData} />
@@ -1522,6 +1578,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
