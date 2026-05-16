@@ -18,6 +18,9 @@ export async function GET() {
     chat_master_route:
       exists("app/api/hx2/chat-master/route.ts"),
 
+    runtime_chat_master_api:
+      exists("app/api/hx2/chat-master/route.ts"),
+
     router_route:
       exists("app/api/hx2/router/route.ts"),
 
@@ -50,3 +53,4 @@ export async function GET() {
     }
   });
 }
+
