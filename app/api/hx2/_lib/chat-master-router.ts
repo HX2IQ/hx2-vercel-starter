@@ -3,6 +3,14 @@ import {
   ChatMasterRouteDecision
 } from "../contracts/chat-master";
 
+import {
+  CHAT_MASTER_EXECUTION_MAP
+} from "../contracts/chat-master-execution-map";
+
+import {
+  CHAT_MASTER_KEYWORDS
+} from "../contracts/chat-master-keywords";
+
 export function routeChatMasterIntent(
   input: string
 ): ChatMasterRouteDecision {
@@ -16,28 +24,28 @@ export function routeChatMasterIntent(
   }[] = [
     {
       intent: "health",
-      keywords: ["health", "supplement", "symptom", "diet"],
-      target_node: "ah2"
+      keywords: CHAT_MASTER_KEYWORDS.health,
+      target_node: CHAT_MASTER_EXECUTION_MAP.health.node
     },
     {
       intent: "markets",
-      keywords: ["xrp", "crypto", "market", "stocks"],
-      target_node: "x2"
+      keywords: CHAT_MASTER_KEYWORDS.markets,
+      target_node: CHAT_MASTER_EXECUTION_MAP.markets.node
     },
     {
       intent: "legal",
-      keywords: ["legal", "trademark", "contract", "patent"],
-      target_node: "l2"
+      keywords: CHAT_MASTER_KEYWORDS.legal,
+      target_node: CHAT_MASTER_EXECUTION_MAP.legal.node
     },
     {
       intent: "parenting",
-      keywords: ["child", "school", "reading", "parent"],
-      target_node: "pa2"
+      keywords: CHAT_MASTER_KEYWORDS.parenting,
+      target_node: CHAT_MASTER_EXECUTION_MAP.parenting.node
     },
     {
       intent: "developer",
-      keywords: ["build", "typescript", "nextjs", "guard"],
-      target_node: "dev2"
+      keywords: CHAT_MASTER_KEYWORDS.developer,
+      target_node: CHAT_MASTER_EXECUTION_MAP.developer.node
     }
   ];
 
@@ -54,7 +62,7 @@ export function routeChatMasterIntent(
 
   return {
     intent: "general",
-    target_node: "hx2",
+    target_node: CHAT_MASTER_EXECUTION_MAP.general.node,
     confidence: 0.5,
     reasoning: "Fallback general routing"
   };
