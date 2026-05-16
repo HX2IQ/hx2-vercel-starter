@@ -94,3 +94,4 @@ if ($statusAfter.Count -gt 0) {
   Write-Host "This sprint only produced preflight/planning output." -ForegroundColor Yellow
   Write-Host "Apply a real file-changing patch, then rerun build and guards." -ForegroundColor Yellow
 }
+
