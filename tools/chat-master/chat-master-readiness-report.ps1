@@ -7,6 +7,7 @@ Write-Host ""
 $api = ".\app\api\hx2\chat-master-status\route.ts"
 $map = ".\app\api\hx2\contracts\chat-master-execution-map.ts"
 $keywords = ".\app\api\hx2\contracts\chat-master-keywords.ts"
+$diagnostics = ".\app\api\hx2\chat-master-diagnostics\route.ts"
 
 if (!(Test-Path $api)) {
   throw "Missing chat master status API"
@@ -20,7 +21,11 @@ if (!(Test-Path $keywords)) {
   throw "Missing chat master keywords contract"
 }
 
-$text = (Get-Content $api -Raw) + "`n" + (Get-Content $map -Raw) + "`n" + (Get-Content $keywords -Raw)
+if (!(Test-Path $diagnostics)) {
+  throw "Missing chat master diagnostics API"
+}
+
+$text = (Get-Content $api -Raw) + "`n" + (Get-Content $map -Raw) + "`n" + (Get-Content $keywords -Raw) + "`n" + (Get-Content $diagnostics -Raw)
 
 $fields = @(
   "readiness_percent",
@@ -31,7 +36,10 @@ $fields = @(
   "execute_route",
   "owner_console",
   "CHAT_MASTER_EXECUTION_MAP",
-  "CHAT_MASTER_KEYWORDS"
+  "CHAT_MASTER_KEYWORDS",
+  "diagnostics",
+  "keyword_count",
+  "execution_target"
 )
 
 $missing = @()
@@ -65,4 +73,5 @@ if ($missing.Count -eq 0) {
 }
 
 Write-Host ""
+
 
