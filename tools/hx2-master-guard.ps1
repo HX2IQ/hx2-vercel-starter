@@ -1,5 +1,7 @@
 $ErrorActionPreference = "Stop"
 
+$overall = [System.Diagnostics.Stopwatch]::StartNew()
+
 Write-Host ""
 Write-Host "== HX2 MASTER BUILD GUARD ==" -ForegroundColor Cyan
 Write-Host ""
@@ -32,6 +34,7 @@ foreach ($guard in $guards) {
 
 Write-Host ""
 Write-Host "ALL HX2 GUARDS PASSED" -ForegroundColor Green
+
 
 
 
