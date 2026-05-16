@@ -36,7 +36,8 @@
     "hx2:guard": "powershell -ExecutionPolicy Bypass -File tools/hx2-master-guard.ps1",
     "hx2:verify": "npm run hx2:guard && npm run build",
     "hx2:deploy:safe": "powershell -ExecutionPolicy Bypass -File tools/deploy-hx2-safe.ps1",
-    "hx2:deploy:regress": "powershell -ExecutionPolicy Bypass -File tools/deploy-and-regress.ps1"
+    "hx2:deploy:regress": "powershell -ExecutionPolicy Bypass -File tools/deploy-and-regress.ps1",
+    "hx2:orchestrator:guard": "powershell -ExecutionPolicy Bypass -File tools/orchestrator/hx2-orchestrator-guard-bundle.ps1"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
