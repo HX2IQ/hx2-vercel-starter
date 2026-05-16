@@ -51,6 +51,11 @@ $keywordText = Get-Content $keywords -Raw
 $keywordGroups = ([regex]::Matches($keywordText, "^\s+[a-z]+:", "Multiline")).Count
 
 Write-Host "Keyword Groups: $keywordGroups" -ForegroundColor Cyan
+
+$mapText = Get-Content $map -Raw
+$routeCoverage = ([regex]::Matches($mapText, "^\s+[a-z]+:", "Multiline")).Count
+
+Write-Host "Route Coverage: $routeCoverage" -ForegroundColor Cyan
 Write-Host ""
 
 if ($missing.Count -eq 0) {
@@ -60,3 +65,4 @@ if ($missing.Count -eq 0) {
 }
 
 Write-Host ""
+
