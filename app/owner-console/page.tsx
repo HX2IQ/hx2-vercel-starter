@@ -275,6 +275,21 @@ async function getOrchestratorStatus() {
     return { ok: false, error: err?.message || String(err), orchestrator: null };
   }
 }
+
+async function getChatMasterStatus() {
+  const base =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    "https://optinodeiq.com";
+
+  try {
+    const res = await fetch(`${base}/api/hx2/chat-master-status`, { cache: "no-store" });
+    if (!res.ok) return { ok: false, error: `HTTP ${res.status}`, chat_master: null };
+    return await res.json();
+  } catch (err: any) {
+    return { ok: false, error: err?.message || String(err), chat_master: null };
+  }
+}
 function Card({ title, value }: { title: string; value: string }) {
   return (
     <div className="rounded-2xl border border-slate-700 bg-slate-900 p-4 shadow-sm">
@@ -954,6 +969,41 @@ function GuardStatusPanel({ guardStatus }: { guardStatus: any }) {
   );
 }
 
+
+function ChatMasterStatusPanel({ status }: { status: any }) {
+  const chat = status?.chat_master || {};
+  const checks = chat?.checks || {};
+  const readiness = Number(chat?.readiness_percent ?? 0);
+  const ok = status?.ok === true && readiness === 100;
+
+  return (
+    <div className="mt-4 rounded-2xl border border-slate-700 bg-slate-900 p-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-semibold">Chat Master Status</h2>
+          <p className="mt-1 text-sm text-slate-400">Unified HX2 routing foundation readiness.</p>
+        </div>
+        <div className={`rounded-xl border px-4 py-2 text-sm ${ok ? "border-emerald-800 bg-emerald-950 text-emerald-200" : "border-amber-700 bg-amber-950 text-amber-200"}`}>
+          {ok ? "Ready" : "Partial"}
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <StatCard title="Readiness" value={`${readiness}%`} />
+        <StatCard title="Healthy Checks" value={chat?.healthy_checks ?? 0} />
+        <StatCard title="Total Checks" value={chat?.total_checks ?? 0} />
+      </div>
+
+      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        {Object.keys(checks).map((key) => (
+          <div key={key} className={`rounded-xl border px-4 py-3 text-sm ${checks[key] ? "border-emerald-800 bg-emerald-950 text-emerald-200" : "border-amber-700 bg-amber-950 text-amber-200"}`}>
+            {key}: {checks[key] ? "true" : "false"}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 function OrchestratorStatusPanel({ status }: { status: any }) {
   const orchestrator = status?.orchestrator || {};
   const checks = orchestrator?.checks || {};
@@ -1207,6 +1257,7 @@ export default async function OwnerConsolePage() {
   const baselineDetailData = await getLatestBaselineDetail();
   const benchmarkData = await getLatestBenchmark();
   const orchestratorStatusData = await getOrchestratorStatus();
+  const chatMasterStatusData = await getChatMasterStatus();
   const guardStatusData = await getGuardStatus();
   const environmentStatusData = await getEnvironmentStatus();
   const actionHistoryData = await getActionHistory();
@@ -1265,6 +1316,8 @@ export default async function OwnerConsolePage() {
         <BenchmarkStatusPanel benchmark={benchmarkData} />
 
         <OrchestratorStatusPanel status={orchestratorStatusData} />
+
+        <ChatMasterStatusPanel status={chatMasterStatusData} />
 
         <QuickCommandsPanel />
 
@@ -1582,6 +1635,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
