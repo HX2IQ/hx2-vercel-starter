@@ -43,7 +43,8 @@
     "hx2:timing": "powershell -ExecutionPolicy Bypass -File tools/hx2-verify-timing.ps1",
     "hx2:env": "powershell -ExecutionPolicy Bypass -File tools/hx2-local-env-check.ps1",
     "hx2:chat-master:guard": "powershell -ExecutionPolicy Bypass -File tools/chat-master/hx2-chat-master-guard-bundle.ps1",
-    "hx2:chat-master:report": "powershell -ExecutionPolicy Bypass -File tools/chat-master/chat-master-readiness-report.ps1"
+    "hx2:chat-master:report": "powershell -ExecutionPolicy Bypass -File tools/chat-master/chat-master-readiness-report.ps1",
+    "hx2:chat-master:route-report": "powershell -ExecutionPolicy Bypass -File tools/chat-master/chat-master-route-test-report.ps1"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
