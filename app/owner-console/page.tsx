@@ -638,6 +638,9 @@ function QuickCommandsPanel() {
           <p className="mt-1 text-sm text-slate-400">
             Common HX2 validation and orchestration workflows.
           </p>
+          <p className="mt-1 text-xs text-slate-500">
+            Reference: docs/HX2_VERIFY_MODES.md
+          </p>
         </div>
       </div>
 
@@ -1519,6 +1522,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
