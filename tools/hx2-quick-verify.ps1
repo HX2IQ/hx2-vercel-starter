@@ -1,5 +1,7 @@
 $ErrorActionPreference = "Stop"
 
+$overall = [System.Diagnostics.Stopwatch]::StartNew()
+
 Write-Host ""
 Write-Host "== HX2 QUICK VERIFY ==" -ForegroundColor Cyan
 Write-Host ""
@@ -16,15 +18,24 @@ foreach ($guard in $guards) {
     throw "Missing quick guard: $guard"
   }
 
+  $sw = [System.Diagnostics.Stopwatch]::StartNew()
+
   Write-Host ""
   Write-Host "Running $guard" -ForegroundColor Yellow
 
   powershell -ExecutionPolicy Bypass -File $guard
+
+  $sw.Stop()
+
+  Write-Host ("Completed in {0} ms" -f $sw.ElapsedMilliseconds) -ForegroundColor DarkGray
 
   if ($LASTEXITCODE -ne 0) {
     throw "Quick verify failed: $guard"
   }
 }
 
+$overall.Stop()
+
 Write-Host ""
-Write-Host "HX2 QUICK VERIFY PASSED" -ForegroundColor Green
+Write-Host ("HX2 QUICK VERIFY PASSED ({0} ms total)" -f $overall.ElapsedMilliseconds) -ForegroundColor Green
+
