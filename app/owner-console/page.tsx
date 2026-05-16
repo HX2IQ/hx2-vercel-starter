@@ -674,6 +674,10 @@ function BuildModesPanel() {
       purpose: "Chat Master readiness report"
     },
     {
+      name: "hx2:chat-master:route-report",
+      purpose: "Chat Master route test URLs"
+    },
+    {
       name: "hx2:timing",
       purpose: "Measure validation speed"
     },
@@ -1693,6 +1697,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
