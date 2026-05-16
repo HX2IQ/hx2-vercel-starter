@@ -7,7 +7,8 @@ $guards = @(
   ".\tools\chat-master\chat-master-foundation-check.ps1",
   ".\tools\chat-master\chat-master-status-guard.ps1",
   ".\tools\chat-master\chat-master-intent-contract-guard.ps1",
-  ".\tools\chat-master\chat-master-router-guard.ps1"
+  ".\tools\chat-master\chat-master-router-guard.ps1",
+  ".\tools\chat-master\chat-master-keywords-guard.ps1"
 )
 
 foreach ($guard in $guards) {
@@ -27,6 +28,7 @@ foreach ($guard in $guards) {
 
 Write-Host ""
 Write-Host "ALL CHAT MASTER GUARDS PASSED" -ForegroundColor Green
+
 
 
 
