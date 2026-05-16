@@ -2,6 +2,8 @@ $ErrorActionPreference = "Stop"
 
 $overall = [System.Diagnostics.Stopwatch]::StartNew()
 
+$results = @()
+
 Write-Host ""
 Write-Host "== HX2 QUICK VERIFY ==" -ForegroundColor Cyan
 Write-Host ""
@@ -31,6 +33,11 @@ foreach ($guard in $guards) {
 
   $sw.Stop()
 
+  $results += [pscustomobject]@{
+    Guard = Split-Path $guard -Leaf
+    Milliseconds = $sw.ElapsedMilliseconds
+  }
+
   Write-Host ("Completed in {0} ms" -f $sw.ElapsedMilliseconds) -ForegroundColor DarkGray
 
   if ($LASTEXITCODE -ne 0) {
@@ -41,6 +48,11 @@ foreach ($guard in $guards) {
 $overall.Stop()
 
 Write-Host ""
+Write-Host "QUICK VERIFY SUMMARY" -ForegroundColor Cyan
+$results | Format-Table -AutoSize
+
+Write-Host ""
 Write-Host ("HX2 QUICK VERIFY PASSED ({0} ms total)" -f $overall.ElapsedMilliseconds) -ForegroundColor Green
+
 
 
