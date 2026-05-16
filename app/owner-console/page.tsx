@@ -320,6 +320,37 @@ async function getChatMasterExecutionMap() {
     return { ok: false, error: err?.message || String(err), execution_map: {}, intents: [] };
   }
 }
+
+async function getChatMasterKeywords() {
+  const base =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    "https://optinodeiq.com";
+
+  try {
+    const res = await fetch(`${base}/api/hx2/chat-master-keywords`, { cache: "no-store" });
+
+    if (!res.ok) {
+      return {
+        ok: false,
+        error: `HTTP ${res.status}`,
+        keywords: {},
+        intents: []
+      };
+    }
+
+    return await res.json();
+
+  } catch (err: any) {
+
+    return {
+      ok: false,
+      error: err?.message || String(err),
+      keywords: {},
+      intents: []
+    };
+  }
+}
 function Card({ title, value }: { title: string; value: string }) {
   return (
     <div className="rounded-2xl border border-slate-700 bg-slate-900 p-4 shadow-sm">
@@ -1018,6 +1049,80 @@ function GuardStatusPanel({ guardStatus }: { guardStatus: any }) {
 
 
 
+
+function ChatMasterKeywordsPanel({ data }: { data: any }) {
+
+  const keywords =
+    data?.keywords || {};
+
+  const intents =
+    data?.intents || [];
+
+  return (
+    <div className="mt-4 rounded-2xl border border-slate-700 bg-slate-900 p-5">
+
+      <div>
+        <h2 className="text-lg font-semibold">
+          Chat Master Keywords
+        </h2>
+
+        <p className="mt-1 text-sm text-slate-400">
+          Centralized routing keyword contracts.
+        </p>
+      </div>
+
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <StatCard
+          title="Keyword Status"
+          value={data?.ok ? "Available" : "Issue"}
+        />
+
+        <StatCard
+          title="Intent Count"
+          value={intents.length}
+        />
+
+        <StatCard
+          title="Keyword Groups"
+          value={Object.keys(keywords).length}
+        />
+      </div>
+
+      <div className="mt-4 space-y-3">
+
+        {intents.map((intent: string) => (
+
+          <div
+            key={intent}
+            className="rounded-xl border border-slate-700 bg-slate-950 p-4"
+          >
+
+            <div className="font-mono text-sm text-cyan-300">
+              {intent}
+            </div>
+
+            <div className="mt-2 flex flex-wrap gap-2">
+
+              {(keywords?.[intent] || []).map((k: string) => (
+                <span
+                  key={k}
+                  className="rounded-full border border-cyan-800 bg-cyan-950 px-2 py-1 text-xs text-cyan-200"
+                >
+                  {k}
+                </span>
+              ))}
+
+            </div>
+
+          </div>
+
+        ))}
+
+      </div>
+
+    </div>
+  );
+}
 function ChatMasterExecutionMapPanel({ data }: { data: any }) {
   const map = data?.execution_map || {};
   const intents = data?.intents || Object.keys(map || {});
@@ -1364,6 +1469,7 @@ export default async function OwnerConsolePage() {
   const chatMasterStatusData = await getChatMasterStatus();
   const chatMasterIntentsData = await getChatMasterIntents();
   const chatMasterExecutionMapData = await getChatMasterExecutionMap();
+  const chatMasterKeywordsData = await getChatMasterKeywords();
   const guardStatusData = await getGuardStatus();
   const environmentStatusData = await getEnvironmentStatus();
   const actionHistoryData = await getActionHistory();
@@ -1428,6 +1534,8 @@ export default async function OwnerConsolePage() {
         <ChatMasterIntentsPanel data={chatMasterIntentsData} />
 
         <ChatMasterExecutionMapPanel data={chatMasterExecutionMapData} />
+
+        <ChatMasterKeywordsPanel data={chatMasterKeywordsData} />
 
         <QuickCommandsPanel />
 
@@ -1745,6 +1853,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
