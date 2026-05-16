@@ -29,6 +29,10 @@ export async function GET() {
     const critical_checks = {
       chat_master_route: exists("app/api/hx2/chat-master/route.ts"),
       router_route: exists("app/api/hx2/router/route.ts"),
+      chat_master_foundation:
+        exists("app/api/hx2/chat-master/route.ts") &&
+        exists("app/api/hx2/router/route.ts") &&
+        exists("app/api/hx2/execute/route.ts"),
       execute_route: exists("app/api/hx2/execute/route.ts"),
       redis_configured: !!(
         process.env.UPSTASH_REDIS_REST_URL ||
@@ -90,3 +94,5 @@ export async function GET() {
     );
   }
 }
+
+
