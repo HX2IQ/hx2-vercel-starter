@@ -40,7 +40,8 @@
     "hx2:orchestrator:guard": "powershell -ExecutionPolicy Bypass -File tools/orchestrator/hx2-orchestrator-guard-bundle.ps1",
     "hx2:quick": "powershell -ExecutionPolicy Bypass -File tools/hx2-quick-verify.ps1",
     "hx2:flow": "powershell -ExecutionPolicy Bypass -File tools/hx2-dev-flow.ps1",
-    "hx2:timing": "powershell -ExecutionPolicy Bypass -File tools/hx2-verify-timing.ps1"
+    "hx2:timing": "powershell -ExecutionPolicy Bypass -File tools/hx2-verify-timing.ps1",
+    "hx2:env": "powershell -ExecutionPolicy Bypass -File tools/hx2-local-env-check.ps1"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
