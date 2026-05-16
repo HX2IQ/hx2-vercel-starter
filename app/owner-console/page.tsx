@@ -351,6 +351,41 @@ async function getChatMasterKeywords() {
     };
   }
 }
+
+async function getChatMasterDiagnostics() {
+  const base =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    "https://optinodeiq.com";
+
+  try {
+
+    const res = await fetch(
+      `${base}/api/hx2/chat-master-diagnostics`,
+      { cache: "no-store" }
+    );
+
+    if (!res.ok) {
+      return {
+        ok: false,
+        diagnostics: [],
+        intent_count: 0,
+        error: `HTTP ${res.status}`
+      };
+    }
+
+    return await res.json();
+
+  } catch (err: any) {
+
+    return {
+      ok: false,
+      diagnostics: [],
+      intent_count: 0,
+      error: err?.message || String(err)
+    };
+  }
+}
 function Card({ title, value }: { title: string; value: string }) {
   return (
     <div className="rounded-2xl border border-slate-700 bg-slate-900 p-4 shadow-sm">
@@ -1050,6 +1085,80 @@ function GuardStatusPanel({ guardStatus }: { guardStatus: any }) {
 
 
 
+
+function ChatMasterDiagnosticsPanel({ data }: { data: any }) {
+
+  const diagnostics =
+    data?.diagnostics || [];
+
+  return (
+    <div className="mt-4 rounded-2xl border border-slate-700 bg-slate-900 p-5">
+
+      <div>
+        <h2 className="text-lg font-semibold">
+          Chat Master Diagnostics
+        </h2>
+
+        <p className="mt-1 text-sm text-slate-400">
+          Runtime routing visibility and keyword coverage.
+        </p>
+      </div>
+
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
+
+        <StatCard
+          title="Diagnostics"
+          value={data?.ok ? "Available" : "Issue"}
+        />
+
+        <StatCard
+          title="Intent Count"
+          value={data?.intent_count ?? 0}
+        />
+
+        <StatCard
+          title="Diagnostic Rows"
+          value={diagnostics.length}
+        />
+
+      </div>
+
+      <div className="mt-4 space-y-3">
+
+        {diagnostics.map((row: any) => (
+
+          <div
+            key={row.intent}
+            className="rounded-xl border border-slate-700 bg-slate-950 p-4"
+          >
+
+            <div className="flex flex-wrap items-center justify-between gap-3">
+
+              <div>
+                <div className="font-mono text-sm text-cyan-300">
+                  {row.intent}
+                </div>
+
+                <div className="mt-1 text-xs text-slate-400">
+                  Execution Target: {row.execution_target}
+                </div>
+              </div>
+
+              <div className="rounded-full border border-cyan-800 bg-cyan-950 px-3 py-1 text-xs text-cyan-200">
+                {row.keyword_count} keywords
+              </div>
+
+            </div>
+
+          </div>
+
+        ))}
+
+      </div>
+
+    </div>
+  );
+}
 function ChatMasterKeywordsPanel({ data }: { data: any }) {
 
   const keywords =
@@ -1470,6 +1579,7 @@ export default async function OwnerConsolePage() {
   const chatMasterIntentsData = await getChatMasterIntents();
   const chatMasterExecutionMapData = await getChatMasterExecutionMap();
   const chatMasterKeywordsData = await getChatMasterKeywords();
+  const chatMasterDiagnosticsData = await getChatMasterDiagnostics();
   const guardStatusData = await getGuardStatus();
   const environmentStatusData = await getEnvironmentStatus();
   const actionHistoryData = await getActionHistory();
@@ -1536,6 +1646,8 @@ export default async function OwnerConsolePage() {
         <ChatMasterExecutionMapPanel data={chatMasterExecutionMapData} />
 
         <ChatMasterKeywordsPanel data={chatMasterKeywordsData} />
+
+        <ChatMasterDiagnosticsPanel data={chatMasterDiagnosticsData} />
 
         <QuickCommandsPanel />
 
@@ -1853,6 +1965,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
