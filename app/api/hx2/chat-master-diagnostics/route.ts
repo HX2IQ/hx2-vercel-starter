@@ -34,9 +34,20 @@ export async function GET() {
 
     }));
 
+  const sample_queries = [
+    { intent: "health", query: "Is creatine safe daily?" },
+    { intent: "markets", query: "Latest XRP market news" },
+    { intent: "legal", query: "How do I respond to a trademark office action?" },
+    { intent: "parenting", query: "My child hates reading homework" },
+    { intent: "developer", query: "Why did the Next.js build fail?" },
+    { intent: "general", query: "What is the best plan today?" }
+  ];
+
   return NextResponse.json({
     ok: true,
     diagnostics,
-    intent_count: diagnostics.length
+    intent_count: diagnostics.length,
+    sample_queries
   });
 }
+
