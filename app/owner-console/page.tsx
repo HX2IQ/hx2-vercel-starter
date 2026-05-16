@@ -1029,6 +1029,10 @@ function OrchestratorStatusPanel({ status }: { status: any }) {
         </div>
         <StatCard title="Missing Critical" value={missingCritical.length} />
         <StatCard title="Missing Optional" value={missingOptional.length} />
+        <StatCard
+          title="Chat Master Foundation"
+          value={checks.chat_master_foundation ? "Ready" : "Missing"}
+        />
       </div>
 
       {missingRoutes.length > 0 ? (
@@ -1578,6 +1582,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
