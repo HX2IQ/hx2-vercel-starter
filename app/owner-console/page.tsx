@@ -619,6 +619,42 @@ function ControlHubPanel() {
   );
 }
 
+
+function QuickCommandsPanel() {
+  const commands = [
+    "npm run hx2:quick",
+    "npm run hx2:guard",
+    "npm run hx2:timing",
+    "npm run hx2:env",
+    "npm run hx2:orchestrator:guard",
+    "npm run hx2:orchestrator:report"
+  ];
+
+  return (
+    <div className="mt-6 rounded-2xl border border-slate-700 bg-slate-900 p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-semibold">Quick Developer Commands</h2>
+          <p className="mt-1 text-sm text-slate-400">
+            Common HX2 validation and orchestration workflows.
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-2">
+        {commands.map((cmd) => (
+          <div
+            key={cmd}
+            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-sm text-cyan-300"
+          >
+            {cmd}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function SystemSnapshotHeader({
   benchmark,
   chatMaster,
@@ -1169,6 +1205,8 @@ export default async function OwnerConsolePage() {
 
         <OrchestratorStatusPanel status={orchestratorStatusData} />
 
+        <QuickCommandsPanel />
+
         <GuardStatusPanel guardStatus={guardStatusData} />
 
         <EnvironmentStatusPanel envStatus={environmentStatusData} />
@@ -1481,6 +1519,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
