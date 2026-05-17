@@ -49,12 +49,22 @@ export async function GET() {
         ).toFixed(2)
       : "0.00";
 
+  const routing_maturity =
+    diagnostics.length >= 6 &&
+    Number(average_confidence) >= 0.75
+      ? "advanced"
+      : diagnostics.length >= 4
+      ? "intermediate"
+      : "basic";
+
   return NextResponse.json({
     ok: true,
     diagnostics,
     intent_count: diagnostics.length,
     confidence_distribution,
     average_confidence,
+    routing_maturity,
     sample_queries,
   });
 }
+
