@@ -1100,6 +1100,9 @@ function ChatMasterDiagnosticsPanel({ data }: { data: any }) {
   const averageConfidence =
     data?.average_confidence || "0.00";
 
+  const routingMaturity =
+    data?.routing_maturity || "unknown";
+
 
 
 
@@ -1156,6 +1159,11 @@ function ChatMasterDiagnosticsPanel({ data }: { data: any }) {
         <StatCard
           title="Average Confidence"
           value={averageConfidence}
+        />
+
+        <StatCard
+          title="Routing Maturity"
+          value={routingMaturity}
         />
 
       </div>
@@ -2002,6 +2010,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
