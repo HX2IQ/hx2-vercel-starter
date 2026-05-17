@@ -1091,6 +1091,12 @@ function ChatMasterDiagnosticsPanel({ data }: { data: any }) {
   const diagnostics =
     data?.diagnostics || [];
 
+  const sampleQueries =
+    data?.sample_queries || [];
+
+
+
+
   return (
     <div className="mt-4 rounded-2xl border border-slate-700 bg-slate-900 p-5">
 
@@ -1965,6 +1971,10 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
+
+
+
 
 
 
