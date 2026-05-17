@@ -478,7 +478,7 @@ function ActiveNodesPanel({ activeNodes }: { activeNodes: any }) {
         </div>
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-3">
+      <div className="mt-4 grid gap-3 md:grid-cols-3 xl:grid-cols-6">
         <StatCard title="Node Count" value={count} />
         <StatCard title="Status" value={ok ? "Online" : "Unavailable"} />
         <StatCard title="Source" value="owner:active_nodes" />
@@ -528,7 +528,7 @@ function Ap2QueuePanel({ ap2 }: { ap2: any }) {
         </div>
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-3">
+      <div className="mt-4 grid gap-3 md:grid-cols-3 xl:grid-cols-6">
         <StatCard title="Gateway" value={ap2?.gateway || "unknown"} />
         <StatCard title="HTTP Status" value={ap2?.http_status ?? "unknown"} />
         <StatCard title="Checked UTC" value={ap2?.checked_utc || "unknown"} />
@@ -628,7 +628,7 @@ function RecentActionsPanel({ actionHistory }: { actionHistory: any }) {
         </div>
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-3">
+      <div className="mt-4 grid gap-3 md:grid-cols-3 xl:grid-cols-6">
         <StatCard title="History Count" value={history.length} />
         <StatCard title="Latest Action" value={latest?.action || latest?.task_type || "none"} />
         <StatCard title="Latest Result" value={latest ? (latest?.ok ? "Success" : "Failed") : "none"} />
@@ -1053,7 +1053,7 @@ function GuardStatusPanel({ guardStatus }: { guardStatus: any }) {
         </div>
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-3">
+      <div className="mt-4 grid gap-3 md:grid-cols-3 xl:grid-cols-6">
         <StatCard title="Command" value={guardStatus?.command || "npm run hx2:guard"} />
         <StatCard title="Guards" value={guards.length} />
         <StatCard title="Missing" value={missing.length} />
@@ -1110,7 +1110,7 @@ function ChatMasterDiagnosticsPanel({ data }: { data: any }) {
         </p>
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-3">
+      <div className="mt-4 grid gap-3 md:grid-cols-3 xl:grid-cols-6">
 
         <StatCard
           title="Diagnostics"
@@ -1186,7 +1186,7 @@ function ChatMasterKeywordsPanel({ data }: { data: any }) {
         </p>
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-3">
+      <div className="mt-4 grid gap-3 md:grid-cols-3 xl:grid-cols-6">
         <StatCard
           title="Keyword Status"
           value={data?.ok ? "Available" : "Issue"}
@@ -1249,7 +1249,7 @@ function ChatMasterExecutionMapPanel({ data }: { data: any }) {
         <p className="mt-1 text-sm text-slate-400">Current intent-to-node routing targets.</p>
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-3">
+      <div className="mt-4 grid gap-3 md:grid-cols-3 xl:grid-cols-6">
         <StatCard title="Map Status" value={data?.ok ? "Available" : "Issue"} />
         <StatCard title="Intent Count" value={intents.length} />
         <StatCard title="Routing Targets" value={Object.keys(map).length} />
@@ -1278,7 +1278,7 @@ function ChatMasterIntentsPanel({ data }: { data: any }) {
         <p className="mt-1 text-sm text-slate-400">Available routing intents for unified HX2 orchestration.</p>
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-3">
+      <div className="mt-4 grid gap-3 md:grid-cols-3 xl:grid-cols-6">
         <StatCard title="Status" value={status} />
         <StatCard title="Intent Count" value={intents.length} />
         <StatCard title="Routing Contract" value={intents.length > 0 ? "Available" : "Missing"} />
@@ -1312,7 +1312,7 @@ function ChatMasterStatusPanel({ status }: { status: any }) {
         </div>
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-3">
+      <div className="mt-4 grid gap-3 md:grid-cols-3 xl:grid-cols-6">
         <StatCard title="Readiness" value={`${readiness}%`} />
         <StatCard title="Healthy Checks" value={chat?.healthy_checks ?? 0} />
         <StatCard title="Total Checks" value={chat?.total_checks ?? 0} />
@@ -1971,6 +1971,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
