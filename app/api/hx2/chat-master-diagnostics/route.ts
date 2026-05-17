@@ -30,7 +30,12 @@ export async function GET() {
       execution_target:
         CHAT_MASTER_EXECUTION_MAP[
           intent as keyof typeof CHAT_MASTER_EXECUTION_MAP
-        ]?.node || "unknown"
+        ]?.node || "unknown",
+
+      confidence_estimate:
+        intent === "general"
+          ? 0.5
+          : 0.8
 
     }));
 
@@ -43,11 +48,24 @@ export async function GET() {
     { intent: "general", query: "What is the best plan today?" }
   ];
 
+  const confidence_distribution = {
+    high_confidence:
+      diagnostics.filter((x) => x.confidence_estimate >= 0.8).length,
+
+    medium_confidence:
+      diagnostics.filter((x) => x.confidence_estimate >= 0.6 && x.confidence_estimate < 0.8).length,
+
+    low_confidence:
+      diagnostics.filter((x) => x.confidence_estimate < 0.6).length
+  };
+
   return NextResponse.json({
     ok: true,
     diagnostics,
     intent_count: diagnostics.length,
+    confidence_distribution,
     sample_queries
   });
 }
+
 
