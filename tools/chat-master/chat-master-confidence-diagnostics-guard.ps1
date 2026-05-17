@@ -33,7 +33,10 @@ $requiredUi = @(
   "Medium Confidence",
   "Low Confidence",
   "Average Confidence",
-  "Routing Maturity"
+  "Routing Maturity",
+  "routingMaturityTone",
+  "advanced",
+  "intermediate"
 )
 
 $missing = @()
@@ -62,4 +65,5 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CHAT MASTER CONFIDENCE DIAGNOSTICS GUARD PASSED" -ForegroundColor Green
+
 
