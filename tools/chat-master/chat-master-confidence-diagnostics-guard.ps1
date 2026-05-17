@@ -23,7 +23,8 @@ $requiredApi = @(
   "medium_confidence",
   "low_confidence",
   "confidence_estimate",
-  "average_confidence"
+  "average_confidence",
+  "routing_maturity"
 )
 
 $requiredUi = @(
@@ -31,7 +32,8 @@ $requiredUi = @(
   "High Confidence",
   "Medium Confidence",
   "Low Confidence",
-  "Average Confidence"
+  "Average Confidence",
+  "Routing Maturity"
 )
 
 $missing = @()
@@ -60,3 +62,4 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CHAT MASTER CONFIDENCE DIAGNOSTICS GUARD PASSED" -ForegroundColor Green
+
