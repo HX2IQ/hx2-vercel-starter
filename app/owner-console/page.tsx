@@ -1103,6 +1103,13 @@ function ChatMasterDiagnosticsPanel({ data }: { data: any }) {
   const routingMaturity =
     data?.routing_maturity || "unknown";
 
+  const routingMaturityTone =
+    routingMaturity === "advanced"
+      ? "border-emerald-700 bg-emerald-950 text-emerald-300"
+      : routingMaturity === "intermediate"
+      ? "border-amber-700 bg-amber-950 text-amber-300"
+      : "border-slate-700 bg-slate-950 text-slate-300";
+
 
 
 
@@ -1161,10 +1168,15 @@ function ChatMasterDiagnosticsPanel({ data }: { data: any }) {
           value={averageConfidence}
         />
 
-        <StatCard
-          title="Routing Maturity"
-          value={routingMaturity}
-        />
+        <div className={`rounded-xl border p-4 ${routingMaturityTone}`}>
+          <div className="text-xs uppercase tracking-wide opacity-70">
+            Routing Maturity
+          </div>
+
+          <div className="mt-2 text-xl font-semibold">
+            {routingMaturity}
+          </div>
+        </div>
 
       </div>
 
@@ -2010,6 +2022,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
