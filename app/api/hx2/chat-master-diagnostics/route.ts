@@ -6,38 +6,23 @@ import { CHAT_MASTER_EXECUTION_MAP } from "../contracts/chat-master-execution-ma
 export const runtime = "nodejs";
 
 export async function GET() {
+  const intents = Object.keys(CHAT_MASTER_EXECUTION_MAP);
 
-  const intents =
-    Object.keys(CHAT_MASTER_EXECUTION_MAP);
+  const diagnostics = intents.map((intent) => {
+    const keywords =
+      CHAT_MASTER_KEYWORDS[intent as keyof typeof CHAT_MASTER_KEYWORDS] || [];
 
-  const diagnostics =
-    intents.map((intent) => ({
-
+    return {
       intent,
-
-      keywords:
-        CHAT_MASTER_KEYWORDS[
-          intent as keyof typeof CHAT_MASTER_KEYWORDS
-        ] || [],
-
-      keyword_count:
-        (
-          CHAT_MASTER_KEYWORDS[
-            intent as keyof typeof CHAT_MASTER_KEYWORDS
-          ] || []
-        ).length,
-
+      keywords,
+      keyword_count: keywords.length,
       execution_target:
         CHAT_MASTER_EXECUTION_MAP[
           intent as keyof typeof CHAT_MASTER_EXECUTION_MAP
         ]?.node || "unknown",
-
-      confidence_estimate:
-        intent === "general"
-          ? 0.5
-          : 0.8
-
-    }));
+      confidence_estimate: intent === "general" ? 0.5 : 0.8,
+    };
+  });
 
   const sample_queries = [
     { intent: "health", query: "Is creatine safe daily?" },
@@ -45,27 +30,31 @@ export async function GET() {
     { intent: "legal", query: "How do I respond to a trademark office action?" },
     { intent: "parenting", query: "My child hates reading homework" },
     { intent: "developer", query: "Why did the Next.js build fail?" },
-    { intent: "general", query: "What is the best plan today?" }
+    { intent: "general", query: "What is the best plan today?" },
   ];
 
   const confidence_distribution = {
-    high_confidence:
-      diagnostics.filter((x) => x.confidence_estimate >= 0.8).length,
-
-    medium_confidence:
-      diagnostics.filter((x) => x.confidence_estimate >= 0.6 && x.confidence_estimate < 0.8).length,
-
-    low_confidence:
-      diagnostics.filter((x) => x.confidence_estimate < 0.6).length
+    high_confidence: diagnostics.filter((x) => x.confidence_estimate >= 0.8).length,
+    medium_confidence: diagnostics.filter(
+      (x) => x.confidence_estimate >= 0.6 && x.confidence_estimate < 0.8
+    ).length,
+    low_confidence: diagnostics.filter((x) => x.confidence_estimate < 0.6).length,
   };
+
+  const average_confidence =
+    diagnostics.length > 0
+      ? (
+          diagnostics.reduce((sum, x) => sum + x.confidence_estimate, 0) /
+          diagnostics.length
+        ).toFixed(2)
+      : "0.00";
 
   return NextResponse.json({
     ok: true,
     diagnostics,
     intent_count: diagnostics.length,
     confidence_distribution,
-    sample_queries
+    average_confidence,
+    sample_queries,
   });
 }
-
-

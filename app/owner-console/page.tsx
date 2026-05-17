@@ -1094,6 +1094,12 @@ function ChatMasterDiagnosticsPanel({ data }: { data: any }) {
   const sampleQueries =
     data?.sample_queries || [];
 
+  const confidence =
+    data?.confidence_distribution || {};
+
+  const averageConfidence =
+    data?.average_confidence || "0.00";
+
 
 
 
@@ -1125,6 +1131,31 @@ function ChatMasterDiagnosticsPanel({ data }: { data: any }) {
         <StatCard
           title="Diagnostic Rows"
           value={diagnostics.length}
+        />
+
+        <StatCard
+          title="Sample Queries"
+          value={sampleQueries.length}
+        />
+
+        <StatCard
+          title="High Confidence"
+          value={confidence.high_confidence ?? 0}
+        />
+
+        <StatCard
+          title="Medium Confidence"
+          value={confidence.medium_confidence ?? 0}
+        />
+
+        <StatCard
+          title="Low Confidence"
+          value={confidence.low_confidence ?? 0}
+        />
+
+        <StatCard
+          title="Average Confidence"
+          value={averageConfidence}
         />
 
       </div>
@@ -1971,6 +2002,9 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
+
+
 
 
 
