@@ -82,6 +82,19 @@ $routingMaturity =
   }
 
 Write-Host "Routing Maturity: $routingMaturity" -ForegroundColor Cyan
+
+$readinessTier =
+  if ($routingMaturity -eq "advanced") {
+    "production_candidate"
+  }
+  elseif ($routingMaturity -eq "intermediate") {
+    "staging_candidate"
+  }
+  else {
+    "prototype"
+  }
+
+Write-Host "Readiness Tier: $readinessTier" -ForegroundColor Cyan
 Write-Host ""
 
 if ($missing.Count -eq 0) {
@@ -91,6 +104,7 @@ if ($missing.Count -eq 0) {
 }
 
 Write-Host ""
+
 
 
 
