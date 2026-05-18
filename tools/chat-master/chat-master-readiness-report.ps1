@@ -69,6 +69,19 @@ $diagnosticsText = Get-Content $diagnostics -Raw
 $diagnosticsCoverage = ([regex]::Matches($diagnosticsText, "keyword_count|execution_target|intent_count")).Count
 
 Write-Host "Diagnostics Coverage: $diagnosticsCoverage" -ForegroundColor Cyan
+
+$routingMaturity =
+  if ($routeCoverage -ge 6 -and $diagnosticsCoverage -ge 3) {
+    "advanced"
+  }
+  elseif ($routeCoverage -ge 4) {
+    "intermediate"
+  }
+  else {
+    "basic"
+  }
+
+Write-Host "Routing Maturity: $routingMaturity" -ForegroundColor Cyan
 Write-Host ""
 
 if ($missing.Count -eq 0) {
@@ -78,6 +91,7 @@ if ($missing.Count -eq 0) {
 }
 
 Write-Host ""
+
 
 
 
