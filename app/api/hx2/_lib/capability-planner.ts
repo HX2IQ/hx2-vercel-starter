@@ -110,6 +110,7 @@ function strategyFor(intent: string): string {
 }
 
 import { simulateNodeExecution } from "./capability-execution";
+import { buildOrchestrationSynthesis } from "./capability-synthesis";
 
 export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
 
@@ -124,6 +125,9 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
   const executionResults =
     simulateNodeExecution(intent, selectedNode);
 
+  const orchestrationSynthesis =
+    buildOrchestrationSynthesis(executionResults);
+
   return {
     ok: true,
     user_request: userRequest,
@@ -133,8 +137,10 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
     execution_strategy: strategyFor(intent),
     confidence: candidateNodes[0]?.score || 0.5,
     execution_results: executionResults,
+    orchestration_synthesis: orchestrationSynthesis,
     orchestration_summary:
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
 
