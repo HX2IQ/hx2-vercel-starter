@@ -110,6 +110,15 @@ export async function CapabilityPlannerPreviewPanel() {
   const data = await getCapabilityPlannerPreview();
   const memoryData = await getCapabilityPlannerMemory();
 
+  const learning =
+    memoryData?.learning_signals || {};
+
+  const nodeFrequency =
+    learning?.node_frequency || {};
+
+  const modeFrequency =
+    learning?.execution_mode_frequency || {};
+
   const candidates = data?.candidate_nodes || [];
   const synthesis = data?.orchestration_synthesis || {};
   const escalation = data?.escalation || {};
@@ -143,6 +152,76 @@ export async function CapabilityPlannerPreviewPanel() {
         </div>
       </div>
 
+
+      <div className="mt-4 rounded-xl border border-slate-700 bg-slate-950 p-4">
+        <div className="text-sm font-semibold text-white">
+          Learning Signals
+        </div>
+
+        <div className="mt-3 grid gap-3 md:grid-cols-3">
+          <PlannerStat
+            title="Total Runs"
+            value={learning?.total_runs ?? 0}
+          />
+
+          <PlannerStat
+            title="Escalation Rate"
+            value={learning?.escalation_rate ?? 0}
+          />
+
+          <PlannerStat
+            title="Tracked Nodes"
+            value={Object.keys(nodeFrequency).length}
+          />
+        </div>
+
+        <div className="mt-4 grid gap-3 md:grid-cols-2">
+
+          <div className="rounded-xl border border-slate-700 bg-slate-900 p-4">
+            <div className="text-sm font-semibold text-cyan-300">
+              Node Frequency
+            </div>
+
+            <div className="mt-3 space-y-2">
+              {Object.keys(nodeFrequency).map((node) => (
+                <div
+                  key={node}
+                  className="flex items-center justify-between text-sm"
+                >
+                  <span className="text-white">{node}</span>
+
+                  <span className="text-slate-400">
+                    {nodeFrequency[node]}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-700 bg-slate-900 p-4">
+            <div className="text-sm font-semibold text-cyan-300">
+              Execution Mode Frequency
+            </div>
+
+            <div className="mt-3 space-y-2">
+              {Object.keys(modeFrequency).map((mode) => (
+                <div
+                  key={mode}
+                  className="flex items-center justify-between text-sm"
+                >
+                  <span className="text-white">{mode}</span>
+
+                  <span className="text-slate-400">
+                    {modeFrequency[mode]}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+      </div>
+
       <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {candidates.map((candidate: any) => (
           <div key={candidate.node} className="rounded-xl border border-slate-700 bg-slate-950 p-4">
@@ -155,4 +234,5 @@ export async function CapabilityPlannerPreviewPanel() {
     </div>
   );
 }
+
 
