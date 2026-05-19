@@ -40,7 +40,11 @@ $requiredPanel = @(
   "Tracked Nodes",
   "Node Frequency",
   "Execution Mode Frequency",
-  "learning_signals"
+  "learning_signals",
+  "Sprint Recommendation",
+  "Priority",
+  "Suggested Mode",
+  "sprint_recommendation"
 )
 
 $requiredMount = @(
@@ -70,5 +74,6 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER PREVIEW UI GUARD PASSED"
+
 
 

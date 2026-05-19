@@ -12,8 +12,9 @@ $complexity = "app/api/hx2/_lib/capability-complexity.ts"
 $escalation = "app/api/hx2/_lib/capability-escalation.ts"
 $memory = "app/api/hx2/_lib/capability-memory.ts"
 $memoryRoute = "app/api/hx2/capability-planner-memory/route.ts"
+$sprintRecommendation = "app/api/hx2/_lib/capability-sprint-recommendation.ts"
 
-$paths = @($lib, $route, $execution, $synthesis, $pipeline, $complexity, $escalation, $memory, $memoryRoute)
+$paths = @($lib, $route, $execution, $synthesis, $pipeline, $complexity, $escalation, $memory, $memoryRoute, $sprintRecommendation)
 
 foreach ($path in $paths) {
   if (!(Test-Path $path)) {
@@ -30,6 +31,7 @@ $complexityText = Get-Content $complexity -Raw
 $escalationText = Get-Content $escalation -Raw
 $memoryText = Get-Content $memory -Raw
 $memoryRouteText = Get-Content $memoryRoute -Raw
+$sprintRecommendationText = Get-Content $sprintRecommendation -Raw
 
 $requiredLib = @(
   "CandidateNode",
@@ -144,7 +146,18 @@ $requiredMemoryRoute = @(
   "memory_count",
   "escalation_count",
   "pipeline_execution_count",
+  "sprint_recommendation",
   "NextResponse.json"
+)
+
+$requiredSprintRecommendation = @(
+  "buildSprintRecommendation",
+  "recommendation",
+  "priority",
+  "suggested_execution_mode",
+  "Expand orchestration pipeline coverage",
+  "Improve confidence scoring and node arbitration",
+  "Expand planner intelligence capabilities"
 )
 
 $missing = @()
@@ -203,6 +216,12 @@ foreach ($needle in $requiredMemoryRoute) {
   }
 }
 
+foreach ($needle in $requiredSprintRecommendation) {
+  if ($sprintRecommendationText -notlike "*$needle*") {
+    $missing += "Missing in sprint recommendation lib: $needle"
+  }
+}
+
 if ($missing.Count -gt 0) {
   foreach ($m in $missing) {
     Write-Host "- $m"
@@ -212,4 +231,5 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER GUARD PASSED"
+
 
