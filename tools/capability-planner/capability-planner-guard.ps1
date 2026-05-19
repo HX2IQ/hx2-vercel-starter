@@ -43,6 +43,9 @@ $requiredLib = @(
   "applyAdaptiveNodeScoring",
   "buildPlannerLearningSignals",
   "usageBoost",
+  "nodeReliability",
+  "qualityBoost",
+  "successBoost",
   "selected_node",
   "candidate_nodes",
   "execution_strategy",
@@ -251,6 +254,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER GUARD PASSED"
+
 
 
 
