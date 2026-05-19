@@ -140,7 +140,9 @@ $requiredMemory = @(
   "plannerMemory",
   "execution_mode",
   "selected_node",
-  "completed_nodes"
+  "completed_nodes",
+  "success",
+  "quality_score"
 )
 
 $requiredMemoryRoute = @(
@@ -249,6 +251,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER GUARD PASSED"
+
 
 
 
