@@ -1,57 +1,95 @@
 export type CapabilityPlan = {
-  mode: string;
-  reason: string;
+  ok: boolean;
+  user_request: string;
+  intent: string;
+  candidate_nodes: string[];
+  execution_strategy: string;
+  confidence: number;
+  orchestration_summary: string;
 };
 
-export function planCapability(userQuery: string, hints?: any): CapabilityPlan {
-  const q = (userQuery || "").toLowerCase();
+function detectIntent(input: string): string {
+  const text = input.toLowerCase();
 
-  if (hints?.node_hint === "ah3" || hints?.mode_hint === "healthoi") {
-    return { mode: "ah3", reason: "HealthOI embedded chat hint matched AH3" };
+  if (text.match(/health|supplement|diet|symptom|vitamin|blood/i)) {
+    return "health_analysis";
   }
 
-  if (q.match(/build|code|fix bug|typescript|nextjs|react|script/)) {
-    return { mode: "coding", reason: "Coding / build / deployment language matched DEV2" };
+  if (text.match(/crypto|xrp|bitcoin|market|stocks|silver/i)) {
+    return "market_analysis";
   }
 
-  if (q.match(/image|logo|poster|photo|ad creative|design/)) {
-    return { mode: "image", reason: "Image intent detected" };
+  if (text.match(/marketing|seo|customer|sales|brand/i)) {
+    return "marketing_strategy";
   }
 
-  if (q.match(/near me|warehouse|supplier|company|business|local/)) {
-    return { mode: "business", reason: "Business/local intent detected" };
+  if (text.match(/travel|flight|hotel|vacation/i)) {
+    return "travel_planning";
   }
 
-  if (q.match(/remind|schedule|every day|automation/)) {
-    return { mode: "automation", reason: "Automation intent detected" };
+  if (text.match(/parent|child|school|reading|tutor/i)) {
+    return "parenting_support";
   }
 
-  if (q.match(/parenting|parent|child|kid|kids|8 year old|eight year old|homework|reading homework|hates reading|school struggle|tantrum|screen time|tutoring/)) {
-    return { mode: "pa2", reason: "Parenting / child development intent matched PA2" };
-  }
-
-  if (q.match(/supplement|symptom|fasting|magnesium|health/)) {
-    return { mode: "ah3", reason: "Health intent detected" };
-  }
-
-  if (q.match(/research|news|latest|search current/)) {
-    return { mode: "research", reason: "Fresh information / search intent matched Research mode" };
-  }
-
-  if (q.match(/smartest move|what should i do|help me think|advice|future|decision|strategy|next move|best move|think through|roadmap|phase|drift|grand design|orchestrator|chat-master|capability planner/)) {
-    return { mode: "conversation", reason: "Strategic planning / roadmap intent matched O2" };
-  }
-
-  return { mode: "general", reason: "Default general mode" };
+  return "general_reasoning";
 }
 
+function mapNodes(intent: string): string[] {
+  switch (intent) {
+    case "health_analysis":
+      return ["AH2", "DA2"];
 
+    case "market_analysis":
+      return ["X2", "H2", "DA2"];
 
+    case "marketing_strategy":
+      return ["K2", "DA2"];
 
+    case "travel_planning":
+      return ["TravelOI", "DA2"];
 
+    case "parenting_support":
+      return ["PA2", "DA2"];
 
+    default:
+      return ["HX2", "DA2"];
+  }
+}
 
+function strategyFor(intent: string): string {
+  switch (intent) {
+    case "health_analysis":
+      return "mechanism-first health evaluation";
 
+    case "market_analysis":
+      return "multi-node market + narrative analysis";
 
+    case "marketing_strategy":
+      return "brand and conversion optimization";
 
+    case "travel_planning":
+      return "cost/risk optimized travel orchestration";
 
+    case "parenting_support":
+      return "development-aware parenting guidance";
+
+    default:
+      return "general orchestration reasoning";
+  }
+}
+
+export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
+  const intent = detectIntent(userRequest);
+  const candidateNodes = mapNodes(intent);
+
+  return {
+    ok: true,
+    user_request: userRequest,
+    intent,
+    candidate_nodes: candidateNodes,
+    execution_strategy: strategyFor(intent),
+    confidence: 0.72,
+    orchestration_summary:
+      `Planner selected ${candidateNodes.join(", ")} for ${intent}.`
+  };
+}
