@@ -41,6 +41,7 @@ $requiredPanel = @(
   "Average Quality",
   "Tracked Nodes",
   "Node Frequency",
+  "Node Reliability",
   "Execution Mode Frequency",
   "learning_signals",
   "Sprint Recommendation",
@@ -81,6 +82,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER PREVIEW UI GUARD PASSED"
+
 
 
 

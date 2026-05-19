@@ -116,6 +116,9 @@ export async function CapabilityPlannerPreviewPanel() {
   const nodeFrequency =
     learning?.node_frequency || {};
 
+  const nodeReliability =
+    learning?.node_reliability || {};
+
   const modeFrequency =
     learning?.execution_mode_frequency || {};
 
@@ -263,6 +266,39 @@ export async function CapabilityPlannerPreviewPanel() {
             </div>
           </div>
 
+
+          <div className="rounded-xl border border-slate-700 bg-slate-900 p-4">
+            <div className="text-sm font-semibold text-cyan-300">
+              Node Reliability
+            </div>
+
+            <div className="mt-3 space-y-2">
+              {Object.keys(nodeReliability).map((node) => (
+                <div
+                  key={node}
+                  className="rounded-lg border border-slate-800 bg-slate-950 p-3 text-sm"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-white">{node}</span>
+                    <span className="text-slate-400">
+                      runs: {nodeReliability[node]?.runs ?? 0}
+                    </span>
+                  </div>
+
+                  <div className="mt-2 grid gap-2 md:grid-cols-2">
+                    <div className="text-slate-400">
+                      success: {nodeReliability[node]?.success_rate ?? 0}
+                    </div>
+
+                    <div className="text-slate-400">
+                      quality: {nodeReliability[node]?.average_quality ?? 0}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className="rounded-xl border border-slate-700 bg-slate-900 p-4">
             <div className="text-sm font-semibold text-cyan-300">
               Execution Mode Frequency
@@ -299,6 +335,7 @@ export async function CapabilityPlannerPreviewPanel() {
     </div>
   );
 }
+
 
 
 
