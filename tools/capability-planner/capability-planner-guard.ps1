@@ -74,6 +74,11 @@ $requiredRoute = @(
 $requiredExecution = @(
   "SimulatedNodeResult",
   "simulateNodeExecution",
+  "buildops_execution",
+  "DEV2",
+  "AP2",
+  "BuildOps execution plan prepared",
+  "Execution orchestration support prepared",
   "health_analysis",
   "market_analysis",
   "marketing_strategy",
@@ -207,3 +212,4 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER GUARD PASSED"
+
