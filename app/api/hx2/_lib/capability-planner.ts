@@ -18,6 +18,7 @@ export type CapabilityPlan = {
   request_complexity: any;
   execution_mode: string;
   escalation: any;
+  planner_feedback: any;
   orchestration_summary: string;
 };
 
@@ -167,6 +168,7 @@ import { assessRequestComplexity } from "./capability-complexity";
 import { evaluateExecutionEscalation } from "./capability-escalation";
 import { recordPlannerExecution } from "./capability-memory";
 import { buildPlannerLearningSignals } from "./capability-learning";
+import { evaluatePlannerFeedback } from "./capability-feedback";
 
 export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
 
@@ -194,6 +196,12 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
 
   const executionResults =
     simulateNodeExecution(intent, selectedNode, finalExecutionMode);
+
+  const plannerFeedback =
+    evaluatePlannerFeedback(
+      executionResults,
+      finalExecutionMode
+    );
 
   recordPlannerExecution({
     timestamp: new Date().toISOString(),
@@ -234,10 +242,12 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
     request_complexity: requestComplexity,
     execution_mode: finalExecutionMode,
     escalation: escalation,
+    planner_feedback: plannerFeedback,
     orchestration_summary:
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
 
 
 
