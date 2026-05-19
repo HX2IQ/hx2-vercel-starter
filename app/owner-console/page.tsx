@@ -277,117 +277,11 @@ async function getOrchestratorStatus() {
     return { ok: false, error: err?.message || String(err), orchestrator: null };
   }
 }
-
-async function getChatMasterStatus() {
-  const base =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.NEXT_PUBLIC_BASE_URL ||
-    "https://optinodeiq.com";
-
-  try {
-    const res = await fetch(`${base}/api/hx2/chat-master-status`, { cache: "no-store" });
-    if (!res.ok) return { ok: false, error: `HTTP ${res.status}`, chat_master: null };
-    return await res.json();
-  } catch (err: any) {
-    return { ok: false, error: err?.message || String(err), chat_master: null };
-  }
-}
-
-async function getChatMasterIntents() {
-  const base =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.NEXT_PUBLIC_BASE_URL ||
-    "https://optinodeiq.com";
-
-  try {
-    const res = await fetch(`${base}/api/hx2/chat-master-intents`, { cache: "no-store" });
-    if (!res.ok) return { ok: false, error: `HTTP ${res.status}`, chat_master_intents: null };
-    return await res.json();
-  } catch (err: any) {
-    return { ok: false, error: err?.message || String(err), chat_master_intents: null };
-  }
-}
-
-async function getChatMasterExecutionMap() {
-  const base =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.NEXT_PUBLIC_BASE_URL ||
-    "https://optinodeiq.com";
-
-  try {
-    const res = await fetch(`${base}/api/hx2/chat-master-execution-map`, { cache: "no-store" });
-    if (!res.ok) return { ok: false, error: `HTTP ${res.status}`, execution_map: {}, intents: [] };
-    return await res.json();
-  } catch (err: any) {
-    return { ok: false, error: err?.message || String(err), execution_map: {}, intents: [] };
-  }
-}
-
-async function getChatMasterKeywords() {
-  const base =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.NEXT_PUBLIC_BASE_URL ||
-    "https://optinodeiq.com";
-
-  try {
-    const res = await fetch(`${base}/api/hx2/chat-master-keywords`, { cache: "no-store" });
-
-    if (!res.ok) {
-      return {
-        ok: false,
-        error: `HTTP ${res.status}`,
-        keywords: {},
-        intents: []
-      };
-    }
-
-    return await res.json();
-
-  } catch (err: any) {
-
-    return {
-      ok: false,
-      error: err?.message || String(err),
-      keywords: {},
-      intents: []
-    };
-  }
-}
-
-async function getChatMasterDiagnostics() {
-  const base =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.NEXT_PUBLIC_BASE_URL ||
-    "https://optinodeiq.com";
-
-  try {
-
-    const res = await fetch(
-      `${base}/api/hx2/chat-master-diagnostics`,
-      { cache: "no-store" }
-    );
-
-    if (!res.ok) {
-      return {
-        ok: false,
-        diagnostics: [],
-        intent_count: 0,
-        error: `HTTP ${res.status}`
-      };
-    }
-
-    return await res.json();
-
-  } catch (err: any) {
-
-    return {
-      ok: false,
-      diagnostics: [],
-      intent_count: 0,
-      error: err?.message || String(err)
-    };
-  }
-}
+
+
+
+
+
 function Card({ title, value }: { title: string; value: string }) {
   return (
     <div className="rounded-2xl border border-slate-700 bg-slate-900 p-4 shadow-sm">
@@ -1345,13 +1239,7 @@ export default async function OwnerConsolePage() {
   const o2ActionsData = await getO2Actions();
   const baselineDetailData = await getLatestBaselineDetail();
   const benchmarkData = await getLatestBenchmark();
-  const orchestratorStatusData = await getOrchestratorStatus();
-  const chatMasterStatusData = await getChatMasterStatus();
-  const chatMasterIntentsData = await getChatMasterIntents();
-  const chatMasterExecutionMapData = await getChatMasterExecutionMap();
-  const chatMasterKeywordsData = await getChatMasterKeywords();
-  const chatMasterDiagnosticsData = await getChatMasterDiagnostics();
-  const guardStatusData = await getGuardStatus();
+  const orchestratorStatusData = await getOrchestratorStatus();  const guardStatusData = await getGuardStatus();
   const environmentStatusData = await getEnvironmentStatus();
   const actionHistoryData = await getActionHistory();
   const memoryStatusData = await getMemoryStatus();
@@ -1727,6 +1615,7 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
 
 
 
