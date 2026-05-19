@@ -47,6 +47,38 @@ function detectIntent(input: string): string {
   return "general_reasoning";
 }
 
+
+function applyAdaptiveNodeScoring(
+  candidateNodes: CandidateNode[]
+): CandidateNode[] {
+
+  const learning =
+    buildPlannerLearningSignals();
+
+  const frequency =
+    learning?.node_frequency || {};
+
+  return candidateNodes
+    .map((node) => {
+
+      const usageBoost =
+        (frequency[node.node] || 0) * 0.02;
+
+      return {
+        ...node,
+        score: Number(
+          Math.min(
+            1,
+            node.score + usageBoost
+          ).toFixed(2)
+        )
+      };
+    })
+    .sort(
+      (a, b) => b.score - a.score
+    );
+}
+
 function scoreNodes(intent: string): CandidateNode[] {
 
   switch (intent) {
@@ -120,6 +152,7 @@ import { buildExecutionPipeline } from "./capability-pipeline";
 import { assessRequestComplexity } from "./capability-complexity";
 import { evaluateExecutionEscalation } from "./capability-escalation";
 import { recordPlannerExecution } from "./capability-memory";
+import { buildPlannerLearningSignals } from "./capability-learning";
 
 export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
 
@@ -191,6 +224,7 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
 
 
 
