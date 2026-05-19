@@ -15,6 +15,8 @@ export type CapabilityPlan = {
   execution_results: any[];
   orchestration_synthesis: any;
   execution_pipeline: any[];
+  request_complexity: any;
+  execution_mode: string;
   orchestration_summary: string;
 };
 
@@ -114,6 +116,7 @@ function strategyFor(intent: string): string {
 import { simulateNodeExecution } from "./capability-execution";
 import { buildOrchestrationSynthesis } from "./capability-synthesis";
 import { buildExecutionPipeline } from "./capability-pipeline";
+import { assessRequestComplexity } from "./capability-complexity";
 
 export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
 
@@ -134,6 +137,9 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
   const executionPipeline =
     buildExecutionPipeline(candidateNodes);
 
+  const requestComplexity =
+    assessRequestComplexity(userRequest, candidateNodes);
+
   return {
     ok: true,
     user_request: userRequest,
@@ -145,10 +151,13 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
     execution_results: executionResults,
     orchestration_synthesis: orchestrationSynthesis,
     execution_pipeline: executionPipeline,
+    request_complexity: requestComplexity,
+    execution_mode: requestComplexity.execution_mode,
     orchestration_summary:
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
 
 
 
