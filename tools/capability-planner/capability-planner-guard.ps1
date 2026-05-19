@@ -13,8 +13,9 @@ $escalation = "app/api/hx2/_lib/capability-escalation.ts"
 $memory = "app/api/hx2/_lib/capability-memory.ts"
 $memoryRoute = "app/api/hx2/capability-planner-memory/route.ts"
 $sprintRecommendation = "app/api/hx2/_lib/capability-sprint-recommendation.ts"
+$feedback = "app/api/hx2/_lib/capability-feedback.ts"
 
-$paths = @($lib, $route, $execution, $synthesis, $pipeline, $complexity, $escalation, $memory, $memoryRoute, $sprintRecommendation)
+$paths = @($lib, $route, $execution, $synthesis, $pipeline, $complexity, $escalation, $memory, $memoryRoute, $sprintRecommendation, $feedback)
 
 foreach ($path in $paths) {
   if (!(Test-Path $path)) {
@@ -32,6 +33,7 @@ $escalationText = Get-Content $escalation -Raw
 $memoryText = Get-Content $memory -Raw
 $memoryRouteText = Get-Content $memoryRoute -Raw
 $sprintRecommendationText = Get-Content $sprintRecommendation -Raw
+$feedbackText = Get-Content $feedback -Raw
 
 $requiredLib = @(
   "CandidateNode",
@@ -160,6 +162,16 @@ $requiredSprintRecommendation = @(
   "Expand planner intelligence capabilities"
 )
 
+$requiredFeedback = @(
+  "PlannerFeedback",
+  "evaluatePlannerFeedback",
+  "success",
+  "quality_score",
+  "feedback_reason",
+  "Full orchestration success",
+  "Execution quality below threshold"
+)
+
 $missing = @()
 
 foreach ($needle in $requiredLib) {
@@ -222,6 +234,12 @@ foreach ($needle in $requiredSprintRecommendation) {
   }
 }
 
+foreach ($needle in $requiredFeedback) {
+  if ($feedbackText -notlike "*$needle*") {
+    $missing += "Missing in feedback lib: $needle"
+  }
+}
+
 if ($missing.Count -gt 0) {
   foreach ($m in $missing) {
     Write-Host "- $m"
@@ -231,5 +249,6 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER GUARD PASSED"
+
 
 
