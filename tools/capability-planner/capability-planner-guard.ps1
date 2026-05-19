@@ -63,6 +63,24 @@ $requiredExecution = @(
   "summary"
 )
 
+$requiredMemory = @(
+  "PlannerMemoryRecord",
+  "recordPlannerExecution",
+  "getPlannerMemory",
+  "plannerMemory",
+  "execution_mode",
+  "selected_node",
+  "completed_nodes"
+)
+
+$requiredMemoryRoute = @(
+  "getPlannerMemory",
+  "memory_count",
+  "escalation_count",
+  "pipeline_execution_count",
+  "NextResponse.json"
+)
+
 $missing = @()
 
 foreach ($needle in $requiredLib) {
@@ -92,5 +110,6 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER GUARD PASSED"
+
 
 
