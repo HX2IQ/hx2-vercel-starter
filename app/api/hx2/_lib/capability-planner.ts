@@ -229,6 +229,14 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
     escalation.final_mode;
 
 
+  const selectionExplanation =
+    buildSelectionExplanation(
+      selectedNode,
+      candidateNodes,
+      intent,
+      finalExecutionMode
+    );
+
   const executionResults =
     simulateNodeExecution(intent, selectedNode, finalExecutionMode);
 
@@ -285,6 +293,7 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
 
 
 
