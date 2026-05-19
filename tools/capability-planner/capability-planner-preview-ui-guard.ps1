@@ -28,7 +28,12 @@ $requiredPanel = @(
   "Orchestration Synthesis",
   "candidate_nodes",
   "execution_pipeline",
-  "orchestration_synthesis"
+  "orchestration_synthesis",
+  "getCapabilityPlannerMemory",
+  "Memory Records",
+  "Escalation Count",
+  "Pipeline Runs",
+  "capability-planner-memory"
 )
 
 $requiredMount = @(
@@ -58,3 +63,4 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER PREVIEW UI GUARD PASSED"
+
