@@ -225,6 +225,16 @@ export async function CapabilityPlannerPreviewPanel() {
           />
 
           <PlannerStat
+            title="Success Rate"
+            value={learning?.success_rate ?? 0}
+          />
+
+          <PlannerStat
+            title="Average Quality"
+            value={learning?.average_quality_score ?? 0}
+          />
+
+          <PlannerStat
             title="Tracked Nodes"
             value={Object.keys(nodeFrequency).length}
           />
@@ -289,6 +299,7 @@ export async function CapabilityPlannerPreviewPanel() {
     </div>
   );
 }
+
 
 
 
