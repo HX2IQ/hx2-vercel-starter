@@ -46,7 +46,9 @@ $requiredLib = @(
   "nodeReliability",
   "qualityBoost",
   "successBoost",
+  "buildSelectionExplanation",
   "selected_node",
+  "selection_explanation",
   "candidate_nodes",
   "execution_strategy",
   "execution_results",
@@ -254,6 +256,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER GUARD PASSED"
+
 
 
 
