@@ -56,6 +56,37 @@ function PlannerStat({ title, value }: { title: string; value: any }) {
   );
 }
 
+async function getCapabilityPlannerMemory() {
+  try {
+    const base = getBaseUrl();
+
+    const res = await fetch(`${base}/api/hx2/capability-planner-memory`, {
+      method: "GET",
+      cache: "no-store"
+    });
+
+    if (!res.ok) {
+      return {
+        ok: false,
+        memory_count: 0,
+        escalation_count: 0,
+        pipeline_execution_count: 0,
+        memory: []
+      };
+    }
+
+    return await res.json();
+  } catch {
+    return {
+      ok: false,
+      memory_count: 0,
+      escalation_count: 0,
+      pipeline_execution_count: 0,
+      memory: []
+    };
+  }
+}
+
 async function getCapabilityPlannerPreview() {
   return postJson(
     "/api/hx2/capability-planner",
@@ -77,6 +108,7 @@ async function getCapabilityPlannerPreview() {
 
 export async function CapabilityPlannerPreviewPanel() {
   const data = await getCapabilityPlannerPreview();
+  const memoryData = await getCapabilityPlannerMemory();
 
   const candidates = data?.candidate_nodes || [];
   const synthesis = data?.orchestration_synthesis || {};
@@ -99,6 +131,9 @@ export async function CapabilityPlannerPreviewPanel() {
         <PlannerStat title="Execution Mode" value={data?.execution_mode || "unknown"} />
         <PlannerStat title="Escalated" value={escalation?.escalated ? "true" : "false"} />
         <PlannerStat title="Pipeline Steps" value={pipeline.length} />
+        <PlannerStat title="Memory Records" value={memoryData?.memory_count ?? 0} />
+        <PlannerStat title="Escalation Count" value={memoryData?.escalation_count ?? 0} />
+        <PlannerStat title="Pipeline Runs" value={memoryData?.pipeline_execution_count ?? 0} />
       </div>
 
       <div className="mt-4 rounded-xl border border-slate-700 bg-slate-950 p-4">
@@ -120,3 +155,4 @@ export async function CapabilityPlannerPreviewPanel() {
     </div>
   );
 }
+
