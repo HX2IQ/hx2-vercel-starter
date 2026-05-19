@@ -1,3 +1,5 @@
+import { ChatMasterPanels } from "./_components/chat-master-panels";
+
 async function getOwnerSummary() {
   const base =
     process.env.NEXT_PUBLIC_SITE_URL ||
@@ -1695,16 +1697,7 @@ export default async function OwnerConsolePage() {
         <BenchmarkStatusPanel benchmark={benchmarkData} />
 
         <OrchestratorStatusPanel status={orchestratorStatusData} />
-
-        <ChatMasterStatusPanel status={chatMasterStatusData} />
-
-        <ChatMasterIntentsPanel data={chatMasterIntentsData} />
-
-        <ChatMasterExecutionMapPanel data={chatMasterExecutionMapData} />
-
-        <ChatMasterKeywordsPanel data={chatMasterKeywordsData} />
-
-        <ChatMasterDiagnosticsPanel data={chatMasterDiagnosticsData} />
+        <ChatMasterPanels />
 
         <QuickCommandsPanel />
 
@@ -2022,6 +2015,9 @@ export default async function OwnerConsolePage() {
     </main>
   );
 }
+
+
+
 
 
 
