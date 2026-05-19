@@ -24,6 +24,10 @@ export type CapabilityPlan = {
 function detectIntent(input: string): string {
   const text = input.toLowerCase();
 
+  if (text.match(/sprint|build|deploy|debug|fix|guard|api|typescript|vercel|dev2|patch/i)) {
+    return "buildops_execution";
+  }
+
   if (text.match(/health|supplement|diet|symptom|vitamin|blood/i)) {
     return "health_analysis";
   }
@@ -83,6 +87,13 @@ function scoreNodes(intent: string): CandidateNode[] {
 
   switch (intent) {
 
+    case "buildops_execution":
+      return [
+        { node: "DEV2", score: 0.96, reason: "Primary build and sprint execution node" },
+        { node: "AP2", score: 0.84, reason: "Execution orchestration support" },
+        { node: "DA2", score: 0.68, reason: "Failure-mode review" }
+      ];
+
     case "health_analysis":
       return [
         { node: "AH2", score: 0.94, reason: "Primary health analysis node" },
@@ -125,6 +136,9 @@ function scoreNodes(intent: string): CandidateNode[] {
 function strategyFor(intent: string): string {
 
   switch (intent) {
+
+    case "buildops_execution":
+      return "DEV2 build planning and execution orchestration";
 
     case "health_analysis":
       return "mechanism-first health evaluation";
@@ -224,6 +238,7 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
 
 
 
