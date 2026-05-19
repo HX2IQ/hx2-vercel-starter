@@ -63,18 +63,33 @@ function applyAdaptiveNodeScoring(
   const frequency =
     learning?.node_frequency || {};
 
+  const nodeReliability =
+    learning?.node_reliability || {};
+
   return candidateNodes
     .map((node) => {
 
       const usageBoost =
         (frequency[node.node] || 0) * 0.02;
 
+      const reliability =
+        nodeReliability?.[node.node];
+
+      const qualityBoost =
+        Number(reliability?.average_quality || 0) * 0.08;
+
+      const successBoost =
+        Number(reliability?.success_rate || 0) * 0.06;
+
       return {
         ...node,
         score: Number(
           Math.min(
             1,
-            node.score + usageBoost
+            node.score +
+            usageBoost +
+            qualityBoost +
+            successBoost
           ).toFixed(2)
         )
       };
@@ -249,6 +264,7 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
 
 
 

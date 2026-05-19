@@ -9,6 +9,8 @@ export function buildPlannerLearningSignals() {
 
   const nodeFrequency: Record<string, number> = {};
   const modeFrequency: Record<string, number> = {};
+  const nodeQualityTotals: Record<string, number> = {};
+  const nodeSuccessTotals: Record<string, number> = {};
 
   let escalationCount = 0;
   let successCount = 0;
@@ -18,6 +20,15 @@ export function buildPlannerLearningSignals() {
 
     nodeFrequency[row.selected_node] =
       (nodeFrequency[row.selected_node] || 0) + 1;
+
+    nodeQualityTotals[row.selected_node] =
+      (nodeQualityTotals[row.selected_node] || 0) +
+      (row.quality_score || 0);
+
+    if (row.success) {
+      nodeSuccessTotals[row.selected_node] =
+        (nodeSuccessTotals[row.selected_node] || 0) + 1;
+    }
 
     modeFrequency[row.execution_mode] =
       (modeFrequency[row.execution_mode] || 0) + 1;
@@ -31,6 +42,34 @@ export function buildPlannerLearningSignals() {
     }
 
     qualityTotal += row.quality_score || 0;
+  }
+
+
+  const nodeReliability: Record<string, any> = {};
+
+  for (const node of Object.keys(nodeFrequency)) {
+
+    const runs =
+      nodeFrequency[node] || 0;
+
+    const successes =
+      nodeSuccessTotals[node] || 0;
+
+    const quality =
+      nodeQualityTotals[node] || 0;
+
+    nodeReliability[node] = {
+      runs,
+      success_rate:
+        runs > 0
+          ? Number((successes / runs).toFixed(2))
+          : 0,
+
+      average_quality:
+        runs > 0
+          ? Number((quality / runs).toFixed(2))
+          : 0
+    };
   }
 
   return {
@@ -54,8 +93,11 @@ export function buildPlannerLearningSignals() {
         ? Number((qualityTotal / memory.length).toFixed(2))
         : 0,
 
+    node_reliability: nodeReliability,
+
     node_frequency: nodeFrequency,
     execution_mode_frequency: modeFrequency
   };
 }
+
 
