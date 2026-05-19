@@ -12,6 +12,7 @@ export type CapabilityPlan = {
   selected_node: string;
   execution_strategy: string;
   confidence: number;
+  execution_results: any[];
   orchestration_summary: string;
 };
 
@@ -108,6 +109,8 @@ function strategyFor(intent: string): string {
   }
 }
 
+import { simulateNodeExecution } from "./capability-execution";
+
 export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
 
   const intent = detectIntent(userRequest);
@@ -118,6 +121,9 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
     [...candidateNodes]
       .sort((a, b) => b.score - a.score)[0]?.node || "HX2";
 
+  const executionResults =
+    simulateNodeExecution(intent, selectedNode);
+
   return {
     ok: true,
     user_request: userRequest,
@@ -126,7 +132,9 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
     selected_node: selectedNode,
     execution_strategy: strategyFor(intent),
     confidence: candidateNodes[0]?.score || 0.5,
+    execution_results: executionResults,
     orchestration_summary:
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
