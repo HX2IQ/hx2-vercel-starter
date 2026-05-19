@@ -1,8 +1,15 @@
+export type CandidateNode = {
+  node: string;
+  score: number;
+  reason: string;
+};
+
 export type CapabilityPlan = {
   ok: boolean;
   user_request: string;
   intent: string;
-  candidate_nodes: string[];
+  candidate_nodes: CandidateNode[];
+  selected_node: string;
   execution_strategy: string;
   confidence: number;
   orchestration_summary: string;
@@ -19,7 +26,7 @@ function detectIntent(input: string): string {
     return "market_analysis";
   }
 
-  if (text.match(/marketing|seo|customer|sales|brand/i)) {
+  if (text.match(/marketing|seo|sales|customer|brand/i)) {
     return "marketing_strategy";
   }
 
@@ -34,35 +41,58 @@ function detectIntent(input: string): string {
   return "general_reasoning";
 }
 
-function mapNodes(intent: string): string[] {
+function scoreNodes(intent: string): CandidateNode[] {
+
   switch (intent) {
+
     case "health_analysis":
-      return ["AH2", "DA2"];
+      return [
+        { node: "AH2", score: 0.94, reason: "Primary health analysis node" },
+        { node: "DA2", score: 0.71, reason: "Risk/challenge analysis" }
+      ];
 
     case "market_analysis":
-      return ["X2", "H2", "DA2"];
+      return [
+        { node: "X2", score: 0.95, reason: "Primary market intelligence node" },
+        { node: "H2", score: 0.82, reason: "Macro/narrative correlation" },
+        { node: "DA2", score: 0.66, reason: "Counter-analysis layer" }
+      ];
 
     case "marketing_strategy":
-      return ["K2", "DA2"];
+      return [
+        { node: "K2", score: 0.93, reason: "Marketing optimization node" },
+        { node: "DA2", score: 0.63, reason: "Challenge assumptions" }
+      ];
 
     case "travel_planning":
-      return ["TravelOI", "DA2"];
+      return [
+        { node: "TravelOI", score: 0.92, reason: "Travel orchestration node" },
+        { node: "DA2", score: 0.58, reason: "Risk evaluation" }
+      ];
 
     case "parenting_support":
-      return ["PA2", "DA2"];
+      return [
+        { node: "PA2", score: 0.91, reason: "Parenting guidance node" },
+        { node: "DA2", score: 0.61, reason: "Developmental challenge analysis" }
+      ];
 
     default:
-      return ["HX2", "DA2"];
+      return [
+        { node: "HX2", score: 0.75, reason: "General orchestration reasoning" },
+        { node: "DA2", score: 0.55, reason: "Challenge analysis" }
+      ];
   }
 }
 
 function strategyFor(intent: string): string {
+
   switch (intent) {
+
     case "health_analysis":
       return "mechanism-first health evaluation";
 
     case "market_analysis":
-      return "multi-node market + narrative analysis";
+      return "multi-node market and narrative orchestration";
 
     case "marketing_strategy":
       return "brand and conversion optimization";
@@ -79,17 +109,24 @@ function strategyFor(intent: string): string {
 }
 
 export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
+
   const intent = detectIntent(userRequest);
-  const candidateNodes = mapNodes(intent);
+
+  const candidateNodes = scoreNodes(intent);
+
+  const selectedNode =
+    [...candidateNodes]
+      .sort((a, b) => b.score - a.score)[0]?.node || "HX2";
 
   return {
     ok: true,
     user_request: userRequest,
     intent,
     candidate_nodes: candidateNodes,
+    selected_node: selectedNode,
     execution_strategy: strategyFor(intent),
-    confidence: 0.72,
+    confidence: candidateNodes[0]?.score || 0.5,
     orchestration_summary:
-      `Planner selected ${candidateNodes.join(", ")} for ${intent}.`
+      `Planner selected ${selectedNode} for ${intent}.`
   };
 }
