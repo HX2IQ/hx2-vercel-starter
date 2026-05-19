@@ -1,3 +1,5 @@
+import { CapabilityPlannerPreviewPanel } from "./capability-planner-panel";
+
 function getBaseUrl() {
   return (
     process.env.NEXT_PUBLIC_APP_URL ||
@@ -227,6 +229,7 @@ export async function ChatMasterPanels() {
 
   return (
     <>
+      <CapabilityPlannerPreviewPanel />
       <ChatMasterStatusPanel status={status} />
       <ChatMasterReadinessPanel data={readiness} />
       <ChatMasterIntentsPanel data={intents} />
@@ -236,5 +239,6 @@ export async function ChatMasterPanels() {
     </>
   );
 }
+
 
 
