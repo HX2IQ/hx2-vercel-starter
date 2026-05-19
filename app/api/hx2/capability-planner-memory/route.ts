@@ -8,6 +8,10 @@ import {
   buildPlannerLearningSignals
 } from "../_lib/capability-learning";
 
+import {
+  buildSprintRecommendation
+} from "../_lib/capability-sprint-recommendation";
+
 export async function GET() {
 
   const memory =
@@ -27,13 +31,18 @@ export async function GET() {
   const learningSignals =
     buildPlannerLearningSignals();
 
+  const sprintRecommendation =
+    buildSprintRecommendation();
+
   return NextResponse.json({
     ok: true,
     memory_count: memory.length,
     escalation_count: escalations,
     pipeline_execution_count: pipelineExecutions,
     learning_signals: learningSignals,
+    sprint_recommendation: sprintRecommendation,
     memory
   });
 }
+
 
