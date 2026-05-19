@@ -144,6 +144,10 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
   const finalExecutionMode =
     escalation.final_mode;
 
+
+  const executionResults =
+    simulateNodeExecution(intent, selectedNode, finalExecutionMode);
+
   recordPlannerExecution({
     timestamp: new Date().toISOString(),
     intent,
@@ -151,13 +155,10 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
     execution_mode: finalExecutionMode,
     escalation: escalation.escalated,
     completed_nodes:
-      executionResults?.filter(
+      executionResults.filter(
         (r: any) => r.status === "complete"
-      )?.length || 0
+      ).length
   });
-
-  const executionResults =
-    simulateNodeExecution(intent, selectedNode, finalExecutionMode);
 
   const orchestrationSynthesis =
     buildOrchestrationSynthesis(executionResults);
@@ -190,6 +191,7 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
 
 
 
