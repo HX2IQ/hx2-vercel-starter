@@ -125,6 +125,9 @@ export async function CapabilityPlannerPreviewPanel() {
   const candidates = data?.candidate_nodes || [];
   const synthesis = data?.orchestration_synthesis || {};
   const escalation = data?.escalation || {};
+
+  const plannerFeedback =
+    data?.planner_feedback || {};
   const pipeline = data?.execution_pipeline || [];
 
   return (
@@ -286,6 +289,7 @@ export async function CapabilityPlannerPreviewPanel() {
     </div>
   );
 }
+
 
 
 
