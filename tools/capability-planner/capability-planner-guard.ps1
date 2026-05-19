@@ -6,22 +6,30 @@ Write-Host "== CAPABILITY PLANNER GUARD =="
 $lib = "app/api/hx2/_lib/capability-planner.ts"
 $route = "app/api/hx2/capability-planner/route.ts"
 $execution = "app/api/hx2/_lib/capability-execution.ts"
+$synthesis = "app/api/hx2/_lib/capability-synthesis.ts"
+$pipeline = "app/api/hx2/_lib/capability-pipeline.ts"
+$complexity = "app/api/hx2/_lib/capability-complexity.ts"
+$escalation = "app/api/hx2/_lib/capability-escalation.ts"
+$memory = "app/api/hx2/_lib/capability-memory.ts"
+$memoryRoute = "app/api/hx2/capability-planner-memory/route.ts"
 
-if (!(Test-Path $lib)) {
-  throw "Missing capability planner lib"
-}
+$paths = @($lib, $route, $execution, $synthesis, $pipeline, $complexity, $escalation, $memory, $memoryRoute)
 
-if (!(Test-Path $route)) {
-  throw "Missing capability planner route"
-}
-
-if (!(Test-Path $execution)) {
-  throw "Missing capability execution lib"
+foreach ($path in $paths) {
+  if (!(Test-Path $path)) {
+    throw "Missing required file: $path"
+  }
 }
 
 $libText = Get-Content $lib -Raw
 $routeText = Get-Content $route -Raw
 $executionText = Get-Content $execution -Raw
+$synthesisText = Get-Content $synthesis -Raw
+$pipelineText = Get-Content $pipeline -Raw
+$complexityText = Get-Content $complexity -Raw
+$escalationText = Get-Content $escalation -Raw
+$memoryText = Get-Content $memory -Raw
+$memoryRouteText = Get-Content $memoryRoute -Raw
 
 $requiredLib = @(
   "CandidateNode",
@@ -35,6 +43,11 @@ $requiredLib = @(
   "candidate_nodes",
   "execution_strategy",
   "execution_results",
+  "orchestration_synthesis",
+  "execution_pipeline",
+  "request_complexity",
+  "execution_mode",
+  "escalation",
   "orchestration_summary",
   "simulateNodeExecution",
   "buildops_execution",
@@ -61,10 +74,6 @@ $requiredRoute = @(
 $requiredExecution = @(
   "SimulatedNodeResult",
   "simulateNodeExecution",
-  "buildops_execution",
-  "DEV2",
-  "AP2",
-  "DEV2 build planning and execution orchestration",
   "health_analysis",
   "market_analysis",
   "marketing_strategy",
@@ -72,6 +81,47 @@ $requiredExecution = @(
   "parenting_support",
   "complete",
   "summary"
+)
+
+$requiredSynthesis = @(
+  "OrchestrationSynthesis",
+  "buildOrchestrationSynthesis",
+  "participating_nodes",
+  "completed_nodes",
+  "total_nodes",
+  "execution_status",
+  "synthesis_summary"
+)
+
+$requiredPipeline = @(
+  "ExecutionStep",
+  "buildExecutionPipeline",
+  "step",
+  "node",
+  "action",
+  "depends_on"
+)
+
+$requiredComplexity = @(
+  "RequestComplexity",
+  "assessRequestComplexity",
+  "execution_mode",
+  "single_node",
+  "multi_node",
+  "pipeline",
+  "level",
+  "score",
+  "reasons"
+)
+
+$requiredEscalation = @(
+  "EscalationDecision",
+  "evaluateExecutionEscalation",
+  "escalated",
+  "original_mode",
+  "final_mode",
+  "reason",
+  "No escalation required"
 )
 
 $requiredMemory = @(
@@ -112,6 +162,42 @@ foreach ($needle in $requiredExecution) {
   }
 }
 
+foreach ($needle in $requiredSynthesis) {
+  if ($synthesisText -notlike "*$needle*") {
+    $missing += "Missing in synthesis lib: $needle"
+  }
+}
+
+foreach ($needle in $requiredPipeline) {
+  if ($pipelineText -notlike "*$needle*") {
+    $missing += "Missing in pipeline lib: $needle"
+  }
+}
+
+foreach ($needle in $requiredComplexity) {
+  if ($complexityText -notlike "*$needle*") {
+    $missing += "Missing in complexity lib: $needle"
+  }
+}
+
+foreach ($needle in $requiredEscalation) {
+  if ($escalationText -notlike "*$needle*") {
+    $missing += "Missing in escalation lib: $needle"
+  }
+}
+
+foreach ($needle in $requiredMemory) {
+  if ($memoryText -notlike "*$needle*") {
+    $missing += "Missing in memory lib: $needle"
+  }
+}
+
+foreach ($needle in $requiredMemoryRoute) {
+  if ($memoryRouteText -notlike "*$needle*") {
+    $missing += "Missing in memory route: $needle"
+  }
+}
+
 if ($missing.Count -gt 0) {
   foreach ($m in $missing) {
     Write-Host "- $m"
@@ -121,8 +207,3 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER GUARD PASSED"
-
-
-
-
-
