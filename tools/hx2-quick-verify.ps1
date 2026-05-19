@@ -13,6 +13,7 @@ if (Test-Path ".\tools\hx2-local-env-check.ps1") {
 }
 
 $guards = @(
+  ".\tools\capability-planner\capability-planner-guard.ps1",
   ".\tools\guard-hx2-syntax.ps1",
   ".\tools\orchestrator\hx2-orchestrator-guard-bundle.ps1",
   ".\tools\chat-master\chat-master-status-guard.ps1",
@@ -54,6 +55,7 @@ $results | Format-Table -AutoSize
 
 Write-Host ""
 Write-Host ("HX2 QUICK VERIFY PASSED ({0} ms total)" -f $overall.ElapsedMilliseconds) -ForegroundColor Green
+
 
 
 
