@@ -33,7 +33,14 @@ $requiredPanel = @(
   "Memory Records",
   "Escalation Count",
   "Pipeline Runs",
-  "capability-planner-memory"
+  "capability-planner-memory",
+  "Learning Signals",
+  "Total Runs",
+  "Escalation Rate",
+  "Tracked Nodes",
+  "Node Frequency",
+  "Execution Mode Frequency",
+  "learning_signals"
 )
 
 $requiredMount = @(
@@ -63,4 +70,5 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER PREVIEW UI GUARD PASSED"
+
 
