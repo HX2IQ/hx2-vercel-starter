@@ -13,6 +13,7 @@ export type CapabilityPlan = {
   execution_strategy: string;
   confidence: number;
   execution_results: any[];
+  orchestration_synthesis: any;
   orchestration_summary: string;
 };
 
@@ -142,5 +143,6 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
 
 
