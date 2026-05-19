@@ -119,6 +119,7 @@ import { buildOrchestrationSynthesis } from "./capability-synthesis";
 import { buildExecutionPipeline } from "./capability-pipeline";
 import { assessRequestComplexity } from "./capability-complexity";
 import { evaluateExecutionEscalation } from "./capability-escalation";
+import { recordPlannerExecution } from "./capability-memory";
 
 export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
 
@@ -142,6 +143,18 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
 
   const finalExecutionMode =
     escalation.final_mode;
+
+  recordPlannerExecution({
+    timestamp: new Date().toISOString(),
+    intent,
+    selected_node: selectedNode,
+    execution_mode: finalExecutionMode,
+    escalation: escalation.escalated,
+    completed_nodes:
+      executionResults?.filter(
+        (r: any) => r.status === "complete"
+      )?.length || 0
+  });
 
   const executionResults =
     simulateNodeExecution(intent, selectedNode, finalExecutionMode);
@@ -177,6 +190,7 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
 
 
 
