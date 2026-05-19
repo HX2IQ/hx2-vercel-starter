@@ -112,6 +112,24 @@ export function ChatMasterDiagnosticsPanel({ data }: { data: any }) {
         <StatCard title="Average Confidence" value={averageConfidence} />
         <StatCard title="Routing Maturity" value={routingMaturity} />
       </div>
+
+      <div className="mt-4 space-y-3">
+        {diagnostics.map((row: any) => (
+          <div key={row.intent} className="rounded-xl border border-slate-700 bg-slate-950 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div className="font-mono text-sm text-cyan-300">{row.intent}</div>
+                <div className="mt-1 text-xs text-slate-400">
+                  Execution Target: {row.execution_target || "unknown"}
+                </div>
+              </div>
+              <div className="rounded-full border border-cyan-800 bg-cyan-950 px-3 py-1 text-xs text-cyan-200">
+                {row.keyword_count ?? 0} keywords
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -218,4 +236,5 @@ export async function ChatMasterPanels() {
     </>
   );
 }
+
 
