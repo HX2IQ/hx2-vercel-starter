@@ -48,6 +48,7 @@ $requiredPanel = @(
   "Priority",
   "Suggested Mode",
   "sprint_recommendation",
+  "Selection Explanation",
   "Planner Feedback",
   "Execution Success",
   "Quality Score",
@@ -82,6 +83,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER PREVIEW UI GUARD PASSED"
+
 
 
 

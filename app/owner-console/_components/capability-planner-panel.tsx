@@ -164,6 +164,17 @@ export async function CapabilityPlannerPreviewPanel() {
 
 
 
+
+      <div className="mt-4 rounded-xl border border-amber-800 bg-slate-950 p-4">
+        <div className="text-sm font-semibold text-white">
+          Selection Explanation
+        </div>
+
+        <div className="mt-3 text-sm text-slate-300">
+          {selectionExplanation}
+        </div>
+      </div>
+
       <div className="mt-4 rounded-xl border border-emerald-800 bg-slate-950 p-4">
         <div className="text-sm font-semibold text-white">
           Planner Feedback
@@ -335,6 +346,7 @@ export async function CapabilityPlannerPreviewPanel() {
     </div>
   );
 }
+
 
 
 
