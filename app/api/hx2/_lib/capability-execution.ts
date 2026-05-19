@@ -22,6 +22,25 @@ export function simulateNodeExecution(
 
   switch (intent) {
 
+    case "buildops_execution":
+      return [
+        {
+          node: "DEV2",
+          status: "complete",
+          summary: "BuildOps execution plan prepared."
+        },
+        {
+          node: "AP2",
+          status: "complete",
+          summary: "Execution orchestration support prepared."
+        },
+        {
+          node: "DA2",
+          status: "complete",
+          summary: "Failure-mode review completed."
+        }
+      ];
+
     case "health_analysis":
       return [
         {
@@ -97,4 +116,5 @@ export function simulateNodeExecution(
       ];
   }
 }
+
 
