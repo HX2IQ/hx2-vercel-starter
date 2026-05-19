@@ -17,6 +17,7 @@ export type CapabilityPlan = {
   execution_pipeline: any[];
   request_complexity: any;
   execution_mode: string;
+  escalation: any;
   orchestration_summary: string;
 };
 
@@ -117,6 +118,7 @@ import { simulateNodeExecution } from "./capability-execution";
 import { buildOrchestrationSynthesis } from "./capability-synthesis";
 import { buildExecutionPipeline } from "./capability-pipeline";
 import { assessRequestComplexity } from "./capability-complexity";
+import { evaluateExecutionEscalation } from "./capability-escalation";
 
 export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
 
@@ -131,19 +133,29 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
   const requestComplexity =
     assessRequestComplexity(userRequest, candidateNodes);
 
+  const escalation =
+    evaluateExecutionEscalation(
+      requestComplexity.execution_mode,
+      candidateNodes[0]?.score || 0.5,
+      candidateNodes
+    );
+
+  const finalExecutionMode =
+    escalation.final_mode;
+
   const executionResults =
-    simulateNodeExecution(intent, selectedNode, requestComplexity.execution_mode);
+    simulateNodeExecution(intent, selectedNode, finalExecutionMode);
 
   const orchestrationSynthesis =
     buildOrchestrationSynthesis(executionResults);
 
   const executionPipeline =
-    requestComplexity.execution_mode === "pipeline"
+    finalExecutionMode === "pipeline"
       ? buildExecutionPipeline(candidateNodes)
       : buildExecutionPipeline(
           candidateNodes.slice(
             0,
-            requestComplexity.execution_mode === "multi_node" ? 2 : 1
+            finalExecutionMode === "multi_node" ? 2 : 1
           )
         );
 
@@ -159,11 +171,13 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
     orchestration_synthesis: orchestrationSynthesis,
     execution_pipeline: executionPipeline,
     request_complexity: requestComplexity,
-    execution_mode: requestComplexity.execution_mode,
+    execution_mode: finalExecutionMode,
+    escalation: escalation,
     orchestration_summary:
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
 
 
 
