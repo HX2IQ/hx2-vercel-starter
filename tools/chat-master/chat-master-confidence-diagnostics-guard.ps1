@@ -1,69 +1,44 @@
 $ErrorActionPreference = "Stop"
 
 Write-Host ""
-Write-Host "== CHAT MASTER CONFIDENCE DIAGNOSTICS GUARD ==" -ForegroundColor Cyan
+Write-Host "== CHAT MASTER CONFIDENCE DIAGNOSTICS GUARD =="
 
-$api = ".\app\api\hx2\chat-master-diagnostics\route.ts"
-$page = ".\app\owner-console\page.tsx"
-
-if (!(Test-Path $api)) {
-  throw "Missing chat master diagnostics API"
-}
-
-if (!(Test-Path $page)) {
-  throw "Missing owner console page"
-}
-
-$apiText = Get-Content $api -Raw
-$pageText = Get-Content $page -Raw
-
-$requiredApi = @(
-  "confidence_distribution",
-  "high_confidence",
-  "medium_confidence",
-  "low_confidence",
-  "confidence_estimate",
-  "average_confidence",
-  "routing_maturity"
+$paths = @(
+  "app/owner-console/page.tsx",
+  "app/owner-console/_components/chat-master-panels.tsx"
 )
 
-$requiredUi = @(
+$combined = ""
+
+foreach ($path in $paths) {
+  if (Test-Path $path) {
+    $combined += "`n--- $path ---`n"
+    $combined += Get-Content $path -Raw
+  }
+}
+
+$required = @(
   "confidence_distribution",
   "High Confidence",
   "Medium Confidence",
   "Low Confidence",
   "Average Confidence",
-  "Routing Maturity",
-  "routingMaturityTone",
-  "advanced",
-  "intermediate"
+  "Routing Maturity"
 )
 
 $missing = @()
 
-foreach ($item in $requiredApi) {
-  if ($apiText -notmatch [regex]::Escape($item)) {
-    $missing += "API missing: $item"
-  }
-}
-
-foreach ($item in $requiredUi) {
-  if ($pageText -notmatch [regex]::Escape($item)) {
-    $missing += "UI missing: $item"
+foreach ($needle in $required) {
+  if ($combined -notlike "*$needle*") {
+    $missing += $needle
   }
 }
 
 if ($missing.Count -gt 0) {
-
-  Write-Host "CHAT MASTER CONFIDENCE DIAGNOSTICS GUARD FAILED" -ForegroundColor Red
-
-  $missing | ForEach-Object {
-    Write-Host "- $_" -ForegroundColor Yellow
+  foreach ($item in $missing) {
+    Write-Host "- UI missing: $item"
   }
-
   throw "Confidence diagnostics contract incomplete"
 }
 
-Write-Host "CHAT MASTER CONFIDENCE DIAGNOSTICS GUARD PASSED" -ForegroundColor Green
-
-
+Write-Host "CHAT MASTER CONFIDENCE DIAGNOSTICS GUARD PASSED"

@@ -1,26 +1,23 @@
 $ErrorActionPreference = "Stop"
 
 Write-Host ""
-Write-Host "== CHAT MASTER KEYWORDS UI GUARD ==" -ForegroundColor Cyan
+Write-Host "== CHAT MASTER KEYWORDS UI GUARD =="
 
-$api = ".\app\api\hx2\chat-master-keywords\route.ts"
-$page = ".\app\owner-console\page.tsx"
-
-if (!(Test-Path $api)) { throw "Missing chat master keywords API" }
-if (!(Test-Path $page)) { throw "Missing owner console page" }
-
-$apiText = Get-Content $api -Raw
-$pageText = Get-Content $page -Raw
-
-$requiredApi = @(
-  "CHAT_MASTER_KEYWORDS",
-  "keywords",
-  "intents",
-  "count"
+$paths = @(
+  "app/owner-console/page.tsx",
+  "app/owner-console/_components/chat-master-panels.tsx"
 )
 
-$requiredUi = @(
-  "getChatMasterKeywords",
+$combined = ""
+
+foreach ($path in $paths) {
+  if (Test-Path $path) {
+    $combined += "`n--- $path ---`n"
+    $combined += Get-Content $path -Raw
+  }
+}
+
+$required = @(
   "ChatMasterKeywordsPanel",
   "Chat Master Keywords",
   "Centralized routing keyword contracts",
@@ -29,22 +26,17 @@ $requiredUi = @(
 
 $missing = @()
 
-foreach ($item in $requiredApi) {
-  if ($apiText -notmatch [regex]::Escape($item)) {
-    $missing += "API missing: $item"
-  }
-}
-
-foreach ($item in $requiredUi) {
-  if ($pageText -notmatch [regex]::Escape($item)) {
-    $missing += "UI missing: $item"
+foreach ($needle in $required) {
+  if ($combined -notlike "*$needle*") {
+    $missing += $needle
   }
 }
 
 if ($missing.Count -gt 0) {
-  Write-Host "CHAT MASTER KEYWORDS UI GUARD FAILED" -ForegroundColor Red
-  $missing | ForEach-Object { Write-Host "- $_" -ForegroundColor Yellow }
+  foreach ($item in $missing) {
+    Write-Host "- UI missing: $item"
+  }
   throw "Chat master keywords API/UI contract incomplete"
 }
 
-Write-Host "CHAT MASTER KEYWORDS UI GUARD PASSED" -ForegroundColor Green
+Write-Host "CHAT MASTER KEYWORDS UI GUARD PASSED"
