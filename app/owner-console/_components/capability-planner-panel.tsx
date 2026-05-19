@@ -119,6 +119,9 @@ export async function CapabilityPlannerPreviewPanel() {
   const modeFrequency =
     learning?.execution_mode_frequency || {};
 
+  const sprintRecommendation =
+    memoryData?.sprint_recommendation || {};
+
   const candidates = data?.candidate_nodes || [];
   const synthesis = data?.orchestration_synthesis || {};
   const escalation = data?.escalation || {};
@@ -152,6 +155,29 @@ export async function CapabilityPlannerPreviewPanel() {
         </div>
       </div>
 
+
+
+      <div className="mt-4 rounded-xl border border-cyan-800 bg-slate-950 p-4">
+        <div className="text-sm font-semibold text-white">
+          Sprint Recommendation
+        </div>
+
+        <div className="mt-2 text-sm text-slate-300">
+          {sprintRecommendation?.recommendation || "No sprint recommendation available."}
+        </div>
+
+        <div className="mt-3 grid gap-3 md:grid-cols-2">
+          <PlannerStat
+            title="Priority"
+            value={sprintRecommendation?.priority || "unknown"}
+          />
+
+          <PlannerStat
+            title="Suggested Mode"
+            value={sprintRecommendation?.suggested_execution_mode || "unknown"}
+          />
+        </div>
+      </div>
 
       <div className="mt-4 rounded-xl border border-slate-700 bg-slate-950 p-4">
         <div className="text-sm font-semibold text-white">
@@ -234,5 +260,6 @@ export async function CapabilityPlannerPreviewPanel() {
     </div>
   );
 }
+
 
 
