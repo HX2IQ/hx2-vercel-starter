@@ -5,6 +5,8 @@ export type PlannerMemoryRecord = {
   execution_mode: string;
   escalation: boolean;
   completed_nodes: number;
+  success: boolean;
+  quality_score: number;
 };
 
 const plannerMemory: PlannerMemoryRecord[] = [];
@@ -20,3 +22,4 @@ export function recordPlannerExecution(record: PlannerMemoryRecord) {
 export function getPlannerMemory() {
   return plannerMemory;
 }
+

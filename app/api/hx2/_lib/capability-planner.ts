@@ -212,7 +212,9 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
     completed_nodes:
       executionResults.filter(
         (r: any) => r.status === "complete"
-      ).length
+      ).length,
+    success: plannerFeedback.success,
+    quality_score: plannerFeedback.quality_score
   });
 
   const orchestrationSynthesis =
@@ -247,6 +249,7 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
 
 
 

@@ -11,6 +11,8 @@ export function buildPlannerLearningSignals() {
   const modeFrequency: Record<string, number> = {};
 
   let escalationCount = 0;
+  let successCount = 0;
+  let qualityTotal = 0;
 
   for (const row of memory) {
 
@@ -23,6 +25,12 @@ export function buildPlannerLearningSignals() {
     if (row.escalation) {
       escalationCount++;
     }
+
+    if (row.success) {
+      successCount++;
+    }
+
+    qualityTotal += row.quality_score || 0;
   }
 
   return {
@@ -36,7 +44,18 @@ export function buildPlannerLearningSignals() {
           )
         : 0,
 
+    success_rate:
+      memory.length > 0
+        ? Number((successCount / memory.length).toFixed(2))
+        : 0,
+
+    average_quality_score:
+      memory.length > 0
+        ? Number((qualityTotal / memory.length).toFixed(2))
+        : 0,
+
     node_frequency: nodeFrequency,
     execution_mode_frequency: modeFrequency
   };
 }
+
