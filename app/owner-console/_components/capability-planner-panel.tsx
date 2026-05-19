@@ -157,6 +157,32 @@ export async function CapabilityPlannerPreviewPanel() {
 
 
 
+
+      <div className="mt-4 rounded-xl border border-emerald-800 bg-slate-950 p-4">
+        <div className="text-sm font-semibold text-white">
+          Planner Feedback
+        </div>
+
+        <div className="mt-3 grid gap-3 md:grid-cols-3">
+
+          <PlannerStat
+            title="Execution Success"
+            value={plannerFeedback?.success ? "true" : "false"}
+          />
+
+          <PlannerStat
+            title="Quality Score"
+            value={plannerFeedback?.quality_score ?? 0}
+          />
+
+          <PlannerStat
+            title="Feedback Reason"
+            value={plannerFeedback?.feedback_reason || "unknown"}
+          />
+
+        </div>
+      </div>
+
       <div className="mt-4 rounded-xl border border-cyan-800 bg-slate-950 p-4">
         <div className="text-sm font-semibold text-white">
           Sprint Recommendation
@@ -260,6 +286,7 @@ export async function CapabilityPlannerPreviewPanel() {
     </div>
   );
 }
+
 
 
 
