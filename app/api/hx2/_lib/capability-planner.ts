@@ -128,17 +128,24 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
     [...candidateNodes]
       .sort((a, b) => b.score - a.score)[0]?.node || "HX2";
 
+  const requestComplexity =
+    assessRequestComplexity(userRequest, candidateNodes);
+
   const executionResults =
-    simulateNodeExecution(intent, selectedNode);
+    simulateNodeExecution(intent, selectedNode, requestComplexity.execution_mode);
 
   const orchestrationSynthesis =
     buildOrchestrationSynthesis(executionResults);
 
   const executionPipeline =
-    buildExecutionPipeline(candidateNodes);
-
-  const requestComplexity =
-    assessRequestComplexity(userRequest, candidateNodes);
+    requestComplexity.execution_mode === "pipeline"
+      ? buildExecutionPipeline(candidateNodes)
+      : buildExecutionPipeline(
+          candidateNodes.slice(
+            0,
+            requestComplexity.execution_mode === "multi_node" ? 2 : 1
+          )
+        );
 
   return {
     ok: true,
@@ -157,6 +164,7 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
 
 
 

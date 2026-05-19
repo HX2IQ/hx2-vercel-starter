@@ -6,8 +6,19 @@ export type SimulatedNodeResult = {
 
 export function simulateNodeExecution(
   intent: string,
-  selectedNode: string
+  selectedNode: string,
+  executionMode: string = "pipeline"
 ): SimulatedNodeResult[] {
+
+  if (executionMode === "single_node") {
+    return [
+      {
+        node: selectedNode,
+        status: "complete",
+        summary: `Single-node execution completed by ${selectedNode}.`
+      }
+    ];
+  }
 
   switch (intent) {
 
@@ -86,3 +97,4 @@ export function simulateNodeExecution(
       ];
   }
 }
+
