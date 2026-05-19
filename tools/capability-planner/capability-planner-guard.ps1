@@ -37,6 +37,10 @@ $requiredLib = @(
   "execution_results",
   "orchestration_summary",
   "simulateNodeExecution",
+  "buildops_execution",
+  "DEV2",
+  "AP2",
+  "DEV2 build planning and execution orchestration",
   "health_analysis",
   "market_analysis",
   "marketing_strategy",
@@ -57,6 +61,10 @@ $requiredRoute = @(
 $requiredExecution = @(
   "SimulatedNodeResult",
   "simulateNodeExecution",
+  "buildops_execution",
+  "DEV2",
+  "AP2",
+  "DEV2 build planning and execution orchestration",
   "health_analysis",
   "market_analysis",
   "marketing_strategy",
@@ -113,6 +121,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER GUARD PASSED"
+
 
 
 
