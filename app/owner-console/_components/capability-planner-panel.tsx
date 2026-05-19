@@ -131,6 +131,9 @@ export async function CapabilityPlannerPreviewPanel() {
 
   const plannerFeedback =
     data?.planner_feedback || {};
+
+  const selectionExplanation =
+    data?.selection_explanation || "No explanation available.";
   const pipeline = data?.execution_pipeline || [];
 
   return (
@@ -346,6 +349,7 @@ export async function CapabilityPlannerPreviewPanel() {
     </div>
   );
 }
+
 
 
 
