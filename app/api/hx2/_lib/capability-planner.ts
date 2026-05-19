@@ -10,6 +10,7 @@ export type CapabilityPlan = {
   intent: string;
   candidate_nodes: CandidateNode[];
   selected_node: string;
+  selection_explanation: string;
   execution_strategy: string;
   confidence: number;
   execution_results: any[];
@@ -149,6 +150,25 @@ function scoreNodes(intent: string): CandidateNode[] {
   }
 }
 
+
+function buildSelectionExplanation(
+  selectedNode: string,
+  candidateNodes: CandidateNode[],
+  intent: string,
+  executionMode: string
+): string {
+  const selected =
+    candidateNodes.find((n) => n.node === selectedNode);
+
+  const score =
+    selected?.score ?? 0;
+
+  const reason =
+    selected?.reason || "No reason available.";
+
+  return `Selected ${selectedNode} for ${intent} with score ${score}. Reason: ${reason}. Execution mode: ${executionMode}.`;
+}
+
 function strategyFor(intent: string): string {
 
   switch (intent) {
@@ -251,6 +271,7 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
     intent,
     candidate_nodes: candidateNodes,
     selected_node: selectedNode,
+    selection_explanation: selectionExplanation,
     execution_strategy: strategyFor(intent),
     confidence: candidateNodes[0]?.score || 0.5,
     execution_results: executionResults,
@@ -264,6 +285,7 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
 
 
 
