@@ -4,6 +4,7 @@ import { buildSprintNextAction } from "../_lib/sprint-next-action";
 import { buildSprintHistorySummary } from "../_lib/sprint-history-summary";
 import { buildSprintNextRiskGate } from "../_lib/sprint-next-risk-gate";
 import { buildSprintRiskGateActions } from "../_lib/sprint-risk-gate-actions";
+import { buildSprintPowerShellActions } from "../_lib/sprint-powershell-actions";
 import { buildPlannerLearningSignals } from "../_lib/capability-learning";
 
 export async function POST(req: Request) {
@@ -40,6 +41,11 @@ export async function POST(req: Request) {
         sprintRiskGate
       );
 
+    const sprintPowerShellActions =
+      buildSprintPowerShellActions(
+        sprintRiskGateActions
+      );
+
     return NextResponse.json({
       ok: true,
       request: message,
@@ -62,7 +68,10 @@ export async function POST(req: Request) {
           sprintRiskGate,
 
         risk_gate_actions:
-          sprintRiskGateActions
+          sprintRiskGateActions,
+
+        powershell_actions:
+          sprintPowerShellActions
       },
       planner: plan
     });
@@ -73,6 +82,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
