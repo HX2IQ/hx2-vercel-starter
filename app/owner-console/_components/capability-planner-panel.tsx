@@ -504,9 +504,10 @@ export async function CapabilityPlannerPreviewPanel() {
         ))}
       </div>
       </div>
-    </>
+    </div>
   );
 }
+
 
 
 
