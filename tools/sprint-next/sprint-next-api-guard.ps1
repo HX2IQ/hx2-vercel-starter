@@ -22,6 +22,10 @@ $required = @(
   "selection_explanation",
   "buildops_sprint_plan",
   "sprint_recommendation",
+  "actionable_sprint",
+  "dev2_feature_name",
+  "next_action",
+  "recommended_guard",
   "planner"
 )
 
@@ -42,3 +46,4 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT API GUARD PASSED"
+
