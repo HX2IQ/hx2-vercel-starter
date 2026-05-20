@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { buildCapabilityPlan } from "../_lib/capability-planner";
 import { buildSprintNextAction } from "../_lib/sprint-next-action";
 import { buildSprintHistorySummary } from "../_lib/sprint-history-summary";
+import { buildPlannerLearningSignals } from "../_lib/capability-learning";
 
 export async function POST(req: Request) {
   try {
@@ -18,9 +19,12 @@ export async function POST(req: Request) {
     const sprintAction =
       buildSprintNextAction(plan);
 
+    const learningSignals =
+      buildPlannerLearningSignals();
+
     const sprintHistorySummary =
       buildSprintHistorySummary(
-        plan?.learning_signals || {}
+        learningSignals
       );
 
     return NextResponse.json({
@@ -50,5 +54,6 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
