@@ -128,6 +128,18 @@ export async function CapabilityPlannerPreviewPanel() {
   const executionRiskFrequency =
     learning?.execution_risk_frequency || {};
 
+  const negativeLearning =
+    learning?.negative_learning || {};
+
+  const executionModeFailures =
+    negativeLearning?.execution_mode_failures || {};
+
+  const sprintTypeFailures =
+    negativeLearning?.sprint_type_failures || {};
+
+  const nodeFailures =
+    negativeLearning?.node_failures || {};
+
   const sprintRecommendation =
     memoryData?.sprint_recommendation || {};
 
@@ -352,7 +364,60 @@ export async function CapabilityPlannerPreviewPanel() {
           </div>
 
           
-          <div className="rounded-xl border border-slate-700 bg-slate-900 p-4">
+          
+          <div className="rounded-xl border border-red-900 bg-slate-900 p-4">
+            <div className="text-sm font-semibold text-red-300">
+              Negative Learning
+            </div>
+
+            <div className="mt-3 grid gap-3 md:grid-cols-3">
+              <div className="rounded-lg border border-slate-800 bg-slate-950 p-3">
+                <div className="text-xs uppercase tracking-wide text-slate-500">
+                  Node Failures
+                </div>
+
+                <div className="mt-2 space-y-1">
+                  {Object.keys(nodeFailures).map((node) => (
+                    <div key={node} className="flex items-center justify-between text-sm">
+                      <span className="text-white">{node}</span>
+                      <span className="text-slate-400">{nodeFailures[node]}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-slate-800 bg-slate-950 p-3">
+                <div className="text-xs uppercase tracking-wide text-slate-500">
+                  Sprint Type Failures
+                </div>
+
+                <div className="mt-2 space-y-1">
+                  {Object.keys(sprintTypeFailures).map((type) => (
+                    <div key={type} className="flex items-center justify-between text-sm">
+                      <span className="text-white">{type}</span>
+                      <span className="text-slate-400">{sprintTypeFailures[type]}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-slate-800 bg-slate-950 p-3">
+                <div className="text-xs uppercase tracking-wide text-slate-500">
+                  Execution Mode Failures
+                </div>
+
+                <div className="mt-2 space-y-1">
+                  {Object.keys(executionModeFailures).map((mode) => (
+                    <div key={mode} className="flex items-center justify-between text-sm">
+                      <span className="text-white">{mode}</span>
+                      <span className="text-slate-400">{executionModeFailures[mode]}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+<div className="rounded-xl border border-slate-700 bg-slate-900 p-4">
             <div className="text-sm font-semibold text-cyan-300">
               Sprint Type Frequency
             </div>
@@ -436,6 +501,7 @@ export async function CapabilityPlannerPreviewPanel() {
     </div>
   );
 }
+
 
 
 
