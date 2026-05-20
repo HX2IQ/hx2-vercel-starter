@@ -28,6 +28,7 @@ export type CapabilityPlan = {
   execution_mode: string;
   escalation: any;
   planner_feedback: any;
+  buildops_sprint_plan?: any;
   orchestration_summary: string;
 };
 
@@ -249,6 +250,7 @@ import { evaluateExecutionEscalation } from "./capability-escalation";
 import { recordPlannerExecution } from "./capability-memory";
 import { buildPlannerLearningSignals } from "./capability-learning";
 import { evaluatePlannerFeedback } from "./capability-feedback";
+import { buildBuildOpsSprintPlan } from "./capability-buildops-sprint-plan";
 
 export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
 
@@ -290,6 +292,11 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
       executionResults,
       finalExecutionMode
     );
+
+  const buildopsSprintPlan =
+    intent === "buildops_execution"
+      ? buildBuildOpsSprintPlan(userRequest, finalExecutionMode)
+      : null;
 
   recordPlannerExecution({
     timestamp: new Date().toISOString(),
@@ -334,10 +341,12 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
     execution_mode: finalExecutionMode,
     escalation: escalation,
     planner_feedback: plannerFeedback,
+    buildops_sprint_plan: buildopsSprintPlan,
     orchestration_summary:
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
 
 
 
