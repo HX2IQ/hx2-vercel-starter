@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { buildCapabilityPlan } from "../_lib/capability-planner";
+import { buildSprintNextAction } from "../_lib/sprint-next-action";
 
 export async function POST(req: Request) {
   try {
@@ -13,6 +14,9 @@ export async function POST(req: Request) {
 
     const plan = buildCapabilityPlan(message);
 
+    const sprintAction =
+      buildSprintNextAction(plan);
+
     return NextResponse.json({
       ok: true,
       request: message,
@@ -24,7 +28,9 @@ export async function POST(req: Request) {
         buildops_sprint_plan: plan.buildops_sprint_plan || null,
         sprint_recommendation:
           plan.buildops_sprint_plan?.recommended_focus ||
-          plan.orchestration_summary
+          plan.orchestration_summary,
+        actionable_sprint:
+          sprintAction
       },
       planner: plan
     });
@@ -35,3 +41,4 @@ export async function POST(req: Request) {
     });
   }
 }
+
