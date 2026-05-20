@@ -2,6 +2,14 @@ export type CandidateNode = {
   node: string;
   score: number;
   reason: string;
+  adaptive_score_audit?: {
+    base_score: number;
+    usage_boost: number;
+    quality_boost: number;
+    success_boost: number;
+    stability_boost: number;
+    total_boost: number;
+  };
 };
 
 export type CapabilityPlan = {
@@ -91,18 +99,31 @@ function applyAdaptiveNodeScoring(
       const stabilityBoost =
         historyWeight * 0.05;
 
+      const totalBoost =
+        Math.min(
+          0.18,
+          usageBoost +
+          qualityBoost +
+          successBoost +
+          stabilityBoost
+        );
+
       return {
         ...node,
         score: Number(
           Math.min(
             1,
-            node.score +
-            usageBoost +
-            qualityBoost +
-            successBoost +
-            stabilityBoost
+            node.score + totalBoost
           ).toFixed(2)
-        )
+        ),
+        adaptive_score_audit: {
+          base_score: node.score,
+          usage_boost: Number(usageBoost.toFixed(2)),
+          quality_boost: Number(qualityBoost.toFixed(2)),
+          success_boost: Number(successBoost.toFixed(2)),
+          stability_boost: Number(stabilityBoost.toFixed(2)),
+          total_boost: Number(totalBoost.toFixed(2))
+        }
       };
     })
     .sort(
@@ -303,6 +324,7 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
 
 
 
