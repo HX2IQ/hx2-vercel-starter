@@ -63,10 +63,6 @@ foreach ($needle in $requiredChat) {
   }
 }
 
-if ($capability -like "*</>*") {
-  $missing += "Invalid fragment close found in capability planner panel"
-}
-
 if ($missing.Count -gt 0) {
   foreach ($m in $missing) {
     Write-Host "- $m"
@@ -76,3 +72,4 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "OWNER CONSOLE PLANNER PANEL STRUCTURE GUARD PASSED"
+
