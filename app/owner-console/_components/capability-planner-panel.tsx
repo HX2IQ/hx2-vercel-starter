@@ -353,12 +353,30 @@ export async function CapabilityPlannerPreviewPanel() {
             <div className="font-mono text-sm text-cyan-300">{candidate.node}</div>
             <div className="mt-1 text-sm text-white">Score: {candidate.score}</div>
             <div className="mt-1 text-xs text-slate-400">{candidate.reason}</div>
+
+            {candidate.adaptive_score_audit ? (
+              <div className="mt-3 rounded-lg border border-slate-800 bg-slate-900 p-3">
+                <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  Adaptive Score Audit
+                </div>
+
+                <div className="mt-2 grid gap-2 text-xs text-slate-400 md:grid-cols-2">
+                  <div>Base: {candidate.adaptive_score_audit.base_score}</div>
+                  <div>Usage: {candidate.adaptive_score_audit.usage_boost}</div>
+                  <div>Quality: {candidate.adaptive_score_audit.quality_boost}</div>
+                  <div>Success: {candidate.adaptive_score_audit.success_boost}</div>
+                  <div>Stability: {candidate.adaptive_score_audit.stability_boost}</div>
+                  <div>Total Boost: {candidate.adaptive_score_audit.total_boost}</div>
+                </div>
+              </div>
+            ) : null}
           </div>
         ))}
       </div>
     </div>
   );
 }
+
 
 
 
