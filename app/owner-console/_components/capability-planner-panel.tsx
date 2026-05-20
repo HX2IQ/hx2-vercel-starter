@@ -1,3 +1,4 @@
+import { AdaptiveScoreAudit } from "./adaptive-score-audit";
 import { SprintNextPreviewPanel } from "./sprint-next-panel";
 function getBaseUrl() {
   if (process.env.NEXT_PUBLIC_APP_URL) {
@@ -481,25 +482,9 @@ export async function CapabilityPlannerPreviewPanel() {
             <div className="mt-1 text-sm text-white">Score: {candidate.score}</div>
             <div className="mt-1 text-xs text-slate-400">{candidate.reason}</div>
 
-            {candidate.adaptive_score_audit ? (
-              <div className="mt-3 rounded-lg border border-slate-800 bg-slate-900 p-3">
-                <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Adaptive Score Audit
-                </div>
-
-                <div className="mt-2 grid gap-2 text-xs text-slate-400 md:grid-cols-2">
-                  <div>Base: {candidate.adaptive_score_audit.base_score}</div>
-                  <div>Usage: {candidate.adaptive_score_audit.usage_boost}</div>
-                  <div>Quality: {candidate.adaptive_score_audit.quality_boost}</div>
-                  <div>Success: {candidate.adaptive_score_audit.success_boost}</div>
-                  <div>Stability: {candidate.adaptive_score_audit.stability_boost}</div>
-                  <div>Confidence Penalty: {candidate.adaptive_score_audit.confidence_penalty ?? 0}</div>
-                  <div>Governance Penalty: {candidate.adaptive_score_audit.governance_penalty ?? 0}</div>
-                  <div>Negative Learning Penalty: {candidate.adaptive_score_audit.negative_learning_penalty ?? 0}</div>
-                  <div>Total Boost: {candidate.adaptive_score_audit.total_boost}</div>
-                </div>
-              </div>
-            ) : null}
+            <AdaptiveScoreAudit
+              audit={candidate.adaptive_score_audit}
+            />
           </div>
         ))}
       </div>
@@ -507,3 +492,4 @@ export async function CapabilityPlannerPreviewPanel() {
     </>
   );
 }
+
