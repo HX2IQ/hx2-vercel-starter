@@ -53,8 +53,7 @@ function PlannerStat({ title, value }: { title: string; value: any }) {
     <div className="rounded-xl border border-slate-700 bg-slate-950 p-4">
       <div className="text-xs uppercase tracking-wide text-slate-500">{title}</div>
       <div className="mt-2 text-xl font-semibold text-white">{String(value)}</div>
-      </div>
-    </>
+    </div>
   );
 }
 
@@ -508,6 +507,7 @@ export async function CapabilityPlannerPreviewPanel() {
     </>
   );
 }
+
 
 
 
