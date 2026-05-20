@@ -351,7 +351,37 @@ export async function CapabilityPlannerPreviewPanel() {
             </div>
           </div>
 
+          
           <div className="rounded-xl border border-slate-700 bg-slate-900 p-4">
+            <div className="text-sm font-semibold text-cyan-300">
+              Sprint Type Frequency
+            </div>
+
+            <div className="mt-3 space-y-2">
+              {Object.keys(sprintTypeFrequency).map((type) => (
+                <div key={type} className="flex items-center justify-between text-sm">
+                  <span className="text-white">{type}</span>
+                  <span className="text-slate-400">{sprintTypeFrequency[type]}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-700 bg-slate-900 p-4">
+            <div className="text-sm font-semibold text-cyan-300">
+              Execution Risk Frequency
+            </div>
+
+            <div className="mt-3 space-y-2">
+              {Object.keys(executionRiskFrequency).map((risk) => (
+                <div key={risk} className="flex items-center justify-between text-sm">
+                  <span className="text-white">{risk}</span>
+                  <span className="text-slate-400">{executionRiskFrequency[risk]}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+<div className="rounded-xl border border-slate-700 bg-slate-900 p-4">
             <div className="text-sm font-semibold text-cyan-300">
               Execution Mode Frequency
             </div>
@@ -406,6 +436,7 @@ export async function CapabilityPlannerPreviewPanel() {
     </div>
   );
 }
+
 
 
 
