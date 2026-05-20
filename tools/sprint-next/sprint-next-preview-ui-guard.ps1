@@ -3,37 +3,46 @@ $ErrorActionPreference = "Stop"
 Write-Host ""
 Write-Host "== SPRINT NEXT PREVIEW UI GUARD =="
 
-$panel = "app/owner-console/_components/sprint-next-panel.tsx"
+$paths = @(
+  "app/owner-console/_components/sprint-next-panel.tsx",
+  "app/owner-console/_components/risk-gate-actions.tsx"
+)
 
-if (!(Test-Path $panel)) {
-  throw "Missing sprint next panel"
+$combined = ""
+
+foreach ($path in $paths) {
+  if (!(Test-Path $path)) {
+    throw "Missing sprint next UI file: $path"
+  }
+
+  $combined += "`n--- $path ---`n"
+  $combined += Get-Content $path -Raw
 }
-
-$text = Get-Content $panel -Raw
 
 $required = @(
   "SprintNextPreviewPanel",
   "Sprint Next Planner",
   "Planner-driven DEV2 build sequencing preview",
   "Sprint Recommendation",
-  "Risk Gate",
-  "Gate",
-  "Reason",
-  "Risk Gate Actions",
-  "recommended_sequence",
   "History Summary",
   "Top Sprint Type",
   "Top Mode",
   "Top Success Node",
   "Top Failure Node",
-  "history_summary"
+  "history_summary",
+  "Risk Gate",
+  "Gate",
+  "Reason",
+  "RiskGateActions",
+  "Risk Gate Actions",
+  "sequence"
 )
 
 $missing = @()
 
 foreach ($needle in $required) {
-  if ($text -notlike "*$needle*") {
-    $missing += "Missing in sprint next panel: $needle"
+  if ($combined -notlike "*$needle*") {
+    $missing += "Missing in sprint next UI surface: $needle"
   }
 }
 
@@ -46,5 +55,3 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT PREVIEW UI GUARD PASSED"
-
-
