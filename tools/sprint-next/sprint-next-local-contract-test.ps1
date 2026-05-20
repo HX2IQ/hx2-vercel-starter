@@ -7,8 +7,9 @@ $route = "app/api/hx2/sprint-next/route.ts"
 $planner = "app/api/hx2/_lib/capability-planner.ts"
 $buildops = "app/api/hx2/_lib/capability-buildops-sprint-plan.ts"
 $action = "app/api/hx2/_lib/sprint-next-action.ts"
+$riskGate = "app/api/hx2/_lib/sprint-next-risk-gate.ts"
 
-foreach ($path in @($route, $planner, $buildops, $action)) {
+foreach ($path in @($route, $planner, $buildops, $action, $riskGate)) {
   if (!(Test-Path $path)) {
     throw "Missing required file: $path"
   }
@@ -18,6 +19,7 @@ $routeText = Get-Content $route -Raw
 $plannerText = Get-Content $planner -Raw
 $buildopsText = Get-Content $buildops -Raw
 $actionText = Get-Content $action -Raw
+$riskGateText = Get-Content $riskGate -Raw
 
 $required = @(
   @{ name = "route uses planner"; ok = $routeText -like "*buildCapabilityPlan*" },
@@ -32,7 +34,12 @@ $required = @(
   @{ name = "sprint action returns feature name"; ok = $actionText -like "*dev2_feature_name*" },
   @{ name = "sprint action returns next action"; ok = $actionText -like "*next_action*" },
   @{ name = "sprint action returns recommended guard"; ok = $actionText -like "*recommended_guard*" },
-  @{ name = "route returns actionable sprint"; ok = $routeText -like "*actionable_sprint*" }
+  @{ name = "route returns actionable sprint"; ok = $routeText -like "*actionable_sprint*" },
+  @{ name = "route returns risk gate"; ok = $routeText -like "*risk_gate*" },
+  @{ name = "risk gate helper exists"; ok = $riskGateText -like "*buildSprintNextRiskGate*" },
+  @{ name = "risk gate supports proceed"; ok = $riskGateText -like "*proceed*" },
+  @{ name = "risk gate supports guard first"; ok = $riskGateText -like "*guard_first*" },
+  @{ name = "risk gate supports inspect first"; ok = $riskGateText -like "*inspect_first*" }
 )
 
 $failed = @()
@@ -51,4 +58,5 @@ if ($failed.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT LOCAL CONTRACT TEST PASSED"
+
 
