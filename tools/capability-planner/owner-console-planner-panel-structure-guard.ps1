@@ -5,6 +5,7 @@ Write-Host "== OWNER CONSOLE PLANNER PANEL STRUCTURE GUARD =="
 
 $files = @(
   "app/owner-console/_components/capability-planner-panel.tsx",
+  "app/owner-console/_components/adaptive-score-audit.tsx",
   "app/owner-console/_components/sprint-next-panel.tsx",
   "app/owner-console/_components/chat-master-panels.tsx"
 )
@@ -16,6 +17,7 @@ foreach ($file in $files) {
 }
 
 $capability = Get-Content "app/owner-console/_components/capability-planner-panel.tsx" -Raw
+$audit = Get-Content "app/owner-console/_components/adaptive-score-audit.tsx" -Raw
 $sprint = Get-Content "app/owner-console/_components/sprint-next-panel.tsx" -Raw
 $chat = Get-Content "app/owner-console/_components/chat-master-panels.tsx" -Raw
 
@@ -26,7 +28,14 @@ $requiredCapability = @(
   "CapabilityPlannerPreviewPanel",
   "Capability Planner Preview",
   "Learning Signals",
-  "Adaptive Score Audit"
+  "AdaptiveScoreAudit"
+)
+
+$requiredAudit = @(
+  "AdaptiveScoreAudit",
+  "Adaptive Score Audit",
+  "Negative Learning Penalty",
+  "Total Boost"
 )
 
 $requiredSprint = @(
@@ -51,6 +60,12 @@ foreach ($needle in $requiredCapability) {
   }
 }
 
+foreach ($needle in $requiredAudit) {
+  if ($audit -notlike "*$needle*") {
+    $missing += "Missing in adaptive score audit component: $needle"
+  }
+}
+
 foreach ($needle in $requiredSprint) {
   if ($sprint -notlike "*$needle*") {
     $missing += "Missing in sprint next panel: $needle"
@@ -72,4 +87,5 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "OWNER CONSOLE PLANNER PANEL STRUCTURE GUARD PASSED"
+
 
