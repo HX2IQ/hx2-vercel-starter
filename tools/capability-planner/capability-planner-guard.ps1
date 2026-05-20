@@ -157,7 +157,9 @@ $requiredMemory = @(
   "selected_node",
   "completed_nodes",
   "success",
-  "quality_score"
+  "quality_score",
+  "sprint_type",
+  "execution_risk"
 )
 
 $requiredMemoryRoute = @(
@@ -184,6 +186,8 @@ $requiredFeedback = @(
   "evaluatePlannerFeedback",
   "success",
   "quality_score",
+  "sprint_type",
+  "execution_risk",
   "feedback_reason",
   "Full orchestration success",
   "Execution quality below threshold"
@@ -287,6 +291,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER GUARD PASSED"
+
 
 
 
