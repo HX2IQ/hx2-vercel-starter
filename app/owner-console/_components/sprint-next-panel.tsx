@@ -53,6 +53,7 @@ export async function SprintNextPreviewPanel() {
   const sprint = data?.sprint_next || {};
   const buildops = sprint?.buildops_sprint_plan || {};
   const history = sprint?.history_summary || {};
+  const riskGate = sprint?.risk_gate || {};
 
   return (
     <div className="mt-4 rounded-2xl border border-purple-800 bg-slate-900 p-5">
@@ -70,6 +71,15 @@ export async function SprintNextPreviewPanel() {
         <SprintNextStat title="Execution Mode" value={sprint?.execution_mode || "unknown"} />
         <SprintNextStat title="Sprint Type" value={buildops?.sprint_type || "unknown"} />
         <SprintNextStat title="Risk Level" value={buildops?.risk_level || "unknown"} />
+      </div>
+
+      <div className="mt-4 rounded-xl border border-amber-800 bg-slate-950 p-4">
+        <div className="text-sm font-semibold text-white">Risk Gate</div>
+
+        <div className="mt-3 grid gap-3 md:grid-cols-2">
+          <SprintNextStat title="Gate" value={riskGate?.gate || "unknown"} />
+          <SprintNextStat title="Reason" value={riskGate?.reason || "No reason available."} />
+        </div>
       </div>
 
       <div className="mt-4 rounded-xl border border-slate-700 bg-slate-950 p-4">
@@ -92,4 +102,5 @@ export async function SprintNextPreviewPanel() {
     </div>
   );
 }
+
 
