@@ -54,6 +54,8 @@ export async function SprintNextPreviewPanel() {
   const buildops = sprint?.buildops_sprint_plan || {};
   const history = sprint?.history_summary || {};
   const riskGate = sprint?.risk_gate || {};
+  const riskGateActions = sprint?.risk_gate_actions || {};
+  const recommendedSequence = riskGateActions?.recommended_sequence || [];
 
   return (
     <div className="mt-4 rounded-2xl border border-purple-800 bg-slate-900 p-5">
@@ -82,6 +84,18 @@ export async function SprintNextPreviewPanel() {
         </div>
       </div>
 
+      <div className="mt-4 rounded-xl border border-amber-800 bg-slate-950 p-4">
+        <div className="text-sm font-semibold text-white">Risk Gate Actions</div>
+
+        <div className="mt-3 space-y-2">
+          {recommendedSequence.map((step: string, index: number) => (
+            <div key={`${step}-${index}`} className="rounded-lg border border-slate-800 bg-slate-900 p-3 text-sm text-slate-300">
+              {index + 1}. {step}
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="mt-4 rounded-xl border border-slate-700 bg-slate-950 p-4">
         <div className="text-sm font-semibold text-white">History Summary</div>
 
@@ -102,5 +116,6 @@ export async function SprintNextPreviewPanel() {
     </div>
   );
 }
+
 
 
