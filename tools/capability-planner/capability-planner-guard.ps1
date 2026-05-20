@@ -49,6 +49,10 @@ $requiredLib = @(
   "historyWeight",
   "stabilityBoost",
   "adaptive_score_audit",
+  "confidencePenalty",
+  "governancePenalty",
+  "confidence_penalty",
+  "governance_penalty",
   "total_boost",
   "buildSelectionExplanation",
   "selected_node",
@@ -260,6 +264,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER GUARD PASSED"
+
 
 
 

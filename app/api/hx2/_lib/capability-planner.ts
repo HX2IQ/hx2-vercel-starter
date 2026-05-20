@@ -99,13 +99,25 @@ function applyAdaptiveNodeScoring(
       const stabilityBoost =
         historyWeight * 0.05;
 
+      const confidencePenalty =
+        historyWeight < 0.3
+          ? 0.04
+          : 0;
+
+      const governancePenalty =
+        Number(reliability?.success_rate || 0) < 0.5
+          ? 0.05
+          : 0;
+
       const totalBoost =
         Math.min(
           0.18,
           usageBoost +
           qualityBoost +
           successBoost +
-          stabilityBoost
+          stabilityBoost -
+          confidencePenalty -
+          governancePenalty
         );
 
       return {
@@ -122,6 +134,8 @@ function applyAdaptiveNodeScoring(
           quality_boost: Number(qualityBoost.toFixed(2)),
           success_boost: Number(successBoost.toFixed(2)),
           stability_boost: Number(stabilityBoost.toFixed(2)),
+          confidence_penalty: Number(confidencePenalty.toFixed(2)),
+          governance_penalty: Number(governancePenalty.toFixed(2)),
           total_boost: Number(totalBoost.toFixed(2))
         }
       };
@@ -324,6 +338,7 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
 
 
 
