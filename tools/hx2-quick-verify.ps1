@@ -13,6 +13,7 @@ if (Test-Path ".\tools\hx2-local-env-check.ps1") {
 }
 
 $guards = @(
+  ".\tools\dev2\transient-cleanup-guard.ps1",
   ".\tools\dev2\scratch-workspace-guard.ps1",
   ".\tools\dev2\self-cleaning-smoke-guard.ps1",
   ".\tools\dev2\insert-panel-guard.ps1",
@@ -68,6 +69,7 @@ $results | Format-Table -AutoSize
 
 Write-Host ""
 Write-Host ("HX2 QUICK VERIFY PASSED ({0} ms total)" -f $overall.ElapsedMilliseconds) -ForegroundColor Green
+
 
 
 
