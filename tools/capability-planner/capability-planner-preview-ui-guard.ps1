@@ -29,6 +29,8 @@ $requiredPanel = @(
   "candidate_nodes",
   "Adaptive Score Audit",
   "Total Boost",
+  "Confidence Penalty",
+  "Governance Penalty",
   "execution_pipeline",
   "orchestration_synthesis",
   "getCapabilityPlannerMemory",
@@ -86,6 +88,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER PREVIEW UI GUARD PASSED"
+
 
 
 

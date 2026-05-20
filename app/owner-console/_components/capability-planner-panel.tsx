@@ -366,6 +366,8 @@ export async function CapabilityPlannerPreviewPanel() {
                   <div>Quality: {candidate.adaptive_score_audit.quality_boost}</div>
                   <div>Success: {candidate.adaptive_score_audit.success_boost}</div>
                   <div>Stability: {candidate.adaptive_score_audit.stability_boost}</div>
+                  <div>Confidence Penalty: {candidate.adaptive_score_audit.confidence_penalty ?? 0}</div>
+                  <div>Governance Penalty: {candidate.adaptive_score_audit.governance_penalty ?? 0}</div>
                   <div>Total Boost: {candidate.adaptive_score_audit.total_boost}</div>
                 </div>
               </div>
@@ -376,6 +378,7 @@ export async function CapabilityPlannerPreviewPanel() {
     </div>
   );
 }
+
 
 
 
