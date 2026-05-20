@@ -49,6 +49,10 @@ $requiredPanel = @(
   "stability:",
   "Execution Mode Frequency",
   "learning_signals",
+  "BuildOps Sprint Plan",
+  "Sprint Type",
+  "Risk Level",
+  "Guard Strategy",
   "Sprint Recommendation",
   "Priority",
   "Suggested Mode",
@@ -88,6 +92,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER PREVIEW UI GUARD PASSED"
+
 
 
 
