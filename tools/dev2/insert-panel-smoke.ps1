@@ -6,7 +6,7 @@ Write-Host "== DEV2 PANEL INSERTER SMOKE TEST =="
 $dir = "tools/dev2/tmp-panel-inserter-smoke"
 New-Item -ItemType Directory -Force $dir | Out-Null
 
-$target = Join-Path $dir "target.tsx"
+$target = Join-Path $dir "target.txt"
 $insert = Join-Path $dir "insert.txt"
 
 $targetLines = @(
@@ -36,3 +36,4 @@ if ($text -notlike "*<InsertedPanel />*") {
 }
 
 Write-Host "DEV2 PANEL INSERTER SMOKE TEST PASSED"
+
