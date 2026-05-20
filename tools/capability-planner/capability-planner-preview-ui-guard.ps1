@@ -47,8 +47,6 @@ $requiredPanel = @(
   "Node Frequency",
   "Node Reliability / Stability Weighting",
   "stability:",
-  "Sprint Type Frequency",
-  "Execution Risk Frequency",
   "Execution Mode Frequency",
   "learning_signals",
   "BuildOps Sprint Plan",
