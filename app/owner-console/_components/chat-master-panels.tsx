@@ -1,3 +1,4 @@
+import { SprintNextPreviewPanel } from "./sprint-next-panel";
 import { CapabilityPlannerPreviewPanel } from "./capability-planner-panel";
 
 function getBaseUrl() {
@@ -229,6 +230,7 @@ export async function ChatMasterPanels() {
 
   return (
     <>
+      <SprintNextPreviewPanel />
       <CapabilityPlannerPreviewPanel />
       <ChatMasterStatusPanel status={status} />
       <ChatMasterReadinessPanel data={readiness} />
@@ -239,6 +241,7 @@ export async function ChatMasterPanels() {
     </>
   );
 }
+
 
 
 
