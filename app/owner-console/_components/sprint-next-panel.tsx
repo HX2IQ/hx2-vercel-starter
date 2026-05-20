@@ -1,3 +1,4 @@
+import { Dev2SprintPackagePanel } from "./dev2-sprint-package-panel";
 function getBaseUrl() {
   if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL;
   if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL;
@@ -52,6 +53,7 @@ export async function SprintNextPreviewPanel() {
   const data = await getSprintNextPreview();
   const sprint = data?.sprint_next || {};
   const buildops = sprint?.buildops_sprint_plan || {};
+  const dev2Package = sprint?.dev2_sprint_package || null;
   const history = sprint?.history_summary || {};
   const riskGate = sprint?.risk_gate || {};
   const riskGateActions = sprint?.risk_gate_actions || {};
@@ -116,6 +118,7 @@ export async function SprintNextPreviewPanel() {
     </div>
   );
 }
+
 
 
 
