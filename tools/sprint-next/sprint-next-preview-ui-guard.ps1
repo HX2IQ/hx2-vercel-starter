@@ -16,6 +16,9 @@ $required = @(
   "Sprint Next Planner",
   "Planner-driven DEV2 build sequencing preview",
   "Sprint Recommendation",
+  "Risk Gate",
+  "Gate",
+  "Reason",
   "History Summary",
   "Top Sprint Type",
   "Top Mode",
@@ -41,3 +44,4 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT PREVIEW UI GUARD PASSED"
+
