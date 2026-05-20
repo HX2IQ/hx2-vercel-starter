@@ -283,7 +283,7 @@ export async function CapabilityPlannerPreviewPanel() {
 
           <div className="rounded-xl border border-slate-700 bg-slate-900 p-4">
             <div className="text-sm font-semibold text-cyan-300">
-              Node Reliability
+              Node Reliability / Stability Weighting
             </div>
 
             <div className="mt-3 space-y-2">
@@ -306,6 +306,16 @@ export async function CapabilityPlannerPreviewPanel() {
 
                     <div className="text-slate-400">
                       quality: {nodeReliability[node]?.average_quality ?? 0}
+                    </div>
+
+                    <div className="text-slate-400">
+                      stability:
+                      {
+                        Math.min(
+                          1,
+                          (nodeReliability[node]?.runs ?? 0) / 10
+                        ).toFixed(2)
+                      }
                     </div>
                   </div>
                 </div>
@@ -349,6 +359,7 @@ export async function CapabilityPlannerPreviewPanel() {
     </div>
   );
 }
+
 
 
 
