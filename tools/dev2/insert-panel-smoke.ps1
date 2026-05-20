@@ -37,3 +37,8 @@ if ($text -notlike "*<InsertedPanel />*") {
 
 Write-Host "DEV2 PANEL INSERTER SMOKE TEST PASSED"
 
+Remove-Item $dir -Recurse -Force -ErrorAction SilentlyContinue
+
+Write-Host "Temporary smoke fixtures cleaned."
+
+
