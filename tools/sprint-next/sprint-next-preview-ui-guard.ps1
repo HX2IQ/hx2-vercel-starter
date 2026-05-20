@@ -19,6 +19,8 @@ $required = @(
   "Risk Gate",
   "Gate",
   "Reason",
+  "Risk Gate Actions",
+  "recommended_sequence",
   "History Summary",
   "Top Sprint Type",
   "Top Mode",
@@ -44,4 +46,5 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT PREVIEW UI GUARD PASSED"
+
 
