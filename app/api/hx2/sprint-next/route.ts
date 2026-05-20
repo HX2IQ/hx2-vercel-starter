@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { buildCapabilityPlan } from "../_lib/capability-planner";
 import { buildSprintNextAction } from "../_lib/sprint-next-action";
 import { buildSprintHistorySummary } from "../_lib/sprint-history-summary";
+import { buildSprintNextRiskGate } from "../_lib/sprint-next-risk-gate";
 import { buildPlannerLearningSignals } from "../_lib/capability-learning";
 
 export async function POST(req: Request) {
@@ -27,6 +28,12 @@ export async function POST(req: Request) {
         learningSignals
       );
 
+    const sprintRiskGate =
+      buildSprintNextRiskGate(
+        plan,
+        sprintHistorySummary
+      );
+
     return NextResponse.json({
       ok: true,
       request: message,
@@ -43,7 +50,10 @@ export async function POST(req: Request) {
           sprintAction,
 
         history_summary:
-          sprintHistorySummary
+          sprintHistorySummary,
+
+        risk_gate:
+          sprintRiskGate
       },
       planner: plan
     });
@@ -54,6 +64,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
