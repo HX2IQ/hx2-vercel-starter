@@ -13,6 +13,7 @@ if (Test-Path ".\tools\hx2-local-env-check.ps1") {
 }
 
 $guards = @(
+  ".\tools\dev2\dev2-tsx-mutation-safety-guard.ps1",
   ".\tools\sprint-next\sprint-next-preview-ui-guard.ps1",
   ".\tools\sprint-next\sprint-history-summary-guard.ps1",
   ".\tools\capability-planner\capability-plan-type-contract-guard.ps1",
@@ -63,6 +64,7 @@ $results | Format-Table -AutoSize
 
 Write-Host ""
 Write-Host ("HX2 QUICK VERIFY PASSED ({0} ms total)" -f $overall.ElapsedMilliseconds) -ForegroundColor Green
+
 
 
 
