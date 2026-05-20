@@ -1,3 +1,4 @@
+import { SprintNextPreviewPanel } from "./sprint-next-panel";
 function getBaseUrl() {
   if (process.env.NEXT_PUBLIC_APP_URL) {
     return process.env.NEXT_PUBLIC_APP_URL;
@@ -52,7 +53,8 @@ function PlannerStat({ title, value }: { title: string; value: any }) {
     <div className="rounded-xl border border-slate-700 bg-slate-950 p-4">
       <div className="text-xs uppercase tracking-wide text-slate-500">{title}</div>
       <div className="mt-2 text-xl font-semibold text-white">{String(value)}</div>
-    </div>
+      </div>
+    </>
   );
 }
 
@@ -158,7 +160,10 @@ export async function CapabilityPlannerPreviewPanel() {
   const pipeline = data?.execution_pipeline || [];
 
   return (
-    <div className="mt-4 rounded-2xl border border-cyan-800 bg-slate-900 p-5">
+    <>
+      <SprintNextPreviewPanel />
+
+      <div className="mt-4 rounded-2xl border border-cyan-800 bg-slate-900 p-5">
       <div>
         <h2 className="text-lg font-semibold">Capability Planner Preview</h2>
         <p className="mt-1 text-sm text-slate-400">
@@ -499,9 +504,11 @@ export async function CapabilityPlannerPreviewPanel() {
           </div>
         ))}
       </div>
-    </div>
+      </div>
+    </>
   );
 }
+
 
 
 
