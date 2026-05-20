@@ -122,6 +122,12 @@ export async function CapabilityPlannerPreviewPanel() {
   const modeFrequency =
     learning?.execution_mode_frequency || {};
 
+  const sprintTypeFrequency =
+    learning?.sprint_type_frequency || {};
+
+  const executionRiskFrequency =
+    learning?.execution_risk_frequency || {};
+
   const sprintRecommendation =
     memoryData?.sprint_recommendation || {};
 
@@ -400,6 +406,7 @@ export async function CapabilityPlannerPreviewPanel() {
     </div>
   );
 }
+
 
 
 
