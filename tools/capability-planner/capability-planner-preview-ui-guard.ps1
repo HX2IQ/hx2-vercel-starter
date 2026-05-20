@@ -31,6 +31,7 @@ $requiredPanel = @(
   "Total Boost",
   "Confidence Penalty",
   "Governance Penalty",
+  "Negative Learning Penalty",
   "execution_pipeline",
   "orchestration_synthesis",
   "getCapabilityPlannerMemory",
@@ -98,6 +99,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER PREVIEW UI GUARD PASSED"
+
 
 
 
