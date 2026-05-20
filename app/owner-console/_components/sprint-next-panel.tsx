@@ -52,6 +52,7 @@ export async function SprintNextPreviewPanel() {
   const data = await getSprintNextPreview();
   const sprint = data?.sprint_next || {};
   const buildops = sprint?.buildops_sprint_plan || {};
+  const history = sprint?.history_summary || {};
 
   return (
     <div className="mt-4 rounded-2xl border border-purple-800 bg-slate-900 p-5">
@@ -72,6 +73,17 @@ export async function SprintNextPreviewPanel() {
       </div>
 
       <div className="mt-4 rounded-xl border border-slate-700 bg-slate-950 p-4">
+        <div className="text-sm font-semibold text-white">History Summary</div>
+
+        <div className="mt-3 grid gap-3 md:grid-cols-4">
+          <SprintNextStat title="Top Sprint Type" value={history?.top_sprint_type || "unknown"} />
+          <SprintNextStat title="Top Mode" value={history?.top_execution_mode || "unknown"} />
+          <SprintNextStat title="Top Success Node" value={history?.top_success_node || "unknown"} />
+          <SprintNextStat title="Top Failure Node" value={history?.top_failure_node || "unknown"} />
+        </div>
+      </div>
+
+      <div className="mt-4 rounded-xl border border-slate-700 bg-slate-950 p-4">
         <div className="text-sm font-semibold text-white">Sprint Recommendation</div>
         <div className="mt-2 text-sm text-slate-300">
           {sprint?.sprint_recommendation || "No sprint recommendation available."}
@@ -80,3 +92,4 @@ export async function SprintNextPreviewPanel() {
     </div>
   );
 }
+
