@@ -14,6 +14,10 @@ export function buildPlannerLearningSignals() {
   const nodeQualityTotals: Record<string, number> = {};
   const nodeSuccessTotals: Record<string, number> = {};
 
+  const executionModeFailures: Record<string, number> = {};
+  const sprintTypeFailures: Record<string, number> = {};
+  const nodeFailures: Record<string, number> = {};
+
   let escalationCount = 0;
   let successCount = 0;
   let qualityTotal = 0;
@@ -50,6 +54,18 @@ export function buildPlannerLearningSignals() {
     }
 
     qualityTotal += row.quality_score || 0;
+
+    if (!row.success) {
+
+      executionModeFailures[row.execution_mode || "unknown"] =
+        (executionModeFailures[row.execution_mode || "unknown"] || 0) + 1;
+
+      sprintTypeFailures[row.sprint_type || "general"] =
+        (sprintTypeFailures[row.sprint_type || "general"] || 0) + 1;
+
+      nodeFailures[row.selected_node || "unknown"] =
+        (nodeFailures[row.selected_node || "unknown"] || 0) + 1;
+    }
   }
 
 
@@ -80,6 +96,18 @@ export function buildPlannerLearningSignals() {
     };
   }
 
+
+  const negativeLearning = {
+    execution_mode_failures:
+      executionModeFailures,
+
+    sprint_type_failures:
+      sprintTypeFailures,
+
+    node_failures:
+      nodeFailures
+  };
+
   return {
     total_runs: memory.length,
     escalation_rate:
@@ -109,10 +137,14 @@ export function buildPlannerLearningSignals() {
     execution_risk_frequency:
       riskFrequency,
 
+    negative_learning:
+      negativeLearning,
+
     node_frequency: nodeFrequency,
     execution_mode_frequency: modeFrequency
   };
 }
+
 
 
 
