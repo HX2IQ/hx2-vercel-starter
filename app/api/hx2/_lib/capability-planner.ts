@@ -82,6 +82,15 @@ function applyAdaptiveNodeScoring(
       const successBoost =
         Number(reliability?.success_rate || 0) * 0.06;
 
+      const historyWeight =
+        Math.min(
+          1,
+          Number(reliability?.runs || 0) / 10
+        );
+
+      const stabilityBoost =
+        historyWeight * 0.05;
+
       return {
         ...node,
         score: Number(
@@ -90,7 +99,8 @@ function applyAdaptiveNodeScoring(
             node.score +
             usageBoost +
             qualityBoost +
-            successBoost
+            successBoost +
+            stabilityBoost
           ).toFixed(2)
         )
       };
@@ -293,6 +303,7 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
 
 
 
