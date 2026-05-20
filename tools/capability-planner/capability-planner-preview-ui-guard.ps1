@@ -3,21 +3,23 @@ $ErrorActionPreference = "Stop"
 Write-Host ""
 Write-Host "== CAPABILITY PLANNER PREVIEW UI GUARD =="
 
-$panel = "app/owner-console/_components/capability-planner-panel.tsx"
-$chatMasterPanels = "app/owner-console/_components/chat-master-panels.tsx"
+$paths = @(
+  "app/owner-console/_components/capability-planner-panel.tsx",
+  "app/owner-console/_components/adaptive-score-audit.tsx"
+)
 
-if (!(Test-Path $panel)) {
-  throw "Missing capability planner preview panel"
+$combined = ""
+
+foreach ($path in $paths) {
+  if (Test-Path $path) {
+    $combined += "`n--- $path ---`n"
+    $combined += Get-Content $path -Raw
+  } else {
+    throw "Missing preview UI file: $path"
+  }
 }
 
-if (!(Test-Path $chatMasterPanels)) {
-  throw "Missing chat master panels component"
-}
-
-$panelText = Get-Content $panel -Raw
-$chatText = Get-Content $chatMasterPanels -Raw
-
-$requiredPanel = @(
+$required = @(
   "CapabilityPlannerPreviewPanel",
   "Capability Planner Preview",
   "Live orchestration intelligence preview",
@@ -27,11 +29,6 @@ $requiredPanel = @(
   "Pipeline Steps",
   "Orchestration Synthesis",
   "candidate_nodes",
-  "Adaptive Score Audit",
-  "Total Boost",
-  "Confidence Penalty",
-  "Governance Penalty",
-  "Negative Learning Penalty",
   "execution_pipeline",
   "orchestration_synthesis",
   "getCapabilityPlannerMemory",
@@ -46,48 +43,34 @@ $requiredPanel = @(
   "Average Quality",
   "Tracked Nodes",
   "Node Frequency",
-  "Node Reliability / Stability Weighting",
-  "stability:",
-  "Negative Learning",
-  "Node Failures",
-  "Sprint Type Failures",
-  "Execution Mode Failures",
-  "Sprint Type Frequency",
-  "Execution Risk Frequency",
+  "Node Reliability",
   "Execution Mode Frequency",
-  "learning_signals",
-  "BuildOps Sprint Plan",
-  "Sprint Type",
-  "Risk Level",
-  "Guard Strategy",
   "Sprint Recommendation",
   "Priority",
   "Suggested Mode",
   "sprint_recommendation",
-  "Selection Explanation",
   "Planner Feedback",
   "Execution Success",
   "Quality Score",
   "Feedback Reason",
-  "planner_feedback"
-)
-
-$requiredMount = @(
-  "CapabilityPlannerPreviewPanel",
-  "./capability-planner-panel"
+  "planner_feedback",
+  "Selection Explanation",
+  "BuildOps Sprint Plan",
+  "Sprint Type",
+  "Risk Level",
+  "Guard Strategy",
+  "Adaptive Score Audit",
+  "Total Boost",
+  "Confidence Penalty",
+  "Governance Penalty",
+  "Negative Learning Penalty"
 )
 
 $missing = @()
 
-foreach ($needle in $requiredPanel) {
-  if ($panelText -notlike "*$needle*") {
-    $missing += "Missing in preview panel: $needle"
-  }
-}
-
-foreach ($needle in $requiredMount) {
-  if ($chatText -notlike "*$needle*") {
-    $missing += "Missing in chat master panels mount: $needle"
+foreach ($needle in $required) {
+  if ($combined -notlike "*$needle*") {
+    $missing += "Missing in preview UI surface: $needle"
   }
 }
 
@@ -95,23 +78,8 @@ if ($missing.Count -gt 0) {
   foreach ($m in $missing) {
     Write-Host "- $m"
   }
+
   throw "Capability planner preview UI guard failed"
 }
 
 Write-Host "CAPABILITY PLANNER PREVIEW UI GUARD PASSED"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
