@@ -14,8 +14,9 @@ $memory = "app/api/hx2/_lib/capability-memory.ts"
 $memoryRoute = "app/api/hx2/capability-planner-memory/route.ts"
 $sprintRecommendation = "app/api/hx2/_lib/capability-sprint-recommendation.ts"
 $feedback = "app/api/hx2/_lib/capability-feedback.ts"
+$buildopsSprintPlan = "app/api/hx2/_lib/capability-buildops-sprint-plan.ts"
 
-$paths = @($lib, $route, $execution, $synthesis, $pipeline, $complexity, $escalation, $memory, $memoryRoute, $sprintRecommendation, $feedback)
+$paths = @($lib, $route, $execution, $synthesis, $pipeline, $complexity, $escalation, $memory, $memoryRoute, $sprintRecommendation, $feedback, $buildopsSprintPlan)
 
 foreach ($path in $paths) {
   if (!(Test-Path $path)) {
@@ -34,6 +35,7 @@ $memoryText = Get-Content $memory -Raw
 $memoryRouteText = Get-Content $memoryRoute -Raw
 $sprintRecommendationText = Get-Content $sprintRecommendation -Raw
 $feedbackText = Get-Content $feedback -Raw
+$buildopsSprintPlanText = Get-Content $buildopsSprintPlan -Raw
 
 $requiredLib = @(
   "CandidateNode",
@@ -187,6 +189,21 @@ $requiredFeedback = @(
   "Execution quality below threshold"
 )
 
+$requiredBuildOpsSprintPlan = @(
+  "BuildOpsSprintPlan",
+  "buildBuildOpsSprintPlan",
+  "sprint_type",
+  "recommended_focus",
+  "risk_level",
+  "guard_strategy",
+  "execution_notes",
+  "bugfix",
+  "guard_hardening",
+  "feature_expansion",
+  "Repair failing contract before feature expansion",
+  "Add isolated capability module before UI integration"
+)
+
 $missing = @()
 
 foreach ($needle in $requiredLib) {
@@ -255,6 +272,12 @@ foreach ($needle in $requiredFeedback) {
   }
 }
 
+foreach ($needle in $requiredBuildOpsSprintPlan) {
+  if ($buildopsSprintPlanText -notlike "*$needle*") {
+    $missing += "Missing in buildops sprint plan lib: $needle"
+  }
+}
+
 if ($missing.Count -gt 0) {
   foreach ($m in $missing) {
     Write-Host "- $m"
@@ -264,6 +287,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER GUARD PASSED"
+
 
 
 
