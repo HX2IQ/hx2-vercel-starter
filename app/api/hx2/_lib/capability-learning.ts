@@ -9,6 +9,8 @@ export function buildPlannerLearningSignals() {
 
   const nodeFrequency: Record<string, number> = {};
   const modeFrequency: Record<string, number> = {};
+  const sprintTypeFrequency: Record<string, number> = {};
+  const riskFrequency: Record<string, number> = {};
   const nodeQualityTotals: Record<string, number> = {};
   const nodeSuccessTotals: Record<string, number> = {};
 
@@ -32,6 +34,12 @@ export function buildPlannerLearningSignals() {
 
     modeFrequency[row.execution_mode] =
       (modeFrequency[row.execution_mode] || 0) + 1;
+
+    sprintTypeFrequency[row.sprint_type || "general"] =
+      (sprintTypeFrequency[row.sprint_type || "general"] || 0) + 1;
+
+    riskFrequency[row.execution_risk || "unknown"] =
+      (riskFrequency[row.execution_risk || "unknown"] || 0) + 1;
 
     if (row.escalation) {
       escalationCount++;
@@ -95,9 +103,16 @@ export function buildPlannerLearningSignals() {
 
     node_reliability: nodeReliability,
 
+    sprint_type_frequency:
+      sprintTypeFrequency,
+
+    execution_risk_frequency:
+      riskFrequency,
+
     node_frequency: nodeFrequency,
     execution_mode_frequency: modeFrequency
   };
 }
+
 
 

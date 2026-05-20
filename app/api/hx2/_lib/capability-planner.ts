@@ -309,7 +309,11 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
         (r: any) => r.status === "complete"
       ).length,
     success: plannerFeedback.success,
-    quality_score: plannerFeedback.quality_score
+    quality_score: plannerFeedback.quality_score,
+    sprint_type:
+      buildopsSprintPlan?.sprint_type || "general",
+    execution_risk:
+      buildopsSprintPlan?.risk_level || "unknown"
   });
 
   const orchestrationSynthesis =
@@ -346,6 +350,7 @@ export function buildCapabilityPlan(userRequest: string): CapabilityPlan {
       `Planner selected ${selectedNode} for ${intent}.`
   };
 }
+
 
 
 
