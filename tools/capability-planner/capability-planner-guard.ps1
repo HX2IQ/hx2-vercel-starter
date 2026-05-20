@@ -39,7 +39,9 @@ $checks = @{
     "execution_pipeline","request_complexity","execution_mode",
     "escalation","planner_feedback","buildops_sprint_plan",
     "orchestration_summary","adaptive_score_audit","confidencePenalty",
-    "governancePenalty","historyWeight","stabilityBoost"
+    "governancePenalty",
+  "negativeLearningPenalty",
+  "negative_learning_penalty","historyWeight","stabilityBoost"
   )
 
   execution = @(
@@ -126,4 +128,5 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "CAPABILITY PLANNER GUARD PASSED"
+
 
