@@ -125,6 +125,9 @@ export async function CapabilityPlannerPreviewPanel() {
   const sprintRecommendation =
     memoryData?.sprint_recommendation || {};
 
+  const buildopsSprintPlan =
+    data?.buildops_sprint_plan || null;
+
   const candidates = data?.candidate_nodes || [];
   const synthesis = data?.orchestration_synthesis || {};
   const escalation = data?.escalation || {};
@@ -202,6 +205,25 @@ export async function CapabilityPlannerPreviewPanel() {
 
         </div>
       </div>
+
+
+      {buildopsSprintPlan ? (
+        <div className="mt-4 rounded-xl border border-purple-800 bg-slate-950 p-4">
+          <div className="text-sm font-semibold text-white">
+            BuildOps Sprint Plan
+          </div>
+
+          <div className="mt-3 grid gap-3 md:grid-cols-3">
+            <PlannerStat title="Sprint Type" value={buildopsSprintPlan?.sprint_type || "unknown"} />
+            <PlannerStat title="Risk Level" value={buildopsSprintPlan?.risk_level || "unknown"} />
+            <PlannerStat title="Guard Strategy" value={buildopsSprintPlan?.guard_strategy || "unknown"} />
+          </div>
+
+          <div className="mt-4 text-sm text-slate-300">
+            {buildopsSprintPlan?.recommended_focus || "No build focus available."}
+          </div>
+        </div>
+      ) : null}
 
       <div className="mt-4 rounded-xl border border-cyan-800 bg-slate-950 p-4">
         <div className="text-sm font-semibold text-white">
@@ -378,6 +400,7 @@ export async function CapabilityPlannerPreviewPanel() {
     </div>
   );
 }
+
 
 
 
