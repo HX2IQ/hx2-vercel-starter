@@ -7,6 +7,10 @@ export type Dev2SprintPackage = {
   expected_guards: string[];
   commit_message: string;
   rollback_note: string;
+  execution_phases: {
+    phase: string;
+    action: string;
+  }[];
 };
 
 export function buildDev2SprintPackage(
@@ -62,6 +66,26 @@ export function buildDev2SprintPackage(
       `Complete ${featureName}`,
 
     rollback_note:
-      "Use git restore on touched files if guard fails before commit."
+      "Use git restore on touched files if guard fails before commit.",
+
+    execution_phases: [
+      {
+        phase: "inspect",
+        action: "Confirm target files and current guard state before patching."
+      },
+      {
+        phase: "patch",
+        action: "Apply one isolated capability change only."
+      },
+      {
+        phase: "verify",
+        action: "Run hx2:quick and focused guard commands."
+      },
+      {
+        phase: "commit",
+        action: "Commit only after all guards pass."
+      }
+    ]
   };
 }
+
