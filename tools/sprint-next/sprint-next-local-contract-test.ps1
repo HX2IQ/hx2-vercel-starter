@@ -10,8 +10,9 @@ $action = "app/api/hx2/_lib/sprint-next-action.ts"
 $riskGate = "app/api/hx2/_lib/sprint-next-risk-gate.ts"
 $riskGateActions = "app/api/hx2/_lib/sprint-risk-gate-actions.ts"
 $packageSuccess = "app/api/hx2/_lib/dev2-package-success-learning.ts"
+$adaptiveStrategy = "app/api/hx2/_lib/adaptive-dev2-package-strategy.ts"
 
-foreach ($path in @($route, $planner, $buildops, $action, $riskGate, $riskGateActions, $packageSuccess)) {
+foreach ($path in @($route, $planner, $buildops, $action, $riskGate, $riskGateActions, $packageSuccess, $adaptiveStrategy)) {
   if (!(Test-Path $path)) {
     throw "Missing required file: $path"
   }
@@ -24,6 +25,7 @@ $actionText = Get-Content $action -Raw
 $riskGateText = Get-Content $riskGate -Raw
 $riskGateActionsText = Get-Content $riskGateActions -Raw
 $packageSuccessText = Get-Content $packageSuccess -Raw
+$adaptiveStrategyText = Get-Content $adaptiveStrategy -Raw
 
 $required = @(
   @{ name = "route uses planner"; ok = $routeText -like "*buildCapabilityPlan*" },
@@ -52,7 +54,12 @@ $required = @(
   @{ name = "route returns DEV2 package success signal"; ok = $routeText -like "*dev2_package_success_signal*" },
   @{ name = "DEV2 package success helper exists"; ok = $packageSuccessText -like "*buildDev2PackageSuccessSignal*" },
   @{ name = "DEV2 package success score exists"; ok = $packageSuccessText -like "*success_score*" },
-  @{ name = "DEV2 package success type exists"; ok = $packageSuccessText -like "*package_type*" }
+  @{ name = "DEV2 package success type exists"; ok = $packageSuccessText -like "*package_type*" },
+  @{ name = "route returns adaptive package strategy"; ok = $routeText -like "*adaptive_package_strategy*" },
+  @{ name = "adaptive strategy helper exists"; ok = $adaptiveStrategyText -like "*buildAdaptivePackageStrategy*" },
+  @{ name = "adaptive strategy supports stability first"; ok = $adaptiveStrategyText -like "*stability_first*" },
+  @{ name = "adaptive strategy supports balanced execution"; ok = $adaptiveStrategyText -like "*balanced_execution*" },
+  @{ name = "adaptive strategy supports expansion ready"; ok = $adaptiveStrategyText -like "*expansion_ready*" }
 )
 
 $failed = @()
@@ -71,6 +78,7 @@ if ($failed.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT LOCAL CONTRACT TEST PASSED"
+
 
 
 
