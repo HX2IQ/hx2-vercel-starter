@@ -66,6 +66,8 @@ $required = @(
   @{ name = "adaptive modifier supports stability first"; ok = $adaptiveModifierText -like "*stability_first*" },
   @{ name = "adaptive modifier supports balanced execution"; ok = $adaptiveModifierText -like "*balanced_execution*" },
   @{ name = "adaptive modifier supports expanded surface"; ok = $adaptiveModifierText -like "*expanded orchestration surface allowed*" },
+  @{ name = "adaptive modifier returns modification audit"; ok = $adaptiveModifierText -like "*adaptive_modification_audit*" },
+  @{ name = "adaptive modifier returns modified fields"; ok = $adaptiveModifierText -like "*modified_fields*" },
   @{ name = "route applies adaptive package execution"; ok = $routeText -like "*applyAdaptivePackageExecution*" }
 )
 
@@ -85,6 +87,7 @@ if ($failed.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT LOCAL CONTRACT TEST PASSED"
+
 
 
 

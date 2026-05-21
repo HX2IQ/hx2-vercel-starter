@@ -17,6 +17,9 @@ $combined = (Get-Content $panel -Raw) + "`n" + (Get-Content $sprintPanel -Raw)
 $required = @(
   "Dev2SprintPackagePanel",
   "DEV2 Sprint Package",
+  "Adaptive Modification Audit",
+  "modified_fields",
+  "Reason:",
   "Adaptive Package Strategy",
   "Strategy:",
   "Recommendation:",
@@ -48,6 +51,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "DEV2 SPRINT PACKAGE PREVIEW GUARD PASSED"
+
 
 
 
