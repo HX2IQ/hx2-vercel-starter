@@ -10,6 +10,7 @@ export function Dev2SprintPackagePanel({
   const guards = pkg?.expected_guards || [];
   const phases = pkg?.execution_phases || [];
   const copyReadyPowerShell = pkg?.copy_ready_powershell || [];
+  const successSignal = pkg?.dev2_package_success_signal || null;
 
   return (
     <div className="mt-4 rounded-xl border border-emerald-800 bg-slate-950 p-4">
@@ -31,6 +32,14 @@ export function Dev2SprintPackagePanel({
           <div className="mt-1 text-white">{pkg.risk_gate || "unknown"}</div>
         </div>
       </div>
+
+      {successSignal ? (
+        <div className="mt-4 rounded-lg border border-emerald-800 bg-slate-900 p-3 text-sm">
+          <div className="font-semibold text-white">Package Success Signal</div>
+          <div className="mt-2 text-slate-300">Type: {successSignal?.package_type || "unknown"}</div>
+          <div className="mt-1 text-slate-300">Success Score: {successSignal?.success_score ?? 0}</div>
+        </div>
+      ) : null}
 
       <div className="mt-4 text-sm text-slate-300">
         <div className="font-semibold text-white">Files to Touch</div>
@@ -83,5 +92,6 @@ export function Dev2SprintPackagePanel({
     </div>
   );
 }
+
 
 
