@@ -18,6 +18,7 @@ $required = @(
   "Dev2SprintPackagePanel",
   "DEV2 Sprint Package",
   "Files to Touch",
+  "Execution Phases",
   "Commands",
   "Expected Guards",
   "Rollback",
@@ -40,3 +41,4 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "DEV2 SPRINT PACKAGE PREVIEW GUARD PASSED"
+
