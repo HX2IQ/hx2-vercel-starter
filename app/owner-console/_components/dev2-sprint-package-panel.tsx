@@ -8,6 +8,7 @@ export function Dev2SprintPackagePanel({
   const commands = pkg?.commands || [];
   const files = pkg?.files_to_touch || [];
   const guards = pkg?.expected_guards || [];
+  const phases = pkg?.execution_phases || [];
 
   return (
     <div className="mt-4 rounded-xl border border-emerald-800 bg-slate-950 p-4">
@@ -38,6 +39,17 @@ export function Dev2SprintPackagePanel({
       </div>
 
       <div className="mt-4 text-sm text-slate-300">
+        <div className="font-semibold text-white">Execution Phases</div>
+        <ol className="mt-2 list-decimal pl-5">
+          {phases.map((phase: any) => (
+            <li key={phase.phase}>
+              <span className="font-semibold">{phase.phase}</span>: {phase.action}
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div className="mt-4 text-sm text-slate-300">
         <div className="font-semibold text-white">Commands</div>
         <ol className="mt-2 list-decimal pl-5">
           {commands.map((cmd: string) => <li key={cmd} className="font-mono text-xs">{cmd}</li>)}
@@ -61,3 +73,4 @@ export function Dev2SprintPackagePanel({
     </div>
   );
 }
+
