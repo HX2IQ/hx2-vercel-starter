@@ -51,7 +51,8 @@ $required = @(
   @{ name = "risk gate actions returns sequence"; ok = $riskGateActionsText -like "*recommended_sequence*" },
   @{ name = "route returns DEV2 package success signal"; ok = $routeText -like "*dev2_package_success_signal*" },
   @{ name = "DEV2 package success helper exists"; ok = $packageSuccessText -like "*buildDev2PackageSuccessSignal*" },
-  @{ name = "DEV2 package success score exists"; ok = $packageSuccessText -like "*success_score*" }
+  @{ name = "DEV2 package success score exists"; ok = $packageSuccessText -like "*success_score*" },
+  @{ name = "DEV2 package success type exists"; ok = $packageSuccessText -like "*package_type*" }
 )
 
 $failed = @()
@@ -70,6 +71,7 @@ if ($failed.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT LOCAL CONTRACT TEST PASSED"
+
 
 
 

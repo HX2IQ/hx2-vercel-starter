@@ -17,6 +17,9 @@ $combined = (Get-Content $panel -Raw) + "`n" + (Get-Content $sprintPanel -Raw)
 $required = @(
   "Dev2SprintPackagePanel",
   "DEV2 Sprint Package",
+  "Package Success Signal",
+  "package_type",
+  "success_score",
   "Files to Touch",
   "Execution Phases",
   "Copy-Ready PowerShell",
@@ -42,5 +45,6 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "DEV2 SPRINT PACKAGE PREVIEW GUARD PASSED"
+
 
 
