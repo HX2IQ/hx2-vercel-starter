@@ -13,8 +13,9 @@ $packageSuccess = "app/api/hx2/_lib/dev2-package-success-learning.ts"
 $adaptiveStrategy = "app/api/hx2/_lib/adaptive-dev2-package-strategy.ts"
 $adaptiveModifier = "app/api/hx2/_lib/adaptive-package-execution-modifier.ts"
 $operatorDecision = "app/api/hx2/_lib/dev2-operator-decision.ts"
+$operatorFollowthrough = "app/api/hx2/_lib/operator-decision-followthrough.ts"
 
-foreach ($path in @($route, $planner, $buildops, $action, $riskGate, $riskGateActions, $packageSuccess, $adaptiveStrategy, $adaptiveModifier, $operatorDecision)) {
+foreach ($path in @($route, $planner, $buildops, $action, $riskGate, $riskGateActions, $packageSuccess, $adaptiveStrategy, $adaptiveModifier, $operatorDecision, $operatorFollowthrough)) {
   if (!(Test-Path $path)) {
     throw "Missing required file: $path"
   }
@@ -30,6 +31,7 @@ $packageSuccessText = Get-Content $packageSuccess -Raw
 $adaptiveStrategyText = Get-Content $adaptiveStrategy -Raw
 $adaptiveModifierText = Get-Content $adaptiveModifier -Raw
 $operatorDecisionText = Get-Content $operatorDecision -Raw
+$operatorFollowthroughText = Get-Content $operatorFollowthrough -Raw
 
 $required = @(
   @{ name = "route uses planner"; ok = $routeText -like "*buildCapabilityPlan*" },
@@ -76,6 +78,10 @@ $required = @(
   @{ name = "operator decision supports stabilize"; ok = $operatorDecisionText -like "*stabilize*" },
   @{ name = "operator decision supports expand"; ok = $operatorDecisionText -like "*expand*" },
   @{ name = "route returns operator decision"; ok = $routeText -like "*operator_decision*" },
+  @{ name = "route returns operator followthrough"; ok = $routeText -like "*operator_followthrough*" },
+  @{ name = "operator followthrough helper exists"; ok = $operatorFollowthroughText -like "*buildOperatorDecisionFollowthrough*" },
+  @{ name = "operator followthrough has expected path"; ok = $operatorFollowthroughText -like "*expected_operator_path*" },
+  @{ name = "operator followthrough has learning message"; ok = $operatorFollowthroughText -like "*learning_message*" },
   @{ name = "route applies adaptive package execution"; ok = $routeText -like "*applyAdaptivePackageExecution*" }
 )
 
@@ -95,6 +101,7 @@ if ($failed.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT LOCAL CONTRACT TEST PASSED"
+
 
 
 
