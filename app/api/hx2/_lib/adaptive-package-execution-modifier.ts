@@ -17,6 +17,12 @@ export function applyAdaptivePackageExecution(
       "Focused guard before patch"
     ];
 
+    pkg.adaptive_modification_audit = {
+      strategy,
+      modified_fields: ["expected_guards", "files_to_touch"],
+      reason: "Stability-first strategy restricts scope and increases guard coverage."
+    };
+
     pkg.files_to_touch = [
       "single isolated file only"
     ];
@@ -31,12 +37,24 @@ export function applyAdaptivePackageExecution(
       "npm run hx2:chat-master:guard"
     ];
 
+    pkg.adaptive_modification_audit = {
+      strategy,
+      modified_fields: ["expected_guards"],
+      reason: "Balanced strategy keeps standard verification while allowing modular progress."
+    };
+
     return pkg;
   }
 
   pkg.expected_guards = [
     "npm run hx2:quick"
   ];
+
+  pkg.adaptive_modification_audit = {
+    strategy,
+    modified_fields: ["expected_guards", "files_to_touch"],
+    reason: "Expansion-ready strategy reduces guard load and allows broader orchestration work."
+  };
 
   pkg.files_to_touch = [
     ...(
@@ -47,3 +65,4 @@ export function applyAdaptivePackageExecution(
 
   return pkg;
 }
+
