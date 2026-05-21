@@ -12,6 +12,7 @@ export function Dev2SprintPackagePanel({
   const copyReadyPowerShell = pkg?.copy_ready_powershell || [];
   const successSignal = pkg?.dev2_package_success_signal || null;
   const adaptiveStrategy = pkg?.adaptive_package_strategy || null;
+  const adaptiveAudit = pkg?.adaptive_modification_audit || null;
 
   return (
     <div className="mt-4 rounded-xl border border-emerald-800 bg-slate-950 p-4">
@@ -33,6 +34,15 @@ export function Dev2SprintPackagePanel({
           <div className="mt-1 text-white">{pkg.risk_gate || "unknown"}</div>
         </div>
       </div>
+
+      {adaptiveAudit ? (
+        <div className="mt-4 rounded-lg border border-cyan-800 bg-slate-900 p-3 text-sm">
+          <div className="font-semibold text-white">Adaptive Modification Audit</div>
+          <div className="mt-2 text-slate-300">Strategy: {adaptiveAudit?.strategy || "unknown"}</div>
+          <div className="mt-1 text-slate-300">Modified: {(adaptiveAudit?.modified_fields || []).join(", ")}</div>
+          <div className="mt-1 text-slate-300">Reason: {adaptiveAudit?.reason || "unknown"}</div>
+        </div>
+      ) : null}
 
       {adaptiveStrategy ? (
         <div className="mt-4 rounded-lg border border-cyan-800 bg-slate-900 p-3 text-sm">
@@ -109,6 +119,7 @@ export function Dev2SprintPackagePanel({
     </div>
   );
 }
+
 
 
 
