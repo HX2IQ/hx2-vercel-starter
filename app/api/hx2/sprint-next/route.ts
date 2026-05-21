@@ -10,6 +10,7 @@ import { buildDev2PackageSuccessSignal } from "../_lib/dev2-package-success-lear
 import { buildAdaptivePackageStrategy } from "../_lib/adaptive-dev2-package-strategy";
 import { applyAdaptivePackageExecution } from "../_lib/adaptive-package-execution-modifier";
 import { buildDev2OperatorDecision } from "../_lib/dev2-operator-decision";
+import { buildOperatorDecisionFollowthrough } from "../_lib/operator-decision-followthrough";
 import { buildPlannerLearningSignals } from "../_lib/capability-learning";
 
 export async function POST(req: Request) {
@@ -100,6 +101,11 @@ export async function POST(req: Request) {
     adaptiveSprintPackage.operator_decision =
       dev2OperatorDecision;
 
+    adaptiveSprintPackage.operator_followthrough =
+      buildOperatorDecisionFollowthrough(
+        dev2OperatorDecision
+      );
+
     return NextResponse.json({
       ok: true,
       request: message,
@@ -123,6 +129,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
