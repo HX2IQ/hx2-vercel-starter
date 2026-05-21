@@ -38,6 +38,7 @@ $required = @(
   @{ name = "sprint action returns recommended guard"; ok = $actionText -like "*recommended_guard*" },
   @{ name = "route returns actionable sprint"; ok = $routeText -like "*actionable_sprint*" },
   @{ name = "DEV2 package has execution phases"; ok = (Get-Content "app/api/hx2/_lib/sprint-dev2-package.ts" -Raw) -like "*execution_phases*" },
+  @{ name = "DEV2 package has copy-ready PowerShell"; ok = (Get-Content "app/api/hx2/_lib/sprint-dev2-package.ts" -Raw) -like "*copy_ready_powershell*" },
   @{ name = "route returns risk gate"; ok = $routeText -like "*risk_gate*" },
   @{ name = "risk gate helper exists"; ok = $riskGateText -like "*buildSprintNextRiskGate*" },
   @{ name = "risk gate supports proceed"; ok = $riskGateText -like "*proceed*" },
@@ -64,6 +65,7 @@ if ($failed.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT LOCAL CONTRACT TEST PASSED"
+
 
 
 
