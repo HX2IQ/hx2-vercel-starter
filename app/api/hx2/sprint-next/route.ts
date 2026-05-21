@@ -8,6 +8,7 @@ import { buildSprintPowerShellActions } from "../_lib/sprint-powershell-actions"
 import { buildDev2SprintPackage } from "../_lib/sprint-dev2-package";
 import { buildDev2PackageSuccessSignal } from "../_lib/dev2-package-success-learning";
 import { buildAdaptivePackageStrategy } from "../_lib/adaptive-dev2-package-strategy";
+import { applyAdaptivePackageExecution } from "../_lib/adaptive-package-execution-modifier";
 import { buildPlannerLearningSignals } from "../_lib/capability-learning";
 
 export async function POST(req: Request) {
@@ -84,13 +85,19 @@ export async function POST(req: Request) {
         dev2PackageSuccessSignal
       );
 
+    const adaptiveSprintPackage =
+      applyAdaptivePackageExecution(
+        dev2SprintPackage,
+        adaptivePackageStrategy
+      );
+
     return NextResponse.json({
       ok: true,
       request: message,
       sprint_next: {
         ...sprintNextPayload,
         dev2_sprint_package:
-          dev2SprintPackage,
+          adaptiveSprintPackage,
 
         dev2_package_success_signal:
           dev2PackageSuccessSignal,
@@ -107,6 +114,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
