@@ -11,6 +11,7 @@ export type Dev2SprintPackage = {
     phase: string;
     action: string;
   }[];
+  copy_ready_powershell: string[];
 };
 
 export function buildDev2SprintPackage(
@@ -85,7 +86,15 @@ export function buildDev2SprintPackage(
         phase: "commit",
         action: "Commit only after all guards pass."
       }
+    ],
+
+    copy_ready_powershell: [
+      `powershell -ExecutionPolicy Bypass -File .\\tools\\dev2-feature-compiler.ps1 -FeatureName "${featureName}"`,
+      "npm run hx2:quick",
+      "npm run hx2:chat-master:guard",
+      "git status --short"
     ]
   };
 }
+
 
