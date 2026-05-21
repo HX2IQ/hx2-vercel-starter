@@ -12,8 +12,9 @@ $riskGateActions = "app/api/hx2/_lib/sprint-risk-gate-actions.ts"
 $packageSuccess = "app/api/hx2/_lib/dev2-package-success-learning.ts"
 $adaptiveStrategy = "app/api/hx2/_lib/adaptive-dev2-package-strategy.ts"
 $adaptiveModifier = "app/api/hx2/_lib/adaptive-package-execution-modifier.ts"
+$operatorDecision = "app/api/hx2/_lib/dev2-operator-decision.ts"
 
-foreach ($path in @($route, $planner, $buildops, $action, $riskGate, $riskGateActions, $packageSuccess, $adaptiveStrategy, $adaptiveModifier)) {
+foreach ($path in @($route, $planner, $buildops, $action, $riskGate, $riskGateActions, $packageSuccess, $adaptiveStrategy, $adaptiveModifier, $operatorDecision)) {
   if (!(Test-Path $path)) {
     throw "Missing required file: $path"
   }
@@ -28,6 +29,7 @@ $riskGateActionsText = Get-Content $riskGateActions -Raw
 $packageSuccessText = Get-Content $packageSuccess -Raw
 $adaptiveStrategyText = Get-Content $adaptiveStrategy -Raw
 $adaptiveModifierText = Get-Content $adaptiveModifier -Raw
+$operatorDecisionText = Get-Content $operatorDecision -Raw
 
 $required = @(
   @{ name = "route uses planner"; ok = $routeText -like "*buildCapabilityPlan*" },
@@ -68,6 +70,12 @@ $required = @(
   @{ name = "adaptive modifier supports expanded surface"; ok = $adaptiveModifierText -like "*expanded orchestration surface allowed*" },
   @{ name = "adaptive modifier returns modification audit"; ok = $adaptiveModifierText -like "*adaptive_modification_audit*" },
   @{ name = "adaptive modifier returns modified fields"; ok = $adaptiveModifierText -like "*modified_fields*" },
+  @{ name = "operator decision helper exists"; ok = $operatorDecisionText -like "*buildDev2OperatorDecision*" },
+  @{ name = "operator decision supports proceed"; ok = $operatorDecisionText -like "*proceed*" },
+  @{ name = "operator decision supports inspect"; ok = $operatorDecisionText -like "*inspect*" },
+  @{ name = "operator decision supports stabilize"; ok = $operatorDecisionText -like "*stabilize*" },
+  @{ name = "operator decision supports expand"; ok = $operatorDecisionText -like "*expand*" },
+  @{ name = "route returns operator decision"; ok = $routeText -like "*operator_decision*" },
   @{ name = "route applies adaptive package execution"; ok = $routeText -like "*applyAdaptivePackageExecution*" }
 )
 
@@ -87,6 +95,7 @@ if ($failed.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT LOCAL CONTRACT TEST PASSED"
+
 
 
 
