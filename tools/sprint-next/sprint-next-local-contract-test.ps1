@@ -11,8 +11,9 @@ $riskGate = "app/api/hx2/_lib/sprint-next-risk-gate.ts"
 $riskGateActions = "app/api/hx2/_lib/sprint-risk-gate-actions.ts"
 $packageSuccess = "app/api/hx2/_lib/dev2-package-success-learning.ts"
 $adaptiveStrategy = "app/api/hx2/_lib/adaptive-dev2-package-strategy.ts"
+$adaptiveModifier = "app/api/hx2/_lib/adaptive-package-execution-modifier.ts"
 
-foreach ($path in @($route, $planner, $buildops, $action, $riskGate, $riskGateActions, $packageSuccess, $adaptiveStrategy)) {
+foreach ($path in @($route, $planner, $buildops, $action, $riskGate, $riskGateActions, $packageSuccess, $adaptiveStrategy, $adaptiveModifier)) {
   if (!(Test-Path $path)) {
     throw "Missing required file: $path"
   }
@@ -26,6 +27,7 @@ $riskGateText = Get-Content $riskGate -Raw
 $riskGateActionsText = Get-Content $riskGateActions -Raw
 $packageSuccessText = Get-Content $packageSuccess -Raw
 $adaptiveStrategyText = Get-Content $adaptiveStrategy -Raw
+$adaptiveModifierText = Get-Content $adaptiveModifier -Raw
 
 $required = @(
   @{ name = "route uses planner"; ok = $routeText -like "*buildCapabilityPlan*" },
@@ -59,7 +61,12 @@ $required = @(
   @{ name = "adaptive strategy helper exists"; ok = $adaptiveStrategyText -like "*buildAdaptivePackageStrategy*" },
   @{ name = "adaptive strategy supports stability first"; ok = $adaptiveStrategyText -like "*stability_first*" },
   @{ name = "adaptive strategy supports balanced execution"; ok = $adaptiveStrategyText -like "*balanced_execution*" },
-  @{ name = "adaptive strategy supports expansion ready"; ok = $adaptiveStrategyText -like "*expansion_ready*" }
+  @{ name = "adaptive strategy supports expansion ready"; ok = $adaptiveStrategyText -like "*expansion_ready*" },
+  @{ name = "adaptive modifier helper exists"; ok = $adaptiveModifierText -like "*applyAdaptivePackageExecution*" },
+  @{ name = "adaptive modifier supports stability first"; ok = $adaptiveModifierText -like "*stability_first*" },
+  @{ name = "adaptive modifier supports balanced execution"; ok = $adaptiveModifierText -like "*balanced_execution*" },
+  @{ name = "adaptive modifier supports expanded surface"; ok = $adaptiveModifierText -like "*expanded orchestration surface allowed*" },
+  @{ name = "route applies adaptive package execution"; ok = $routeText -like "*applyAdaptivePackageExecution*" }
 )
 
 $failed = @()
@@ -78,6 +85,7 @@ if ($failed.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT LOCAL CONTRACT TEST PASSED"
+
 
 
 
