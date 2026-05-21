@@ -9,6 +9,7 @@ import { buildDev2SprintPackage } from "../_lib/sprint-dev2-package";
 import { buildDev2PackageSuccessSignal } from "../_lib/dev2-package-success-learning";
 import { buildAdaptivePackageStrategy } from "../_lib/adaptive-dev2-package-strategy";
 import { applyAdaptivePackageExecution } from "../_lib/adaptive-package-execution-modifier";
+import { buildDev2OperatorDecision } from "../_lib/dev2-operator-decision";
 import { buildPlannerLearningSignals } from "../_lib/capability-learning";
 
 export async function POST(req: Request) {
@@ -91,6 +92,14 @@ export async function POST(req: Request) {
         adaptivePackageStrategy
       );
 
+    const dev2OperatorDecision =
+      buildDev2OperatorDecision(
+        adaptiveSprintPackage
+      );
+
+    adaptiveSprintPackage.operator_decision =
+      dev2OperatorDecision;
+
     return NextResponse.json({
       ok: true,
       request: message,
@@ -114,6 +123,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
