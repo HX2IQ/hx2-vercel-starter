@@ -7,6 +7,7 @@ import { buildSprintRiskGateActions } from "../_lib/sprint-risk-gate-actions";
 import { buildSprintPowerShellActions } from "../_lib/sprint-powershell-actions";
 import { buildDev2SprintPackage } from "../_lib/sprint-dev2-package";
 import { buildDev2PackageSuccessSignal } from "../_lib/dev2-package-success-learning";
+import { buildAdaptivePackageStrategy } from "../_lib/adaptive-dev2-package-strategy";
 import { buildPlannerLearningSignals } from "../_lib/capability-learning";
 
 export async function POST(req: Request) {
@@ -78,6 +79,11 @@ export async function POST(req: Request) {
         learningSignals
       );
 
+    const adaptivePackageStrategy =
+      buildAdaptivePackageStrategy(
+        dev2PackageSuccessSignal
+      );
+
     return NextResponse.json({
       ok: true,
       request: message,
@@ -87,7 +93,10 @@ export async function POST(req: Request) {
           dev2SprintPackage,
 
         dev2_package_success_signal:
-          dev2PackageSuccessSignal
+          dev2PackageSuccessSignal,
+
+        adaptive_package_strategy:
+          adaptivePackageStrategy
       },
       planner: plan
     });
@@ -98,6 +107,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
