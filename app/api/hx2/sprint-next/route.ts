@@ -12,6 +12,7 @@ import { applyAdaptivePackageExecution } from "../_lib/adaptive-package-executio
 import { buildDev2OperatorDecision } from "../_lib/dev2-operator-decision";
 import { buildOperatorDecisionFollowthrough } from "../_lib/operator-decision-followthrough";
 import { buildOrchestrationExecutionMemory } from "../_lib/orchestration-execution-memory";
+import { buildOrchestrationRuntimeOutcome } from "../_lib/orchestration-runtime-outcome";
 import { buildPlannerLearningSignals } from "../_lib/capability-learning";
 
 export async function POST(req: Request) {
@@ -112,6 +113,11 @@ export async function POST(req: Request) {
         adaptiveSprintPackage
       );
 
+    adaptiveSprintPackage.runtime_outcome =
+      buildOrchestrationRuntimeOutcome(
+        adaptiveSprintPackage.execution_memory
+      );
+
     return NextResponse.json({
       ok: true,
       request: message,
@@ -135,6 +141,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
