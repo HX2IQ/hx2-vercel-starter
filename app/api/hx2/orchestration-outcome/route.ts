@@ -1,3 +1,4 @@
+import { buildOperatorFollowthroughEvaluation } from "../_lib/operator-followthrough-evaluator";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -15,14 +16,27 @@ export async function POST(req: Request) {
         ? body.completed_guards
         : [];
 
+    const runtimeOutcome = {
+      execution_id,
+      runtime_status,
+      completed_guards,
+      completion_timestamp:
+        new Date().toISOString()
+    };
+
+    const followthroughEvaluation =
+      buildOperatorFollowthroughEvaluation(
+        body?.execution_memory || {},
+        runtimeOutcome
+      );
+
     return NextResponse.json({
       ok: true,
-      recorded_outcome: {
-        execution_id,
-        runtime_status,
-        completed_guards,
-        completion_timestamp: new Date().toISOString()
-      }
+      recorded_outcome:
+        runtimeOutcome,
+
+      followthrough_evaluation:
+        followthroughEvaluation
     });
   } catch (err: any) {
     return NextResponse.json({
@@ -31,3 +45,4 @@ export async function POST(req: Request) {
     });
   }
 }
+
