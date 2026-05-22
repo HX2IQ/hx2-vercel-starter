@@ -1,4 +1,5 @@
 import { buildOperatorFollowthroughEvaluation } from "../_lib/operator-followthrough-evaluator";
+import { buildOrchestrationOutcomeLearningRecord } from "../_lib/orchestration-outcome-learning-record";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -30,13 +31,22 @@ export async function POST(req: Request) {
         runtimeOutcome
       );
 
+    const learningRecord =
+      buildOrchestrationOutcomeLearningRecord(
+        runtimeOutcome,
+        followthroughEvaluation
+      );
+
     return NextResponse.json({
       ok: true,
       recorded_outcome:
         runtimeOutcome,
 
       followthrough_evaluation:
-        followthroughEvaluation
+        followthroughEvaluation,
+
+      learning_record:
+        learningRecord
     });
   } catch (err: any) {
     return NextResponse.json({
@@ -45,4 +55,5 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
