@@ -1,3 +1,4 @@
+import { OrchestrationOutcomeSummaryPanel } from "./orchestration-outcome-summary-panel";
 import { SprintNextPreviewPanel } from "./sprint-next-panel";
 import { CapabilityPlannerPreviewPanel } from "./capability-planner-panel";
 
@@ -230,6 +231,7 @@ export async function ChatMasterPanels() {
 
   return (
     <>
+      <OrchestrationOutcomeSummaryPanel />
       <SprintNextPreviewPanel />
       <CapabilityPlannerPreviewPanel />
       <ChatMasterStatusPanel status={status} />
@@ -241,6 +243,7 @@ export async function ChatMasterPanels() {
     </>
   );
 }
+
 
 
 
