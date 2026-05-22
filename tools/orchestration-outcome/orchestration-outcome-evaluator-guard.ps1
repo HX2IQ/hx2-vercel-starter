@@ -5,9 +5,9 @@ Write-Host "== ORCHESTRATION OUTCOME EVALUATOR GUARD =="
 
 $route = "app/api/hx2/orchestration-outcome/route.ts"
 $evaluator = "app/api/hx2/_lib/operator-followthrough-evaluator.ts"
-$learningRecord = "app/api/hx2/_lib/orchestration-outcome-learning-record.ts"
+$learning = "app/api/hx2/_lib/orchestration-outcome-learning-record.ts"
 
-foreach ($path in @($route, $evaluator, $learningRecord)) {
+foreach ($path in @($route, $evaluator, $learning)) {
   if (!(Test-Path $path)) {
     throw "Missing required file: $path"
   }
@@ -15,7 +15,7 @@ foreach ($path in @($route, $evaluator, $learningRecord)) {
 
 $routeText = Get-Content $route -Raw
 $evalText = Get-Content $evaluator -Raw
-$learningText = Get-Content $learningRecord -Raw
+$learningText = Get-Content $learning -Raw
 
 $requiredRoute = @(
   "POST",
@@ -25,16 +25,14 @@ $requiredRoute = @(
   "completed_guards",
   "recorded_outcome",
   "followthrough_evaluation",
-  "buildOperatorFollowthroughEvaluation",
   "learning_record",
+  "buildOperatorFollowthroughEvaluation",
   "buildOrchestrationOutcomeLearningRecord"
 )
 
 $requiredEvaluator = @(
   "OperatorFollowthroughEvaluation",
   "buildOperatorFollowthroughEvaluation",
-  "learning_record",
-  "buildOrchestrationOutcomeLearningRecord",
   "alignment",
   "aligned",
   "partial",
@@ -58,7 +56,7 @@ $missing = @()
 
 foreach ($needle in $requiredRoute) {
   if ($routeText -notlike "*$needle*") {
-    $missing += "Missing in outcome route: $needle"
+    $missing += "Missing in route: $needle"
   }
 }
 
@@ -83,4 +81,3 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "ORCHESTRATION OUTCOME EVALUATOR GUARD PASSED"
-
