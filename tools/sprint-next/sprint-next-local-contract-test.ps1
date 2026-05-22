@@ -14,6 +14,8 @@ $adaptiveStrategy = "app/api/hx2/_lib/adaptive-dev2-package-strategy.ts"
 $adaptiveModifier = "app/api/hx2/_lib/adaptive-package-execution-modifier.ts"
 $operatorDecision = "app/api/hx2/_lib/dev2-operator-decision.ts"
 $operatorFollowthrough = "app/api/hx2/_lib/operator-decision-followthrough.ts"
+$outcomeTelemetrySummary = "app/api/hx2/_lib/outcome-telemetry-summary.ts"
+$outcomeTelemetryInfluence = "app/api/hx2/_lib/outcome-telemetry-influence.ts"
 
 foreach ($path in @($route, $planner, $buildops, $action, $riskGate, $riskGateActions, $packageSuccess, $adaptiveStrategy, $adaptiveModifier, $operatorDecision, $operatorFollowthrough)) {
   if (!(Test-Path $path)) {
@@ -32,6 +34,8 @@ $adaptiveStrategyText = Get-Content $adaptiveStrategy -Raw
 $adaptiveModifierText = Get-Content $adaptiveModifier -Raw
 $operatorDecisionText = Get-Content $operatorDecision -Raw
 $operatorFollowthroughText = Get-Content $operatorFollowthrough -Raw
+$outcomeTelemetrySummaryText = Get-Content $outcomeTelemetrySummary -Raw
+$outcomeTelemetryInfluenceText = Get-Content $outcomeTelemetryInfluence -Raw
 
 $required = @(
   @{ name = "route uses planner"; ok = $routeText -like "*buildCapabilityPlan*" },
@@ -82,6 +86,11 @@ $required = @(
   @{ name = "operator followthrough helper exists"; ok = $operatorFollowthroughText -like "*buildOperatorDecisionFollowthrough*" },
   @{ name = "operator followthrough has expected path"; ok = $operatorFollowthroughText -like "*expected_operator_path*" },
   @{ name = "operator followthrough has learning message"; ok = $operatorFollowthroughText -like "*learning_message*" },
+  @{ name = "outcome telemetry summary helper exists"; ok = $outcomeTelemetrySummaryText -like "*buildOutcomeTelemetrySummary*" },
+  @{ name = "outcome telemetry summary reads jsonl"; ok = $outcomeTelemetrySummaryText -like "*outcome-learning-records.jsonl*" },
+  @{ name = "outcome telemetry influence helper exists"; ok = $outcomeTelemetryInfluenceText -like "*buildOutcomeTelemetryInfluence*" },
+  @{ name = "route returns outcome telemetry summary"; ok = $routeText -like "*outcome_telemetry_summary*" },
+  @{ name = "route returns outcome telemetry influence"; ok = $routeText -like "*outcome_telemetry_influence*" },
   @{ name = "route applies adaptive package execution"; ok = $routeText -like "*applyAdaptivePackageExecution*" }
 )
 
@@ -101,6 +110,7 @@ if ($failed.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT LOCAL CONTRACT TEST PASSED"
+
 
 
 
