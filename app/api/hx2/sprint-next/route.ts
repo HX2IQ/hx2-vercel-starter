@@ -78,6 +78,12 @@ export async function POST(req: Request) {
         sprintAction,
       history_summary:
         sprintHistorySummary,
+
+      outcome_telemetry_summary:
+        outcomeTelemetrySummary,
+
+      outcome_telemetry_influence:
+        outcomeTelemetryInfluence,
       risk_gate:
         sprintRiskGate,
       risk_gate_actions:
@@ -158,6 +164,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
