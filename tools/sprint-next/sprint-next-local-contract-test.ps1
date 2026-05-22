@@ -16,6 +16,7 @@ $operatorDecision = "app/api/hx2/_lib/dev2-operator-decision.ts"
 $operatorFollowthrough = "app/api/hx2/_lib/operator-decision-followthrough.ts"
 $outcomeTelemetrySummary = "app/api/hx2/_lib/outcome-telemetry-summary.ts"
 $outcomeTelemetryInfluence = "app/api/hx2/_lib/outcome-telemetry-influence.ts"
+$telemetryDecision = "app/api/hx2/_lib/telemetry-influenced-operator-decision.ts"
 
 foreach ($path in @($route, $planner, $buildops, $action, $riskGate, $riskGateActions, $packageSuccess, $adaptiveStrategy, $adaptiveModifier, $operatorDecision, $operatorFollowthrough)) {
   if (!(Test-Path $path)) {
@@ -36,6 +37,7 @@ $operatorDecisionText = Get-Content $operatorDecision -Raw
 $operatorFollowthroughText = Get-Content $operatorFollowthrough -Raw
 $outcomeTelemetrySummaryText = Get-Content $outcomeTelemetrySummary -Raw
 $outcomeTelemetryInfluenceText = Get-Content $outcomeTelemetryInfluence -Raw
+$telemetryDecisionText = Get-Content $telemetryDecision -Raw
 
 $required = @(
   @{ name = "route uses planner"; ok = $routeText -like "*buildCapabilityPlan*" },
@@ -91,6 +93,9 @@ $required = @(
   @{ name = "outcome telemetry influence helper exists"; ok = $outcomeTelemetryInfluenceText -like "*buildOutcomeTelemetryInfluence*" },
   @{ name = "route returns outcome telemetry summary"; ok = $routeText -like "*outcome_telemetry_summary*" },
   @{ name = "route returns outcome telemetry influence"; ok = $routeText -like "*outcome_telemetry_influence*" },
+  @{ name = "telemetry decision helper exists"; ok = $telemetryDecisionText -like "*applyTelemetryInfluenceToOperatorDecision*" },
+  @{ name = "telemetry decision supports override"; ok = $telemetryDecisionText -like "*telemetry_override*" },
+  @{ name = "route applies telemetry decision"; ok = $routeText -like "*applyTelemetryInfluenceToOperatorDecision*" },
   @{ name = "route applies adaptive package execution"; ok = $routeText -like "*applyAdaptivePackageExecution*" }
 )
 
@@ -110,6 +115,7 @@ if ($failed.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT LOCAL CONTRACT TEST PASSED"
+
 
 
 
