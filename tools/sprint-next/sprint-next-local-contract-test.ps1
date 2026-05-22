@@ -17,6 +17,7 @@ $operatorFollowthrough = "app/api/hx2/_lib/operator-decision-followthrough.ts"
 $outcomeTelemetrySummary = "app/api/hx2/_lib/outcome-telemetry-summary.ts"
 $outcomeTelemetryInfluence = "app/api/hx2/_lib/outcome-telemetry-influence.ts"
 $telemetryDecision = "app/api/hx2/_lib/telemetry-influenced-operator-decision.ts"
+$weightedConfidence = "app/api/hx2/_lib/weighted-orchestration-confidence.ts"
 
 foreach ($path in @($route, $planner, $buildops, $action, $riskGate, $riskGateActions, $packageSuccess, $adaptiveStrategy, $adaptiveModifier, $operatorDecision, $operatorFollowthrough)) {
   if (!(Test-Path $path)) {
@@ -38,6 +39,7 @@ $operatorFollowthroughText = Get-Content $operatorFollowthrough -Raw
 $outcomeTelemetrySummaryText = Get-Content $outcomeTelemetrySummary -Raw
 $outcomeTelemetryInfluenceText = Get-Content $outcomeTelemetryInfluence -Raw
 $telemetryDecisionText = Get-Content $telemetryDecision -Raw
+$weightedConfidenceText = Get-Content $weightedConfidence -Raw
 
 $required = @(
   @{ name = "route uses planner"; ok = $routeText -like "*buildCapabilityPlan*" },
@@ -96,6 +98,11 @@ $required = @(
   @{ name = "telemetry decision helper exists"; ok = $telemetryDecisionText -like "*applyTelemetryInfluenceToOperatorDecision*" },
   @{ name = "telemetry decision supports override"; ok = $telemetryDecisionText -like "*telemetry_override*" },
   @{ name = "route applies telemetry decision"; ok = $routeText -like "*applyTelemetryInfluenceToOperatorDecision*" },
+  @{ name = "weighted confidence helper exists"; ok = $weightedConfidenceText -like "*buildWeightedOrchestrationConfidence*" },
+  @{ name = "weighted confidence score exists"; ok = $weightedConfidenceText -like "*confidence_score*" },
+  @{ name = "weighted confidence band exists"; ok = $weightedConfidenceText -like "*confidence_band*" },
+  @{ name = "weighted confidence reason exists"; ok = $weightedConfidenceText -like "*confidence_reason*" },
+  @{ name = "route returns orchestration confidence"; ok = $routeText -like "*orchestration_confidence*" },
   @{ name = "route applies adaptive package execution"; ok = $routeText -like "*applyAdaptivePackageExecution*" }
 )
 
@@ -115,6 +122,7 @@ if ($failed.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT LOCAL CONTRACT TEST PASSED"
+
 
 
 
