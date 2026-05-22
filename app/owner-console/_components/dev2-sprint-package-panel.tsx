@@ -42,6 +42,7 @@ export function Dev2SprintPackagePanel({
           <div className="mt-2 text-slate-300">Decision: {operatorDecision?.decision || "unknown"}</div>
           <div className="mt-1 text-slate-300">Reason: {operatorDecision?.reason || "unknown"}</div>
           <div className="mt-1 text-slate-300">Message: {operatorDecision?.operator_message || "unknown"}</div>
+          <div className="mt-1 text-slate-300">Telemetry Override: {operatorDecision?.telemetry_override ? "true" : "false"}</div>
         </div>
       ) : null}
 
@@ -129,6 +130,7 @@ export function Dev2SprintPackagePanel({
     </div>
   );
 }
+
 
 
 
