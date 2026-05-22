@@ -12,6 +12,7 @@ import { applyAdaptivePackageExecution } from "../_lib/adaptive-package-executio
 import { buildDev2OperatorDecision } from "../_lib/dev2-operator-decision";
 import { buildOperatorDecisionFollowthrough } from "../_lib/operator-decision-followthrough";
 import { buildOrchestrationExecutionMemory } from "../_lib/orchestration-execution-memory";
+import { buildOutcomeTelemetryInfluence } from "../_lib/outcome-telemetry-influence";
 import { buildOrchestrationRuntimeOutcome } from "../_lib/orchestration-runtime-outcome";
 import { buildPlannerLearningSignals } from "../_lib/capability-learning";
 
@@ -36,6 +37,11 @@ export async function POST(req: Request) {
     const sprintHistorySummary =
       buildSprintHistorySummary(
         learningSignals
+      );
+
+    const outcomeTelemetryInfluence =
+      buildOutcomeTelemetryInfluence(
+        sprintHistorySummary
       );
 
     const sprintRiskGate =
@@ -141,6 +147,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
