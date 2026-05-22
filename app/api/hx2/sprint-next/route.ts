@@ -10,6 +10,7 @@ import { buildDev2PackageSuccessSignal } from "../_lib/dev2-package-success-lear
 import { buildAdaptivePackageStrategy } from "../_lib/adaptive-dev2-package-strategy";
 import { applyAdaptivePackageExecution } from "../_lib/adaptive-package-execution-modifier";
 import { buildDev2OperatorDecision } from "../_lib/dev2-operator-decision";
+import { applyTelemetryInfluenceToOperatorDecision } from "../_lib/telemetry-influenced-operator-decision";
 import { buildOperatorDecisionFollowthrough } from "../_lib/operator-decision-followthrough";
 import { buildOrchestrationExecutionMemory } from "../_lib/orchestration-execution-memory";
 import { buildOutcomeTelemetryInfluence } from "../_lib/outcome-telemetry-influence";
@@ -110,8 +111,14 @@ export async function POST(req: Request) {
         adaptiveSprintPackage
       );
 
+    const telemetryAdjustedDecision =
+      applyTelemetryInfluenceToOperatorDecision(
+        dev2OperatorDecision,
+        outcomeTelemetryInfluence
+      );
+
     adaptiveSprintPackage.operator_decision =
-      dev2OperatorDecision;
+      telemetryAdjustedDecision;
 
     adaptiveSprintPackage.operator_followthrough =
       buildOperatorDecisionFollowthrough(
@@ -151,6 +158,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
