@@ -11,6 +11,7 @@ import { buildAdaptivePackageStrategy } from "../_lib/adaptive-dev2-package-stra
 import { applyAdaptivePackageExecution } from "../_lib/adaptive-package-execution-modifier";
 import { buildDev2OperatorDecision } from "../_lib/dev2-operator-decision";
 import { buildOperatorDecisionFollowthrough } from "../_lib/operator-decision-followthrough";
+import { buildOrchestrationExecutionMemory } from "../_lib/orchestration-execution-memory";
 import { buildPlannerLearningSignals } from "../_lib/capability-learning";
 
 export async function POST(req: Request) {
@@ -106,6 +107,11 @@ export async function POST(req: Request) {
         dev2OperatorDecision
       );
 
+    adaptiveSprintPackage.execution_memory =
+      buildOrchestrationExecutionMemory(
+        adaptiveSprintPackage
+      );
+
     return NextResponse.json({
       ok: true,
       request: message,
@@ -129,6 +135,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
