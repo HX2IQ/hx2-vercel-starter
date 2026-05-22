@@ -14,6 +14,7 @@ import { applyTelemetryInfluenceToOperatorDecision } from "../_lib/telemetry-inf
 import { buildOperatorDecisionFollowthrough } from "../_lib/operator-decision-followthrough";
 import { buildOrchestrationExecutionMemory } from "../_lib/orchestration-execution-memory";
 import { buildOutcomeTelemetryInfluence } from "../_lib/outcome-telemetry-influence";
+import { buildWeightedOrchestrationConfidence } from "../_lib/weighted-orchestration-confidence";
 import { buildOutcomeTelemetrySummary } from "../_lib/outcome-telemetry-summary";
 import { buildOrchestrationRuntimeOutcome } from "../_lib/orchestration-runtime-outcome";
 import { buildPlannerLearningSignals } from "../_lib/capability-learning";
@@ -46,6 +47,11 @@ export async function POST(req: Request) {
 
     const outcomeTelemetryInfluence =
       buildOutcomeTelemetryInfluence(
+        outcomeTelemetrySummary
+      );
+
+    const orchestrationConfidence =
+      buildWeightedOrchestrationConfidence(
         outcomeTelemetrySummary
       );
 
@@ -84,6 +90,9 @@ export async function POST(req: Request) {
 
       outcome_telemetry_influence:
         outcomeTelemetryInfluence,
+
+      orchestration_confidence:
+        orchestrationConfidence,
       risk_gate:
         sprintRiskGate,
       risk_gate_actions:
@@ -164,6 +173,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
