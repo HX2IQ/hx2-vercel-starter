@@ -1,5 +1,6 @@
 import { buildOperatorFollowthroughEvaluation } from "../_lib/operator-followthrough-evaluator";
 import { buildOrchestrationOutcomeLearningRecord } from "../_lib/orchestration-outcome-learning-record";
+import { persistOrchestrationOutcomeLearningRecord } from "../_lib/orchestration-outcome-persistence";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -37,6 +38,11 @@ export async function POST(req: Request) {
         followthroughEvaluation
       );
 
+    const persistence =
+      persistOrchestrationOutcomeLearningRecord(
+        learningRecord
+      );
+
     return NextResponse.json({
       ok: true,
       recorded_outcome:
@@ -46,7 +52,9 @@ export async function POST(req: Request) {
         followthroughEvaluation,
 
       learning_record:
-        learningRecord
+        learningRecord,
+
+      persistence
     });
   } catch (err: any) {
     return NextResponse.json({
@@ -55,5 +63,6 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
