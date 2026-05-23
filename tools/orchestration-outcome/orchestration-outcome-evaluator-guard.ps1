@@ -7,8 +7,9 @@ $route = "app/api/hx2/orchestration-outcome/route.ts"
 $evaluator = "app/api/hx2/_lib/operator-followthrough-evaluator.ts"
 $learning = "app/api/hx2/_lib/orchestration-outcome-learning-record.ts"
 $persistence = "app/api/hx2/_lib/orchestration-outcome-persistence.ts"
+$weightUpdater = "app/api/hx2/_lib/adaptive-learning-weight-updater.ts"
 
-foreach ($path in @($route, $evaluator, $learning, $persistence)) {
+foreach ($path in @($route, $evaluator, $learning, $persistence, $weightUpdater)) {
   if (!(Test-Path $path)) {
     throw "Missing required file: $path"
   }
@@ -18,8 +19,18 @@ $routeText = Get-Content $route -Raw
 $evalText = Get-Content $evaluator -Raw
 $learningText = Get-Content $learning -Raw
 $persistenceText = Get-Content $persistence -Raw
+$weightUpdaterText = Get-Content $weightUpdater -Raw
 
 $checks = @{
+  weightUpdater = @(
+    "updateAdaptiveLearningWeights",
+    "orchestration-learning-weights.json",
+    "stability_bias",
+    "expansion_bias",
+    "verification_bias",
+    "telemetry_bias",
+    "clamp"
+  )
   route = @(
     "POST","NextResponse.json","recorded_outcome",
     "followthrough_evaluation","learning_record",
@@ -47,6 +58,7 @@ $texts = @{
   evaluator = $evalText
   learning = $learningText
   persistence = $persistenceText
+  weightUpdater = $weightUpdaterText
 }
 
 $missing = @()
@@ -65,3 +77,4 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "ORCHESTRATION OUTCOME EVALUATOR GUARD PASSED"
+
