@@ -26,6 +26,10 @@ $required = @(
   "Telemetry Quality",
   "Learning Weights Applied",
   "Learning Weight Audit",
+  "Learning Weight Strategy Audit",
+  "Posture:",
+  "Scope:",
+  "Verification:",
   "Original Score",
   "Weighted Score",
   "Telemetry Bias",
@@ -67,6 +71,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "DEV2 SPRINT PACKAGE PREVIEW GUARD PASSED"
+
 
 
 
