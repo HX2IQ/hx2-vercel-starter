@@ -18,6 +18,8 @@ $outcomeTelemetrySummary = "app/api/hx2/_lib/outcome-telemetry-summary.ts"
 $outcomeTelemetryInfluence = "app/api/hx2/_lib/outcome-telemetry-influence.ts"
 $telemetryDecision = "app/api/hx2/_lib/telemetry-influenced-operator-decision.ts"
 $weightedConfidence = "app/api/hx2/_lib/weighted-orchestration-confidence.ts"
+$telemetryQuality = "app/api/hx2/_lib/outcome-telemetry-quality.ts"
+$qualityConfidence = "app/api/hx2/_lib/telemetry-quality-governed-confidence.ts"
 $confidenceDecision = "app/api/hx2/_lib/confidence-influenced-operator-decision.ts"
 $confidencePackage = "app/api/hx2/_lib/confidence-modified-sprint-package.ts"
 
@@ -42,6 +44,8 @@ $outcomeTelemetrySummaryText = Get-Content $outcomeTelemetrySummary -Raw
 $outcomeTelemetryInfluenceText = Get-Content $outcomeTelemetryInfluence -Raw
 $telemetryDecisionText = Get-Content $telemetryDecision -Raw
 $weightedConfidenceText = Get-Content $weightedConfidence -Raw
+$telemetryQualityText = Get-Content $telemetryQuality -Raw
+$qualityConfidenceText = Get-Content $qualityConfidence -Raw
 $confidenceDecisionText = Get-Content $confidenceDecision -Raw
 $confidencePackageText = Get-Content $confidencePackage -Raw
 
@@ -107,6 +111,12 @@ $required = @(
   @{ name = "weighted confidence band exists"; ok = $weightedConfidenceText -like "*confidence_band*" },
   @{ name = "weighted confidence reason exists"; ok = $weightedConfidenceText -like "*confidence_reason*" },
   @{ name = "route returns orchestration confidence"; ok = $routeText -like "*orchestration_confidence*" },
+  @{ name = "route returns telemetry quality"; ok = $routeText -like "*outcome_telemetry_quality*" },
+  @{ name = "telemetry quality helper exists"; ok = $telemetryQualityText -like "*buildOutcomeTelemetryQuality*" },
+  @{ name = "telemetry quality has insufficient band"; ok = $telemetryQualityText -like "*insufficient*" },
+  @{ name = "quality confidence helper exists"; ok = $qualityConfidenceText -like "*applyTelemetryQualityToConfidence*" },
+  @{ name = "quality confidence supports quality override"; ok = $qualityConfidenceText -like "*quality_override*" },
+  @{ name = "route applies telemetry quality to confidence"; ok = $routeText -like "*applyTelemetryQualityToConfidence*" },
   @{ name = "confidence decision helper exists"; ok = $confidenceDecisionText -like "*applyConfidenceToOperatorDecision*" },
   @{ name = "confidence decision supports override"; ok = $confidenceDecisionText -like "*confidence_override*" },
   @{ name = "confidence decision tracks confidence band"; ok = $confidenceDecisionText -like "*confidence_band*" },
@@ -134,6 +144,7 @@ if ($failed.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT LOCAL CONTRACT TEST PASSED"
+
 
 
 
