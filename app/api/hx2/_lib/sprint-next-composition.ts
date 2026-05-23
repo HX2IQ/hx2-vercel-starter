@@ -70,7 +70,7 @@ export function buildSprintNextPayload(message: string) {
     actionable_sprint: sprintAction,
     history_summary: sprintHistorySummary,
     persistent_learning_weights: persistentLearningWeights,
-    learning_weight_driven_strategy: contextAdjustedLearningStrategy,
+    learning_weight_driven_strategy: learningWeightDrivenStrategy,
     outcome_telemetry_summary: outcomeTelemetrySummary,
     outcome_telemetry_quality: outcomeTelemetryQuality,
     outcome_telemetry_influence: outcomeTelemetryInfluence,
@@ -160,4 +160,5 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
 
