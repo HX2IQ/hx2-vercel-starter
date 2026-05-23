@@ -5,8 +5,9 @@ Write-Host "== SPRINT HISTORY SUMMARY GUARD =="
 
 $summary = "app/api/hx2/_lib/sprint-history-summary.ts"
 $route = "app/api/hx2/sprint-next/route.ts"
+$composition = "app/api/hx2/_lib/sprint-next-composition.ts"
 
-foreach ($path in @($summary, $route)) {
+foreach ($path in @($summary, $route, $composition)) {
   if (!(Test-Path $path)) {
     throw "Missing required file: $path"
   }
@@ -14,6 +15,7 @@ foreach ($path in @($summary, $route)) {
 
 $summaryText = Get-Content $summary -Raw
 $routeText = Get-Content $route -Raw
+$compositionText = Get-Content $composition -Raw
 
 $requiredSummary = @(
   "SprintHistorySummary",
@@ -27,9 +29,15 @@ $requiredSummary = @(
 )
 
 $requiredRoute = @(
-  "buildPlannerLearningSignals",
+  "buildSprintNextPayload",
+  "sprint_next",
+  "planner"
+)
+
+$requiredComposition = @(
   "buildSprintHistorySummary",
-  "history_summary"
+  "history_summary",
+  "buildPlannerLearningSignals"
 )
 
 $missing = @()
@@ -43,6 +51,12 @@ foreach ($needle in $requiredSummary) {
 foreach ($needle in $requiredRoute) {
   if ($routeText -notlike "*$needle*") {
     $missing += "Missing in sprint-next route: $needle"
+  }
+}
+
+foreach ($needle in $requiredComposition) {
+  if ($compositionText -notlike "*$needle*") {
+    $missing += "Missing in composition helper: $needle"
   }
 }
 
