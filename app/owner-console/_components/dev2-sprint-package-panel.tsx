@@ -48,6 +48,18 @@ export function Dev2SprintPackagePanel({
           <div className="mt-1 text-slate-300">Confidence Score: {operatorDecision?.confidence_score ?? 0}</div>
           <div className="mt-1 text-slate-300">Quality Override: {operatorDecision?.quality_override ? "true" : "false"}</div>
           <div className="mt-1 text-slate-300">Telemetry Quality: {operatorDecision?.telemetry_quality_band || "unknown"}</div>
+          <div className="mt-1 text-slate-300">Learning Weights Applied: {operatorDecision?.learning_weights_applied ? "true" : "false"}</div>
+
+          {operatorDecision?.learning_weight_audit ? (
+            <div className="mt-3 rounded-lg border border-slate-800 bg-slate-950 p-3">
+              <div className="font-semibold text-white">Learning Weight Audit</div>
+              <div className="mt-2 text-slate-300">Original Score: {operatorDecision.learning_weight_audit.original_score ?? 0}</div>
+              <div className="mt-1 text-slate-300">Weighted Score: {operatorDecision.learning_weight_audit.weighted_score ?? 0}</div>
+              <div className="mt-1 text-slate-300">Telemetry Bias: {operatorDecision.learning_weight_audit.telemetry_bias ?? 1}</div>
+              <div className="mt-1 text-slate-300">Stability Bias: {operatorDecision.learning_weight_audit.stability_bias ?? 1}</div>
+              <div className="mt-1 text-slate-300">Expansion Bias: {operatorDecision.learning_weight_audit.expansion_bias ?? 1}</div>
+            </div>
+          ) : null}
         </div>
       ) : null}
 
@@ -135,6 +147,7 @@ export function Dev2SprintPackagePanel({
     </div>
   );
 }
+
 
 
 
