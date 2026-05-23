@@ -21,6 +21,7 @@ import { applyTelemetryQualityToConfidence } from "../_lib/telemetry-quality-gov
 import { applyLearningWeightsToConfidence } from "../_lib/learning-weights-influence-confidence";
 import { buildOutcomeTelemetrySummary } from "../_lib/outcome-telemetry-summary";
 import { buildPersistentLearningWeights } from "../_lib/persistent-learning-weights";
+import { buildLearningWeightDrivenStrategy } from "../_lib/learning-weight-driven-strategy";
 import { buildOutcomeTelemetryQuality } from "../_lib/outcome-telemetry-quality";
 import { buildOrchestrationRuntimeOutcome } from "../_lib/orchestration-runtime-outcome";
 import { buildPlannerLearningSignals } from "../_lib/capability-learning";
@@ -50,6 +51,11 @@ export async function POST(req: Request) {
 
     const persistentLearningWeights =
       buildPersistentLearningWeights();
+
+    const learningWeightDrivenStrategy =
+      buildLearningWeightDrivenStrategy(
+        persistentLearningWeights
+      );
 
     const outcomeTelemetrySummary =
       buildOutcomeTelemetrySummary();
@@ -113,6 +119,9 @@ export async function POST(req: Request) {
 
       persistent_learning_weights:
         persistentLearningWeights,
+
+      learning_weight_driven_strategy:
+        learningWeightDrivenStrategy,
 
       outcome_telemetry_summary:
         outcomeTelemetrySummary,
@@ -217,6 +226,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
