@@ -23,6 +23,7 @@ $qualityConfidence = "app/api/hx2/_lib/telemetry-quality-governed-confidence.ts"
 $persistentWeights = "app/api/hx2/_lib/persistent-learning-weights.ts"
 $weightsConfidence = "app/api/hx2/_lib/learning-weights-influence-confidence.ts"
 $weightStrategy = "app/api/hx2/_lib/learning-weight-driven-strategy.ts"
+$weightPackageModifier = "app/api/hx2/_lib/learning-weight-strategy-package-modifier.ts"
 $confidenceDecision = "app/api/hx2/_lib/confidence-influenced-operator-decision.ts"
 $confidencePackage = "app/api/hx2/_lib/confidence-modified-sprint-package.ts"
 
@@ -52,6 +53,7 @@ $qualityConfidenceText = Get-Content $qualityConfidence -Raw
 $persistentWeightsText = Get-Content $persistentWeights -Raw
 $weightsConfidenceText = Get-Content $weightsConfidence -Raw
 $weightStrategyText = Get-Content $weightStrategy -Raw
+$weightPackageModifierText = Get-Content $weightPackageModifier -Raw
 $confidenceDecisionText = Get-Content $confidenceDecision -Raw
 $confidencePackageText = Get-Content $confidencePackage -Raw
 
@@ -134,6 +136,10 @@ $required = @(
   @{ name = "learning weight strategy verification exists"; ok = $weightStrategyText -like "*verification_intensity*" },
   @{ name = "learning weight strategy scope exists"; ok = $weightStrategyText -like "*scope_preference*" },
   @{ name = "route returns learning weight strategy"; ok = $routeText -like "*learning_weight_driven_strategy*" },
+  @{ name = "learning weight package modifier helper exists"; ok = $weightPackageModifierText -like "*applyLearningWeightStrategyToPackage*" },
+  @{ name = "learning weight package modifier audit exists"; ok = $weightPackageModifierText -like "*learning_weight_strategy_audit*" },
+  @{ name = "learning weight package modifier changes scope"; ok = $weightPackageModifierText -like "*scope_preference*" },
+  @{ name = "route applies learning weight package modifier"; ok = $routeText -like "*applyLearningWeightStrategyToPackage*" },
   @{ name = "confidence decision helper exists"; ok = $confidenceDecisionText -like "*applyConfidenceToOperatorDecision*" },
   @{ name = "confidence decision supports override"; ok = $confidenceDecisionText -like "*confidence_override*" },
   @{ name = "confidence decision tracks confidence band"; ok = $confidenceDecisionText -like "*confidence_band*" },
@@ -161,6 +167,7 @@ if ($failed.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT LOCAL CONTRACT TEST PASSED"
+
 
 
 
