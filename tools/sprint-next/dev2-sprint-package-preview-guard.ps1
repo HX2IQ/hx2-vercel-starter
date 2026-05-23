@@ -22,6 +22,8 @@ $required = @(
   "Confidence Override",
   "Confidence Band",
   "Confidence Score",
+  "Quality Override",
+  "Telemetry Quality",
   "Decision:",
   "Message:",
   "Adaptive Modification Audit",
@@ -58,6 +60,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "DEV2 SPRINT PACKAGE PREVIEW GUARD PASSED"
+
 
 
 
