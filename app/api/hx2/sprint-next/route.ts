@@ -12,6 +12,7 @@ import { applyAdaptivePackageExecution } from "../_lib/adaptive-package-executio
 import { buildDev2OperatorDecision } from "../_lib/dev2-operator-decision";
 import { applyTelemetryInfluenceToOperatorDecision } from "../_lib/telemetry-influenced-operator-decision";
 import { applyConfidenceToOperatorDecision } from "../_lib/confidence-influenced-operator-decision";
+import { applyConfidenceToSprintPackage } from "../_lib/confidence-modified-sprint-package";
 import { buildOperatorDecisionFollowthrough } from "../_lib/operator-decision-followthrough";
 import { buildOrchestrationExecutionMemory } from "../_lib/orchestration-execution-memory";
 import { buildOutcomeTelemetryInfluence } from "../_lib/outcome-telemetry-influence";
@@ -122,6 +123,12 @@ export async function POST(req: Request) {
         adaptivePackageStrategy
       );
 
+    const confidenceSprintPackage =
+      applyConfidenceToSprintPackage(
+        adaptiveSprintPackage,
+        orchestrationConfidence
+      );
+
     const dev2OperatorDecision =
       buildDev2OperatorDecision(
         adaptiveSprintPackage
@@ -139,15 +146,15 @@ export async function POST(req: Request) {
         orchestrationConfidence
       );
 
-    adaptiveSprintPackage.operator_decision =
+    confidenceSprintPackage.operator_decision =
       confidenceAdjustedDecision;
 
-    adaptiveSprintPackage.operator_followthrough =
+    confidenceSprintPackage.operator_followthrough =
       buildOperatorDecisionFollowthrough(
         dev2OperatorDecision
       );
 
-    adaptiveSprintPackage.execution_memory =
+    confidenceSprintPackage.execution_memory =
       buildOrchestrationExecutionMemory(
         adaptiveSprintPackage
       );
@@ -163,7 +170,7 @@ export async function POST(req: Request) {
       sprint_next: {
         ...sprintNextPayload,
         dev2_sprint_package:
-          adaptiveSprintPackage,
+          confidenceSprintPackage,
 
         dev2_package_success_signal:
           dev2PackageSuccessSignal,
@@ -180,6 +187,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
