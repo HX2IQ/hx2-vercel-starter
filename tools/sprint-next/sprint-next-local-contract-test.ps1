@@ -20,6 +20,8 @@ $telemetryDecision = "app/api/hx2/_lib/telemetry-influenced-operator-decision.ts
 $weightedConfidence = "app/api/hx2/_lib/weighted-orchestration-confidence.ts"
 $telemetryQuality = "app/api/hx2/_lib/outcome-telemetry-quality.ts"
 $qualityConfidence = "app/api/hx2/_lib/telemetry-quality-governed-confidence.ts"
+$persistentWeights = "app/api/hx2/_lib/persistent-learning-weights.ts"
+$weightsConfidence = "app/api/hx2/_lib/learning-weights-influence-confidence.ts"
 $confidenceDecision = "app/api/hx2/_lib/confidence-influenced-operator-decision.ts"
 $confidencePackage = "app/api/hx2/_lib/confidence-modified-sprint-package.ts"
 
@@ -46,6 +48,8 @@ $telemetryDecisionText = Get-Content $telemetryDecision -Raw
 $weightedConfidenceText = Get-Content $weightedConfidence -Raw
 $telemetryQualityText = Get-Content $telemetryQuality -Raw
 $qualityConfidenceText = Get-Content $qualityConfidence -Raw
+$persistentWeightsText = Get-Content $persistentWeights -Raw
+$weightsConfidenceText = Get-Content $weightsConfidence -Raw
 $confidenceDecisionText = Get-Content $confidenceDecision -Raw
 $confidencePackageText = Get-Content $confidencePackage -Raw
 
@@ -117,6 +121,12 @@ $required = @(
   @{ name = "quality confidence helper exists"; ok = $qualityConfidenceText -like "*applyTelemetryQualityToConfidence*" },
   @{ name = "quality confidence supports quality override"; ok = $qualityConfidenceText -like "*quality_override*" },
   @{ name = "route applies telemetry quality to confidence"; ok = $routeText -like "*applyTelemetryQualityToConfidence*" },
+  @{ name = "persistent learning weights helper exists"; ok = $persistentWeightsText -like "*buildPersistentLearningWeights*" },
+  @{ name = "persistent learning weights file exists"; ok = $persistentWeightsText -like "*orchestration-learning-weights.json*" },
+  @{ name = "learning weights confidence helper exists"; ok = $weightsConfidenceText -like "*applyLearningWeightsToConfidence*" },
+  @{ name = "learning weights audit exists"; ok = $weightsConfidenceText -like "*learning_weight_audit*" },
+  @{ name = "route returns persistent learning weights"; ok = $routeText -like "*persistent_learning_weights*" },
+  @{ name = "route applies learning weights to confidence"; ok = $routeText -like "*applyLearningWeightsToConfidence*" },
   @{ name = "confidence decision helper exists"; ok = $confidenceDecisionText -like "*applyConfidenceToOperatorDecision*" },
   @{ name = "confidence decision supports override"; ok = $confidenceDecisionText -like "*confidence_override*" },
   @{ name = "confidence decision tracks confidence band"; ok = $confidenceDecisionText -like "*confidence_band*" },
@@ -144,6 +154,7 @@ if ($failed.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT LOCAL CONTRACT TEST PASSED"
+
 
 
 
