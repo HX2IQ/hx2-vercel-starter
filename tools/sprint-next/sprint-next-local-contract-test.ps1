@@ -18,6 +18,7 @@ $outcomeTelemetrySummary = "app/api/hx2/_lib/outcome-telemetry-summary.ts"
 $outcomeTelemetryInfluence = "app/api/hx2/_lib/outcome-telemetry-influence.ts"
 $telemetryDecision = "app/api/hx2/_lib/telemetry-influenced-operator-decision.ts"
 $weightedConfidence = "app/api/hx2/_lib/weighted-orchestration-confidence.ts"
+$confidenceDecision = "app/api/hx2/_lib/confidence-influenced-operator-decision.ts"
 
 foreach ($path in @($route, $planner, $buildops, $action, $riskGate, $riskGateActions, $packageSuccess, $adaptiveStrategy, $adaptiveModifier, $operatorDecision, $operatorFollowthrough)) {
   if (!(Test-Path $path)) {
@@ -40,6 +41,7 @@ $outcomeTelemetrySummaryText = Get-Content $outcomeTelemetrySummary -Raw
 $outcomeTelemetryInfluenceText = Get-Content $outcomeTelemetryInfluence -Raw
 $telemetryDecisionText = Get-Content $telemetryDecision -Raw
 $weightedConfidenceText = Get-Content $weightedConfidence -Raw
+$confidenceDecisionText = Get-Content $confidenceDecision -Raw
 
 $required = @(
   @{ name = "route uses planner"; ok = $routeText -like "*buildCapabilityPlan*" },
@@ -103,6 +105,10 @@ $required = @(
   @{ name = "weighted confidence band exists"; ok = $weightedConfidenceText -like "*confidence_band*" },
   @{ name = "weighted confidence reason exists"; ok = $weightedConfidenceText -like "*confidence_reason*" },
   @{ name = "route returns orchestration confidence"; ok = $routeText -like "*orchestration_confidence*" },
+  @{ name = "confidence decision helper exists"; ok = $confidenceDecisionText -like "*applyConfidenceToOperatorDecision*" },
+  @{ name = "confidence decision supports override"; ok = $confidenceDecisionText -like "*confidence_override*" },
+  @{ name = "confidence decision tracks confidence band"; ok = $confidenceDecisionText -like "*confidence_band*" },
+  @{ name = "route applies confidence decision"; ok = $routeText -like "*applyConfidenceToOperatorDecision*" },
   @{ name = "route applies adaptive package execution"; ok = $routeText -like "*applyAdaptivePackageExecution*" }
 )
 
@@ -122,6 +128,7 @@ if ($failed.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT LOCAL CONTRACT TEST PASSED"
+
 
 
 
