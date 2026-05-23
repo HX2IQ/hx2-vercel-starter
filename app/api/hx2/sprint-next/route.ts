@@ -18,6 +18,7 @@ import { buildOrchestrationExecutionMemory } from "../_lib/orchestration-executi
 import { buildOutcomeTelemetryInfluence } from "../_lib/outcome-telemetry-influence";
 import { buildWeightedOrchestrationConfidence } from "../_lib/weighted-orchestration-confidence";
 import { buildOutcomeTelemetrySummary } from "../_lib/outcome-telemetry-summary";
+import { buildOutcomeTelemetryQuality } from "../_lib/outcome-telemetry-quality";
 import { buildOrchestrationRuntimeOutcome } from "../_lib/orchestration-runtime-outcome";
 import { buildPlannerLearningSignals } from "../_lib/capability-learning";
 
@@ -46,6 +47,11 @@ export async function POST(req: Request) {
 
     const outcomeTelemetrySummary =
       buildOutcomeTelemetrySummary();
+
+    const outcomeTelemetryQuality =
+      buildOutcomeTelemetryQuality(
+        outcomeTelemetrySummary
+      );
 
     const outcomeTelemetryInfluence =
       buildOutcomeTelemetryInfluence(
@@ -89,6 +95,9 @@ export async function POST(req: Request) {
 
       outcome_telemetry_summary:
         outcomeTelemetrySummary,
+
+      outcome_telemetry_quality:
+        outcomeTelemetryQuality,
 
       outcome_telemetry_influence:
         outcomeTelemetryInfluence,
@@ -187,6 +196,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
