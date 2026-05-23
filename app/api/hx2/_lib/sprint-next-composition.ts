@@ -29,6 +29,7 @@ import { classifyOrchestrationExecutionContext } from "./context-aware-learning-
 import { applyContextToLearningWeightStrategy } from "./context-adjusted-learning-strategy";
 import { buildSprintNextStageAudit } from "./sprint-next-stage-audit";
 import { buildRecursiveVerificationResult } from "./recursive-verification-stage";
+import { applyRecursiveVerificationToPackage } from "./recursive-verification-package-modifier";
 
 export function buildSprintNextPayload(message: string) {
   const stageAudit = buildSprintNextStageAudit();
@@ -135,8 +136,14 @@ export function buildSprintNextPayload(message: string) {
       contextAdjustedLearningStrategy
     );
 
+  const verifiedPackage =
+    applyRecursiveVerificationToPackage(
+      strategyPackage,
+      recursiveVerification
+    );
+
   const baseDecision =
-    buildDev2OperatorDecision(strategyPackage);
+    buildDev2OperatorDecision(verifiedPackage);
 
   const telemetryDecision =
     applyTelemetryInfluenceToOperatorDecision(
@@ -150,29 +157,30 @@ export function buildSprintNextPayload(message: string) {
       orchestrationConfidence
     );
 
-  strategyPackage.operator_decision = confidenceDecision;
+  verifiedPackage.operator_decision = confidenceDecision;
 
-  strategyPackage.operator_followthrough =
+  verifiedPackage.operator_followthrough =
     buildOperatorDecisionFollowthrough(confidenceDecision);
 
-  strategyPackage.execution_memory =
-    buildOrchestrationExecutionMemory(strategyPackage);
+  verifiedPackage.execution_memory =
+    buildOrchestrationExecutionMemory(verifiedPackage);
 
   strategyPackage.runtime_outcome =
-    buildOrchestrationRuntimeOutcome(strategyPackage.execution_memory);
+    buildOrchestrationRuntimeOutcome(verifiedPackage.execution_memory);
 
   return {
     sprint_next: {
       ...packageSeed,
       orchestration_execution_context: orchestrationExecutionContext,
       stage_audit: stageAudit,
-      dev2_sprint_package: strategyPackage,
+      dev2_sprint_package: verifiedPackage,
       dev2_package_success_signal: successSignal,
       adaptive_package_strategy: adaptiveStrategy
     },
     planner: plan
   };
 }
+
 
 
 
