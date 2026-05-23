@@ -36,6 +36,16 @@ export function Dev2SprintPackagePanel({
         </div>
       </div>
 
+      {pkg?.learning_weight_strategy_audit ? (
+        <div className="mt-4 rounded-lg border border-cyan-800 bg-slate-900 p-3 text-sm">
+          <div className="font-semibold text-white">Learning Weight Strategy Audit</div>
+          <div className="mt-2 text-slate-300">Posture: {pkg.learning_weight_strategy_audit?.orchestration_posture || "unknown"}</div>
+          <div className="mt-1 text-slate-300">Scope: {pkg.learning_weight_strategy_audit?.scope_preference || "unknown"}</div>
+          <div className="mt-1 text-slate-300">Verification: {pkg.learning_weight_strategy_audit?.verification_intensity || "unknown"}</div>
+          <div className="mt-1 text-slate-300">Reason: {pkg.learning_weight_strategy_audit?.reason || "unknown"}</div>
+        </div>
+      ) : null}
+
       {operatorDecision ? (
         <div className="mt-4 rounded-lg border border-amber-800 bg-slate-900 p-3 text-sm">
           <div className="font-semibold text-white">Operator Decision</div>
@@ -147,6 +157,7 @@ export function Dev2SprintPackagePanel({
     </div>
   );
 }
+
 
 
 
