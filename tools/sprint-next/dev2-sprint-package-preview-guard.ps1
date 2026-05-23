@@ -24,6 +24,13 @@ $required = @(
   "Confidence Score",
   "Quality Override",
   "Telemetry Quality",
+  "Learning Weights Applied",
+  "Learning Weight Audit",
+  "Original Score",
+  "Weighted Score",
+  "Telemetry Bias",
+  "Stability Bias",
+  "Expansion Bias",
   "Decision:",
   "Message:",
   "Adaptive Modification Audit",
@@ -60,6 +67,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "DEV2 SPRINT PACKAGE PREVIEW GUARD PASSED"
+
 
 
 
