@@ -43,6 +43,9 @@ export function Dev2SprintPackagePanel({
           <div className="mt-1 text-slate-300">Reason: {operatorDecision?.reason || "unknown"}</div>
           <div className="mt-1 text-slate-300">Message: {operatorDecision?.operator_message || "unknown"}</div>
           <div className="mt-1 text-slate-300">Telemetry Override: {operatorDecision?.telemetry_override ? "true" : "false"}</div>
+          <div className="mt-1 text-slate-300">Confidence Override: {operatorDecision?.confidence_override ? "true" : "false"}</div>
+          <div className="mt-1 text-slate-300">Confidence Band: {operatorDecision?.confidence_band || "unknown"}</div>
+          <div className="mt-1 text-slate-300">Confidence Score: {operatorDecision?.confidence_score ?? 0}</div>
         </div>
       ) : null}
 
@@ -130,6 +133,7 @@ export function Dev2SprintPackagePanel({
     </div>
   );
 }
+
 
 
 
