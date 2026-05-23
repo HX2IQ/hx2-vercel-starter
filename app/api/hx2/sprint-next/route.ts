@@ -23,6 +23,7 @@ import { applyLearningWeightsToConfidence } from "../_lib/learning-weights-influ
 import { buildOutcomeTelemetrySummary } from "../_lib/outcome-telemetry-summary";
 import { buildPersistentLearningWeights } from "../_lib/persistent-learning-weights";
 import { buildLearningWeightDrivenStrategy } from "../_lib/learning-weight-driven-strategy";
+import { classifyOrchestrationExecutionContext } from "../_lib/context-aware-learning-classifier";
 import { buildOutcomeTelemetryQuality } from "../_lib/outcome-telemetry-quality";
 import { buildOrchestrationRuntimeOutcome } from "../_lib/orchestration-runtime-outcome";
 import { buildPlannerLearningSignals } from "../_lib/capability-learning";
@@ -56,6 +57,11 @@ export async function POST(req: Request) {
     const learningWeightDrivenStrategy =
       buildLearningWeightDrivenStrategy(
         persistentLearningWeights
+      );
+
+    const orchestrationExecutionContext =
+      classifyOrchestrationExecutionContext(
+        dev2SprintPackage
       );
 
     const outcomeTelemetrySummary =
@@ -123,6 +129,9 @@ export async function POST(req: Request) {
 
       learning_weight_driven_strategy:
         learningWeightDrivenStrategy,
+
+      orchestration_execution_context:
+        orchestrationExecutionContext,
 
       outcome_telemetry_summary:
         outcomeTelemetrySummary,
@@ -233,6 +242,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
