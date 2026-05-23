@@ -104,6 +104,8 @@ const outcomeTelemetrySummary =
         sprintRiskGateActions
       );
 
+    const orchestrationExecutionContext = "balanced";
+
     const sprintNextPayload = {
       intent: plan.intent,
       selected_node: plan.selected_node,
@@ -148,11 +150,6 @@ const outcomeTelemetrySummary =
 
     const dev2SprintPackage =
       buildDev2SprintPackage(sprintNextPayload);
-
-    const orchestrationExecutionContext =
-      classifyOrchestrationExecutionContext(
-        dev2SprintPackage
-      );
 const dev2PackageSuccessSignal =
       buildDev2PackageSuccessSignal(
         dev2SprintPackage,
@@ -240,6 +237,7 @@ const dev2PackageSuccessSignal =
     });
   }
 }
+
 
 
 
