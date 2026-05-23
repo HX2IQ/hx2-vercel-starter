@@ -13,6 +13,7 @@ import { buildDev2OperatorDecision } from "../_lib/dev2-operator-decision";
 import { applyTelemetryInfluenceToOperatorDecision } from "../_lib/telemetry-influenced-operator-decision";
 import { applyConfidenceToOperatorDecision } from "../_lib/confidence-influenced-operator-decision";
 import { applyConfidenceToSprintPackage } from "../_lib/confidence-modified-sprint-package";
+import { applyLearningWeightStrategyToPackage } from "../_lib/learning-weight-strategy-package-modifier";
 import { buildOperatorDecisionFollowthrough } from "../_lib/operator-decision-followthrough";
 import { buildOrchestrationExecutionMemory } from "../_lib/orchestration-execution-memory";
 import { buildOutcomeTelemetryInfluence } from "../_lib/outcome-telemetry-influence";
@@ -168,6 +169,12 @@ export async function POST(req: Request) {
         orchestrationConfidence
       );
 
+    const strategySprintPackage =
+      applyLearningWeightStrategyToPackage(
+        confidenceSprintPackage,
+        learningWeightDrivenStrategy
+      );
+
     const dev2OperatorDecision =
       buildDev2OperatorDecision(
         adaptiveSprintPackage
@@ -185,15 +192,15 @@ export async function POST(req: Request) {
         orchestrationConfidence
       );
 
-    confidenceSprintPackage.operator_decision =
+    strategySprintPackage.operator_decision =
       confidenceAdjustedDecision;
 
-    confidenceSprintPackage.operator_followthrough =
+    strategySprintPackage.operator_followthrough =
       buildOperatorDecisionFollowthrough(
         dev2OperatorDecision
       );
 
-    confidenceSprintPackage.execution_memory =
+    strategySprintPackage.execution_memory =
       buildOrchestrationExecutionMemory(
         adaptiveSprintPackage
       );
@@ -209,7 +216,7 @@ export async function POST(req: Request) {
       sprint_next: {
         ...sprintNextPayload,
         dev2_sprint_package:
-          confidenceSprintPackage,
+          strategySprintPackage,
 
         dev2_package_success_signal:
           dev2PackageSuccessSignal,
@@ -226,6 +233,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
