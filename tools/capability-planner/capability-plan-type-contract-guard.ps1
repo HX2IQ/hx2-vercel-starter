@@ -4,16 +4,18 @@ Write-Host ""
 Write-Host "== CAPABILITY PLAN TYPE CONTRACT GUARD =="
 
 $planner = "app/api/hx2/_lib/capability-planner.ts"
-$sprintNext = "app/api/hx2/sprint-next/route.ts"
+$route = "app/api/hx2/sprint-next/route.ts"
+$composition = "app/api/hx2/_lib/sprint-next-composition.ts"
 
-foreach ($path in @($planner, $sprintNext)) {
+foreach ($path in @($planner, $route, $composition)) {
   if (!(Test-Path $path)) {
     throw "Missing required file: $path"
   }
 }
 
 $plannerText = Get-Content $planner -Raw
-$sprintText = Get-Content $sprintNext -Raw
+$routeText = Get-Content $route -Raw
+$compositionText = Get-Content $composition -Raw
 
 $requiredPlanFields = @(
   "selected_node",
@@ -28,6 +30,25 @@ $requiredPlanFields = @(
   "buildops_sprint_plan"
 )
 
+$requiredRoute = @(
+  "buildSprintNextPayload",
+  "NextResponse.json",
+  "request"
+)
+
+$requiredCompositionHelpers = @(
+  "buildCapabilityPlan",
+  "buildSprintNextAction",
+  "buildPlannerLearningSignals",
+  "buildSprintHistorySummary",
+  "buildSprintNextPayload"
+)
+
+$forbiddenRoutePatterns = @(
+  "plan?.learning_signals",
+  "plan.learning_signals"
+)
+
 $missing = @()
 
 foreach ($field in $requiredPlanFields) {
@@ -36,27 +57,21 @@ foreach ($field in $requiredPlanFields) {
   }
 }
 
-$forbiddenSprintNextPatterns = @(
-  "plan?.learning_signals",
-  "plan.learning_signals"
-)
-
-foreach ($pattern in $forbiddenSprintNextPatterns) {
-  if ($sprintText -like "*$pattern*") {
-    $missing += "Sprint-next route incorrectly reads helper-only field from plan: $pattern"
+foreach ($needle in $requiredRoute) {
+  if ($routeText -notlike "*$needle*") {
+    $missing += "Sprint-next route missing thin-route contract: $needle"
   }
 }
 
-$requiredSprintNextHelpers = @(
-  "buildCapabilityPlan",
-  "buildSprintNextAction",
-  "buildPlannerLearningSignals",
-  "buildSprintHistorySummary"
-)
+foreach ($helper in $requiredCompositionHelpers) {
+  if ($compositionText -notlike "*$helper*") {
+    $missing += "Sprint-next composition missing helper: $helper"
+  }
+}
 
-foreach ($helper in $requiredSprintNextHelpers) {
-  if ($sprintText -notlike "*$helper*") {
-    $missing += "Sprint-next route missing helper: $helper"
+foreach ($pattern in $forbiddenRoutePatterns) {
+  if ($routeText -like "*$pattern*" -or $compositionText -like "*$pattern*") {
+    $missing += "Sprint-next incorrectly reads helper-only field from plan: $pattern"
   }
 }
 
