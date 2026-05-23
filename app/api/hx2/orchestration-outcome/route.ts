@@ -1,5 +1,6 @@
 import { buildOperatorFollowthroughEvaluation } from "../_lib/operator-followthrough-evaluator";
 import { buildOrchestrationOutcomeLearningRecord } from "../_lib/orchestration-outcome-learning-record";
+import { updateAdaptiveLearningWeights } from "../_lib/adaptive-learning-weight-updater";
 import { persistOrchestrationOutcomeLearningRecord } from "../_lib/orchestration-outcome-persistence";
 import { NextResponse } from "next/server";
 
@@ -43,6 +44,11 @@ export async function POST(req: Request) {
         learningRecord
       );
 
+    const updated_learning_weights =
+      updateAdaptiveLearningWeights(
+        learningRecord
+      );
+
     return NextResponse.json({
       ok: true,
       recorded_outcome:
@@ -54,7 +60,9 @@ export async function POST(req: Request) {
       learning_record:
         learningRecord,
 
-      persistence
+      persistence,
+
+      updated_learning_weights
     });
   } catch (err: any) {
     return NextResponse.json({
@@ -63,6 +71,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
