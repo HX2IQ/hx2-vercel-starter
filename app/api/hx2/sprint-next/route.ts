@@ -19,6 +19,7 @@ import { buildOutcomeTelemetryInfluence } from "../_lib/outcome-telemetry-influe
 import { buildWeightedOrchestrationConfidence } from "../_lib/weighted-orchestration-confidence";
 import { applyTelemetryQualityToConfidence } from "../_lib/telemetry-quality-governed-confidence";
 import { buildOutcomeTelemetrySummary } from "../_lib/outcome-telemetry-summary";
+import { buildPersistentLearningWeights } from "../_lib/persistent-learning-weights";
 import { buildOutcomeTelemetryQuality } from "../_lib/outcome-telemetry-quality";
 import { buildOrchestrationRuntimeOutcome } from "../_lib/orchestration-runtime-outcome";
 import { buildPlannerLearningSignals } from "../_lib/capability-learning";
@@ -45,6 +46,9 @@ export async function POST(req: Request) {
       buildSprintHistorySummary(
         learningSignals
       );
+
+    const persistentLearningWeights =
+      buildPersistentLearningWeights();
 
     const outcomeTelemetrySummary =
       buildOutcomeTelemetrySummary();
@@ -99,6 +103,9 @@ export async function POST(req: Request) {
         sprintAction,
       history_summary:
         sprintHistorySummary,
+
+      persistent_learning_weights:
+        persistentLearningWeights,
 
       outcome_telemetry_summary:
         outcomeTelemetrySummary,
@@ -203,6 +210,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
