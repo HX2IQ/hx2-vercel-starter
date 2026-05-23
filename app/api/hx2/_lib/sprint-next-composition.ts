@@ -28,6 +28,7 @@ import { buildOrchestrationRuntimeOutcome } from "./orchestration-runtime-outcom
 import { classifyOrchestrationExecutionContext } from "./context-aware-learning-classifier";
 import { applyContextToLearningWeightStrategy } from "./context-adjusted-learning-strategy";
 import { buildSprintNextStageAudit } from "./sprint-next-stage-audit";
+import { buildRecursiveVerificationResult } from "./recursive-verification-stage";
 
 export function buildSprintNextPayload(message: string) {
   const stageAudit = buildSprintNextStageAudit();
@@ -59,6 +60,13 @@ export function buildSprintNextPayload(message: string) {
       persistentLearningWeights
     );
 
+  const recursiveVerification =
+    buildRecursiveVerificationResult({
+      orchestrationConfidence,
+      learningWeightDrivenStrategy,
+      outcomeTelemetryQuality
+    });
+
   const sprintAction = buildSprintNextAction(plan);
 
   const basePayload = {
@@ -77,7 +85,8 @@ export function buildSprintNextPayload(message: string) {
     outcome_telemetry_summary: outcomeTelemetrySummary,
     outcome_telemetry_quality: outcomeTelemetryQuality,
     outcome_telemetry_influence: outcomeTelemetryInfluence,
-    orchestration_confidence: orchestrationConfidence
+    orchestration_confidence: orchestrationConfidence,
+    recursive_verification: recursiveVerification
   };
 
   const riskGate =
@@ -164,6 +173,7 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
 
 
 
