@@ -18,6 +18,7 @@ import { buildOrchestrationExecutionMemory } from "../_lib/orchestration-executi
 import { buildOutcomeTelemetryInfluence } from "../_lib/outcome-telemetry-influence";
 import { buildWeightedOrchestrationConfidence } from "../_lib/weighted-orchestration-confidence";
 import { applyTelemetryQualityToConfidence } from "../_lib/telemetry-quality-governed-confidence";
+import { applyLearningWeightsToConfidence } from "../_lib/learning-weights-influence-confidence";
 import { buildOutcomeTelemetrySummary } from "../_lib/outcome-telemetry-summary";
 import { buildPersistentLearningWeights } from "../_lib/persistent-learning-weights";
 import { buildOutcomeTelemetryQuality } from "../_lib/outcome-telemetry-quality";
@@ -68,10 +69,16 @@ export async function POST(req: Request) {
         outcomeTelemetrySummary
       );
 
-    const orchestrationConfidence =
+    const qualityGovernedConfidence =
       applyTelemetryQualityToConfidence(
         rawOrchestrationConfidence,
         outcomeTelemetryQuality
+      );
+
+    const orchestrationConfidence =
+      applyLearningWeightsToConfidence(
+        qualityGovernedConfidence,
+        persistentLearningWeights
       );
 
     const sprintRiskGate =
@@ -210,6 +217,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
