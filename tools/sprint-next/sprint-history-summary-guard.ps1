@@ -29,15 +29,15 @@ $requiredSummary = @(
 )
 
 $requiredRoute = @(
-  "buildSprintNextPayload",
-  "sprint_next",
-  "planner"
+  "buildSprintNextPayload"
 )
 
 $requiredComposition = @(
   "buildSprintHistorySummary",
   "history_summary",
-  "buildPlannerLearningSignals"
+  "buildPlannerLearningSignals",
+  "sprint_next",
+  "planner"
 )
 
 $missing = @()
@@ -69,3 +69,4 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "SPRINT HISTORY SUMMARY GUARD PASSED"
+
