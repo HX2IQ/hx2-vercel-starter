@@ -58,13 +58,7 @@ export async function POST(req: Request) {
       buildLearningWeightDrivenStrategy(
         persistentLearningWeights
       );
-
-    const orchestrationExecutionContext =
-      classifyOrchestrationExecutionContext(
-        dev2SprintPackage
-      );
-
-    const outcomeTelemetrySummary =
+const outcomeTelemetrySummary =
       buildOutcomeTelemetrySummary();
 
     const outcomeTelemetryQuality =
@@ -155,6 +149,11 @@ export async function POST(req: Request) {
     const dev2SprintPackage =
       buildDev2SprintPackage(sprintNextPayload);
 
+    const orchestrationExecutionContext =
+      classifyOrchestrationExecutionContext(
+        dev2SprintPackage
+      );
+
     const dev2PackageSuccessSignal =
       buildDev2PackageSuccessSignal(
         dev2SprintPackage,
@@ -242,6 +241,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
