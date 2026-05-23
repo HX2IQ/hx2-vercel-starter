@@ -17,6 +17,7 @@ import { buildOperatorDecisionFollowthrough } from "../_lib/operator-decision-fo
 import { buildOrchestrationExecutionMemory } from "../_lib/orchestration-execution-memory";
 import { buildOutcomeTelemetryInfluence } from "../_lib/outcome-telemetry-influence";
 import { buildWeightedOrchestrationConfidence } from "../_lib/weighted-orchestration-confidence";
+import { applyTelemetryQualityToConfidence } from "../_lib/telemetry-quality-governed-confidence";
 import { buildOutcomeTelemetrySummary } from "../_lib/outcome-telemetry-summary";
 import { buildOutcomeTelemetryQuality } from "../_lib/outcome-telemetry-quality";
 import { buildOrchestrationRuntimeOutcome } from "../_lib/orchestration-runtime-outcome";
@@ -58,9 +59,15 @@ export async function POST(req: Request) {
         outcomeTelemetrySummary
       );
 
-    const orchestrationConfidence =
+    const rawOrchestrationConfidence =
       buildWeightedOrchestrationConfidence(
         outcomeTelemetrySummary
+      );
+
+    const orchestrationConfidence =
+      applyTelemetryQualityToConfidence(
+        rawOrchestrationConfidence,
+        outcomeTelemetryQuality
       );
 
     const sprintRiskGate =
@@ -196,6 +203,7 @@ export async function POST(req: Request) {
     });
   }
 }
+
 
 
 
