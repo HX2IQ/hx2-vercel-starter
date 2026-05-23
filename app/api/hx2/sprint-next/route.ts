@@ -153,8 +153,7 @@ const outcomeTelemetrySummary =
       classifyOrchestrationExecutionContext(
         dev2SprintPackage
       );
-
-    const dev2PackageSuccessSignal =
+const dev2PackageSuccessSignal =
       buildDev2PackageSuccessSignal(
         dev2SprintPackage,
         learningSignals
@@ -241,6 +240,7 @@ const outcomeTelemetrySummary =
     });
   }
 }
+
 
 
 
