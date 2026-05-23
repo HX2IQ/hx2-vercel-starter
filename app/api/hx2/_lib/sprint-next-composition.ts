@@ -26,6 +26,7 @@ import { buildOperatorDecisionFollowthrough } from "./operator-decision-followth
 import { buildOrchestrationExecutionMemory } from "./orchestration-execution-memory";
 import { buildOrchestrationRuntimeOutcome } from "./orchestration-runtime-outcome";
 import { classifyOrchestrationExecutionContext } from "./context-aware-learning-classifier";
+import { applyContextToLearningWeightStrategy } from "./context-adjusted-learning-strategy";
 
 export function buildSprintNextPayload(message: string) {
   const plan = buildCapabilityPlan(message);
@@ -69,7 +70,7 @@ export function buildSprintNextPayload(message: string) {
     actionable_sprint: sprintAction,
     history_summary: sprintHistorySummary,
     persistent_learning_weights: persistentLearningWeights,
-    learning_weight_driven_strategy: learningWeightDrivenStrategy,
+    learning_weight_driven_strategy: contextAdjustedLearningStrategy,
     outcome_telemetry_summary: outcomeTelemetrySummary,
     outcome_telemetry_quality: outcomeTelemetryQuality,
     outcome_telemetry_influence: outcomeTelemetryInfluence,
@@ -98,6 +99,12 @@ export function buildSprintNextPayload(message: string) {
   const orchestrationExecutionContext =
     classifyOrchestrationExecutionContext(dev2SprintPackage);
 
+  const contextAdjustedLearningStrategy =
+    applyContextToLearningWeightStrategy(
+      learningWeightDrivenStrategy,
+      orchestrationExecutionContext
+    );
+
   const successSignal =
     buildDev2PackageSuccessSignal(dev2SprintPackage, learningSignals);
 
@@ -113,7 +120,7 @@ export function buildSprintNextPayload(message: string) {
   const strategyPackage =
     applyLearningWeightStrategyToPackage(
       confidencePackage,
-      learningWeightDrivenStrategy
+      contextAdjustedLearningStrategy
     );
 
   const baseDecision =
@@ -153,3 +160,4 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
