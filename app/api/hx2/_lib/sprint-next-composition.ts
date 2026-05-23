@@ -27,8 +27,11 @@ import { buildOrchestrationExecutionMemory } from "./orchestration-execution-mem
 import { buildOrchestrationRuntimeOutcome } from "./orchestration-runtime-outcome";
 import { classifyOrchestrationExecutionContext } from "./context-aware-learning-classifier";
 import { applyContextToLearningWeightStrategy } from "./context-adjusted-learning-strategy";
+import { buildSprintNextStageAudit } from "./sprint-next-stage-audit";
 
 export function buildSprintNextPayload(message: string) {
+  const stageAudit = buildSprintNextStageAudit();
+
   const plan = buildCapabilityPlan(message);
 
   const learningSignals = buildPlannerLearningSignals();
@@ -153,6 +156,7 @@ export function buildSprintNextPayload(message: string) {
     sprint_next: {
       ...packageSeed,
       orchestration_execution_context: orchestrationExecutionContext,
+      stage_audit: stageAudit,
       dev2_sprint_package: strategyPackage,
       dev2_package_success_signal: successSignal,
       adaptive_package_strategy: adaptiveStrategy
@@ -160,5 +164,6 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
 
 
