@@ -19,9 +19,7 @@ import { buildAdaptivePackageStrategy } from "./adaptive-dev2-package-strategy";
 import { applyAdaptivePackageExecution } from "./adaptive-package-execution-modifier";
 import { applyConfidenceToSprintPackage } from "./confidence-modified-sprint-package";
 import { applyLearningWeightStrategyToPackage } from "./learning-weight-strategy-package-modifier";
-import { buildDev2OperatorDecision } from "./dev2-operator-decision";
-import { applyTelemetryInfluenceToOperatorDecision } from "./telemetry-influenced-operator-decision";
-import { applyConfidenceToOperatorDecision } from "./confidence-influenced-operator-decision";
+import { buildSprintNextDecisionStage } from "./sprint-next-decision-stage";
 import { buildOperatorDecisionFollowthrough } from "./operator-decision-followthrough";
 import { buildOrchestrationExecutionMemory } from "./orchestration-execution-memory";
 import { buildOrchestrationRuntimeOutcome } from "./orchestration-runtime-outcome";
@@ -32,7 +30,6 @@ import { buildRecursiveVerificationResult } from "./recursive-verification-stage
 import { applyRecursiveVerificationToPackage } from "./recursive-verification-package-modifier";
 import { buildVerificationTrustPosture } from "./verification-trust-posture";
 import { applyVerificationEscalation } from "./verification-escalation-stage";
-import { applyVerificationEscalationToOperatorDecision } from "./verification-escalation-operator-decision";
 import { buildVerificationSynthesis } from "./verification-synthesis-stage";
 import { applyVerificationSynthesisToPackage } from "./verification-synthesis-package-modifier";
 import { buildOrchestrationRecoveryRecommendation } from "./orchestration-recovery-recommendation";
@@ -200,34 +197,16 @@ export function buildSprintNextPayload(message: string) {
 
   const restraintAdjustedPackage = synthesisPackage;
 
-  const baseDecision =
-    buildDev2OperatorDecision(restraintAdjustedPackage);
-
-  const telemetryDecision =
-    applyTelemetryInfluenceToOperatorDecision(
-      baseDecision,
-      outcomeTelemetryInfluence
-    );
-
-  const confidenceDecision =
-    applyConfidenceToOperatorDecision(
-      telemetryDecision,
+  const finalOperatorDecision =
+    buildSprintNextDecisionStage({
+      sprintPackage: restraintAdjustedPackage,
+      outcomeTelemetryInfluence,
       orchestrationConfidence
-    );
-
-  const verificationEscalationDecision =
-    applyVerificationEscalationToOperatorDecision(
-      confidenceDecision,
-      synthesisPackage
-    );
-
-  const confidenceDecayDecision =
-    verificationEscalationDecision;
-
-  restraintAdjustedPackage.operator_decision = confidenceDecayDecision;
+    });
+  restraintAdjustedPackage.operator_decision = finalOperatorDecision;
 
   restraintAdjustedPackage.operator_followthrough =
-    buildOperatorDecisionFollowthrough(confidenceDecayDecision);
+    buildOperatorDecisionFollowthrough(finalOperatorDecision);
 
   restraintAdjustedPackage.execution_memory =
     buildOrchestrationExecutionMemory(restraintAdjustedPackage);
@@ -247,6 +226,7 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
 
 
 
