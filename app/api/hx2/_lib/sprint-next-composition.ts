@@ -27,6 +27,7 @@ import { buildSprintNextDecisionStage } from "./sprint-next-decision-stage";
 import { sprintNextStageRegistry } from "./sprint-next-stage-registry";
 import { buildStageRegistryIntegrity } from "./sprint-next-stage-registry-integrity";
 import { validateSprintNextStageRegistry } from "./registry-driven-orchestration-validation";
+import { applyRegistryValidationGateToPackage } from "./registry-validation-package-gate";
 import { buildOperatorDecisionFollowthrough } from "./operator-decision-followthrough";
 import { buildOrchestrationExecutionMemory } from "./orchestration-execution-memory";
 import { buildOrchestrationRuntimeOutcome } from "./orchestration-runtime-outcome";
@@ -229,20 +230,20 @@ export function buildSprintNextPayload(message: string) {
 
   const finalOperatorDecision =
     buildSprintNextDecisionStage({
-      sprintPackage: restraintAdjustedPackage,
+      sprintPackage: registryGatedPackage,
       outcomeTelemetryInfluence,
       orchestrationConfidence
     });
-  restraintAdjustedPackage.operator_decision = finalOperatorDecision;
+  registryGatedPackage.operator_decision = finalOperatorDecision;
 
-  restraintAdjustedPackage.operator_followthrough =
+  registryGatedPackage.operator_followthrough =
     buildOperatorDecisionFollowthrough(finalOperatorDecision);
 
-  restraintAdjustedPackage.execution_memory =
-    buildOrchestrationExecutionMemory(restraintAdjustedPackage);
+  registryGatedPackage.execution_memory =
+    buildOrchestrationExecutionMemory(registryGatedPackage);
 
   strategyPackage.runtime_outcome =
-    buildOrchestrationRuntimeOutcome(restraintAdjustedPackage.execution_memory);
+    buildOrchestrationRuntimeOutcome(registryGatedPackage.execution_memory);
 
   const orchestration_stage_registry =
     sprintNextStageRegistry;
@@ -258,13 +259,14 @@ export function buildSprintNextPayload(message: string) {
       ...packageSeed,
       orchestration_execution_context: orchestrationExecutionContext,
       stage_audit: stageAudit,
-      dev2_sprint_package: restraintAdjustedPackage,
+      dev2_sprint_package: registryGatedPackage,
       dev2_package_success_signal: successSignal,
       adaptive_package_strategy: adaptiveStrategy
     },
     planner: plan
   };
 }
+
 
 
 
