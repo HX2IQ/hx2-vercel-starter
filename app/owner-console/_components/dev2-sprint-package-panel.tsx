@@ -46,6 +46,15 @@ export function Dev2SprintPackagePanel({
         </div>
       ) : null}
 
+      {pkg?.verification_synthesis_audit ? (
+        <div className="mt-4 rounded-lg border border-violet-800 bg-slate-900 p-3 text-sm">
+          <div className="font-semibold text-white">Verification Synthesis Audit</div>
+          <div className="mt-2 text-slate-300">Applied: {pkg.verification_synthesis_audit?.applied ? "true" : "false"}</div>
+          <div className="mt-1 text-slate-300">Stability: {pkg.verification_synthesis_audit?.orchestration_stability || "unknown"}</div>
+          <div className="mt-1 text-slate-300">Reason: {pkg.verification_synthesis_audit?.reason || "unknown"}</div>
+        </div>
+      ) : null}
+
       <VerificationEscalationPanel escalation={pkg?.verification_escalation} />
 
       {pkg?.verification_trust_posture ? (
@@ -188,6 +197,7 @@ export function Dev2SprintPackagePanel({
     </div>
   );
 }
+
 
 
 
