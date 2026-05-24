@@ -77,6 +77,11 @@ $requiredComposition = @(
   "applyAdaptivePackageExecution"
 )
 
+$decisionChecks = @(
+  @{ name = "decision stage applies telemetry influence"; ok = $decisionStageText -like "*applyTelemetryInfluenceToOperatorDecision*" },
+  @{ name = "decision stage applies confidence decision"; ok = $decisionStageText -like "*applyConfidenceToOperatorDecision*" }
+)
+
 $missing = @()
 
 foreach ($needle in $requiredRoute) {
@@ -100,6 +105,8 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT LOCAL CONTRACT TEST PASSED"
+
+
 
 
 
