@@ -33,6 +33,7 @@ import { applyRecursiveVerificationToPackage } from "./recursive-verification-pa
 import { buildVerificationTrustPosture } from "./verification-trust-posture";
 import { applyVerificationEscalation } from "./verification-escalation-stage";
 import { applyVerificationEscalationToOperatorDecision } from "./verification-escalation-operator-decision";
+import { buildVerificationSynthesis } from "./verification-synthesis-stage";
 
 export function buildSprintNextPayload(message: string) {
   const stageAudit = buildSprintNextStageAudit();
@@ -159,6 +160,20 @@ export function buildSprintNextPayload(message: string) {
       verifiedPackage
     );
 
+  const verificationSynthesis =
+    buildVerificationSynthesis({
+      orchestrationConfidence,
+      outcomeTelemetryQuality,
+      verificationTrustPosture,
+      verificationEscalation:
+        escalatedPackage?.verification_escalation,
+      learningWeightDrivenStrategy:
+        contextAdjustedLearningStrategy
+    });
+
+  escalatedPackage.verification_synthesis =
+    verificationSynthesis;
+
   const baseDecision =
     buildDev2OperatorDecision(escalatedPackage);
 
@@ -203,6 +218,7 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
 
 
 
