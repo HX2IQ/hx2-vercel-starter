@@ -1,8 +1,14 @@
 import { sprintNextStageRegistry } from "./sprint-next-stage-registry";
 
-export function validateSprintNextStageRegistry() {
+type StageType =
+  | "planning"
+  | "verification"
+  | "synthesis"
+  | "restraint"
+  | "decision";
 
-  const requiredStageTypes = [
+export function validateSprintNextStageRegistry() {
+  const requiredStageTypes: StageType[] = [
     "planning",
     "verification",
     "synthesis",
@@ -10,7 +16,7 @@ export function validateSprintNextStageRegistry() {
     "decision"
   ];
 
-  const stageTypes =
+  const stageTypes: StageType[] =
     sprintNextStageRegistry.map(
       (stage) => stage.stage_type
     );
