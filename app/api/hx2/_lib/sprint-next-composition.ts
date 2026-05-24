@@ -34,6 +34,7 @@ import { buildVerificationTrustPosture } from "./verification-trust-posture";
 import { applyVerificationEscalation } from "./verification-escalation-stage";
 import { applyVerificationEscalationToOperatorDecision } from "./verification-escalation-operator-decision";
 import { buildVerificationSynthesis } from "./verification-synthesis-stage";
+import { applyVerificationSynthesisToPackage } from "./verification-synthesis-package-modifier";
 
 export function buildSprintNextPayload(message: string) {
   const stageAudit = buildSprintNextStageAudit();
@@ -174,8 +175,13 @@ export function buildSprintNextPayload(message: string) {
   escalatedPackage.verification_synthesis =
     verificationSynthesis;
 
+  const synthesisPackage =
+    applyVerificationSynthesisToPackage(
+      escalatedPackage
+    );
+
   const baseDecision =
-    buildDev2OperatorDecision(escalatedPackage);
+    buildDev2OperatorDecision(synthesisPackage);
 
   const telemetryDecision =
     applyTelemetryInfluenceToOperatorDecision(
@@ -192,32 +198,33 @@ export function buildSprintNextPayload(message: string) {
   const verificationEscalationDecision =
     applyVerificationEscalationToOperatorDecision(
       confidenceDecision,
-      escalatedPackage
+      synthesisPackage
     );
 
-  escalatedPackage.operator_decision = verificationEscalationDecision;
+  synthesisPackage.operator_decision = verificationEscalationDecision;
 
-  escalatedPackage.operator_followthrough =
+  synthesisPackage.operator_followthrough =
     buildOperatorDecisionFollowthrough(verificationEscalationDecision);
 
-  escalatedPackage.execution_memory =
-    buildOrchestrationExecutionMemory(escalatedPackage);
+  synthesisPackage.execution_memory =
+    buildOrchestrationExecutionMemory(synthesisPackage);
 
   strategyPackage.runtime_outcome =
-    buildOrchestrationRuntimeOutcome(escalatedPackage.execution_memory);
+    buildOrchestrationRuntimeOutcome(synthesisPackage.execution_memory);
 
   return {
     sprint_next: {
       ...packageSeed,
       orchestration_execution_context: orchestrationExecutionContext,
       stage_audit: stageAudit,
-      dev2_sprint_package: escalatedPackage,
+      dev2_sprint_package: synthesisPackage,
       dev2_package_success_signal: successSignal,
       adaptive_package_strategy: adaptiveStrategy
     },
     planner: plan
   };
 }
+
 
 
 
