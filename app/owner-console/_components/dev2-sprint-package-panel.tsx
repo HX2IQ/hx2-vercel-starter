@@ -46,6 +46,15 @@ export function Dev2SprintPackagePanel({
         </div>
       ) : null}
 
+      {pkg?.adaptive_restraint_audit ? (
+        <div className="mt-4 rounded-lg border border-yellow-800 bg-slate-900 p-3 text-sm">
+          <div className="font-semibold text-white">Adaptive Restraint Audit</div>
+          <div className="mt-2 text-slate-300">Applied: {pkg.adaptive_restraint_audit?.applied ? "true" : "false"}</div>
+          <div className="mt-1 text-slate-300">Mode: {pkg.adaptive_restraint_audit?.restraint_mode || "unknown"}</div>
+          <div className="mt-1 text-slate-300">Reason: {pkg.adaptive_restraint_audit?.reason || "unknown"}</div>
+        </div>
+      ) : null}
+
       {pkg?.orchestration_self_awareness ? (
         <div className="mt-4 rounded-lg border border-cyan-800 bg-slate-900 p-3 text-sm">
           <div className="font-semibold text-white">Orchestration Self-Awareness</div>
@@ -219,6 +228,7 @@ export function Dev2SprintPackagePanel({
     </div>
   );
 }
+
 
 
 
