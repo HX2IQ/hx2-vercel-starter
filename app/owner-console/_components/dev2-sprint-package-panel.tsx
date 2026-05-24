@@ -177,6 +177,16 @@ export function Dev2SprintPackagePanel({
         </div>
       ) : null}
 
+      {pkg?.orchestration_stage_registry_integrity ? (
+        <div className="mt-4 rounded-lg border border-blue-800 bg-slate-900 p-3 text-sm">
+          <div className="font-semibold text-white">Stage Registry Integrity</div>
+          <div className="mt-2 text-slate-300">Registry OK: {pkg.orchestration_stage_registry_integrity?.registry_ok ? "true" : "false"}</div>
+          <div className="mt-1 text-slate-300">Stage Count: {pkg.orchestration_stage_registry_integrity?.stage_count ?? 0}</div>
+          <div className="mt-1 text-slate-300">Duplicate IDs: {(pkg.orchestration_stage_registry_integrity?.duplicate_ids || []).join(", ") || "none"}</div>
+          <div className="mt-1 text-slate-300">Duplicate Helpers: {(pkg.orchestration_stage_registry_integrity?.duplicate_helpers || []).join(", ") || "none"}</div>
+        </div>
+      ) : null}
+
       <div className="mt-4 text-sm text-slate-300">
         <div className="font-semibold text-white">Files to Touch</div>
         <ul className="mt-2 list-disc pl-5">
@@ -228,6 +238,7 @@ export function Dev2SprintPackagePanel({
     </div>
   );
 }
+
 
 
 
