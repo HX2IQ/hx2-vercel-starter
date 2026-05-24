@@ -25,6 +25,7 @@ import { applyConfidenceToSprintPackage } from "./confidence-modified-sprint-pac
 import { applyLearningWeightStrategyToPackage } from "./learning-weight-strategy-package-modifier";
 import { buildSprintNextDecisionStage } from "./sprint-next-decision-stage";
 import { sprintNextStageRegistry } from "./sprint-next-stage-registry";
+import { buildStageRegistryIntegrity } from "./sprint-next-stage-registry-integrity";
 import { buildOperatorDecisionFollowthrough } from "./operator-decision-followthrough";
 import { buildOrchestrationExecutionMemory } from "./orchestration-execution-memory";
 import { buildOrchestrationRuntimeOutcome } from "./orchestration-runtime-outcome";
@@ -245,6 +246,9 @@ export function buildSprintNextPayload(message: string) {
   const orchestration_stage_registry =
     sprintNextStageRegistry;
 
+  const orchestration_stage_registry_integrity =
+    buildStageRegistryIntegrity();
+
   return {
     sprint_next: {
       ...packageSeed,
@@ -257,6 +261,7 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
 
 
 
