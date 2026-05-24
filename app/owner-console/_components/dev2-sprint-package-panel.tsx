@@ -46,6 +46,19 @@ export function Dev2SprintPackagePanel({
         </div>
       ) : null}
 
+      {pkg?.orchestration_recovery ? (
+        <div className="mt-4 rounded-lg border border-orange-800 bg-slate-900 p-3 text-sm">
+          <div className="font-semibold text-white">Orchestration Recovery</div>
+          <div className="mt-2 text-slate-300">Mode: {pkg.orchestration_recovery?.recovery_mode || "unknown"}</div>
+          <div className="mt-1 text-slate-300">Reason: {pkg.orchestration_recovery?.recovery_reason || "unknown"}</div>
+          <ol className="mt-2 list-decimal pl-5 text-slate-300">
+            {(pkg.orchestration_recovery?.recommended_steps || []).map((step: string) => (
+              <li key={step}>{step}</li>
+            ))}
+          </ol>
+        </div>
+      ) : null}
+
       {pkg?.verification_synthesis_audit ? (
         <div className="mt-4 rounded-lg border border-violet-800 bg-slate-900 p-3 text-sm">
           <div className="font-semibold text-white">Verification Synthesis Audit</div>
@@ -197,6 +210,7 @@ export function Dev2SprintPackagePanel({
     </div>
   );
 }
+
 
 
 
