@@ -18,6 +18,11 @@ $combined = (Get-Content $panel -Raw) + "`n" + (Get-Content $sprintPanel -Raw) +
 $required = @(
   "Dev2SprintPackagePanel",
   "DEV2 Sprint Package",
+  "Stage Registry Integrity",
+  "Registry OK",
+  "Stage Count",
+  "Duplicate IDs",
+  "Duplicate Helpers",
   "Operator Decision",
   "Telemetry Override",
   "Confidence Override",
@@ -92,6 +97,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "DEV2 SPRINT PACKAGE PREVIEW GUARD PASSED"
+
 
 
 
