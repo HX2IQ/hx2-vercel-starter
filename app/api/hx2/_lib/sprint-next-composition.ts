@@ -221,10 +221,10 @@ export function buildSprintNextPayload(message: string) {
       synthesisPackage
     );
 
-  restraintAdjustedPackage.operator_decision = verificationEscalationDecision;
+  restraintAdjustedPackage.operator_decision = confidenceDecayDecision;
 
   restraintAdjustedPackage.operator_followthrough =
-    buildOperatorDecisionFollowthrough(verificationEscalationDecision);
+    buildOperatorDecisionFollowthrough(confidenceDecayDecision);
 
   restraintAdjustedPackage.execution_memory =
     buildOrchestrationExecutionMemory(restraintAdjustedPackage);
@@ -244,6 +244,7 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
 
 
 
