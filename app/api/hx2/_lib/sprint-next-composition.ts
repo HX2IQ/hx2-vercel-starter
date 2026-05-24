@@ -184,7 +184,7 @@ export function buildSprintNextPayload(message: string) {
 
   const recoveryRecommendation =
     buildOrchestrationRecoveryRecommendation(
-      restraintPackage
+      synthesisPackage
     );
 
   synthesisPackage.orchestration_recovery =
@@ -192,14 +192,14 @@ export function buildSprintNextPayload(message: string) {
 
   const orchestrationSelfAwareness =
     buildOrchestrationSelfAwareness(
-      restraintPackage
+      synthesisPackage
     );
 
   synthesisPackage.orchestration_self_awareness =
     orchestrationSelfAwareness;
 
   const baseDecision =
-    buildDev2OperatorDecision(restraintPackage);
+    buildDev2OperatorDecision(synthesisPackage);
 
   const telemetryDecision =
     applyTelemetryInfluenceToOperatorDecision(
@@ -216,15 +216,15 @@ export function buildSprintNextPayload(message: string) {
   const verificationEscalationDecision =
     applyVerificationEscalationToOperatorDecision(
       confidenceDecision,
-      restraintPackage
+      synthesisPackage
     );
 
-  restraintPackage.operator_decision = verificationEscalationDecision;
+  synthesisPackage.operator_decision = verificationEscalationDecision;
 
-  restraintPackage.operator_followthrough =
+  synthesisPackage.operator_followthrough =
     buildOperatorDecisionFollowthrough(verificationEscalationDecision);
 
-  restraintPackage.execution_memory =
+  synthesisPackage.execution_memory =
     buildOrchestrationExecutionMemory(synthesisPackage);
 
   strategyPackage.runtime_outcome =
@@ -235,13 +235,14 @@ export function buildSprintNextPayload(message: string) {
       ...packageSeed,
       orchestration_execution_context: orchestrationExecutionContext,
       stage_audit: stageAudit,
-      dev2_sprint_package: restraintPackage,
+      dev2_sprint_package: synthesisPackage,
       dev2_package_success_signal: successSignal,
       adaptive_package_strategy: adaptiveStrategy
     },
     planner: plan
   };
 }
+
 
 
 
