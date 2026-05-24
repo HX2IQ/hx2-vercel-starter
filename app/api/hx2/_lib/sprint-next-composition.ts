@@ -24,6 +24,7 @@ import { applyAdaptivePackageExecution } from "./adaptive-package-execution-modi
 import { applyConfidenceToSprintPackage } from "./confidence-modified-sprint-package";
 import { applyLearningWeightStrategyToPackage } from "./learning-weight-strategy-package-modifier";
 import { buildSprintNextDecisionStage } from "./sprint-next-decision-stage";
+import { sprintNextStageRegistry } from "./sprint-next-stage-registry";
 import { buildOperatorDecisionFollowthrough } from "./operator-decision-followthrough";
 import { buildOrchestrationExecutionMemory } from "./orchestration-execution-memory";
 import { buildOrchestrationRuntimeOutcome } from "./orchestration-runtime-outcome";
@@ -241,6 +242,9 @@ export function buildSprintNextPayload(message: string) {
   strategyPackage.runtime_outcome =
     buildOrchestrationRuntimeOutcome(restraintAdjustedPackage.execution_memory);
 
+  const orchestration_stage_registry =
+    sprintNextStageRegistry;
+
   return {
     sprint_next: {
       ...packageSeed,
@@ -253,6 +257,7 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
 
 
 
