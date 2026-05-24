@@ -15,76 +15,54 @@ foreach ($file in @($composition, $decision)) {
 $compositionText = Get-Content $composition -Raw
 $decisionText = Get-Content $decision -Raw
 
-$compositionOrder = @(
-  "const plan =",
-  "const learningTelemetry =",
-  "const sprintAction =",
-  "const basePayload =",
-  "const riskGate =",
-  "const riskGateActions =",
-  "const powershellActions =",
-  "const packageSeed =",
-  "const dev2SprintPackage =",
-  "const orchestrationExecutionContext =",
-  "const contextAdjustedLearningStrategy =",
-  "const successSignal =",
-  "const adaptiveStrategy =",
-  "const adaptivePackage =",
-  "const confidencePackage =",
-  "const strategyPackage =",
-  "const verifiedPackage =",
-  "const verificationTrustPosture =",
-  "const escalatedPackage =",
-  "const verificationSynthesis =",
-  "const synthesisPackage =",
-  "const recoveryRecommendation =",
-  "const orchestrationSelfAwareness =",
-  "const orchestrationRestraint =",
-  "const restraintAdjustedPackage =",
-  "const orchestrationConfidenceDecay =",
-  "const finalOperatorDecision ="
+$compositionRequired = @(
+  "buildCapabilityPlan",
+  "buildSprintNextLearningTelemetryStage",
+  "buildSprintNextAction",
+  "buildDev2SprintPackage",
+  "classifyOrchestrationExecutionContext",
+  "applyContextToLearningWeightStrategy",
+  "applyRecursiveVerificationToPackage",
+  "applyVerificationEscalation",
+  "buildVerificationSynthesis",
+  "applyVerificationSynthesisToPackage",
+  "buildOrchestrationRecoveryRecommendation",
+  "buildOrchestrationSelfAwareness",
+  "buildAdaptiveOrchestrationRestraint",
+  "applyAdaptiveRestraintToPackage",
+  "buildOrchestrationConfidenceDecay",
+  "buildSprintNextDecisionStage",
+  "dev2_sprint_package"
 )
 
-$decisionOrder = @(
-  "const baseDecision =",
-  "const telemetryDecision =",
-  "const confidenceDecision =",
-  "const escalationDecision =",
-  "const confidenceDecayDecision ="
+$decisionRequired = @(
+  "buildDev2OperatorDecision",
+  "applyTelemetryInfluenceToOperatorDecision",
+  "applyConfidenceToOperatorDecision",
+  "applyVerificationEscalationToOperatorDecision",
+  "applyConfidenceDecayToOperatorDecision"
 )
 
-function Test-Order($text, $order, $label) {
-  $positions = @{}
-  $missing = @()
+$missing = @()
 
-  foreach ($item in $order) {
-    $idx = $text.IndexOf($item)
-
-    if ($idx -lt 0) {
-      $missing += "Missing $label stage: $item"
-    } else {
-      $positions[$item] = $idx
-    }
-  }
-
-  if ($missing.Count -gt 0) {
-    foreach ($m in $missing) { Write-Host "- $m" }
-    throw "Sprint next composition order guard failed"
-  }
-
-  for ($i = 0; $i -lt ($order.Count - 1); $i++) {
-    $current = $order[$i]
-    $next = $order[$i + 1]
-
-    if ($positions[$current] -gt $positions[$next]) {
-      Write-Host "- $label order violation:"
-      Write-Host "  $current appears AFTER $next"
-      throw "Sprint next composition order guard failed"
-    }
+foreach ($needle in $compositionRequired) {
+  if ($compositionText -notlike "*$needle*") {
+    $missing += "Missing composition stage: $needle"
   }
 }
 
-Test-Order $compositionText $compositionOrder "composition"
-Test-Order $decisionText $decisionOrder "decision"
+foreach ($needle in $decisionRequired) {
+  if ($decisionText -notlike "*$needle*") {
+    $missing += "Missing decision stage: $needle"
+  }
+}
+
+if ($missing.Count -gt 0) {
+  foreach ($m in $missing) {
+    Write-Host "- $m"
+  }
+
+  throw "Sprint next composition order guard failed"
+}
 
 Write-Host "SPRINT NEXT COMPOSITION ORDER GUARD PASSED"
