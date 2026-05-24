@@ -1,3 +1,7 @@
+import { buildOrchestrationConfidenceDecay } from "./orchestration-confidence-decay";
+import { applyAdaptiveRestraintToPackage } from "./adaptive-restraint-package-modifier";
+import { buildAdaptiveOrchestrationRestraint } from "./adaptive-orchestration-restraint";
+import { buildSprintNextLearningTelemetryStage } from "./sprint-next-learning-telemetry-stage";
 import { buildCapabilityPlan } from "./capability-planner";
 import { buildSprintNextAction } from "./sprint-next-action";
 import { buildSprintHistorySummary } from "./sprint-history-summary";
@@ -39,6 +43,9 @@ export function buildSprintNextPayload(message: string) {
   const stageAudit = buildSprintNextStageAudit();
 
   const plan = buildCapabilityPlan(message);
+
+  const learningTelemetry =
+    buildSprintNextLearningTelemetryStage();
 
   const learningSignals = buildPlannerLearningSignals();
   const sprintHistorySummary = buildSprintHistorySummary(learningSignals);
@@ -195,7 +202,28 @@ export function buildSprintNextPayload(message: string) {
   synthesisPackage.orchestration_self_awareness =
     orchestrationSelfAwareness;
 
+  const orchestrationRestraint =
+    buildAdaptiveOrchestrationRestraint(
+      synthesisPackage
+    );
+
+  synthesisPackage.adaptive_orchestration_restraint =
+    orchestrationRestraint;
+
   const restraintAdjustedPackage = synthesisPackage;
+
+  const restraintAdjustedPackage =
+    applyAdaptiveRestraintToPackage(
+      synthesisPackage
+    );
+
+  const orchestrationConfidenceDecay =
+    buildOrchestrationConfidenceDecay(
+      restraintAdjustedPackage
+    );
+
+  restraintAdjustedPackage.orchestration_confidence_decay =
+    orchestrationConfidenceDecay;
 
   const finalOperatorDecision =
     buildSprintNextDecisionStage({
@@ -226,6 +254,7 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
 
 
 
