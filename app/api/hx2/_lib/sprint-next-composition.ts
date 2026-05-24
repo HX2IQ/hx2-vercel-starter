@@ -30,6 +30,7 @@ import { applyContextToLearningWeightStrategy } from "./context-adjusted-learnin
 import { buildSprintNextStageAudit } from "./sprint-next-stage-audit";
 import { buildRecursiveVerificationResult } from "./recursive-verification-stage";
 import { applyRecursiveVerificationToPackage } from "./recursive-verification-package-modifier";
+import { buildVerificationTrustPosture } from "./verification-trust-posture";
 
 export function buildSprintNextPayload(message: string) {
   const stageAudit = buildSprintNextStageAudit();
@@ -142,6 +143,15 @@ export function buildSprintNextPayload(message: string) {
       recursiveVerification
     );
 
+  const verificationTrustPosture =
+    buildVerificationTrustPosture(
+      recursiveVerification,
+      verifiedPackage
+    );
+
+  verifiedPackage.verification_trust_posture =
+    verificationTrustPosture;
+
   const baseDecision =
     buildDev2OperatorDecision(verifiedPackage);
 
@@ -180,6 +190,7 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
 
 
 
