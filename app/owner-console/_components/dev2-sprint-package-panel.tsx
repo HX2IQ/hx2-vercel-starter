@@ -86,6 +86,7 @@ export function Dev2SprintPackagePanel({
           <div className="mt-1 text-slate-300">Confidence Override: {operatorDecision?.confidence_override ? "true" : "false"}</div>
           <div className="mt-1 text-slate-300">Confidence Band: {operatorDecision?.confidence_band || "unknown"}</div>
           <div className="mt-1 text-slate-300">Confidence Score: {operatorDecision?.confidence_score ?? 0}</div>
+          <div className="mt-1 text-slate-300">Verification Escalation Override: {operatorDecision?.verification_escalation_override ? "true" : "false"}</div>
           <div className="mt-1 text-slate-300">Quality Override: {operatorDecision?.quality_override ? "true" : "false"}</div>
           <div className="mt-1 text-slate-300">Telemetry Quality: {operatorDecision?.telemetry_quality_band || "unknown"}</div>
           <div className="mt-1 text-slate-300">Learning Weights Applied: {operatorDecision?.learning_weights_applied ? "true" : "false"}</div>
@@ -187,6 +188,7 @@ export function Dev2SprintPackagePanel({
     </div>
   );
 }
+
 
 
 
