@@ -198,6 +198,8 @@ export function buildSprintNextPayload(message: string) {
   synthesisPackage.orchestration_self_awareness =
     orchestrationSelfAwareness;
 
+  const restraintAdjustedPackage = synthesisPackage;
+
   const baseDecision =
     buildDev2OperatorDecision(restraintAdjustedPackage);
 
@@ -242,6 +244,7 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
 
 
 
