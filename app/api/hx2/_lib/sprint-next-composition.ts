@@ -25,6 +25,10 @@ import { applyConfidenceToSprintPackage } from "./confidence-modified-sprint-pac
 import { applyLearningWeightStrategyToPackage } from "./learning-weight-strategy-package-modifier";
 import { buildSprintNextDecisionStage } from "./sprint-next-decision-stage";
 import { sprintNextStageRegistry } from "./sprint-next-stage-registry";
+import {
+  buildSprintExecutionPackageLineage,
+  evolveSprintExecutionPackage
+} from "./sprint-execution-package-lineage";
 import { buildStageRegistryIntegrity } from "./sprint-next-stage-registry-integrity";
 import { validateSprintNextStageRegistry } from "./registry-driven-orchestration-validation";
 import { applyRegistryValidationGateToPackage } from "./registry-validation-package-gate";
@@ -214,6 +218,11 @@ export function buildSprintNextPayload(message: string) {
   synthesisPackage.adaptive_orchestration_restraint =
     orchestrationRestraint;
 
+  const executionLineage =
+    buildSprintExecutionPackageLineage(
+      synthesisPackage
+    );
+
   const restraintAdjustedPackage = synthesisPackage;
 
     applyAdaptiveRestraintToPackage(
@@ -228,7 +237,21 @@ export function buildSprintNextPayload(message: string) {
   restraintAdjustedPackage.orchestration_confidence_decay =
     orchestrationConfidenceDecay;
 
+  const restraintLineage =
+    evolveSprintExecutionPackage(
+      executionLineage,
+      "adaptive-restraint",
+      restraintAdjustedPackage
+    );
+
   const registryGatedPackage = restraintAdjustedPackage;
+
+  const registryValidationLineage =
+    evolveSprintExecutionPackage(
+      restraintLineage,
+      "registry-validation",
+      registryGatedPackage
+    );
 
   const finalOperatorDecision =
     buildSprintNextDecisionStage({
@@ -268,6 +291,7 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
 
 
 
