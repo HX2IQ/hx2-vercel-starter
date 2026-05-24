@@ -35,6 +35,7 @@ import { applyVerificationEscalation } from "./verification-escalation-stage";
 import { applyVerificationEscalationToOperatorDecision } from "./verification-escalation-operator-decision";
 import { buildVerificationSynthesis } from "./verification-synthesis-stage";
 import { applyVerificationSynthesisToPackage } from "./verification-synthesis-package-modifier";
+import { buildOrchestrationRecoveryRecommendation } from "./orchestration-recovery-recommendation";
 
 export function buildSprintNextPayload(message: string) {
   const stageAudit = buildSprintNextStageAudit();
@@ -180,6 +181,14 @@ export function buildSprintNextPayload(message: string) {
       escalatedPackage
     );
 
+  const recoveryRecommendation =
+    buildOrchestrationRecoveryRecommendation(
+      synthesisPackage
+    );
+
+  synthesisPackage.orchestration_recovery =
+    recoveryRecommendation;
+
   const baseDecision =
     buildDev2OperatorDecision(synthesisPackage);
 
@@ -224,6 +233,7 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
 
 
 
