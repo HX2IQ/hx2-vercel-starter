@@ -36,6 +36,16 @@ export function Dev2SprintPackagePanel({
         </div>
       </div>
 
+      {pkg?.recursive_verification_audit ? (
+        <div className="mt-4 rounded-lg border border-purple-800 bg-slate-900 p-3 text-sm">
+          <div className="font-semibold text-white">Recursive Verification Audit</div>
+          <div className="mt-2 text-slate-300">Applied: {pkg.recursive_verification_audit?.applied ? "true" : "false"}</div>
+          <div className="mt-1 text-slate-300">Action: {pkg.recursive_verification_audit?.suggested_action || "unknown"}</div>
+          <div className="mt-1 text-slate-300">Status: {pkg.recursive_verification_audit?.verification_status || "unknown"}</div>
+          <div className="mt-1 text-slate-300">Reason: {pkg.recursive_verification_audit?.reason || "unknown"}</div>
+        </div>
+      ) : null}
+
       {pkg?.learning_weight_strategy_audit ? (
         <div className="mt-4 rounded-lg border border-cyan-800 bg-slate-900 p-3 text-sm">
           <div className="font-semibold text-white">Learning Weight Strategy Audit</div>
@@ -157,6 +167,7 @@ export function Dev2SprintPackagePanel({
     </div>
   );
 }
+
 
 
 
