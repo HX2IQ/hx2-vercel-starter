@@ -212,7 +212,6 @@ export function buildSprintNextPayload(message: string) {
 
   const restraintAdjustedPackage = synthesisPackage;
 
-  const restraintAdjustedPackage =
     applyAdaptiveRestraintToPackage(
       synthesisPackage
     );
