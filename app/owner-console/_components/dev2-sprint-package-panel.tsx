@@ -46,6 +46,15 @@ export function Dev2SprintPackagePanel({
         </div>
       ) : null}
 
+      {pkg?.orchestration_self_awareness ? (
+        <div className="mt-4 rounded-lg border border-cyan-800 bg-slate-900 p-3 text-sm">
+          <div className="font-semibold text-white">Orchestration Self-Awareness</div>
+          <div className="mt-2 text-slate-300">Identity: {pkg.orchestration_self_awareness?.orchestration_identity || "unknown"}</div>
+          <div className="mt-1 text-slate-300">Posture: {pkg.orchestration_self_awareness?.adaptive_posture || "unknown"}</div>
+          <div className="mt-1 text-slate-300">Reason: {pkg.orchestration_self_awareness?.orchestration_state_reason || "unknown"}</div>
+        </div>
+      ) : null}
+
       {pkg?.orchestration_recovery ? (
         <div className="mt-4 rounded-lg border border-orange-800 bg-slate-900 p-3 text-sm">
           <div className="font-semibold text-white">Orchestration Recovery</div>
@@ -210,6 +219,7 @@ export function Dev2SprintPackagePanel({
     </div>
   );
 }
+
 
 
 
