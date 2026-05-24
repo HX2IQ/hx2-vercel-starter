@@ -1,3 +1,4 @@
+import { VerificationEscalationPanel } from "./verification-escalation-panel";
 export function Dev2SprintPackagePanel({
   pkg
 }: {
@@ -44,6 +45,8 @@ export function Dev2SprintPackagePanel({
           <div className="mt-1 text-slate-300">Reason: {pkg.verification_escalation?.escalation_reason || "unknown"}</div>
         </div>
       ) : null}
+
+      <VerificationEscalationPanel escalation={pkg?.verification_escalation} />
 
       {pkg?.verification_trust_posture ? (
         <div className="mt-4 rounded-lg border border-emerald-800 bg-slate-900 p-3 text-sm">
@@ -184,6 +187,7 @@ export function Dev2SprintPackagePanel({
     </div>
   );
 }
+
 
 
 

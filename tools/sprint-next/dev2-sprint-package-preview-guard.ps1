@@ -4,15 +4,16 @@ Write-Host ""
 Write-Host "== DEV2 SPRINT PACKAGE PREVIEW GUARD =="
 
 $panel = "app/owner-console/_components/dev2-sprint-package-panel.tsx"
+$verificationEscalationPanel = "app/owner-console/_components/verification-escalation-panel.tsx"
 $sprintPanel = "app/owner-console/_components/sprint-next-panel.tsx"
 
-foreach ($path in @($panel, $sprintPanel)) {
+foreach ($path in @($panel, $sprintPanel, $verificationEscalationPanel)) {
   if (!(Test-Path $path)) {
     throw "Missing required UI file: $path"
   }
 }
 
-$combined = (Get-Content $panel -Raw) + "`n" + (Get-Content $sprintPanel -Raw)
+$combined = (Get-Content $panel -Raw) + "`n" + (Get-Content $sprintPanel -Raw) + "`n" + (Get-Content $verificationEscalationPanel -Raw)
 
 $required = @(
   "Dev2SprintPackagePanel",
@@ -81,6 +82,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "DEV2 SPRINT PACKAGE PREVIEW GUARD PASSED"
+
 
 
 
