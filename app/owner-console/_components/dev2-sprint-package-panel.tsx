@@ -36,6 +36,14 @@ export function Dev2SprintPackagePanel({
         </div>
       </div>
 
+      {pkg?.verification_trust_posture ? (
+        <div className="mt-4 rounded-lg border border-emerald-800 bg-slate-900 p-3 text-sm">
+          <div className="font-semibold text-white">Verification Trust Posture</div>
+          <div className="mt-2 text-slate-300">Posture: {pkg.verification_trust_posture?.trust_posture || "unknown"}</div>
+          <div className="mt-1 text-slate-300">Reason: {pkg.verification_trust_posture?.trust_reason || "unknown"}</div>
+        </div>
+      ) : null}
+
       {pkg?.recursive_verification_audit ? (
         <div className="mt-4 rounded-lg border border-purple-800 bg-slate-900 p-3 text-sm">
           <div className="font-semibold text-white">Recursive Verification Audit</div>
@@ -167,6 +175,7 @@ export function Dev2SprintPackagePanel({
     </div>
   );
 }
+
 
 
 
