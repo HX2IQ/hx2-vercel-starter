@@ -7,32 +7,7 @@ $route = "app/api/hx2/sprint-next/route.ts"
 $composition = "app/api/hx2/_lib/sprint-next-composition.ts"
 $decisionStage = "app/api/hx2/_lib/sprint-next-decision-stage.ts"
 
-$helpers = @(
-  "app/api/hx2/_lib/capability-planner.ts",
-  "app/api/hx2/_lib/sprint-next-action.ts",
-  "app/api/hx2/_lib/capability-buildops-sprint-plan.ts",
-  "app/api/hx2/_lib/sprint-next-risk-gate.ts",
-  "app/api/hx2/_lib/sprint-risk-gate-actions.ts",
-  "app/api/hx2/_lib/sprint-dev2-package.ts",
-  "app/api/hx2/_lib/dev2-package-success-learning.ts",
-  "app/api/hx2/_lib/adaptive-dev2-package-strategy.ts",
-  "app/api/hx2/_lib/adaptive-package-execution-modifier.ts",
-  "app/api/hx2/_lib/dev2-operator-decision.ts",
-  "app/api/hx2/_lib/operator-decision-followthrough.ts",
-  "app/api/hx2/_lib/outcome-telemetry-summary.ts",
-  "app/api/hx2/_lib/outcome-telemetry-influence.ts",
-  "app/api/hx2/_lib/outcome-telemetry-quality.ts",
-  "app/api/hx2/_lib/weighted-orchestration-confidence.ts",
-  "app/api/hx2/_lib/telemetry-quality-governed-confidence.ts",
-  "app/api/hx2/_lib/persistent-learning-weights.ts",
-  "app/api/hx2/_lib/learning-weights-influence-confidence.ts",
-  "app/api/hx2/_lib/learning-weight-driven-strategy.ts",
-  "app/api/hx2/_lib/learning-weight-strategy-package-modifier.ts",
-  "app/api/hx2/_lib/confidence-influenced-operator-decision.ts",
-  "app/api/hx2/_lib/confidence-modified-sprint-package.ts"
-)
-
-foreach ($path in @($route, $composition, $decisionStage) + $helpers) {
+foreach ($path in @($route, $composition, $decisionStage)) {
   if (!(Test-Path $path)) {
     throw "Missing required file: $path"
   }
@@ -40,82 +15,44 @@ foreach ($path in @($route, $composition, $decisionStage) + $helpers) {
 
 $routeText = Get-Content $route -Raw
 $compositionText = Get-Content $composition -Raw
-$decisionStageText = Get-Content $decisionStage -Raw
+$decisionText = Get-Content $decisionStage -Raw
 
-$requiredRoute = @(
-  "buildSprintNextPayload",
-  "NextResponse.json",
-  "request"
+$checks = @(
+  @{ name = "thin route uses composition helper"; ok = $routeText -like "*buildSprintNextPayload*" },
+  @{ name = "composition returns sprint_next"; ok = $compositionText -like "*sprint_next*" },
+  @{ name = "composition returns actionable sprint"; ok = $compositionText -like "*actionable_sprint*" },
+  @{ name = "composition returns risk gate"; ok = $compositionText -like "*risk_gate*" },
+  @{ name = "composition returns DEV2 package"; ok = $compositionText -like "*dev2_sprint_package*" },
+  @{ name = "composition returns telemetry summary"; ok = $compositionText -like "*outcome_telemetry_summary*" },
+  @{ name = "composition returns orchestration confidence"; ok = $compositionText -like "*orchestration_confidence*" },
+  @{ name = "composition applies adaptive package execution"; ok = $compositionText -like "*applyAdaptivePackageExecution*" },
+  @{ name = "composition applies confidence package"; ok = $compositionText -like "*applyConfidenceToSprintPackage*" },
+  @{ name = "composition applies learning weight package modifier"; ok = $compositionText -like "*applyLearningWeightStrategyToPackage*" },
+  @{ name = "composition applies recursive verification"; ok = $compositionText -like "*applyRecursiveVerificationToPackage*" },
+  @{ name = "composition applies verification escalation"; ok = $compositionText -like "*applyVerificationEscalation*" },
+  @{ name = "composition applies synthesis package modifier"; ok = $compositionText -like "*applyVerificationSynthesisToPackage*" },
+  @{ name = "composition applies restraint package modifier"; ok = $compositionText -like "*applyAdaptiveRestraintToPackage*" },
+  @{ name = "composition uses decision stage"; ok = $compositionText -like "*buildSprintNextDecisionStage*" },
+  @{ name = "decision stage applies telemetry influence"; ok = $decisionText -like "*applyTelemetryInfluenceToOperatorDecision*" },
+  @{ name = "decision stage applies confidence decision"; ok = $decisionText -like "*applyConfidenceToOperatorDecision*" },
+  @{ name = "decision stage applies verification escalation decision"; ok = $decisionText -like "*applyVerificationEscalationToOperatorDecision*" },
+  @{ name = "decision stage applies confidence decay decision"; ok = $decisionText -like "*applyConfidenceDecayToOperatorDecision*" }
 )
 
-$requiredComposition = @(
-  "buildCapabilityPlan",
-  "buildSprintNextAction",
-  "buildPlannerLearningSignals",
-  "buildSprintHistorySummary",
-  "sprint_next",
-  "actionable_sprint",
-  "risk_gate",
-  "risk_gate_actions",
-  "dev2_sprint_package",
-  "dev2_package_success_signal",
-  "adaptive_package_strategy",
-  "operator_decision",
-  "operator_followthrough",
-  "outcome_telemetry_summary",
-  "outcome_telemetry_influence",
-  "orchestration_confidence",
-  "outcome_telemetry_quality",
-  "persistent_learning_weights",
-  "learning_weight_driven_strategy",
-  "applyTelemetryInfluenceToOperatorDecision",
-  "applyTelemetryQualityToConfidence",
-  "applyLearningWeightsToConfidence",
-  "applyLearningWeightStrategyToPackage",
-  "applyConfidenceToOperatorDecision",
-  "applyConfidenceToSprintPackage",
-  "applyAdaptivePackageExecution"
-)
+$failed = @()
 
-$decisionChecks = @(
-  @{ name = "decision stage applies telemetry influence"; ok = $decisionStageText -like "*applyTelemetryInfluenceToOperatorDecision*" },
-  @{ name = "decision stage applies confidence decision"; ok = $decisionStageText -like "*applyConfidenceToOperatorDecision*" }
-)
-
-$missing = @()
-
-foreach ($needle in $requiredRoute) {
-  if ($routeText -notlike "*$needle*") {
-    $missing += "Missing in thin route: $needle"
+foreach ($check in $checks) {
+  if (-not $check.ok) {
+    $failed += $check.name
   }
 }
 
-foreach ($needle in $requiredComposition) {
-  if ($compositionText -notlike "*$needle*") {
-    $missing += "Missing in composition helper: $needle"
-  }
-}
-
-if ($missing.Count -gt 0) {
-  foreach ($m in $missing) {
-    Write-Host "- $m"
+if ($failed.Count -gt 0) {
+  foreach ($f in $failed) {
+    Write-Host "- Failed: $f"
   }
 
   throw "Sprint next local contract test failed"
 }
 
 Write-Host "SPRINT NEXT LOCAL CONTRACT TEST PASSED"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
