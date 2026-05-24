@@ -228,6 +228,8 @@ export function buildSprintNextPayload(message: string) {
   restraintAdjustedPackage.orchestration_confidence_decay =
     orchestrationConfidenceDecay;
 
+  const registryGatedPackage = restraintAdjustedPackage;
+
   const finalOperatorDecision =
     buildSprintNextDecisionStage({
       sprintPackage: registryGatedPackage,
@@ -266,6 +268,7 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
 
 
 
