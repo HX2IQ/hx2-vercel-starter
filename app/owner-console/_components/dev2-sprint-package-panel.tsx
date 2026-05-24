@@ -36,6 +36,15 @@ export function Dev2SprintPackagePanel({
         </div>
       </div>
 
+      {pkg?.verification_escalation ? (
+        <div className="mt-4 rounded-lg border border-red-800 bg-slate-900 p-3 text-sm">
+          <div className="font-semibold text-white">Verification Escalation</div>
+          <div className="mt-2 text-slate-300">Escalated: {pkg.verification_escalation?.escalated ? "true" : "false"}</div>
+          <div className="mt-1 text-slate-300">Action: {pkg.verification_escalation?.escalation_action || "unknown"}</div>
+          <div className="mt-1 text-slate-300">Reason: {pkg.verification_escalation?.escalation_reason || "unknown"}</div>
+        </div>
+      ) : null}
+
       {pkg?.verification_trust_posture ? (
         <div className="mt-4 rounded-lg border border-emerald-800 bg-slate-900 p-3 text-sm">
           <div className="font-semibold text-white">Verification Trust Posture</div>
@@ -175,6 +184,7 @@ export function Dev2SprintPackagePanel({
     </div>
   );
 }
+
 
 
 
