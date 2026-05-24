@@ -32,6 +32,7 @@ import { buildRecursiveVerificationResult } from "./recursive-verification-stage
 import { applyRecursiveVerificationToPackage } from "./recursive-verification-package-modifier";
 import { buildVerificationTrustPosture } from "./verification-trust-posture";
 import { applyVerificationEscalation } from "./verification-escalation-stage";
+import { applyVerificationEscalationToOperatorDecision } from "./verification-escalation-operator-decision";
 
 export function buildSprintNextPayload(message: string) {
   const stageAudit = buildSprintNextStageAudit();
@@ -173,10 +174,16 @@ export function buildSprintNextPayload(message: string) {
       orchestrationConfidence
     );
 
-  escalatedPackage.operator_decision = confidenceDecision;
+  const verificationEscalationDecision =
+    applyVerificationEscalationToOperatorDecision(
+      confidenceDecision,
+      escalatedPackage
+    );
+
+  escalatedPackage.operator_decision = verificationEscalationDecision;
 
   escalatedPackage.operator_followthrough =
-    buildOperatorDecisionFollowthrough(confidenceDecision);
+    buildOperatorDecisionFollowthrough(verificationEscalationDecision);
 
   escalatedPackage.execution_memory =
     buildOrchestrationExecutionMemory(escalatedPackage);
@@ -196,6 +203,7 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
 
 
 
