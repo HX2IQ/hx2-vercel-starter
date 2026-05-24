@@ -5,6 +5,7 @@ Write-Host "== SPRINT NEXT LOCAL CONTRACT TEST =="
 
 $route = "app/api/hx2/sprint-next/route.ts"
 $composition = "app/api/hx2/_lib/sprint-next-composition.ts"
+$decisionStage = "app/api/hx2/_lib/sprint-next-decision-stage.ts"
 
 $helpers = @(
   "app/api/hx2/_lib/capability-planner.ts",
@@ -31,7 +32,7 @@ $helpers = @(
   "app/api/hx2/_lib/confidence-modified-sprint-package.ts"
 )
 
-foreach ($path in @($route, $composition) + $helpers) {
+foreach ($path in @($route, $composition, $decisionStage) + $helpers) {
   if (!(Test-Path $path)) {
     throw "Missing required file: $path"
   }
@@ -39,6 +40,7 @@ foreach ($path in @($route, $composition) + $helpers) {
 
 $routeText = Get-Content $route -Raw
 $compositionText = Get-Content $composition -Raw
+$decisionStageText = Get-Content $decisionStage -Raw
 
 $requiredRoute = @(
   "buildSprintNextPayload",
@@ -98,6 +100,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT LOCAL CONTRACT TEST PASSED"
+
 
 
 
