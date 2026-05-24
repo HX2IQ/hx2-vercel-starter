@@ -12,7 +12,7 @@ if (!(Test-Path $file)) {
 $text = Get-Content $file -Raw
 
 $anchors = @(
-  "const baseDecision =",
+  "const finalOperatorDecision =",
   "operator_decision =",
   "operator_followthrough =",
   "execution_memory =",
@@ -44,3 +44,4 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "SPRINT NEXT COMPOSITION ANCHOR GUARD PASSED"
+
