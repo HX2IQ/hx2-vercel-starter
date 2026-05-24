@@ -221,6 +221,9 @@ export function buildSprintNextPayload(message: string) {
       synthesisPackage
     );
 
+  const confidenceDecayDecision =
+    verificationEscalationDecision;
+
   restraintAdjustedPackage.operator_decision = confidenceDecayDecision;
 
   restraintAdjustedPackage.operator_followthrough =
@@ -244,6 +247,7 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
 
 
 
