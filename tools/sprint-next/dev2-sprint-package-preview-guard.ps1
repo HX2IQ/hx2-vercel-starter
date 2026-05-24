@@ -28,6 +28,9 @@ $required = @(
   "Learning Weights Applied",
   "Learning Weight Audit",
   "Learning Weight Strategy Audit",
+  "Orchestration Self-Awareness",
+  "Identity:",
+  "Posture:",
   "Orchestration Recovery",
   "Mode:",
   "recommended_steps",
@@ -87,6 +90,7 @@ if ($missing.Count -gt 0) {
 }
 
 Write-Host "DEV2 SPRINT PACKAGE PREVIEW GUARD PASSED"
+
 
 
 
