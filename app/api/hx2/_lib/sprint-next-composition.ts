@@ -29,6 +29,7 @@ import {
   buildSprintExecutionPackageLineage,
   evolveSprintExecutionPackage
 } from "./sprint-execution-package-lineage";
+import { validateExecutionPackageLineage } from "./execution-lineage-integrity";
 import { buildStageRegistryIntegrity } from "./sprint-next-stage-registry-integrity";
 import { validateSprintNextStageRegistry } from "./registry-driven-orchestration-validation";
 import { applyRegistryValidationGateToPackage } from "./registry-validation-package-gate";
@@ -253,6 +254,11 @@ export function buildSprintNextPayload(message: string) {
       registryGatedPackage
     );
 
+  const executionPackageLineageIntegrity =
+    validateExecutionPackageLineage(
+      registryValidationLineage.lineage
+    );
+
   const finalOperatorDecision =
     buildSprintNextDecisionStage({
       sprintPackage: registryGatedPackage,
@@ -287,6 +293,9 @@ export function buildSprintNextPayload(message: string) {
       execution_package_lineage:
         registryValidationLineage.lineage,
 
+      execution_package_lineage_integrity:
+        executionPackageLineageIntegrity,
+
       dev2_sprint_package: registryGatedPackage,
       dev2_package_success_signal: successSignal,
       adaptive_package_strategy: adaptiveStrategy
@@ -294,6 +303,7 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
 
 
 
