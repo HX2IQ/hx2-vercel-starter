@@ -284,6 +284,9 @@ export function buildSprintNextPayload(message: string) {
       ...packageSeed,
       orchestration_execution_context: orchestrationExecutionContext,
       stage_audit: stageAudit,
+      execution_package_lineage:
+        registryValidationLineage.lineage,
+
       dev2_sprint_package: registryGatedPackage,
       dev2_package_success_signal: successSignal,
       adaptive_package_strategy: adaptiveStrategy
@@ -291,6 +294,7 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
 
 
 
