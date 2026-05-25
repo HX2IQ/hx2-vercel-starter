@@ -1,3 +1,4 @@
+import { OrchestrationStageManifestPanel } from "./orchestration-stage-manifest-panel";
 import { LearningWeightsSummaryPanel } from "./learning-weights-summary-panel";
 import { OrchestrationOutcomeSummaryPanel } from "./orchestration-outcome-summary-panel";
 import { SprintNextPreviewPanel } from "./sprint-next-panel";
@@ -232,6 +233,7 @@ export async function ChatMasterPanels() {
 
   return (
     <>
+      <OrchestrationStageManifestPanel />
       <LearningWeightsSummaryPanel />
       <OrchestrationOutcomeSummaryPanel />
       <SprintNextPreviewPanel />
@@ -245,6 +247,7 @@ export async function ChatMasterPanels() {
     </>
   );
 }
+
 
 
 
