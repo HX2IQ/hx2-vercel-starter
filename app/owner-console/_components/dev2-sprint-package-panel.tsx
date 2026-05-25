@@ -46,6 +46,15 @@ export function Dev2SprintPackagePanel({
         </div>
       ) : null}
 
+      {pkg?.execution_package_lineage ? (
+        <div className="mt-4 rounded-lg border border-sky-800 bg-slate-900 p-3 text-sm">
+          <div className="font-semibold text-white">Execution Package Lineage</div>
+          <div className="mt-2 text-slate-300">
+            {(pkg.execution_package_lineage || []).join(" → ") || "unknown"}
+          </div>
+        </div>
+      ) : null}
+
       {pkg?.adaptive_restraint_audit ? (
         <div className="mt-4 rounded-lg border border-yellow-800 bg-slate-900 p-3 text-sm">
           <div className="font-semibold text-white">Adaptive Restraint Audit</div>
@@ -238,6 +247,7 @@ export function Dev2SprintPackagePanel({
     </div>
   );
 }
+
 
 
 
