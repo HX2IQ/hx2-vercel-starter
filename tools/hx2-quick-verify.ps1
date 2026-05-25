@@ -13,6 +13,7 @@ if (Test-Path ".\tools\hx2-local-env-check.ps1") {
 }
 
 $guards = @(
+  ".\tools\sprint-next\orchestration-stage-manifest-api-guard.ps1",
   ".\tools\sprint-next\execution-lineage-integrity-guard.ps1",
   ".\tools\sprint-next\execution-package-lineage-guard.ps1",
   ".\tools\sprint-next\registry-driven-orchestration-validation-guard.ps1",
@@ -86,6 +87,7 @@ $results | Format-Table -AutoSize
 
 Write-Host ""
 Write-Host ("HX2 QUICK VERIFY PASSED ({0} ms total)" -f $overall.ElapsedMilliseconds) -ForegroundColor Green
+
 
 
 
