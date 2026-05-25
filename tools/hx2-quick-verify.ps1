@@ -13,6 +13,7 @@ if (Test-Path ".\tools\hx2-local-env-check.ps1") {
 }
 
 $guards = @(
+  ".\tools\sprint-next\phase3-orchestration-diagnostics-guard.ps1",
   ".\tools\sprint-next\manifest-health-summary-guard.ps1",
   ".\tools\sprint-next\orchestration-stage-manifest-preview-guard.ps1",
   ".\tools\sprint-next\orchestration-stage-manifest-api-guard.ps1",
@@ -89,6 +90,7 @@ $results | Format-Table -AutoSize
 
 Write-Host ""
 Write-Host ("HX2 QUICK VERIFY PASSED ({0} ms total)" -f $overall.ElapsedMilliseconds) -ForegroundColor Green
+
 
 
 
