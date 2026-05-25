@@ -30,6 +30,7 @@ import {
   evolveSprintExecutionPackage
 } from "./sprint-execution-package-lineage";
 import { validateExecutionPackageLineage } from "./execution-lineage-integrity";
+import { applyExecutionLineageIntegrityGate } from "./execution-lineage-integrity-gate";
 import { buildStageRegistryIntegrity } from "./sprint-next-stage-registry-integrity";
 import { validateSprintNextStageRegistry } from "./registry-driven-orchestration-validation";
 import { applyRegistryValidationGateToPackage } from "./registry-validation-package-gate";
@@ -259,22 +260,28 @@ export function buildSprintNextPayload(message: string) {
       registryValidationLineage.lineage
     );
 
+  const lineageGatedPackage =
+    applyExecutionLineageIntegrityGate(
+      registryGatedPackage,
+      executionPackageLineageIntegrity
+    );
+
   const finalOperatorDecision =
     buildSprintNextDecisionStage({
-      sprintPackage: registryGatedPackage,
+      sprintPackage: lineageGatedPackage,
       outcomeTelemetryInfluence,
       orchestrationConfidence
     });
-  registryGatedPackage.operator_decision = finalOperatorDecision;
+  lineageGatedPackage.operator_decision = finalOperatorDecision;
 
-  registryGatedPackage.operator_followthrough =
+  lineageGatedPackage.operator_followthrough =
     buildOperatorDecisionFollowthrough(finalOperatorDecision);
 
-  registryGatedPackage.execution_memory =
-    buildOrchestrationExecutionMemory(registryGatedPackage);
+  lineageGatedPackage.execution_memory =
+    buildOrchestrationExecutionMemory(lineageGatedPackage);
 
   strategyPackage.runtime_outcome =
-    buildOrchestrationRuntimeOutcome(registryGatedPackage.execution_memory);
+    buildOrchestrationRuntimeOutcome(lineageGatedPackage.execution_memory);
 
   const orchestration_stage_registry =
     sprintNextStageRegistry;
@@ -296,13 +303,14 @@ export function buildSprintNextPayload(message: string) {
       execution_package_lineage_integrity:
         executionPackageLineageIntegrity,
 
-      dev2_sprint_package: registryGatedPackage,
+      dev2_sprint_package: lineageGatedPackage,
       dev2_package_success_signal: successSignal,
       adaptive_package_strategy: adaptiveStrategy
     },
     planner: plan
   };
 }
+
 
 
 
