@@ -33,6 +33,7 @@ import { validateExecutionPackageLineage } from "./execution-lineage-integrity";
 import { applyExecutionLineageIntegrityGate } from "./execution-lineage-integrity-gate";
 import { buildManifestHealthSummary } from "./manifest-health-summary";
 import { buildPhase3OrchestrationDiagnostics } from "./phase3-orchestration-diagnostics";
+import { applyPhase3DiagnosticsGate } from "./phase3-diagnostics-package-gate";
 import { buildStageRegistryIntegrity } from "./sprint-next-stage-registry-integrity";
 import { validateSprintNextStageRegistry } from "./registry-driven-orchestration-validation";
 import { applyRegistryValidationGateToPackage } from "./registry-validation-package-gate";
@@ -276,22 +277,28 @@ export function buildSprintNextPayload(message: string) {
       executionPackageLineageIntegrity
     );
 
+  const phase3GatedPackage =
+    applyPhase3DiagnosticsGate(
+      lineageGatedPackage,
+      phase3OrchestrationDiagnostics
+    );
+
   const finalOperatorDecision =
     buildSprintNextDecisionStage({
-      sprintPackage: lineageGatedPackage,
+      sprintPackage: phase3GatedPackage,
       outcomeTelemetryInfluence,
       orchestrationConfidence
     });
-  lineageGatedPackage.operator_decision = finalOperatorDecision;
+  phase3GatedPackage.operator_decision = finalOperatorDecision;
 
-  lineageGatedPackage.operator_followthrough =
+  phase3GatedPackage.operator_followthrough =
     buildOperatorDecisionFollowthrough(finalOperatorDecision);
 
-  lineageGatedPackage.execution_memory =
-    buildOrchestrationExecutionMemory(lineageGatedPackage);
+  phase3GatedPackage.execution_memory =
+    buildOrchestrationExecutionMemory(phase3GatedPackage);
 
   strategyPackage.runtime_outcome =
-    buildOrchestrationRuntimeOutcome(lineageGatedPackage.execution_memory);
+    buildOrchestrationRuntimeOutcome(phase3GatedPackage.execution_memory);
 
   const orchestration_stage_registry =
     sprintNextStageRegistry;
@@ -319,13 +326,14 @@ export function buildSprintNextPayload(message: string) {
       phase3_orchestration_diagnostics:
         phase3OrchestrationDiagnostics,
 
-      dev2_sprint_package: lineageGatedPackage,
+      dev2_sprint_package: phase3GatedPackage,
       dev2_package_success_signal: successSignal,
       adaptive_package_strategy: adaptiveStrategy
     },
     planner: plan
   };
 }
+
 
 
 
