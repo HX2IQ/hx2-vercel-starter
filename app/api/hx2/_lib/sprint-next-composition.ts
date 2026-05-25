@@ -31,6 +31,7 @@ import {
 } from "./sprint-execution-package-lineage";
 import { validateExecutionPackageLineage } from "./execution-lineage-integrity";
 import { applyExecutionLineageIntegrityGate } from "./execution-lineage-integrity-gate";
+import { buildManifestHealthSummary } from "./manifest-health-summary";
 import { buildStageRegistryIntegrity } from "./sprint-next-stage-registry-integrity";
 import { validateSprintNextStageRegistry } from "./registry-driven-orchestration-validation";
 import { applyRegistryValidationGateToPackage } from "./registry-validation-package-gate";
@@ -266,6 +267,9 @@ export function buildSprintNextPayload(message: string) {
       executionPackageLineageIntegrity
     );
 
+  const manifestHealthSummary =
+    buildManifestHealthSummary();
+
   const finalOperatorDecision =
     buildSprintNextDecisionStage({
       sprintPackage: lineageGatedPackage,
@@ -303,6 +307,9 @@ export function buildSprintNextPayload(message: string) {
       execution_package_lineage_integrity:
         executionPackageLineageIntegrity,
 
+      manifest_health_summary:
+        manifestHealthSummary,
+
       dev2_sprint_package: lineageGatedPackage,
       dev2_package_success_signal: successSignal,
       adaptive_package_strategy: adaptiveStrategy
@@ -310,6 +317,7 @@ export function buildSprintNextPayload(message: string) {
     planner: plan
   };
 }
+
 
 
 
