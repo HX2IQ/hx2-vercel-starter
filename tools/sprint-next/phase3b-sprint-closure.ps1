@@ -5,7 +5,8 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "`n== PHASE 3B SPRINT CLOSURE =="
+Write-Host ""
+Write-Host "== PHASE 3B SPRINT CLOSURE =="
 
 $Guards = @(
   "tools/sprint-next/phase3b-route-existence-preflight.ps1",
@@ -29,30 +30,37 @@ foreach ($Guard in $Guards) {
     throw "Missing guard: $Guard"
   }
 
-  Write-Host "`n== RUN GUARD: $Guard =="
+  Write-Host ""
+  Write-Host "== RUN GUARD: $Guard =="
   powershell -ExecutionPolicy Bypass -File $Guard
 }
 
-Write-Host "`n== BUILD =="
+Write-Host ""
+Write-Host "== BUILD =="
 npm run build
 
 if ($SkipDeploy) {
-  Write-Host "`nPHASE 3B SPRINT CLOSURE PASSED — LOCAL ONLY / DEPLOY SKIPPED"
+  Write-Host ""
+  Write-Host "PHASE 3B SPRINT CLOSURE PASSED - LOCAL ONLY / DEPLOY SKIPPED"
   exit 0
 }
 
-Write-Host "`n== DEPLOY PRODUCTION =="
+Write-Host ""
+Write-Host "== DEPLOY PRODUCTION =="
 git push origin main
 
-Write-Host "`n== VERIFY ORIGIN MAIN HAS PHASE 3B FILES =="
+Write-Host ""
+Write-Host "== VERIFY ORIGIN MAIN HAS PHASE 3B FILES =="
 powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-origin-main-preflight.ps1"
 
 npx vercel --prod --force
 
-Write-Host "`n== WAIT FOR PROPAGATION =="
+Write-Host ""
+Write-Host "== WAIT FOR PROPAGATION =="
 Start-Sleep -Seconds 60
 
-Write-Host "`n== VERIFY VERCEL DOMAIN ALIAS =="
+Write-Host ""
+Write-Host "== VERIFY VERCEL DOMAIN ALIAS =="
 powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-vercel-alias-guard.ps1" -Domain $ProbeUrl
 
 $Routes = @(
@@ -66,11 +74,14 @@ $Routes = @(
 )
 
 foreach ($Route in $Routes) {
-  Write-Host "`n== PROBE $Route =="
+  Write-Host ""
+  Write-Host "== PROBE $Route =="
   Invoke-RestMethod "$ProbeUrl$Route" | ConvertTo-Json -Depth 20
 }
 
-Write-Host "`n== RUN PHASE 3B STATUS PRODUCTION PROBE =="
+Write-Host ""
+Write-Host "== RUN PHASE 3B STATUS PRODUCTION PROBE =="
 powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-orchestration-status-production-probe.ps1" -BaseUrl $ProbeUrl
 
-Write-Host "`nPHASE 3B SPRINT CLOSURE PASSED"
+Write-Host ""
+Write-Host "PHASE 3B SPRINT CLOSURE PASSED"
