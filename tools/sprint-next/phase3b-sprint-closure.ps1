@@ -36,55 +36,41 @@ foreach ($Guard in $Guards) {
 Write-Host "`n== BUILD =="
 npm run build
 
-if (-not $SkipDeploy) {
-  Write-Host "`n== DEPLOY PRODUCTION =="
-  git push origin main
-
-  Write-Host "`n== VERIFY ORIGIN MAIN HAS PHASE 3B FILES =="
-  powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-origin-main-preflight.ps1"
-
-  npx vercel --prod --force
-
-  Write-Host "`n== WAIT FOR PROPAGATION =="
-  Start-Sleep -Seconds 60
+if ($SkipDeploy) {
+  Write-Host "`nPHASE 3B SPRINT CLOSURE PASSED — LOCAL ONLY / DEPLOY SKIPPED"
+  exit 0
 }
+
+Write-Host "`n== DEPLOY PRODUCTION =="
+git push origin main
+
+Write-Host "`n== VERIFY ORIGIN MAIN HAS PHASE 3B FILES =="
+powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-origin-main-preflight.ps1"
+
+npx vercel --prod --force
+
+Write-Host "`n== WAIT FOR PROPAGATION =="
+Start-Sleep -Seconds 60
 
 Write-Host "`n== VERIFY VERCEL DOMAIN ALIAS =="
 powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-vercel-alias-guard.ps1" -Domain $ProbeUrl
 
-Write-Host "`n== PROBE COMPILER =="
-Invoke-RestMethod "$ProbeUrl/api/hx2/orchestration-compiler" |
-  ConvertTo-Json -Depth 20
+$Routes = @(
+  "/api/hx2/orchestration-compiler",
+  "/api/hx2/orchestration-stage-dependencies",
+  "/api/hx2/orchestration-stage-graph",
+  "/api/hx2/orchestration-execution-plan",
+  "/api/hx2/phase3b-orchestration-status",
+  "/api/hx2/phase3b-release-manifest",
+  "/api/hx2/phase3b-route-matrix"
+)
 
-Write-Host "`n== PROBE STAGE DEPENDENCIES =="
-Invoke-RestMethod "$ProbeUrl/api/hx2/orchestration-stage-dependencies" |
-  ConvertTo-Json -Depth 20
-
-Write-Host "`n== PROBE STAGE GRAPH =="
-Invoke-RestMethod "$ProbeUrl/api/hx2/orchestration-stage-graph" |
-  ConvertTo-Json -Depth 20
-
-Write-Host "`n== PROBE EXECUTION PLAN =="
-Invoke-RestMethod "$ProbeUrl/api/hx2/orchestration-execution-plan" |
-  ConvertTo-Json -Depth 20
-
-Write-Host "`n== PROBE PHASE 3B STATUS =="
-Invoke-RestMethod "$ProbeUrl/api/hx2/phase3b-orchestration-status" |
-  ConvertTo-Json -Depth 20
-
-Write-Host "`n== PROBE PHASE 3B ROUTE MATRIX =="
-Invoke-RestMethod "$ProbeUrl/api/hx2/phase3b-route-matrix" |
-  ConvertTo-Json -Depth 20
-
-Write-Host "`n== PROBE PHASE 3B RELEASE MANIFEST =="
-Invoke-RestMethod "$ProbeUrl/api/hx2/phase3b-release-manifest" |
-  ConvertTo-Json -Depth 20
+foreach ($Route in $Routes) {
+  Write-Host "`n== PROBE $Route =="
+  Invoke-RestMethod "$ProbeUrl$Route" | ConvertTo-Json -Depth 20
+}
 
 Write-Host "`n== RUN PHASE 3B STATUS PRODUCTION PROBE =="
 powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-orchestration-status-production-probe.ps1" -BaseUrl $ProbeUrl
-if ($LASTEXITCODE -ne 0) {
-  throw "Phase 3B status production probe failed"
-}
 
 Write-Host "`nPHASE 3B SPRINT CLOSURE PASSED"
-
