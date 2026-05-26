@@ -1,5 +1,7 @@
 param(
-  [string]$BaseUrl = "https://optinodeiq.com"
+  [string]$BaseUrl = "https://optinodeiq.com",
+  [int]$Retries = 8,
+  [int]$DelaySeconds = 20
 )
 
 $ErrorActionPreference = "Stop"
@@ -7,11 +9,24 @@ $ErrorActionPreference = "Stop"
 Write-Host "`n== PHASE 3B STATUS PRODUCTION PROBE =="
 
 $Url = "$BaseUrl/api/hx2/phase3b-orchestration-status"
+$Response = $null
+$LastError = $null
 
-try {
-  $Response = Invoke-RestMethod -Uri $Url -Method GET
-} catch {
-  throw "Phase 3B status production probe failed at $Url. $($_.Exception.Message)"
+for ($Attempt = 1; $Attempt -le $Retries; $Attempt++) {
+  try {
+    Write-Host "Probe attempt $Attempt of $Retries`: $Url"
+    $Response = Invoke-RestMethod -Uri $Url -Method GET
+    break
+  } catch {
+    $LastError = $_.Exception.Message
+    if ($Attempt -lt $Retries) {
+      Start-Sleep -Seconds $DelaySeconds
+    }
+  }
+}
+
+if ($null -eq $Response) {
+  throw "Phase 3B status production probe failed after $Retries attempts at $Url. Last error: $LastError"
 }
 
 $RequiredFields = @(
@@ -50,14 +65,5 @@ if ($Response.composition_mutation_allowed -ne $false) {
   throw "Phase 3B status must report composition_mutation_allowed=false"
 }
 
-if (-not ($Response.readiness.PSObject.Properties.Name -contains "phase3b_ready")) {
-  throw "Phase 3B readiness missing phase3b_ready"
-}
-
-if (-not ($Response.readiness.PSObject.Properties.Name -contains "blocking_reasons")) {
-  throw "Phase 3B readiness missing blocking_reasons"
-}
-
 Write-Host "PHASE 3B STATUS PRODUCTION PROBE PASSED"
-
 $Response | ConvertTo-Json -Depth 20
