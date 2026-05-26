@@ -57,5 +57,9 @@ Write-Host "`n== PROBE EXECUTION PLAN =="
 Invoke-RestMethod "$ProbeUrl/api/hx2/orchestration-execution-plan" |
   ConvertTo-Json -Depth 20
 
+Write-Host "`n== RUN PHASE 3B STATUS PRODUCTION PROBE =="
+powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-orchestration-status-production-probe.ps1" -BaseUrl $ProbeUrl
+
 Write-Host "`nPHASE 3B SPRINT CLOSURE PASSED"
+
 
