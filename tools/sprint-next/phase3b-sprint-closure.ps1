@@ -64,6 +64,10 @@ Write-Host "`n== PROBE EXECUTION PLAN =="
 Invoke-RestMethod "$ProbeUrl/api/hx2/orchestration-execution-plan" |
   ConvertTo-Json -Depth 20
 
+Write-Host "`n== PROBE PHASE 3B RELEASE MANIFEST =="
+Invoke-RestMethod "$ProbeUrl/api/hx2/phase3b-release-manifest" |
+  ConvertTo-Json -Depth 20
+
 Write-Host "`n== RUN PHASE 3B STATUS PRODUCTION PROBE =="
 powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-orchestration-status-production-probe.ps1" -BaseUrl $ProbeUrl
 if ($LASTEXITCODE -ne 0) {
@@ -71,6 +75,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "`nPHASE 3B SPRINT CLOSURE PASSED"
+
 
 
 
