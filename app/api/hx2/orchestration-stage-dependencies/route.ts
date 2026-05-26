@@ -15,9 +15,11 @@ export async function GET() {
     ok: true,
 
     route: "/api/hx2/orchestration-stage-dependencies",
+    dependency_mode: "read_only_preview",
 
     dependency_registry: registry,
 
     validation,
   });
 }
+

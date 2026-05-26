@@ -32,6 +32,7 @@ foreach ($Entry in $Matrix.routes) {
 
   $ModeValues = @(
     $Response.compiler_mode,
+    $Response.dependency_mode,
     $Response.plan_mode,
     $Response.graph_mode,
     $Response.status_mode,
@@ -46,3 +47,4 @@ foreach ($Entry in $Matrix.routes) {
 
 Write-Host ""
 Write-Host "PHASE 3B ROUTE MATRIX PRODUCTION PROBE PASSED"
+
