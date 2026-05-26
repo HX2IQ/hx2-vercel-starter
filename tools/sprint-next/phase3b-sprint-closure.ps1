@@ -22,6 +22,7 @@ $Guards = @(
   "tools/sprint-next/phase3b-orchestration-status-guard.ps1",
   "tools/sprint-next/phase3b-release-manifest-guard.ps1",
   "tools/sprint-next/phase3b-route-matrix-guard.ps1",
+  "tools/sprint-next/phase3b-route-mode-contract-guard.ps1",
   "tools/sprint-next/phase3b-sprint-closure-guard.ps1"
 )
 
@@ -89,4 +90,5 @@ powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-orchestratio
 
 Write-Host ""
 Write-Host "PHASE 3B SPRINT CLOSURE PASSED"
+
 
