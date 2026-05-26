@@ -20,6 +20,7 @@ $Guards = @(
   "tools/sprint-next/orchestration-execution-plan-guard.ps1",
   "tools/sprint-next/phase3b-orchestration-status-guard.ps1",
   "tools/sprint-next/phase3b-release-manifest-guard.ps1",
+  "tools/sprint-next/phase3b-route-matrix-guard.ps1",
   "tools/sprint-next/phase3b-sprint-closure-guard.ps1"
 )
 
@@ -71,6 +72,10 @@ Write-Host "`n== PROBE PHASE 3B STATUS =="
 Invoke-RestMethod "$ProbeUrl/api/hx2/phase3b-orchestration-status" |
   ConvertTo-Json -Depth 20
 
+Write-Host "`n== PROBE PHASE 3B ROUTE MATRIX =="
+Invoke-RestMethod "$ProbeUrl/api/hx2/phase3b-route-matrix" |
+  ConvertTo-Json -Depth 20
+
 Write-Host "`n== PROBE PHASE 3B RELEASE MANIFEST =="
 Invoke-RestMethod "$ProbeUrl/api/hx2/phase3b-release-manifest" |
   ConvertTo-Json -Depth 20
@@ -82,3 +87,4 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "`nPHASE 3B SPRINT CLOSURE PASSED"
+
