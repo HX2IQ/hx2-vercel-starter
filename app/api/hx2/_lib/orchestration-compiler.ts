@@ -3,6 +3,10 @@ import * as RegistryIntegrityModule from "./sprint-next-stage-registry-integrity
 import * as RegistryValidationModule from "./registry-driven-orchestration-validation";
 import * as LineageModule from "./sprint-execution-package-lineage";
 import * as LineageIntegrityModule from "./execution-lineage-integrity";
+import {
+  getOrchestrationStageDependencyRegistry,
+  validateStageDependencies,
+} from "./orchestration-stage-dependency-registry";
 
 type AnyRecord = Record<string, any>;
 
@@ -21,6 +25,8 @@ export function getOrchestrationCompilerSnapshot() {
   const registryValidation = callOrRead(RegistryValidationModule as AnyRecord, ["validateRegistryDrivenOrchestration", "registryDrivenOrchestrationValidation"], { ok: false });
   const lineage = callOrRead(LineageModule as AnyRecord, ["getSprintExecutionPackageLineage", "sprintExecutionPackageLineage"], []);
   const lineageIntegrity = callOrRead(LineageIntegrityModule as AnyRecord, ["getExecutionLineageIntegrity", "executionLineageIntegrity", "validateExecutionLineageIntegrity"], { ok: false });
+  const dependencyRegistry = getOrchestrationStageDependencyRegistry();
+  const dependencyRegistryValidation = validateStageDependencies();
 
   const orderedStages = Array.isArray(registry)
     ? registry.map((stage: any, index: number) => ({
@@ -28,7 +34,9 @@ export function getOrchestrationCompilerSnapshot() {
         stage_type: stage.stage_type ?? stage.type ?? "unknown",
         helper: stage.helper ?? stage.helper_id ?? "unknown",
         order: index + 1,
-        depends_on: Array.isArray(stage.depends_on) ? stage.depends_on : [],
+        depends_on:
+          dependencyRegistry.find((dependency: any) => dependency.stage_id === (stage.stage_id ?? stage.id))?.depends_on ??
+          (Array.isArray(stage.depends_on) ? stage.depends_on : []),
       }))
     : [];
 
@@ -47,6 +55,7 @@ export function getOrchestrationCompilerSnapshot() {
   if (registryValidation?.ok === false) blockingReasons.push("registry_validation_failed");
   if (lineageIntegrity?.ok === false) blockingReasons.push("execution_lineage_integrity_failed");
   if (dependencyIssues.length > 0) blockingReasons.push("stage_dependency_validation_failed");
+  if (dependencyRegistryValidation?.ok === false) blockingReasons.push("stage_dependency_registry_validation_failed");
 
   return {
     ok: true,
@@ -60,10 +69,12 @@ export function getOrchestrationCompilerSnapshot() {
     registry_validation: registryValidation,
     lineage_integrity: lineageIntegrity,
     dependency_validation: {
-      ok: dependencyIssues.length === 0,
+      ok: dependencyIssues.length === 0 && dependencyRegistryValidation?.ok !== false,
       issue_count: dependencyIssues.length,
       issues: dependencyIssues,
+      registry_validation: dependencyRegistryValidation,
     },
+    dependency_registry: dependencyRegistry,
     lineage,
     readiness: {
       compiler_ready: blockingReasons.length === 0,
@@ -71,3 +82,4 @@ export function getOrchestrationCompilerSnapshot() {
     },
   };
 }
+
