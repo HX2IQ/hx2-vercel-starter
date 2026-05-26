@@ -16,7 +16,8 @@ $Guards = @(
   "tools/sprint-next/orchestration-stage-graph-guard.ps1",
   "tools/sprint-next/orchestration-stage-graph-cycle-guard.ps1",
   "tools/sprint-next/orchestration-stage-graph-topological-guard.ps1",
-  "tools/sprint-next/orchestration-execution-plan-guard.ps1"
+  "tools/sprint-next/orchestration-execution-plan-guard.ps1",
+  "tools/sprint-next/phase3b-sprint-closure-guard.ps1"
 )
 
 foreach ($Guard in $Guards) {
@@ -57,3 +58,4 @@ Invoke-RestMethod "$ProbeUrl/api/hx2/orchestration-execution-plan" |
   ConvertTo-Json -Depth 20
 
 Write-Host "`nPHASE 3B SPRINT CLOSURE PASSED"
+
