@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "upstream_status": 200,
+  "upstream_url": "https://ap2-worker.optinodeiq.com/brain/status",
+  "data": {
+    "ok": true,
+    "service": "hx2-brain-shell",
+    "brain_attached": true,
+    "brain_version": "hx2-brain-shell-v0.4-memory",
+    "mode": "SAFE"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "generated_at": "2026-03-20T08:51:44",
+  "latest_baseline": "C:\\Users\\ezdet\\hx2-vercel-starter\\tools\\baselines\\20260320-085059",
+  "latest_release_note": "C:\\Users\\ezdet\\hx2-vercel-starter\\tools\\release-notes\\release-note-20260320-085059.md",
+  "latest_autopsy": null,
+  "drift_dashboard": "C:\\Users\\ezdet\\hx2-vercel-starter\\tools\\dashboards\\hx2-drift-dashboard.html",
+  "deploy_log": "C:\\Users\\ezdet\\hx2-vercel-starter\\tools\\_postflight-vercel-deploy.log",
+  "autopsy_count": 0,
+  "baseline_count": 20,
+  "release_note_count": 12,
+  "staging_count": 0,
+  "incomplete_count": 2
+}

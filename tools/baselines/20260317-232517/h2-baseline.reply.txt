@@ -1,0 +1,26 @@
+HX2_FULL_BRAIN_ACTIVE
+
+1. Brief Title  
+Sustained Kinetic Pressure in Iran Amid Regional Security Shifts  
+
+2. Primary Signal  
+- Direct catalyst: Confirmed Israeli and US attacks on Iranian urban centers (Tehran, Karaj) causing prolonged power outages and civilian distress (bbc_world, confidence 0.85).  
+
+3. Supporting Context  
+- Narrative support: Japan advancing missile defense deployments near Taiwan indicates growing strategic military posturing in East Asia (zerohedge, confidence 0.60).  
+
+4. Implications  
+- Iran faces intensified kinetic escalation with direct strikes on infrastructure, elevating risk of retaliatory Iranian operations or proxy mobilization.  
+- Civilian disruptions suggest potential internal unrest or increased resilience strain, complicating Iran’s regional posture.  
+- Concurrently, Japan’s moves near Taiwan hint at broader regional security recalibrations involving US-aligned states, potentially raising spillover risks in the Indo-Pacific.  
+- However, these signals presently appear as separate focal points without confirmed direct linkage or coordinated escalation.  
+
+5. Confidence  
+- Moderate confidence due to strong tier 1 reporting on Iran attacks but limited corroboration for broader regional escalation.  
+- Lower confidence in interpreting Japan's strategic moves as immediate kinetic escalation given narrative source weighting and limited direct evidence.  
+
+6. Monitoring Priorities  
+- Track Iranian governmental and proxy group responses to infrastructure attacks for signs of retaliatory kinetic or asymmetric operations.  
+- Monitor civil unrest indicators within Iran linked to power/service disruptions.  
+- Observe allied deployments and security posture near Taiwan for escalation or crisis signals.  
+- Verify any emerging coordination or spillover between Middle East kinetic events and Indo-Pacific strategic shifts.

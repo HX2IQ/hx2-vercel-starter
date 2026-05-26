@@ -48,7 +48,8 @@ export async function createTask(taskType: string, payload: any, note?: string) 
   };
 
   await writeAllKeys(task);
-  await redis.lpush(queueKey(), taskId);
+  // DEV2.STB: queue push moved to /api/ap2/task/enqueue via TCP (ioredis) with JSON envelope for VPS worker BRPOP.
+  // await redis.lpush(queueKey(), taskId);
 
   return task;
 }

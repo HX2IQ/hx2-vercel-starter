@@ -1,0 +1,61 @@
+== HX2 regression smoke ==
+
+== HX2 regression summary ==
+
+[32;1mtest                                    [0m[32;1m status[0m[32;1m detail[0m
+[32;1m----                                    [0m [32;1m------[0m [32;1m------[0m
+brain/status http                        PASS   HTTP 200
+brain/status ok                          PASS   ok=true
+X2 http                                  PASS   HTTP 200
+X2 ok                                    PASS   ok=true
+X2 node target                           PASS   node_target=X2
+X2 anchor                                PASS   anchor=bloomberg_markets
+X2 direct catalyst count                 PASS   No direct catalysts
+X2 brief has Brief Title                 PASS   Found section: Brief Title
+X2 brief has Primary Signal              PASS   Found section: Primary Signal
+X2 brief has Supporting Context          PASS   Found section: Supporting Context
+X2 brief has Implications                PASS   Found section: Implications
+X2 brief has Confidence                  PASS   Found section: Confidence
+X2 brief has Monitoring Priorities       PASS   Found section: Monitoring Priorities
+X2 no-direct wording                     PASS   Reply communicates no direct catalyst
+X2 indirect-backdrop wording             PASS   Reply explicitly labels indirect backdrop
+X2 narrative-support wording             PASS   Reply explicitly labels narrative support
+X2 direct-catalyst restraint             PASS   Reply does not invent a direct catalyst
+H2 http                                  PASS   HTTP 200
+H2 ok                                    PASS   ok=true
+H2 node target                           PASS   node_target=H2
+H2 anchor                                PASS   anchor=bbc_world
+H2 direct catalyst count                 PASS   At least one direct catalyst
+H2 direct catalyst source                PASS   bbc_world present in direct catalysts
+H2 brief has Brief Title                 PASS   Found section: Brief Title
+H2 brief has Primary Signal              PASS   Found section: Primary Signal
+H2 brief has Supporting Context          PASS   Found section: Supporting Context
+H2 brief has Implications                PASS   Found section: Implications
+H2 brief has Confidence                  PASS   Found section: Confidence
+H2 brief has Monitoring Priorities       PASS   Found section: Monitoring Priorities
+H2 direct-catalyst wording               PASS   Reply references direct catalyst
+H2 narrative-support wording             PASS   Reply references narrative support
+X2 mixed http                            PASS   HTTP 200
+X2 mixed anchor                          PASS   anchor=bloomberg_markets
+X2 mixed direct catalyst count           PASS   No direct catalysts
+X2 mixed brief has Brief Title           PASS   Found section: Brief Title
+X2 mixed brief has Primary Signal        PASS   Found section: Primary Signal
+X2 mixed brief has Supporting Context    PASS   Found section: Supporting Context
+X2 mixed brief has Implications          PASS   Found section: Implications
+X2 mixed brief has Confidence            PASS   Found section: Confidence
+X2 mixed brief has Monitoring Priorities PASS   Found section: Monitoring Priorities
+H2 cross http                            PASS   HTTP 200
+H2 cross anchor                          PASS   anchor=bbc_world
+H2 cross direct catalyst count           PASS   At least one direct catalyst
+H2 cross brief has Brief Title           PASS   Found section: Brief Title
+H2 cross brief has Primary Signal        PASS   Found section: Primary Signal
+H2 cross brief has Supporting Context    PASS   Found section: Supporting Context
+H2 cross brief has Implications          PASS   Found section: Implications
+H2 cross brief has Confidence            PASS   Found section: Confidence
+H2 cross brief has Monitoring Priorities PASS   Found section: Monitoring Priorities
+H2 cross restraint wording               PASS   Reply preserves separation/restraint
+H2 cross direct-catalyst wording         PASS   Reply preserves direct-catalyst framing
+H2 cross narrative-support wording       PASS   Reply preserves narrative-support framing
+
+
+ALL HX2 REGRESSION TESTS PASSED

@@ -1,0 +1,143 @@
+{
+  "ok": true,
+  "taskId": "ap2t_19d015b6fad_522d3fa9",
+  "node_target": "H2",
+  "used_intelligence_prefetch": true,
+  "weak_context": true,
+  "conflict_detected": true,
+  "conflict_notes": [
+    "institutional anchor is being supplemented by alternative/narrative source",
+    "confirmed geopolitical reporting is mixed with lower-tier strategic interpretation"
+  ],
+  "anchor_source": "bbc_world",
+  "anchor_title": "'I just want to be able to sleep': Attacks in Iran rock cities and cut power",
+  "anchor_ts": "2026-03-10T23:38:15.085Z",
+  "supporting_sources": [
+    {
+      "source": "zerohedge",
+      "title": "Japan's Strategic Awakening"
+    }
+  ],
+  "intel_cluster_count": 2,
+  "intel_clusters": [
+    {
+      "cluster_key": "url:bbc.com/news/cev7llekwllo",
+      "count": 1,
+      "representative_title": "'I just want to be able to sleep': Attacks in Iran rock cities and cut power",
+      "representative_source": "bbc_world",
+      "member_sources": [
+        "bbc_world"
+      ],
+      "member_titles": [
+        "'I just want to be able to sleep': Attacks in Iran rock cities and cut power"
+      ],
+      "_cluster_score": 18
+    },
+    {
+      "cluster_key": "url:zerohedge.com/geopolitical/japans-strategic-awakening",
+      "count": 1,
+      "representative_title": "Japan's Strategic Awakening",
+      "representative_source": "zerohedge",
+      "member_sources": [
+        "zerohedge"
+      ],
+      "member_titles": [
+        "Japan's Strategic Awakening"
+      ],
+      "_cluster_score": 5
+    }
+  ],
+  "catalyst_summary": {
+    "direct_catalysts": [
+      {
+        "source": "bbc_world",
+        "title": "'I just want to be able to sleep': Attacks in Iran rock cities and cut power"
+      }
+    ],
+    "indirect_backdrop": [],
+    "narrative_support": [
+      {
+        "source": "zerohedge",
+        "title": "Japan's Strategic Awakening"
+      }
+    ]
+  },
+  "diversity_summary": {
+    "sources": [
+      "bbc_world",
+      "zerohedge"
+    ],
+    "categories": [
+      "geopolitics",
+      "macro_narrative"
+    ],
+    "catalyst_labels": [
+      "direct_catalyst",
+      "narrative_support"
+    ]
+  },
+  "source_memory_summary": [
+    {
+      "source": "bbc_world",
+      "title": "'I just want to be able to sleep': Attacks in Iran rock cities and cut power",
+      "reliability_adjustment": 7
+    },
+    {
+      "source": "zerohedge",
+      "title": "Japan's Strategic Awakening",
+      "reliability_adjustment": -1
+    }
+  ],
+  "selected_intel_count": 2,
+  "selected_intel": [
+    {
+      "id": "ap2t_19cda1d8884_303341d7",
+      "type": "rss.fetch",
+      "title": "'I just want to be able to sleep': Attacks in Iran rock cities and cut power",
+      "summary": "Iranians in Tehran and Karaj tell the BBC they are exhausted and struggling to sleep after 10 days of Israeli and US attacks.",
+      "url": "https://www.bbc.com/news/articles/cev7llekwllo?at_medium=RSS&at_campaign=rss",
+      "source": "bbc_world",
+      "category": "geopolitics",
+      "tier": 1,
+      "confidence": 0.85,
+      "node_targets": [
+        "H2"
+      ],
+      "ts": "2026-03-10T23:38:15.085Z",
+      "_score": 66,
+      "catalyst_label": "direct_catalyst"
+    },
+    {
+      "id": "ap2t_19cda933376_e078bbc0",
+      "type": "rss.fetch",
+      "title": "Japan's Strategic Awakening",
+      "summary": "Japan's Strategic Awakening Authored by Lamont Colucci via The Epoch Times (emphasis ours), Japan’s strategic awakening is no longer theoretical—it’s unfolding in real time. In recent weeks, Tokyo confirmed plans to deploy advanced surface-to-air missile systems on Yonaguni Island, Japan’s westernmost inhabited territory and only about 70 miles from Taiwan. The deployment is part of a broader effort to strengthen de…",
+      "url": "https://www.zerohedge.com/geopolitical/japans-strategic-awakening",
+      "source": "zerohedge",
+      "feed_title": null,
+      "category": "macro_narrative",
+      "tier": 3,
+      "confidence": 0.6,
+      "node_targets": [
+        "X2",
+        "H2"
+      ],
+      "ts": "2026-03-11T01:46:46.689Z",
+      "_score": 31,
+      "catalyst_label": "narrative_support"
+    }
+  ],
+  "result": {
+    "ok": true,
+    "called": "http://127.0.0.1:3805/brain/chat",
+    "data": {
+      "ok": true,
+      "reply": "HX2_FULL_BRAIN_ACTIVE\n\n**Brief Title:** Assessment of Possible Linkages Between Iran Attacks and Taiwan-Adjacent Japan Military Posturing\n\n**Primary Signal:**  \n— Direct catalyst (bbc_world, confidence 0.85): Iranian urban centers endure 10 days of sustained Israeli and US strikes manifesting in power disruptions and widespread civilian distress.  \n— Narrative support (zerohedge, confidence 0.60): Japan initiates strategic missile deployments near Taiwan, signaling heightened regional defense posturing.\n\n**Supporting Context:**  \n- The Iran attacks represent explicit kinetic escalation and targeted infrastructure disruption by state actors (Israel, US). These acts carry a direct risk of Iranian retaliatory measures and potential regional spillover.  \n- The Japanese deployment is defensive, regionally focused on East Asian maritime and air domain security near Taiwan, reflecting growing perceived threat from China rather than direct link to Middle Eastern conflict dynamics.  \n- No direct, confirmed geopolitical reporting currently links the Iran attacks and the Taiwan-adjacent deployments as coordinated or causally connected escalations.\n\n**Implications:**  \n- Current evidence points to discrete theaters with distinct strategic rationales: Middle East kinetic attacks vs East Asian regional deterrence.  \n- However, both indicate concurrent heightened geopolitical tension, increasing global systemic risk and demand for vigilant watch on cross-theater spillover or opportunistic escalations.  \n- Policymakers should treat these as parallel but separate crisis points but remain alert for emergent inter-theater signaling or alignment.\n\n**Confidence:**  \nModerate confidence. High certainty on separated origins based on top-tier sources for Iran; lower tier support for Japan narrative advises caution in over-correlation.\n\n**Monitoring Priorities:**  \n- Follow Iranian political and military leadership communications for retaliation signals or shifts linking East Asian security dynamics.  \n- Monitor open-source and classified reporting on any shifts in US/Israeli military deployment that might unify Middle East and East Asia postures.  \n- Track Japan-China diplomatic/military interactions for escalation patterns that might converge with other global flashpoints.  \n\nSummary: Treat Iran attacks and Taiwan-region Japanese deployments as separate but simultaneous manifestations of rising global tension, not yet confirmed connected escalation fronts.",
+      "brain_attached": true,
+      "brain_version": "hx2-brain-shell-v0.4-memory",
+      "mode": "SAFE"
+    },
+    "brain_attached": true,
+    "brain_version": "hx2-brain-shell-v0.4-memory"
+  }
+}

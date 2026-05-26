@@ -1,54 +1,66 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createTask } from "@/lib/ap2/tasks";
 
 export const runtime = "nodejs";
-const ROUTE_VERSION = "ap2-task-enqueue-v3";
 
-function envDbg() {
-  return {
-    hasUpstashUrl: !!process.env.UPSTASH_REDIS_REST_URL,
-    hasUpstashToken: !!process.env.UPSTASH_REDIS_REST_TOKEN
-  };
-}
-
-function isAuthed(req: NextRequest) {
-  const want = (process.env.HX2_API_KEY || "").trim();
-  if (!want) return true;
-  const got = req.headers.get("authorization") || "";
-  return got === `Bearer ${want}`;
+function j(status: number, obj: any) {
+  return new NextResponse(JSON.stringify(obj), {
+    status,
+    headers: {
+      "content-type": "application/json",
+      "x-chat-route-version": "ap2-enqueue-forward-v2"
+    }
+  });
 }
 
 export async function POST(req: NextRequest) {
   try {
-    if (!isAuthed(req)) {
-      return NextResponse.json(
-        { envDbg: envDbg(), ok: false, error: "unauthorized" },
-        { status: 401, headers: { "x-ap2-route-version": ROUTE_VERSION } }
-      );
-    }
+    const gateway = (process.env.AP2_GATEWAY_BASE_URL || process.env.AP2_WORKER_BASE_URL || "https://ap2-worker.optinodeiq.com").replace(/\/+$/,"");
+    const url = `${gateway}/api/ap2/task/enqueue`;
 
-    const body = await req.json().catch(() => ({} as any));
-    const taskType = String(body?.taskType || body?.task || "").trim();
-    const payload = body?.payload ?? {};
-    const note = body?.note ? String(body.note) : undefined;
+    // Parse body (tolerant)
+    let rawText = await req.text();
+    let payload: any = {};
+    try { payload = rawText ? JSON.parse(rawText) : {}; } catch { payload = {}; }
+
+    // Normalize: accept task/type -> taskType (and also set type for older worker variants)
+    const taskType =
+      payload.taskType ??
+      payload.type ??
+      payload.task ??
+      null;
 
     if (!taskType) {
-      return NextResponse.json(
-        { envDbg: envDbg(), ok: false, error: "missing_taskType", message: "taskType is required" },
-        { status: 400, headers: { "x-ap2-route-version": ROUTE_VERSION } }
-      );
+      return j(400, { ok: false, error: "taskType is required (accepted: taskType | type | task)" });
     }
 
-    const task = await createTask(taskType, payload, note);
+    const forwardBody = {
+      ...payload,
+      taskType,
+      type: payload.type ?? taskType
+    };
 
-    return NextResponse.json(
-      { envDbg: envDbg(), ok: true, status: "ENQUEUED", taskId: task.taskId, task },
-      { headers: { "x-ap2-route-version": ROUTE_VERSION } }
-    );
+    const r = await fetch(url, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        ...(process.env.AP2_BEARER_TOKEN ? { "authorization": `Bearer ${process.env.AP2_BEARER_TOKEN}` } : {})
+      },
+      body: JSON.stringify(forwardBody)
+    });
+
+    const text = await r.text();
+    return new NextResponse(text, {
+      status: r.status,
+      headers: {
+        "content-type": r.headers.get("content-type") || "application/json",
+        "x-chat-route-version": "ap2-enqueue-forward-v2"
+      }
+    });
   } catch (e: any) {
-    return NextResponse.json(
-      { envDbg: envDbg(), ok: false, error: "enqueue_failed", message: String(e?.message || e) },
-      { status: 500, headers: { "x-ap2-route-version": ROUTE_VERSION } }
-    );
+    return j(500, { ok: false, error: e?.message || String(e) });
   }
+}
+
+export async function GET() {
+  return j(405, { ok: false, error: "Method Not Allowed. Use POST.", probe: true });
 }

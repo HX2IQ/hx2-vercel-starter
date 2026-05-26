@@ -1,0 +1,54 @@
+== CAPABILITY PLANNER PANEL STRUCTURE ==
+
+--- key declarations ---
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:113:  const learning =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:116:  const nodeFrequency =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:119:  const nodeReliability =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:122:  const modeFrequency =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:125:  const sprintTypeFrequency =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:128:  const executionRiskFrequency =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:131:  const sprintRecommendation =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:134:  const buildopsSprintPlan =
+
+--- visible section labels ---
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:182:          Selection Explanation
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:192:          Planner Feedback
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:219:            BuildOps Sprint Plan
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:236:          Sprint Recommendation
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:240:          {sprintRecommendation?.recommendation || "No sprint recommendation available."}
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:258:          Learning Signals
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:292:              Node Frequency
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:314:              Node Reliability / Stability Weighting
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:356:              Execution Mode Frequency
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:388:                  Adaptive Score Audit
+
+--- nearby execution mode frequency block ---
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:348:                  </div>
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:349:                </div>
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:350:              ))}
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:351:            </div>
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:352:          </div>
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:353:
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:354:          <div className="rounded-xl border border-slate-700 bg-slate-900 p-4">
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:355:            <div className="text-sm font-semibold text-cyan-300">
+> C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:356:              Execution Mode Frequency
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:357:            </div>
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:358:
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:359:            <div className="mt-3 space-y-2">
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:360:              {Object.keys(modeFrequency).map((mode) => (
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:361:                <div
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:362:                  key={mode}
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:363:                  className="flex items-center justify-between text-sm"
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:364:                >
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:365:                  <span className="text-white">{mode}</span>
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:366:
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:367:                  <span className="text-slate-400">
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:368:                    {modeFrequency[mode]}
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:369:                  </span>
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:370:                </div>
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:371:              ))}
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:372:            </div>
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:373:          </div>
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:374:
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:375:        </div>
+  C:\Users\ezdet\hx2-vercel-starter\app\owner-console\_components\capability-planner-panel.tsx:376:      </div>

@@ -1,0 +1,25 @@
+          <StabilityBadge label={`X2 Anchor Stability (${stability?.window_size ?? 0} recent)`} stable={!!stability?.x2_anchor_stable} values={stability?.x2_anchor_values || []} />
+          <StabilityBadge label={`H2 Anchor Stability (${stability?.window_size ?? 0} recent)`} stable={!!stability?.h2_anchor_stable} values={stability?.h2_anchor_values || []} />
+          <FreshnessBadge label="Baseline Freshness" status={summary?.baseline_freshness || "unknown"} minutes={summary?.baseline_age_minutes ?? null} />
+          <FreshnessBadge label="Release Note Freshness" status={summary?.release_note_freshness || "unknown"} minutes={summary?.release_note_age_minutes ?? null} />
+          <PostflightBadge status={summary?.last_postflight_status || "unknown"} minutes={summary?.last_postflight_age_minutes ?? null} />
+        </div>
+
+        <BenchmarkStatusPanel benchmark={benchmarkData} />
+
+        <OrchestratorStatusPanel status={orchestratorStatusData} />
+
+        <ChatMasterStatusPanel status={chatMasterStatusData} />
+
+        <ChatMasterIntentsPanel data={chatMasterIntentsData} />
+
+        <ChatMasterExecutionMapPanel data={chatMasterExecutionMapData} />
+
+        <ChatMasterKeywordsPanel data={chatMasterKeywordsData} />
+
+        <ChatMasterDiagnosticsPanel data={chatMasterDiagnosticsData} />
+
+        <QuickCommandsPanel />
+
+        <BuildModesPanel />
+

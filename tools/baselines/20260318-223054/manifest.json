@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-03-18T22:31:35",
+  "base": "https://optinodeiq.com",
+  "stage_dir": "C:\\Users\\ezdet\\hx2-vercel-starter\\tools\\baselines\\_staging\\20260318-223054",
+  "files": [
+    {
+      "Name": "brain-status.json",
+      "Length": 289,
+      "LastWriteTime": "2026-03-18T22:30:56.2077821-04:00"
+    },
+    {
+      "Name": "h2-baseline.json",
+      "Length": 6601,
+      "LastWriteTime": "2026-03-18T22:31:16.6260509-04:00"
+    },
+    {
+      "Name": "h2-baseline.reply.txt",
+      "Length": 1968,
+      "LastWriteTime": "2026-03-18T22:31:16.6280098-04:00"
+    },
+    {
+      "Name": "h2-cross.json",
+      "Length": 6870,
+      "LastWriteTime": "2026-03-18T22:31:35.6740408-04:00"
+    },
+    {
+      "Name": "h2-cross.reply.txt",
+      "Length": 2234,
+      "LastWriteTime": "2026-03-18T22:31:35.6784813-04:00"
+    },
+    {
+      "Name": "x2-baseline.json",
+      "Length": 7665,
+      "LastWriteTime": "2026-03-18T22:31:06.1329142-04:00"
+    },
+    {
+      "Name": "x2-baseline.reply.txt",
+      "Length": 2288,
+      "LastWriteTime": "2026-03-18T22:31:06.1398122-04:00"
+    },
+    {
+      "Name": "x2-mixed.json",
+      "Length": 7583,
+      "LastWriteTime": "2026-03-18T22:31:26.1440655-04:00"
+    },
+    {
+      "Name": "x2-mixed.reply.txt",
+      "Length": 1753,
+      "LastWriteTime": "2026-03-18T22:31:26.1500756-04:00"
+    }
+  ]
+}

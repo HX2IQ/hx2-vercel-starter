@@ -1,0 +1,27 @@
+HX2_FULL_BRAIN_ACTIVE
+
+1. Brief Title  
+Iran Urban Attacks and Regional Strategic Shifts  
+
+2. Primary Signal  
+- Direct catalyst (bbc_world): Sustained Israeli and US attacks in Tehran and Karaj have caused widespread disruption—including power outages—and significant civilian distress after at least ten days, evidencing an escalation in kinetic operations on Iranian urban infrastructure.  
+
+3. Supporting Context  
+- Narrative support (zerohedge): Japan is actively enhancing strategic defenses near Taiwan, deploying advanced surface-to-air missile systems on Yonaguni Island, signaling a realignment of regional military postures likely responding to broader Indo-Pacific tensions.  
+
+4. Implications  
+- Iran’s recent attacks indicate operational capability and willingness by Israel and the US to target critical urban infrastructure, potentially degrading Iranian state resilience and risking domestic unrest or retaliatory escalation by Iran or its proxies.  
+- The civilian exhaustion and disruption reported suggest possible impact on internal stability or pressure on Iranian leadership.  
+- Japan’s forward missile deployments highlight an acceleration of strategic preparations around Taiwan, potentially amplifying regional spillover risks if cross-strait tensions flare.  
+- These discrete signals, while geographically separate, both point to heightened kinetic readiness and strategic recalibration by major state actors in volatile theaters.  
+
+5. Confidence  
+- Moderate  
+- The urban attack data is high-confidence (bbc_world, tier 1, 0.85), representing confirmed geopolitical action.  
+- Strategic posture changes in Japan are reported by lower-tier narrative source (zerohedge, tier 3, 0.60) and thus weighted cautiously and separately.  
+
+6. Monitoring Priorities  
+- Continued monitoring of Iranian urban infrastructure attacks for patterns in targets, scale, and state or proxy retaliatory responses.  
+- Tracking civilian disruption metrics and domestic Iranian narrative for shifts in stability or regime pressure.  
+- Surveillance of Japanese military deployments and any subsequent escalations in Taiwan Strait security dynamics.  
+- Attention to broader Israeli-US-Iran signaling to anticipate potential kinetic spillover, including proxy theaters.

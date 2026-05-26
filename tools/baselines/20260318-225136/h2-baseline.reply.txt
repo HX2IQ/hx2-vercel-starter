@@ -1,0 +1,24 @@
+HX2_FULL_BRAIN_ACTIVE
+
+1. Brief Title  
+Urban Unrest and Strategic Shifts in Asia-Pacific  
+
+2. Primary Signal  
+- Direct catalyst (bbc_world): Sustained attacks by Israeli and US forces in Iran have disrupted electricity and morale in major cities including Tehran and Karaj. Civilians report exhaustion and sleeplessness after 10 days of assaults, signaling increased kinetic escalation and potential for internal instability.  
+
+3. Supporting Context  
+- Narrative support (zerohedge): Japan is accelerating defense upgrades near Taiwan, deploying advanced surface-to-air missile systems on Yonaguni Island. This marks a tangible strategic pivot amid regional tensions, indicating growing Japanese readiness to counterbalance China and reinforce US-aligned defense postures.  
+
+4. Implications  
+- Iran attacks represent a volatile escalation centered on infrastructure disruption and civilian hardship, raising risks of Iranian retaliation or fractured internal security. The extended power outages and urban unrest could complicate regime calculations and regional proxy dynamics.  
+- Japan’s enhanced air defenses near Taiwan suggest an intensification of the Asia-Pacific security competition, heightening the possibility of spillover crises or miscalculation in a Taiwan contingency scenario.  
+- Together, these signals reflect parallel escalation modes: Middle East kinetic pressure and Asia-Pacific strategic posture shifts, both reinforcing wider geopolitical fractures.  
+
+5. Confidence  
+- Moderate confidence based on high-tier direct geopolitical reporting of the Iran attacks (bbc_world, 0.85 confidence).  
+- Lower confidence on Japan-related strategic implications due to narrative framing from lower-tier source (zerohedge, 0.60 confidence) and absence of direct conflict outbreak evidence.  
+
+6. Monitoring Priorities  
+- Track Iranian government responses or increased proxy activity following the attacks to gauge escalation or retaliatory risk.  
+- Monitor for further Japanese or allied deployments in Okinawa region and official statements clarifying strategic intentions.  
+- Watch for regional diplomatic moves, public protests, and critical infrastructure status in Iran and the Taiwan Strait vicinity.

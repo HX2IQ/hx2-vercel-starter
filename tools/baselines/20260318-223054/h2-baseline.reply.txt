@@ -1,0 +1,25 @@
+HX2_FULL_BRAIN_ACTIVE
+
+**1. Brief Title:**  
+Escalating Attacks and Regional Military Posturing Signal Heightened Tensions in Iran and East Asia
+
+**2. Primary Signal:**  
+- Sustained Israeli and US attacks in Iran’s major cities (Tehran and Karaj) for over 10 days causing civilian disruption and power outages, as directly reported by BBC World (Direct catalyst, confidence 0.85).
+
+**3. Supporting Context:**  
+- Japan's deployment of advanced surface-to-air missile systems on Yonaguni Island near Taiwan signals progressive strategic military enhancements amid broader regional security recalibrations (ZeroHedge, Narrative support, confidence 0.60).
+
+**4. Implications:**  
+- Iranian urban targeting risks kinetic escalation, potential retaliatory strikes, and domestic instability disrupting critical infrastructure—raising regional spillover risks into the Middle East.  
+- Japanese defense moves reflect growing concern over East Asian flashpoints, particularly Taiwan Strait dynamics, potentially shaping future allied deterrence postures without current direct confrontation.  
+- Combined, these signals indicate heightened geopolitical friction zones with distinct kinetic and strategic dimensions, though no direct link or coordinated escalation between these theaters is confirmed.
+
+**5. Confidence:**  
+- Moderate, anchored by high-confidence direct reporting on Iran attacks.  
+- Lower confidence in regional strategic shifts in East Asia due to reliance on a lower-tier narrative source.
+
+**6. Monitoring Priorities:**  
+- Track Iran’s internal security response and potential Iranian state retaliation patterns.  
+- Monitor any escalation of power/infrastructure sabotage in Iranian cities beyond current reports.  
+- Watch for Japanese missile deployment execution details and potential Chinese or Taiwanese official reactions.  
+- Assess cross-regional influence or signaling between Middle East hostilities and East Asian military posturing.

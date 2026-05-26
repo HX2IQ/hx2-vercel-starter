@@ -1,0 +1,22 @@
+HX2_FULL_BRAIN_ACTIVE
+
+**Brief Title:** XRP Risk Sentiment in Context of Iran and Taiwan Tensions
+
+**Primary Signal:**  
+No direct catalyst present. Market moves are currently influenced by broader macro liquidity and sentiment factors rather than a distinct risk-off event linked to geopolitical tensions.
+
+**Supporting Context:**  
+- Indirect backdrop (bloomberg_markets): Stocks have advanced alongside a dip in oil prices below $90, reflecting eased energy price pressures and improved market confidence. This indicates a generally risk-on environment rather than risk-off.  
+- Narrative support (zerohedge): Japan’s missile deployment near Taiwan signals heightened geopolitical tensions in the region but remains a lower-tier narrative element with limited immediate transmission to macro markets or crypto risk sentiment.  
+
+**Implications:**  
+- The macro environment still leans toward stable or modestly positive liquidity conditions supporting risk assets broadly.  
+- The geopolitical tensions, including Iran and Taiwan hotspots, remain a watch factor but currently represent background noise rather than a driver for a pronounced risk-off move in XRP or crypto markets.  
+- XRP risk sentiment should be monitored for deterioration only if these tensions escalate into market-impacting events impacting liquidity or macro rates.
+
+**Confidence:** Low to moderate—strong institutional and macro sources do not confirm risk-off, while geopolitical narrative elements are present but not dominant.
+
+**Monitoring Priorities:**  
+- Crude oil price trajectories and reserve policies altering energy costs (proxy for inflation and risk appetite).  
+- U.S. and allied strategic responses in East Asia, particularly changes in military deployments or sanctions that could trigger risk-off market shifts.  
+- Crypto volume and volatility shifts concurrent with macro risk repricing.

@@ -1,0 +1,26 @@
+HX2_FULL_BRAIN_ACTIVE
+
+1. Brief Title  
+Sustained Attacks Strain Iranian Urban Centers Amid Emerging Regional Security Shifts  
+
+2. Primary Signal  
+- Direct catalyst (bbc_world, confidence 0.85): Persistent Israeli and US attacks lasting over 10 days are significantly disrupting life in Iranian cities Tehran and Karaj, causing power outages and widespread civilian distress.  
+
+3. Supporting Context  
+- Narrative support (zerohedge, confidence 0.60): Japan is enhancing defensive posture close to Taiwan through deployment of advanced missile systems on Yonaguni Island, signaling shifting strategic dynamics in East Asia.  
+
+4. Implications  
+- The prolonged kinetic pressure on Iran raises risks of escalation through Iranian retaliatory measures, potential infrastructure sabotage, or regional proxy activations.  
+- Civilian hardship in Iran may pressure domestic institutions, possibly affecting regime stability or decision-making calculus toward de-escalation or escalation.  
+- The Japanese missile deployment, while lower confidence and narrative in nature, points to heightened regional security tensions that could intersect with US strategic interests in Asia, indirectly affecting US-Iran conflict dynamics.  
+- Spillover risk remains localized for now, with intensified conflict within Iran most probable, but broader geopolitical linkages merit observation.  
+
+5. Confidence  
+- Moderate overall, anchored by high-confidence direct reporting on Iranian attacks and supported by lower-tier strategic narrative on Japan’s regional posture.  
+- Causative links between Japan’s actions and Iran’s conflict status remain speculative and low confidence.  
+
+6. Monitoring Priorities  
+- Track Iranian military and proxy responses for escalation or retaliation indicators.  
+- Monitor civilian infrastructure disruptions and public sentiment in Iran for signs of societal strain.  
+- Observe US and Israeli military messaging and operational tempo for intensification or de-escalation signals.  
+- Follow developments related to Japan’s missile deployments for shifts in Indo-Pacific security alliances that could impact regional stability.

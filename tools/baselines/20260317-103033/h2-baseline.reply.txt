@@ -1,0 +1,27 @@
+HX2_FULL_BRAIN_ACTIVE
+
+1. Brief Title  
+Iran Endures Sustained Israeli-US Attacks Disrupting Urban Life and Power
+
+2. Primary Signal  
+- Confirmed repeated attacks targeting Iranian cities (Tehran, Karaj) causing power outages and civilian distress, signaled by BBC (Direct catalyst, confidence 0.85).  
+
+3. Supporting Context  
+- Reports highlight widespread exhaustion and inability to rest among Iranians amid 10 days of strikes, indicating persistent kinetic escalation impacting civilian infrastructure.  
+- Japan's defensive military posture update (ZeroHedge, Narrative support) signals regional security recalibration near Taiwan but remains unconfirmed for direct linkage to Middle East dynamics.  
+
+4. Implications  
+- Sustained attacks on Iran increase risk of retaliatory escalations by Iranian proxies or state actors, potentially destabilizing broader Middle East security.  
+- Infrastructure disruption in key urban centers may heighten domestic unrest and challenge regime resilience.  
+- Possible regional spillover through allied militias or indirect state actions remains an open risk but lacks direct evidence here.  
+- Japan’s defense moves reflect unresolved regional tensions in Asia-Pacific but do not directly intersect with Iranian strikes in current intel.  
+
+5. Confidence  
+- Moderate-to-high, anchored on tier-1 BBC reporting for Iran attacks.  
+- Lower confidence on regional Asia-Pacific context which is narrative, limited in direct nexus to Iran strikes.  
+
+6. Monitoring Priorities  
+- Further confirmations of Iranian retaliation or proxy escalations following power-cut strikes.  
+- Changes in Iran’s domestic security posture or civil unrest signals.  
+- Cross-regional military or diplomatic developments linking Middle East kinetic events to Asia-Pacific security shifts.  
+- Validation of Japan’s missile deployment effects on regional security dynamics beyond narrative forecasts.

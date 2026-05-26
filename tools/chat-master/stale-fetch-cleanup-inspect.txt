@@ -1,0 +1,19 @@
+== CHAT MASTER STALE FETCH CLEANUP INSPECT ==
+
+--- fetch functions ---
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:281:async function getChatMasterStatus() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:296:async function getChatMasterIntents() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:311:async function getChatMasterExecutionMap() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:326:async function getChatMasterKeywords() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:357:async function getChatMasterDiagnostics() {
+
+--- data variables ---
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1349:  const chatMasterStatusData = await getChatMasterStatus();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1350:  const chatMasterIntentsData = await getChatMasterIntents();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1351:  const chatMasterExecutionMapData = await getChatMasterExecutionMap();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1352:  const chatMasterKeywordsData = await getChatMasterKeywords();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1353:  const chatMasterDiagnosticsData = await getChatMasterDiagnostics();
+
+--- active panel render ---
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1:import { ChatMasterPanels } from "./_components/chat-master-panels";
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1412:        <ChatMasterPanels />

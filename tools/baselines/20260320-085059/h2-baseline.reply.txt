@@ -1,0 +1,26 @@
+HX2_FULL_BRAIN_ACTIVE
+
+1. Brief Title  
+Escalating Attacks in Iran and Regional Strategic Shifts
+
+2. Primary Signal  
+- Direct catalyst (bbc_world, confidence 0.85): Iran’s major cities Tehran and Karaj are experiencing repeated Israeli and U.S. attacks over 10 days, causing civilian infrastructure disruptions and widespread exhaustion.
+
+3. Supporting Context  
+- Narrative support (zerohedge, confidence 0.60): Japan is deploying advanced surface-to-air missile systems near Taiwan, reflecting a strategic posture shift amid broader regional tensions.
+
+4. Implications  
+- The sustained attacks inside Iran indicate a kinetic escalation risk with potential for internal destabilization and retaliatory actions by Tehran; infrastructure disruption (power outages) exacerbates civilian hardship and may fuel unrest.  
+- U.S.-Israel operations on Iranian soil increase the likelihood of Iran state or proxy retaliations in the region, elevating wider conflict spillover risks.  
+- Japan’s defense deployments, while not an immediate kinetic event, signal heightened regional security competition around East Asia, indirectly relevant to broader U.S.-China-Taiwan confrontations but distinct from the Iran-specific actions.
+
+5. Confidence  
+- Moderate-high confidence in the Iran escalation signal based on a high-tier, reliable direct catalyst.  
+- Lower confidence on broader regional posture from Japan due to medium-tier narrative support and less direct linkage to kinetic escalation.  
+- Overall assessment favors kinetic escalation and infrastructure disruption in Iran as the principal immediate geopolitical signal.
+
+6. Monitoring Priorities  
+- Track further tactical developments and attacks within Iran, including any Iranian military or proxy retaliations against U.S. or Israeli assets.  
+- Monitor protests or civil unrest in Iranian urban centers following infrastructure outages.  
+- Watch Japanese defense deployments for shifts in posture or any regional military exercises indicative of escalating East Asia tensions.  
+- Observe interrelated diplomatic responses from regional powers (Middle East and East Asia) that could amplify or contain current conflict currents.

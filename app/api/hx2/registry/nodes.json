@@ -1,0 +1,33 @@
+[
+  {
+    "node_id": "ah3",
+    "node_label": "Advanced Health Intelligence 3",
+    "route_path": "/api/hx2/nodes/ah3",
+    "status": "active_v2_ah2_mode",
+    "activation": {
+      "enabled": true,
+      "dry_run_only": false
+    }
+  },
+  {
+    "node_id": "ph1",
+    "node_label": "Product Hygiene Intelligence 1",
+    "route_path": "/api/hx2/nodes/ph1",
+    "status": "active_v1",
+    "activation": {
+      "enabled": true,
+      "dry_run_only": false
+    }
+  },
+  {
+    "node_id": "qa1",
+    "node_label": "Quality Assurance Intelligence 1",
+    "route_path": "/api/hx2/nodes/qa1",
+    "status": "active_v1",
+    "activation": {
+      "enabled": true,
+      "dry_run_only": false
+    }
+  }
+]
+

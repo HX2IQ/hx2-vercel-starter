@@ -1,0 +1,26 @@
+HX2_FULL_BRAIN_ACTIVE
+
+1. Brief Title  
+Sustained Attacks in Iran Amid Regional Tensions
+
+2. Primary Signal  
+- Confirmed direct catalyst: A reported 10-day series of Israeli and US attacks in Iranian cities Tehran and Karaj has caused extensive power disruptions and civilian distress, indicating heightened kinetic escalation on Iranian soil (bbc_world, Direct catalyst, confidence 0.85).
+
+3. Supporting Context  
+- Indirect narrative support notes Japan’s strategic military redeployment near Taiwan, illustrating broader East Asian regional militarization trends but with less direct bearing on the Iran-centric escalation (zerohedge, Narrative support, confidence 0.60).
+
+4. Implications  
+- Iran faces increased internal instability risks due to continuing attacks and infrastructure targeting—power cuts undermine civil order and increase public exhaustion.  
+- Elevated risk of Iranian retaliation or asymmetric responses against Israel, US interests, or regional proxies.  
+- Potential for regional spillover if Iran or allied actors escalate violently, especially in areas proximate to current conflict zones.  
+- Japan’s enhanced air-defense posture near Taiwan signals intensifying regional security postures in East Asia but remains a lower-confidence contextual factor unrelated to Iran events.
+
+5. Confidence  
+- Moderate-High confidence in kinetic escalation within Iran due to high-tier source and confirmed civilian impact.  
+- Lower confidence in broader regional extrapolations due to mixed source quality and indirect linkage.
+
+6. Monitoring Priorities  
+- Continued reporting on Iranian urban attacks and civilian infrastructure disruptions for escalation trends.  
+- Iranian state statements or proxy activity indicating retaliation plans or expanded operations.  
+- Israeli and US operational tempo and political messaging to anticipate further kinetic moves.  
+- Developments in East Asian military deployments (e.g., Japan’s missile systems) for regional spillover or multinational strategic shifts.

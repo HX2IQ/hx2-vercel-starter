@@ -1,0 +1,120 @@
+
+--- Match @ line 31 ---
+    if (!txt) return {};
+    try { return JSON.parse(txt); } catch { return { raw: txt }; }
+  } catch { return {}; }
+}
+
+// ✅ Correct Upstash REST: POST baseURL with ["CMD", ...args]
+async function upstash(base: string, token: string, cmd: string, args: any[] = []) {
+  const r = await fetch(base, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify([cmd, ...args]),
+  });
+  const t = await r.text();
+
+--- Match @ line 91 ---
+    };
+
+    const key = `ap2:task:${taskId}`;
+    const taskJson = JSON.stringify(task);
+
+    // 1) SET task record
+    await upstash(base, token, "SET", [key, taskJson]);
+
+    // 2) LPUSH queueKey taskId
+    await upstash(base, token, "LPUSH", [queueKey, taskId]);
+
+    // 3) LLEN queueKey
+    const lenJson = await upstash(base, token, "LLEN", [queueKey]);
+
+--- Match @ line 94 ---
+    const taskJson = JSON.stringify(task);
+
+    // 1) SET task record
+    await upstash(base, token, "SET", [key, taskJson]);
+
+    // 2) LPUSH queueKey taskId
+    await upstash(base, token, "LPUSH", [queueKey, taskId]);
+
+    // 3) LLEN queueKey
+    const lenJson = await upstash(base, token, "LLEN", [queueKey]);
+    const queueLenAfter = typeof lenJson?.result === "number"
+      ? lenJson.result
+      : parseInt(String(lenJson?.result ?? "0"), 10) || 0;
+
+--- Match @ line 97 ---
+    await upstash(base, token, "SET", [key, taskJson]);
+
+    // 2) LPUSH queueKey taskId
+    await upstash(base, token, "LPUSH", [queueKey, taskId]);
+
+    // 3) LLEN queueKey
+    const lenJson = await upstash(base, token, "LLEN", [queueKey]);
+    const queueLenAfter = typeof lenJson?.result === "number"
+      ? lenJson.result
+      : parseInt(String(lenJson?.result ?? "0"), 10) || 0;
+
+    return json(200, { ok: true, status: "ENQUEUED", taskId, queueKey, queueLenAfter, envDbg });
+  } catch (e: any) {
+
+--- Match @ line 98 ---
+
+    // 2) LPUSH queueKey taskId
+    await upstash(base, token, "LPUSH", [queueKey, taskId]);
+
+    // 3) LLEN queueKey
+    const lenJson = await upstash(base, token, "LLEN", [queueKey]);
+    const queueLenAfter = typeof lenJson?.result === "number"
+      ? lenJson.result
+      : parseInt(String(lenJson?.result ?? "0"), 10) || 0;
+
+    return json(200, { ok: true, status: "ENQUEUED", taskId, queueKey, queueLenAfter, envDbg });
+  } catch (e: any) {
+    return json(500, { ok: false, error: "enqueue_failed", message: String(e?.message || e) });
+
+--- Match @ line 99 ---
+    // 2) LPUSH queueKey taskId
+    await upstash(base, token, "LPUSH", [queueKey, taskId]);
+
+    // 3) LLEN queueKey
+    const lenJson = await upstash(base, token, "LLEN", [queueKey]);
+    const queueLenAfter = typeof lenJson?.result === "number"
+      ? lenJson.result
+      : parseInt(String(lenJson?.result ?? "0"), 10) || 0;
+
+    return json(200, { ok: true, status: "ENQUEUED", taskId, queueKey, queueLenAfter, envDbg });
+  } catch (e: any) {
+    return json(500, { ok: false, error: "enqueue_failed", message: String(e?.message || e) });
+  }
+
+--- Match @ line 100 ---
+    await upstash(base, token, "LPUSH", [queueKey, taskId]);
+
+    // 3) LLEN queueKey
+    const lenJson = await upstash(base, token, "LLEN", [queueKey]);
+    const queueLenAfter = typeof lenJson?.result === "number"
+      ? lenJson.result
+      : parseInt(String(lenJson?.result ?? "0"), 10) || 0;
+
+    return json(200, { ok: true, status: "ENQUEUED", taskId, queueKey, queueLenAfter, envDbg });
+  } catch (e: any) {
+    return json(500, { ok: false, error: "enqueue_failed", message: String(e?.message || e) });
+  }
+}
+
+--- Match @ line 102 ---
+    // 3) LLEN queueKey
+    const lenJson = await upstash(base, token, "LLEN", [queueKey]);
+    const queueLenAfter = typeof lenJson?.result === "number"
+      ? lenJson.result
+      : parseInt(String(lenJson?.result ?? "0"), 10) || 0;
+
+    return json(200, { ok: true, status: "ENQUEUED", taskId, queueKey, queueLenAfter, envDbg });
+  } catch (e: any) {
+    return json(500, { ok: false, error: "enqueue_failed", message: String(e?.message || e) });
+  }
+}
+
+

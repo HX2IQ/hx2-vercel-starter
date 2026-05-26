@@ -1,0 +1,26 @@
+HX2_FULL_BRAIN_ACTIVE
+
+1. Brief Title  
+Disruptive Attacks in Iran Amid Rising Regional Tensions
+
+2. Primary Signal  
+- Direct catalyst (bbc_world, confidence 0.85): Sustained Israeli and US attacks against Iranian urban infrastructure, notably power disruptions in Tehran and Karaj, persisting over 10 days, severely impacting civilian life and social stability.
+
+3. Supporting Context  
+- Narrative support (zerohedge, confidence 0.60): Japan's recent strategic deployments, including advanced missile systems near Taiwan, indicate a broader regional military posture shift, but this is less immediately connected and lower confidence.
+
+4. Implications  
+- The prolonged infrastructure attacks inside Iran could escalate kinetic responses or covert retaliation against Israeli and US interests, raising risks of wider regional destabilization.  
+- Civil unrest potential is high given civilian exhaustion and hardship, which may constrain Iranian leadership’s strategic options or accelerate conflict dynamics.  
+- Japan’s military adjustments, while significant, remain a separate strategic vector with indirect linkages to the Iran conflict theatre, thus lower priority in immediate spillover analysis.
+
+5. Confidence  
+- Moderate: Strong direct evidence of Iranian urban attacks with high source reliability.  
+- Lower confidence on regional strategic shifts outside Middle East due to indirect support and narrative framing.
+
+6. Monitoring Priorities  
+- Track Iranian military or proxy retaliatory activity against Israel, US, or allied infrastructure.  
+- Observe public order and protests in affected Iranian cities for potential regime stability signals.  
+- Monitor wider regional alignments, especially involving Japanese deployments and East Asia tensions, for potential indirect impact pathways.
+
+Summary: The key geopolitical signal is the protracted Israeli-US campaign disrupting Iranian power grids in major cities, confirmed by a top-tier source, elevating risks of kinetic escalation and internal instability in Iran. Japan's strategic military moves constitute a softer, indirect signal requiring sustained observation but do not override the immediate crisis in the Middle East.

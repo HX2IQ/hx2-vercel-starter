@@ -1,0 +1,20 @@
+{
+  "name": "HX2 Intelligence Order v1",
+  "purpose": "Define the required master-chat decision order so HX2 does not over-route to specialist templates before checking memory, local facts, sources, and general synthesis.",
+  "order": [
+    "1_context_memory",
+    "2_local_fact_cache",
+    "3_internal_node_knowledge",
+    "4_rss_freshness_layer",
+    "5_web_search_layer",
+    "6_general_llm_synthesis",
+    "7_specialist_node_escalation",
+    "8_qa_formatting_final"
+  ],
+  "rules": {
+    "specialist_nodes": "Specialist nodes should escalate only when the query requires domain-specific reasoning, personal context, safety risk, workflow execution, or structured scoring.",
+    "health_simple_questions": "Simple supplement definition, benefits, side effects, dose, and daily-use questions should use local facts or general synthesis before AH3.",
+    "freshness": "Questions asking latest, current, recent, news, price, laws, recalls, studies, or market movement should use RSS/web before final synthesis.",
+    "qa": "QA should validate or format. QA should not become the user-facing fallback answer."
+  }
+}

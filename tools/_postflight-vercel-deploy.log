@@ -1,0 +1,230 @@
+Vercel CLI 50.4.4
+Retrieving projectΓÇª
+Deploying dan-clarks-projects-ff1ac1ad/optinodeiq
+Uploading [--------------------] (0.0B/6.1KB)
+Uploading [====================] (6.1KB/6.1KB)
+Inspect: https://vercel.com/dan-clarks-projects-ff1ac1ad/optinodeiq/53p49ERf5L2YHFfFQymUycZW2NFm [8s]
+Production: https://optinodeiq-scy1cj6b0-dan-clarks-projects-ff1ac1ad.vercel.app [8s]
+Building...
+Building...
+Building: Running build in Washington, D.C., USA (East) ΓÇô iad1
+Building: Build machine configuration: 4 cores, 8 GB
+Building: Retrieving list of deployment files...
+Building: Downloading 915 deployment files...
+Building: Restored build cache from previous deployment (4jJuSnNPLSV3ZQVXG27hXx1741M7)
+Building: Running "vercel build"
+Building: Vercel CLI 50.33.0
+Building: Installing dependencies...
+Building: > postinstall
+Building: > prisma generate
+Building: Environment variables loaded from .env
+Building: Prisma schema loaded from prisma/schema.prisma
+Building: Γ£ö Generated Prisma Client (v6.19.1) to ./node_modules/@prisma/client in 116ms
+Building: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+Building: Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
+Building: > prepare
+Building: > node -e "const fs=require('fs'); if(fs.existsSync('.git')){require('child_process').execSync('npx husky install',{stdio:'inherit'})} else {console.log('no git; skip husky')}"
+Building: no git; skip husky
+Building: changed 1 package in 3s
+Building: 247 packages are looking for funding
+Building: run `npm fund` for details
+Building: Detected Next.js version: 14.2.35
+Building: Running "npm run build"
+Building: > build
+Building: > prisma generate && next build
+Building: Environment variables loaded from .env
+Building: Prisma schema loaded from prisma/schema.prisma
+Building: ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+Building: Γöé  Update available 6.19.1 -> 7.5.0                       Γöé
+Building: Γöé                                                         Γöé
+Building: Γöé  This is a major update - please follow the guide at    Γöé
+Building: Γöé  https://pris.ly/d/major-version-upgrade                Γöé
+Building: Γöé                                                         Γöé
+Building: Γöé  Run the following to update                            Γöé
+Building: Γöé    npm i --save-dev prisma@latest                       Γöé
+Building: Γöé    npm i @prisma/client@latest                          Γöé
+Building: ΓööΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÿ
+Building: Γ£ö Generated Prisma Client (v6.19.1) to ./node_modules/@prisma/client in 56ms
+Building: Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+Building: Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+Building: Γû▓ Next.js 14.2.35
+Building: - Environments: .env
+Building: Creating an optimized production build ...
+Building: Γ£ô Compiled successfully
+Building: Linting and checking validity of types ...
+Building: Collecting page data ...
+Building: Generating static pages (0/106) ...
+Building: [Upstash Redis] Unable to find environment variable: `UPSTASH_REDIS_REST_URL`
+Building: [Upstash Redis] Unable to find environment variable: `UPSTASH_REDIS_REST_TOKEN`
+Building: [Upstash Redis] The 'url' property is missing or undefined in your Redis config.
+Building: [Upstash Redis] The 'token' property is missing or undefined in your Redis config.
+Building: [Upstash Redis] Redis client was initialized without url or token. Failed to execute command.
+Building: Generating static pages (26/106)
+Building: Generating static pages (52/106)
+Building: Generating static pages (79/106)
+Building: Γ£ô Generating static pages (106/106)
+Building: Finalizing page optimization ...
+Building: Collecting build traces ...
+Building: Route (app)                                         Size     First Load JS
+Building: Γöî Γùï /                                               223 B          87.7 kB
+Building: Γö£ Γùï /_not-found                                     876 B          88.4 kB
+Building: Γö£ Γùï /about                                          223 B          87.7 kB
+Building: Γö£ Γùï /ap2-proof                                      1.53 kB          89 kB
+Building: Γö£ ╞Æ /api/ap2-proof                                  0 B                0 B
+Building: Γö£ ╞Æ /api/ap2-proof/events                           0 B                0 B
+Building: Γö£ ╞Æ /api/ap2-proof/events/[id]                      0 B                0 B
+Building: Γö£ ╞Æ /api/ap2/authcheck                              0 B                0 B
+Building: Γö£ ╞Æ /api/ap2/diagnostics                            0 B                0 B
+Building: Γö£ ╞Æ /api/ap2/execute                                0 B                0 B
+Building: Γö£ ╞Æ /api/ap2/logs/tail                              0 B                0 B
+Building: Γö£ ╞Æ /api/ap2/queue/debug                            0 B                0 B
+Building: Γö£ ╞Æ /api/ap2/redis/debug                            0 B                0 B
+Building: Γö£ ╞Æ /api/ap2/redis/ping                             0 B                0 B
+Building: Γö£ ╞Æ /api/ap2/status                                 0 B                0 B
+Building: Γö£ ╞Æ /api/ap2/task/enqueue                           0 B                0 B
+Building: Γö£ ╞Æ /api/ap2/task/result                            0 B                0 B
+Building: Γö£ ╞Æ /api/ap2/task/status                            0 B                0 B
+Building: Γö£ ╞Æ /api/brain/attach                               0 B                0 B
+Building: Γö£ ╞Æ /api/brain/chat                                 0 B                0 B
+Building: Γö£ ╞Æ /api/brain/health                               0 B                0 B
+Building: Γö£ ╞Æ /api/brain/memory/repair                        0 B                0 B
+Building: Γö£ ╞Æ /api/brain/memory/status                        0 B                0 B
+Building: Γö£ ╞Æ /api/brain/memory/tail                          0 B                0 B
+Building: Γö£ ╞Æ /api/brain/run                                  0 B                0 B
+Building: Γö£ ╞Æ /api/brain/status                               0 B                0 B
+Building: Γö£ ╞Æ /api/build                                      0 B                0 B
+Building: Γö£ ╞Æ /api/chat/poll                                  0 B                0 B
+Building: Γö£ ╞Æ /api/chat/send                                  0 B                0 B
+Building: Γö£ ╞Æ /api/chat/status                                0 B                0 B
+Building: Γö£ ╞Æ /api/console/chat                               0 B                0 B
+Building: Γö£ ╞Æ /api/console/execute                            0 B                0 B
+Building: Γö£ ╞Æ /api/console/nodes/get                          0 B                0 B
+Building: Γö£ ╞Æ /api/factcheck/verify                           0 B                0 B
+Building: Γö£ ╞Æ /api/h2/run                                     0 B                0 B
+Building: Γö£ ╞Æ /api/health                                     0 B                0 B
+Building: Γö£ ╞Æ /api/health/score                               0 B                0 B
+Building: Γö£ ╞Æ /api/hx2                                        0 B                0 B
+Building: Γö£ Γùï /api/hx2_base                                   0 B                0 B
+Building: Γö£ ╞Æ /api/hx2_registry                               0 B                0 B
+Building: Γö£ Γùï /api/hx2/capabilities                           0 B                0 B
+Building: Γö£ ╞Æ /api/hx2/command                                0 B                0 B
+Building: Γö£ Γùï /api/hx2/registry/integrity/deep                0 B                0 B
+Building: Γö£ ╞Æ /api/node/ping                                  0 B                0 B
+Building: Γö£ ╞Æ /api/nodes/[nodeId]/describe                    0 B                0 B
+Building: Γö£ ╞Æ /api/nodes/demo-node-01/ping                    0 B                0 B
+Building: Γö£ ╞Æ /api/nodes/factcheck-oi                         0 B                0 B
+Building: Γö£ Γùï /api/nodes/factcheck-oi/health                  0 B                0 B
+Building: Γö£ ╞Æ /api/nodes/factcheck-oi/run                     0 B                0 B
+Building: Γö£ Γùï /api/nodes/hello                                0 B                0 B
+Building: Γö£ Γùï /api/nodes/hello/health                         0 B                0 B
+Building: Γö£ ╞Æ /api/nodes/hello/run                            0 B                0 B
+Building: Γö£ ╞Æ /api/nodes/intelligence-oi/recent               0 B                0 B
+Building: Γö£ ╞Æ /api/nodes/rss-oi                               0 B                0 B
+Building: Γö£ ╞Æ /api/nodes/wiki-oi                              0 B                0 B
+Building: Γö£ ╞Æ /api/oi/command                                 0 B                0 B
+Building: Γö£ ╞Æ /api/oi/h2/status                               0 B                0 B
+Building: Γö£ ╞Æ /api/oi/public/nodes                            0 B                0 B
+Building: Γö£ ╞Æ /api/oi/status                                  0 B                0 B
+Building: Γö£ Γùï /api/owner/autopsies                            0 B                0 B
+Building: Γö£ Γùï /api/owner/baselines                            0 B                0 B
+Building: Γö£ ╞Æ /api/owner/health                               0 B                0 B
+Building: Γö£ Γùï /api/owner/postflights                          0 B                0 B
+Building: Γö£ Γùï /api/owner/summary                              0 B                0 B
+Building: Γö£ ╞Æ /api/patchops/commit                            0 B                0 B
+Building: Γö£ ╞Æ /api/registry/integrity                         0 B                0 B
+Building: Γö£ ╞Æ /api/registry/node/delete                       0 B                0 B
+Building: Γö£ ╞Æ /api/registry/node/get                          0 B                0 B
+Building: Γö£ ╞Æ /api/registry/node/install                      0 B                0 B
+Building: Γö£ ╞Æ /api/registry/node/list                         0 B                0 B
+Building: Γö£ ╞Æ /api/retail/export                              0 B                0 B
+Building: Γö£ ╞Æ /api/retail/lead-capture                        0 B                0 B
+Building: Γö£ ╞Æ /api/retail/product-compare                     0 B                0 B
+Building: Γö£ ╞Æ /api/retail/status                              0 B                0 B
+Building: Γö£ ╞Æ /api/retail/waitlist                            0 B                0 B
+Building: Γö£ ╞Æ /api/rss/dns                                    0 B                0 B
+Building: Γö£ ╞Æ /api/rss/fetch                                  0 B                0 B
+Building: Γö£ ╞Æ /api/rss/known                                  0 B                0 B
+Building: Γö£ ╞Æ /api/rss/probe                                  0 B                0 B
+Building: Γö£ ╞Æ /api/rss/scan                                   0 B                0 B
+Building: Γö£ ╞Æ /api/scaffold/execute                           0 B                0 B
+Building: Γö£ ╞Æ /api/shop/find                                  0 B                0 B
+Building: Γö£ ╞Æ /api/t2/analyze                                 0 B                0 B
+Building: Γö£ Γùï /api/version                                    0 B                0 B
+Building: Γö£ ╞Æ /api/web/fetch                                  0 B                0 B
+Building: Γö£ ╞Æ /api/web/probe                                  0 B                0 B
+Building: Γö£ ╞Æ /api/web/search                                 0 B                0 B
+Building: Γö£ Γùï /app                                            231 B          96.4 kB
+Building: Γö£ Γùï /app/chat                                       223 B          87.7 kB
+Building: Γö£ Γùï /app/factcheck                                  1.6 kB         97.8 kB
+Building: Γö£ Γùï /app/health                                     1.59 kB        97.8 kB
+Building: Γö£ Γùï /app/shop                                       1.59 kB        97.8 kB
+Building: Γö£ Γùï /app/t2                                         1.6 kB         97.8 kB
+Building: Γö£ ╞Æ /chat                                           2.99 kB        90.5 kB
+Building: Γö£ Γùï /console                                        1.65 kB        89.2 kB
+Building: Γö£ ╞Æ /console/chat                                   0 B                0 B
+Building: Γö£ Γùï /console/nodes                                  1.22 kB        88.7 kB
+Building: Γö£ Γùï /hx2                                            2.38 kB        89.9 kB
+Building: Γö£ Γùï /oi                                             231 B          96.4 kB
+Building: Γö£ ╞Æ /oi/about                                       223 B          87.7 kB
+Building: Γö£ Γùï /oi/building-nodes-with-optimized-intelligence  223 B          87.7 kB
+Building: Γö£ ╞Æ /oi/chat                                        0 B                0 B
+Building: Γö£ ╞Æ /oi/compare                                     231 B          96.4 kB
+Building: Γö£ ╞Æ /oi/h2                                          1.55 kB        89.1 kB
+Building: Γö£ Γùï /oi/how-optimized-intelligence-works            223 B          87.7 kB
+Building: Γö£ ╞Æ /oi/lead                                        223 B          87.7 kB
+Building: Γö£ ╞Æ /oi/nodes                                       230 B          96.4 kB
+Building: Γö£ Γùï /oi/oi-decision-flows                           230 B          96.4 kB
+Building: Γö£ Γùï /oi/oi-for-business-decisions                   231 B          96.4 kB
+Building: Γö£ Γùï /oi/oi-for-crypto-and-markets                   222 B          87.7 kB
+Building: Γö£ Γùï /oi/oi-for-ecommerce                            223 B          87.7 kB
+Building: Γö£ Γùï /oi/oi-for-health-decisions                     231 B          96.4 kB
+Building: Γö£ Γùï /oi/oi-for-home-improvement-decisions           231 B          96.4 kB
+Building: Γö£ Γùï /oi/oi-for-market-decisions                     230 B          96.4 kB
+Building: Γö£ Γùï /oi/oi-for-operations-and-sops                  222 B          87.7 kB
+Building: Γö£ Γùï /oi/oi-for-parenting-decisions                  230 B          96.4 kB
+Building: Γö£ Γùï /oi/oi-for-small-business                       223 B          87.7 kB
+Building: Γö£ Γùï /oi/oi-for-tradeshow-leads                      231 B          96.4 kB
+Building: Γö£ Γùï /oi/oi-framework-checklist                      229 B          96.4 kB
+Building: Γö£ Γùï /oi/oi-node-library                             222 B          87.7 kB
+Building: Γö£ Γùï /oi/oi-playbooks                                231 B          96.4 kB
+Building: Γö£ Γùï /oi/oi-roadmap                                  222 B          87.7 kB
+Building: Γö£ Γùï /oi/oi-verification-rules                       231 B          96.4 kB
+Building: Γö£ Γùï /oi/oi-vs-business-intelligence                 223 B          87.7 kB
+Building: Γö£ Γùï /oi/oi-vs-consulting                            223 B          87.7 kB
+Building: Γö£ Γùï /oi/optimized-intelligence-framework            223 B          87.7 kB
+Building: Γö£ Γùï /oi/optimized-intelligence-use-cases            222 B          87.7 kB
+Building: Γö£ Γùï /oi/optimized-intelligence-vs-ai                222 B          87.7 kB
+Building: Γö£ ╞Æ /oi/pricing                                     231 B          96.4 kB
+Building: Γö£ ╞Æ /oi/products                                    231 B          96.4 kB
+Building: Γö£ ╞Æ /oi/retail                                      231 B          96.4 kB
+Building: Γö£ ╞Æ /oi/status                                      223 B          87.7 kB
+Building: Γö£ Γùï /oi/waitlist                                    1.17 kB        97.4 kB
+Building: Γö£ Γùï /oi/what-is-optimized-intelligence              223 B          87.7 kB
+Building: Γö£ Γùï /opti                                           223 B          87.7 kB
+Building: Γö£ Γùï /optimized-intelligence                         223 B          87.7 kB
+Building: Γö£ ╞Æ /owner-console                                  223 B          87.7 kB
+Building: Γö£ ╞Æ /retail                                         45.1 kB         141 kB
+Building: Γö£ Γùï /retail__old__20260121_174020/progress          1.28 kB        88.8 kB
+Building: Γö£ ╞Æ /retail/about                                   223 B          87.7 kB
+Building: Γö£ ╞Æ /retail/pricing                                 223 B          87.7 kB
+Building: Γö£ ╞Æ /retail/products                                223 B          87.7 kB
+Building: Γö£ ╞Æ /retail/progress                                1.14 kB        97.4 kB
+Building: Γö£ ╞Æ /retail/waitlist                                1.16 kB        97.4 kB
+Building: Γö£ Γùï /robots.txt                                     0 B                0 B
+Building: Γöö Γùï /sitemap.xml                                    0 B                0 B
+Building: + First Load JS shared by all                       87.5 kB
+Building: Γö£ chunks/2117-1df426a716cbf93c.js                 31.9 kB
+Building: Γö£ chunks/fd9d1056-04aed536ad36d283.js             53.6 kB
+Building: Γöö other shared chunks (total)                     1.96 kB
+Building: ╞Æ Middleware                                        26.5 kB
+Building: Γùï  (Static)   prerendered as static content
+Building: ╞Æ  (Dynamic)  server-rendered on demand
+Building: Traced Next.js server files in: 50.493ms
+Building: Created all serverless functions in: 303.677ms
+Building: Collected static files (public/, static/, .next/static): 9.606ms
+Building: Build Completed in /vercel/output [32s]
+Building: Deploying outputs...
+[2K[1A[2K[GProduction: https://optinodeiq-scy1cj6b0-dan-clarks-projects-ff1ac1ad.vercel.app [53s]
+Completing...
+Aliased: https://optinodeiq.com [59s]
+https://optinodeiq-scy1cj6b0-dan-clarks-projects-ff1ac1ad.vercel.app

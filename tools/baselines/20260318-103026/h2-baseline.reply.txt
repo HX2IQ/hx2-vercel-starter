@@ -1,0 +1,29 @@
+HX2_FULL_BRAIN_ACTIVE
+
+**Brief Title:** Iranian Urban Attacks and Japan’s Defensive Posture: Mixed Signals of Regional Tension
+
+**Primary Signal:**  
+- Sustained Israeli and US attacks in Iranian urban centers (Tehran, Karaj) have caused power outages and civil distress, with local testimonies confirming a high level of disruption and public anxiety.  
+(Source: bbc_world | direct_catalyst | confidence 0.85)
+
+**Supporting Context:**  
+- Japan is enhancing its strategic air defense by deploying advanced missile systems near Taiwan, reflecting heightened regional security concerns and a proactive posture in response to broader Indo-Pacific tensions.  
+(Source: zerohedge | narrative_support | confidence 0.60)
+
+**Implications:**  
+- Iran face ongoing kinetic and infrastructure-targeted strikes signaling a phase of intensified asymmetric confrontation, raising risks of escalation or cyclical retaliation.  
+- The civilian impact in Iran (power cuts, social unrest) risks internal destabilization but also potential regime hardening against external actors.  
+- Japan’s missile deployment near Taiwan is a strategic precaution that does not currently represent direct kinetic conflict but signals growing regional militarization related to China-Taiwan tensions.  
+- No immediate signs of spillover violence from the Japanese actions; however, there is a latent risk of broader Indo-Pacific destabilization if regional actors escalate responses.
+
+**Confidence:**  
+- Moderate to high regarding Iranian attacks based on top-tier, on-the-ground testimony.  
+- Lower for broader regional forecasts as Japan’s move is more strategic posture than active conflict.
+
+**Monitoring Priorities:**  
+- Iranian government and proxy responses to urban attacks, including retaliatory strikes or internal crackdowns.  
+- Supply chain and infrastructure resilience in Tehran and Karaj for signs of sustained disruption.  
+- Japanese defense announcements and Chinese reactions to new missile deployments near Taiwan.  
+- Potential alignments or escalations linking Middle East unrest with Indo-Pacific military developments.
+
+This assessment remains calibrated to confirmed reporting, avoiding overreach from narrative-based context.

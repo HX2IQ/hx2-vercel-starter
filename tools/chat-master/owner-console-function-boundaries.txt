@@ -1,0 +1,24 @@
+== OWNER CONSOLE FUNCTION BOUNDARIES ==
+
+--- function ChatMasterDiagnosticsPanel ---
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1089:function ChatMasterDiagnosticsPanel({ data }: { data: any }) {
+
+--- function ChatMasterKeywordsPanel ---
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1219:function ChatMasterKeywordsPanel({ data }: { data: any }) {
+
+--- function ChatMasterExecutionMapPanel ---
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1292:function ChatMasterExecutionMapPanel({ data }: { data: any }) {
+
+--- function ChatMasterIntentsPanel ---
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1321:function ChatMasterIntentsPanel({ data }: { data: any }) {
+
+--- function ChatMasterStatusPanel ---
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1348:function ChatMasterStatusPanel({ status }: { status: any }) {
+
+--- function ChatMasterReadinessPanel ---
+
+--- function OrchestratorStatusPanel ---
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1382:function OrchestratorStatusPanel({ status }: { status: any }) {
+
+--- export default ---
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1623:export default async function OwnerConsolePage() {

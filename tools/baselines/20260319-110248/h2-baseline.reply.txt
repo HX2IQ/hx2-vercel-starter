@@ -1,0 +1,26 @@
+HX2_FULL_BRAIN_ACTIVE
+
+1. Brief Title  
+Iran Urban Attacks and Power Disruptions Amid Broader Regional Tensions
+
+2. Primary Signal  
+- Direct catalyst: Sustained Israeli and U.S. attacks in Tehran and Karaj have generated significant urban disruption, including power outages and widespread civilian distress as reported by BBC World. Civilians report exhaustion and inability to sleep after 10 days of strikes.
+
+3. Supporting Context  
+- Narrative support: Japan’s intensified defensive posture near Taiwan, with deployment of advanced missile systems on Yonaguni Island, signals rising strategic alertness in East Asia, reflecting broader regional security recalibrations.
+
+4. Implications  
+- Iran attacks present a high-risk kinetic escalation with potential for retaliatory measures by Tehran, increasing instability risks in the Middle East.  
+- Urban infrastructure disruption (power cuts) raises humanitarian concerns and potential for domestic unrest in Iran.  
+- Spillover risks include broader regional proxy responses or asymmetric attacks against U.S. or Israeli interests.  
+- Japan’s missile deployment illustrates regional powers actively hedging amid uncertain Taiwan Strait dynamics, but direct linkage to Middle East unrest is tenuous at present.
+
+5. Confidence  
+- Moderate confidence overall due to strong Tier 1 source on Iran attacks (direct catalyst, confidence 0.85) but weaker, narrative-tier support on Japan’s strategic moves (confidence 0.60).  
+- No confirmed direct evidence of immediate spillover outside Iran, judgment remains cautious.
+
+6. Monitoring Priorities  
+- Track Iranian official statements/retaliation patterns targeting Israel, U.S., or proxies.  
+- Monitor power grid and urban infrastructure stability in Tehran and other affected regions.  
+- Observe Japanese defense deployments and broader East Asian security announcements for escalation or doctrinal shifts.  
+- Watch for shifts in U.S., Israeli, and regional allies’ force posture responding to Iran’s urban targeting campaign.

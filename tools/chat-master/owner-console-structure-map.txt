@@ -1,0 +1,346 @@
+== OWNER CONSOLE STRUCTURE MAP ==
+
+FILE:
+app/owner-console/page.tsx
+
+--- imports ---
+
+--- chat master symbols ---
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:189:async function getChatMasterHealth() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:196:    const res = await fetch(`${base}/api/owner/chat-master-health`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:279:async function getChatMasterStatus() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:286:    const res = await fetch(`${base}/api/hx2/chat-master-status`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:294:async function getChatMasterIntents() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:301:    const res = await fetch(`${base}/api/hx2/chat-master-intents`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:309:async function getChatMasterExecutionMap() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:316:    const res = await fetch(`${base}/api/hx2/chat-master-execution-map`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:324:async function getChatMasterKeywords() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:331:    const res = await fetch(`${base}/api/hx2/chat-master-keywords`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:337:        keywords: {},
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:349:      keywords: {},
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:355:async function getChatMasterDiagnostics() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:364:      `${base}/api/hx2/chat-master-diagnostics`,
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:371:        diagnostics: [],
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:383:      diagnostics: [],
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:544:function ChatMasterHealthPanel({ health }: { health: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:551:          <h2 className="text-lg font-semibold">Chat-Master Health</h2>
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:573:          {health?.error || "Chat-master health check failed."}
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:727:        <LinkButton href="/api/owner/chat-master-health" label="Chat-Master Health" />
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:750:      name: "hx2:chat-master:guard",
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:754:      name: "hx2:chat-master:report",
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:755:      purpose: "Chat Master readiness report"
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:758:      name: "hx2:chat-master:route-report",
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:840:  chatMaster,
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:848:  chatMaster: any;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:856:  const chatOk = chatMaster?.ok === true;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:863:  const orchReadiness = Number(orch?.readiness_percent ?? 0);
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:864:  const orchCritical = Number(orch?.critical_readiness_percent ?? 0);
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:871:    chat_master_route: "Restore /api/hx2/chat-master route.",
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:900:      ? `System operational — readiness ${orchReadiness}%, critical ${orchCritical}%.`
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:902:      ? `Review optional orchestration services — readiness ${orchReadiness}%, missing optional ${orchMissingOptional.length}.`
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:903:      : `Immediate orchestration attention required — readiness ${orchReadiness}%, missing critical ${orchMissingCritical.length}.`;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:957:        <StatCard title="Chat-Master" value={chatOk ? "Online" : "Issue"} />
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:963:        <StatCard title="Orch Ready" value={`${orchReadiness}%`} />
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1089:function ChatMasterDiagnosticsPanel({ data }: { data: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1091:  const diagnostics =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1092:    data?.diagnostics || [];
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1104:    data?.routing_maturity || "unknown";
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1121:          Chat Master Diagnostics
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1132:          title="Diagnostics"
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1143:          value={diagnostics.length}
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1185:        {diagnostics.map((row: any) => (
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1205:                {row.keyword_count} keywords
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1219:function ChatMasterKeywordsPanel({ data }: { data: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1221:  const keywords =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1222:    data?.keywords || {};
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1232:          Chat Master Keywords
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1253:          value={Object.keys(keywords).length}
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1272:              {(keywords?.[intent] || []).map((k: string) => (
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1292:function ChatMasterExecutionMapPanel({ data }: { data: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1321:function ChatMasterIntentsPanel({ data }: { data: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1348:function ChatMasterStatusPanel({ status }: { status: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1351:  const readiness = Number(chat?.readiness_percent ?? 0);
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1352:  const ok = status?.ok === true && readiness === 100;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1359:          <p className="mt-1 text-sm text-slate-400">Unified HX2 routing foundation readiness.</p>
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1367:        <StatCard title="Readiness" value={`${readiness}%`} />
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1388:  const readiness = Number(orchestrator?.readiness_percent ?? (total > 0 ? Math.round((healthy / total) * 100) : 0));
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1390:  const criticalReadiness = Number(orchestrator?.critical_readiness_percent ?? readiness);
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1391:  const optionalReadiness = Number(orchestrator?.optional_readiness_percent ?? readiness);
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1394:  const readinessTone =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1395:    readiness >= 90
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1397:      : readiness >= 70
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1401:    criticalReadiness === 100
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1405:    optionalReadiness >= 70
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1426:          <p className="mt-1 text-sm text-slate-400">Centralized orchestration readiness and routing foundation visibility.</p>
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1443:        <div className={`rounded-2xl border p-4 ${readinessTone}`}>
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1444:          <div className="text-sm opacity-80">Readiness</div>
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1445:          <div className="mt-2 text-2xl font-semibold">{readiness}%</div>
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1448:          <div className="text-sm opacity-80">Critical Readiness</div>
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1449:          <div className="mt-2 text-2xl font-semibold">{criticalReadiness}%</div>
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1452:          <div className="text-sm opacity-80">Optional Readiness</div>
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1453:          <div className="mt-2 text-2xl font-semibold">{optionalReadiness}%</div>
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1635:  const chatMasterStatusData = await getChatMasterStatus();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1636:  const chatMasterIntentsData = await getChatMasterIntents();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1637:  const chatMasterExecutionMapData = await getChatMasterExecutionMap();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1638:  const chatMasterKeywordsData = await getChatMasterKeywords();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1639:  const chatMasterDiagnosticsData = await getChatMasterDiagnostics();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1644:  const chatMasterHealthData = await getChatMasterHealth();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1678:        <SystemSnapshotHeader benchmark={benchmarkData} chatMaster={chatMasterHealthData} ap2={ap2QueueData} memory={memoryStatusData} activeNodes={activeNodesData} checks={checks} orchestrator={orchestratorStatusData} />
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1699:        <ChatMasterStatusPanel status={chatMasterStatusData} />
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1701:        <ChatMasterIntentsPanel data={chatMasterIntentsData} />
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1703:        <ChatMasterExecutionMapPanel data={chatMasterExecutionMapData} />
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1705:        <ChatMasterKeywordsPanel data={chatMasterKeywordsData} />
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1707:        <ChatMasterDiagnosticsPanel data={chatMasterDiagnosticsData} />
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1725:        <ChatMasterHealthPanel health={chatMasterHealthData} />
+
+--- exported/default functions ---
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1:async function getOwnerSummary() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:2:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:8:    const res = await fetch(`${base}/api/owner/summary`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:16:async function getBaselineHistory() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:17:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:23:    const res = await fetch(`${base}/api/owner/baselines`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:31:async function getOwnerHealth() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:32:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:38:    const res = await fetch(`${base}/api/owner/health`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:46:async function getAutopsies() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:47:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:53:    const res = await fetch(`${base}/api/owner/autopsies`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:61:async function getPostflightHistory() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:62:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:68:    const res = await fetch(`${base}/api/owner/postflights`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:76:async function getReleaseHistory() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:77:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:83:    const res = await fetch(`${base}/api/owner/releases`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:91:async function getO2Status() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:92:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:98:    const res = await fetch(`${base}/api/owner/o2-status`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:106:async function getO2Actions() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:107:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:113:    const res = await fetch(`${base}/api/owner/o2-actions`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:121:async function getLatestBaselineDetail() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:122:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:128:    const hist = await fetch(`${base}/api/owner/baselines`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:131:    const histJson = await hist.json();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:132:    const latest = histJson?.baselines?.[0]?.baseline;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:135:    const res = await fetch(`${base}/api/owner/baseline-detail?baseline=${encodeURIComponent(latest)}`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:144:async function getLatestBenchmark() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:145:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:151:    const res = await fetch(`${base}/api/owner/benchmark/latest`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:159:async function getActiveNodes() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:160:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:166:    const res = await fetch(`${base}/api/owner/active-nodes`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:174:async function getAp2Queue() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:175:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:181:    const res = await fetch(`${base}/api/owner/ap2-queue`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:189:async function getChatMasterHealth() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:190:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:196:    const res = await fetch(`${base}/api/owner/chat-master-health`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:204:async function getMemoryStatus() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:205:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:211:    const res = await fetch(`${base}/api/owner/memory-status`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:219:async function getActionHistory() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:220:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:226:    const res = await fetch(`${base}/api/owner/action-history`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:234:async function getGuardStatus() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:235:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:241:    const res = await fetch(`${base}/api/owner/guard-status`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:249:async function getEnvironmentStatus() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:250:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:256:    const res = await fetch(`${base}/api/owner/environment-status`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:264:async function getOrchestratorStatus() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:265:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:271:    const res = await fetch(`${base}/api/hx2/orchestrator-status`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:279:async function getChatMasterStatus() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:280:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:286:    const res = await fetch(`${base}/api/hx2/chat-master-status`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:294:async function getChatMasterIntents() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:295:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:301:    const res = await fetch(`${base}/api/hx2/chat-master-intents`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:309:async function getChatMasterExecutionMap() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:310:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:316:    const res = await fetch(`${base}/api/hx2/chat-master-execution-map`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:324:async function getChatMasterKeywords() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:325:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:331:    const res = await fetch(`${base}/api/hx2/chat-master-keywords`, { cache: "no-store" });
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:355:async function getChatMasterDiagnostics() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:356:  const base =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:363:    const res = await fetch(
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:389:function Card({ title, value }: { title: string; value: string }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:398:function StatCard({ title, value }: { title: string; value: number | string }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:407:function LinkButton({ href, label }: { href?: string | null; label: string }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:419:function WarningBadge({ label, active }: { label: string; active: boolean }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:427:function StabilityBadge({ label, stable, values }: { label: string; stable: boolean; values: string[] }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:436:function FreshnessBadge({
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:445:  const style =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:464:function ActiveNodesPanel({ activeNodes }: { activeNodes: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:465:  const nodes = Array.isArray(activeNodes?.nodes) ? activeNodes.nodes : [];
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:466:  const count = activeNodes?.count ?? nodes.length;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:467:  const ok = activeNodes?.ok === true;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:515:function Ap2QueuePanel({ ap2 }: { ap2: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:516:  const ok = ap2?.ok === true;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:517:  const status = ap2?.queue_status || {};
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:544:function ChatMasterHealthPanel({ health }: { health: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:545:  const ok = health?.ok === true;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:580:function MemoryStatusPanel({ memory }: { memory: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:581:  const ok = memory?.ok === true;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:582:  const status = memory?.memory_status || {};
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:615:function RecentActionsPanel({ actionHistory }: { actionHistory: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:616:  const history = Array.isArray(actionHistory?.history) ? actionHistory.history : [];
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:617:  const latest = history[0] || null;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:667:function ReleaseDeploySummaryPanel({
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:676:  const releaseCount = Array.isArray(releases) ? releases.length : 0;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:677:  const hasLatest = !!latestRelease;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:706:function ControlHubPanel() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:735:function BuildModesPanel() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:736:  const modes = [
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:800:function QuickCommandsPanel() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:801:  const commands = [
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:838:function SystemSnapshotHeader({
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:855:  const benchmarkScore = benchmark?.summary?.AverageScore ?? "unknown";
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:856:  const chatOk = chatMaster?.ok === true;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:857:  const ap2Ok = ap2?.ok === true;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:858:  const memoryOk = memory?.ok === true;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:859:  const nodeCount = activeNodes?.count ?? (Array.isArray(activeNodes?.nodes) ? activeNodes.nodes.length : 0);
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:860:  const failingChecks = Array.isArray(checks) ? checks.filter((x) => !x.ok).length : 0;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:861:  const orch = orchestrator?.orchestrator || {};
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:862:  const orchSeverity = String(orch?.severity || "unknown");
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:863:  const orchReadiness = Number(orch?.readiness_percent ?? 0);
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:864:  const orchCritical = Number(orch?.critical_readiness_percent ?? 0);
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:865:  const orchMissingCritical = Array.isArray(orch?.missing_critical) ? orch.missing_critical : [];
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:866:  const orchMissingOptional = Array.isArray(orch?.missing_optional) ? orch.missing_optional : [];
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:868:  const remediationMap: Record<string, string> = {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:879:  const criticalRemediationItems = orchMissingCritical.map((key: string) => ({
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:884:  const optionalRemediationItems = orchMissingOptional.map((key: string) => ({
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:889:  const remediationItems = [...criticalRemediationItems, ...optionalRemediationItems];
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:891:  const snapshotTone =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:898:  const orchestrationRecommendation =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:977:function CommandReferencePanel() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:978:  const commands = [
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1005:function EnvironmentStatusPanel({ envStatus }: { envStatus: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1006:  const configured = envStatus?.configured || {};
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1007:  const env = envStatus?.environment || {};
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1008:  const keys = Object.keys(configured);
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1009:  const missing = keys.filter((k) => !configured[k]);
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1040:function GuardStatusPanel({ guardStatus }: { guardStatus: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1041:  const guards = Array.isArray(guardStatus?.guards) ? guardStatus.guards : [];
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1042:  const missing = guards.filter((g: any) => !g.exists);
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1089:function ChatMasterDiagnosticsPanel({ data }: { data: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1091:  const diagnostics =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1094:  const sampleQueries =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1097:  const confidence =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1100:  const averageConfidence =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1103:  const routingMaturity =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1106:  const routingMaturityTone =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1219:function ChatMasterKeywordsPanel({ data }: { data: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1221:  const keywords =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1224:  const intents =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1292:function ChatMasterExecutionMapPanel({ data }: { data: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1293:  const map = data?.execution_map || {};
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1294:  const intents = data?.intents || Object.keys(map || {});
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1321:function ChatMasterIntentsPanel({ data }: { data: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1322:  const intents = data?.chat_master_intents?.intents || [];
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1323:  const status = data?.chat_master_intents?.status || "unknown";
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1348:function ChatMasterStatusPanel({ status }: { status: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1349:  const chat = status?.chat_master || {};
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1350:  const checks = chat?.checks || {};
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1351:  const readiness = Number(chat?.readiness_percent ?? 0);
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1352:  const ok = status?.ok === true && readiness === 100;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1382:function OrchestratorStatusPanel({ status }: { status: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1383:  const orchestrator = status?.orchestrator || {};
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1384:  const checks = orchestrator?.checks || {};
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1385:  const total = orchestrator?.total_checks ?? Object.keys(checks).length;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1386:  const healthy = orchestrator?.healthy_checks ?? Object.values(checks).filter(Boolean).length;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1387:  const missingRoutes = Array.isArray(orchestrator?.missing_routes) ? orchestrator.missing_routes : [];
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1388:  const readiness = Number(orchestrator?.readiness_percent ?? (total > 0 ? Math.round((healthy / total) * 100) : 0));
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1389:  const severity = String(orchestrator?.severity || "unknown");
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1390:  const criticalReadiness = Number(orchestrator?.critical_readiness_percent ?? readiness);
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1391:  const optionalReadiness = Number(orchestrator?.optional_readiness_percent ?? readiness);
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1392:  const missingCritical = Array.isArray(orchestrator?.missing_critical) ? orchestrator.missing_critical : [];
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1393:  const missingOptional = Array.isArray(orchestrator?.missing_optional) ? orchestrator.missing_optional : [];
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1394:  const readinessTone =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1400:  const criticalTone =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1404:  const optionalTone =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1408:  const severityTone =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1419:  const ok = status?.ok === true && healthy === total && missingRoutes.length === 0;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1479:function BenchmarkStatusPanel({ benchmark }: { benchmark: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1480:  const summary = benchmark?.summary || {};
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1481:  const results = Array.isArray(benchmark?.results) ? benchmark.results : [];
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1482:  const weakest = benchmark?.weakest || null;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1483:  const overallPassed = summary?.OverallPassed === true;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1484:  const tone = overallPassed ? "border-emerald-800 bg-emerald-950 text-emerald-200" : "border-red-800 bg-red-950 text-red-200";
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1533:function SystemHealthSummaryPanel({ checks }: { checks: any[] }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1534:  const total = Array.isArray(checks) ? checks.length : 0;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1535:  const passing = Array.isArray(checks) ? checks.filter((x) => !!x.ok).length : 0;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1536:  const failing = total - passing;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1537:  const avgLatency =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1542:  const tone = failing === 0 ? "border-emerald-800 bg-emerald-950 text-emerald-200" : "border-amber-700 bg-amber-950 text-amber-200";
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1565:function HealthBadge({
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1584:function PostflightBadge({
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1591:  const style =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1608:function O2StateBadge({ state }: { state: string }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1609:  const style =
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1623:export default async function OwnerConsolePage() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1624:  const data = await getOwnerSummary();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1625:  const history = await getBaselineHistory();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1626:  const health = await getOwnerHealth();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1627:  const autopsyData = await getAutopsies();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1628:  const postflightData = await getPostflightHistory();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1629:  const releaseData = await getReleaseHistory();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1630:  const o2Data = await getO2Status();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1631:  const o2ActionsData = await getO2Actions();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1632:  const baselineDetailData = await getLatestBaselineDetail();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1633:  const benchmarkData = await getLatestBenchmark();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1634:  const orchestratorStatusData = await getOrchestratorStatus();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1635:  const chatMasterStatusData = await getChatMasterStatus();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1636:  const chatMasterIntentsData = await getChatMasterIntents();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1637:  const chatMasterExecutionMapData = await getChatMasterExecutionMap();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1638:  const chatMasterKeywordsData = await getChatMasterKeywords();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1639:  const chatMasterDiagnosticsData = await getChatMasterDiagnostics();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1640:  const guardStatusData = await getGuardStatus();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1641:  const environmentStatusData = await getEnvironmentStatus();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1642:  const actionHistoryData = await getActionHistory();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1643:  const memoryStatusData = await getMemoryStatus();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1644:  const chatMasterHealthData = await getChatMasterHealth();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1645:  const ap2QueueData = await getAp2Queue();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1646:  const activeNodesData = await getActiveNodes();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1648:  const summary = data?.summary || {};
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1649:  const preview = data?.release_note_preview || "";
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1650:  const baselines = history?.baselines || [];
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1651:  const stability = history?.stability || {};
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1652:  const checks = health?.checks || [];
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1653:  const autopsies = autopsyData?.autopsies || [];
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1654:  const latestAutopsy = autopsies.length > 0 ? autopsies[0] : null;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1655:  const postflights = postflightData?.postflights || [];
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1656:  const releases = releaseData?.releases || [];
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1657:  const latestRelease = releases.length > 0 ? releases[0] : null;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1658:  const o2State = o2Data?.state || "unknown";
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1659:  const o2Policy = o2Data?.policy || {};
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1660:  const o2Inputs = o2Data?.inputs || {};
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1661:  const o2Recommendations = o2ActionsData?.recommendations || [];
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1662:  const o2Cautions = o2ActionsData?.cautions || [];
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1663:  const detail = baselineDetailData?.detail || null;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1665:  const hasStaging = (summary?.staging_count ?? 0) > 0;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1666:  const hasIncomplete = (summary?.incomplete_count ?? 0) > 0;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1667:  const hasAutopsy = (summary?.autopsy_count ?? 0) > 0;
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1668:  const missingReleaseNote = (summary?.release_note_count ?? 0) < 1;
+
+--- possible duplicate panels ---
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:189:async function getChatMasterHealth() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:279:async function getChatMasterStatus() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:294:async function getChatMasterIntents() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:309:async function getChatMasterExecutionMap() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:324:async function getChatMasterKeywords() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:355:async function getChatMasterDiagnostics() {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1089:function ChatMasterDiagnosticsPanel({ data }: { data: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1219:function ChatMasterKeywordsPanel({ data }: { data: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1292:function ChatMasterExecutionMapPanel({ data }: { data: any }) {
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1635:  const chatMasterStatusData = await getChatMasterStatus();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1636:  const chatMasterIntentsData = await getChatMasterIntents();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1637:  const chatMasterExecutionMapData = await getChatMasterExecutionMap();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1638:  const chatMasterKeywordsData = await getChatMasterKeywords();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1639:  const chatMasterDiagnosticsData = await getChatMasterDiagnostics();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1644:  const chatMasterHealthData = await getChatMasterHealth();
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1703:        <ChatMasterExecutionMapPanel data={chatMasterExecutionMapData} />
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1705:        <ChatMasterKeywordsPanel data={chatMasterKeywordsData} />
+C:\Users\ezdet\hx2-vercel-starter\app\owner-console\page.tsx:1707:        <ChatMasterDiagnosticsPanel data={chatMasterDiagnosticsData} />
