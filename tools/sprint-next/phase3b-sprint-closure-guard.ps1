@@ -13,6 +13,7 @@ $Runner = Get-Content $RunnerPath -Raw
 $RequiredTerms = @(
   "PHASE 3B SPRINT CLOSURE",
   "phase3b-route-existence-preflight.ps1",
+  "phase3b-origin-main-preflight.ps1",
   "orchestration-compiler",
   "orchestration-stage-dependencies",
   "orchestration-stage-graph",
@@ -29,4 +30,5 @@ foreach ($Term in $RequiredTerms) {
 }
 
 Write-Host "PHASE 3B SPRINT CLOSURE GUARD PASSED"
+
 

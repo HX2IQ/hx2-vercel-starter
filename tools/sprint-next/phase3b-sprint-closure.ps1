@@ -36,6 +36,9 @@ npm run build
 if (-not $SkipDeploy) {
   Write-Host "`n== DEPLOY PRODUCTION =="
   git push origin main
+
+Write-Host "`n== VERIFY ORIGIN MAIN HAS PHASE 3B FILES =="
+powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-origin-main-preflight.ps1"
   npx vercel --prod --force
 
   Write-Host "`n== WAIT FOR PROPAGATION =="
@@ -65,6 +68,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "`nPHASE 3B SPRINT CLOSURE PASSED"
+
 
 
 
