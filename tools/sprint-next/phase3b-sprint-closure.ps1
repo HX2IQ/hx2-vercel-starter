@@ -45,6 +45,9 @@ powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-origin-main-
   Start-Sleep -Seconds 60
 }
 
+Write-Host "`n== VERIFY VERCEL DOMAIN ALIAS =="
+powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-vercel-alias-guard.ps1" -Domain $ProbeUrl
+
 Write-Host "`n== PROBE COMPILER =="
 Invoke-RestMethod "$ProbeUrl/api/hx2/orchestration-compiler" |
   ConvertTo-Json -Depth 20
@@ -68,6 +71,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "`nPHASE 3B SPRINT CLOSURE PASSED"
+
 
 
 
