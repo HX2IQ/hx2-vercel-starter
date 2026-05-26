@@ -18,6 +18,8 @@ $Guards = @(
   "tools/sprint-next/orchestration-stage-graph-cycle-guard.ps1",
   "tools/sprint-next/orchestration-stage-graph-topological-guard.ps1",
   "tools/sprint-next/orchestration-execution-plan-guard.ps1",
+  "tools/sprint-next/phase3b-orchestration-status-guard.ps1",
+  "tools/sprint-next/phase3b-release-manifest-guard.ps1",
   "tools/sprint-next/phase3b-sprint-closure-guard.ps1"
 )
 
@@ -37,8 +39,9 @@ if (-not $SkipDeploy) {
   Write-Host "`n== DEPLOY PRODUCTION =="
   git push origin main
 
-Write-Host "`n== VERIFY ORIGIN MAIN HAS PHASE 3B FILES =="
-powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-origin-main-preflight.ps1"
+  Write-Host "`n== VERIFY ORIGIN MAIN HAS PHASE 3B FILES =="
+  powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-origin-main-preflight.ps1"
+
   npx vercel --prod --force
 
   Write-Host "`n== WAIT FOR PROPAGATION =="
@@ -64,6 +67,10 @@ Write-Host "`n== PROBE EXECUTION PLAN =="
 Invoke-RestMethod "$ProbeUrl/api/hx2/orchestration-execution-plan" |
   ConvertTo-Json -Depth 20
 
+Write-Host "`n== PROBE PHASE 3B STATUS =="
+Invoke-RestMethod "$ProbeUrl/api/hx2/phase3b-orchestration-status" |
+  ConvertTo-Json -Depth 20
+
 Write-Host "`n== PROBE PHASE 3B RELEASE MANIFEST =="
 Invoke-RestMethod "$ProbeUrl/api/hx2/phase3b-release-manifest" |
   ConvertTo-Json -Depth 20
@@ -75,10 +82,3 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "`nPHASE 3B SPRINT CLOSURE PASSED"
-
-
-
-
-
-
-
