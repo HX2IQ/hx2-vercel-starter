@@ -1,7 +1,9 @@
 import { getPhase3BOrchestrationStatusSnapshot } from "./phase3b-orchestration-status";
+import { getPhase3BRouteMatrix } from "./phase3b-route-matrix";
 
 export function getPhase3BReleaseManifest() {
   const status = getPhase3BOrchestrationStatusSnapshot();
+  const routeMatrix = getPhase3BRouteMatrix();
 
   return {
     ok: status.ok === true,
@@ -15,6 +17,11 @@ export function getPhase3BReleaseManifest() {
     graph_route: "/api/hx2/orchestration-stage-graph",
     execution_plan_route: "/api/hx2/orchestration-execution-plan",
     readiness: status.readiness,
+    route_matrix: {
+      route_count: routeMatrix.routes.length,
+      matrix_mode: routeMatrix.matrix_mode,
+      routes: routeMatrix.routes,
+    },
     summary: {
       compiler_ready: status.compiler.ready,
       dependencies_ready: status.dependencies.ready,
@@ -24,3 +31,4 @@ export function getPhase3BReleaseManifest() {
     },
   };
 }
+

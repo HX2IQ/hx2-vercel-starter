@@ -25,7 +25,8 @@ $RequiredTerms = @(
   "compiler_route",
   "dependency_route",
   "graph_route",
-  "execution_plan_route"
+  "execution_plan_route",
+  "route_matrix"
 )
 
 foreach ($Term in $RequiredTerms) {
@@ -47,3 +48,4 @@ if ($Route -notmatch "/api/hx2/phase3b-release-manifest") {
 }
 
 Write-Host "PHASE 3B RELEASE MANIFEST GUARD PASSED"
+
