@@ -80,8 +80,13 @@ foreach ($Route in $Routes) {
 }
 
 Write-Host ""
+Write-Host "== RUN PHASE 3B ROUTE MATRIX PRODUCTION PROBE =="
+powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-route-matrix-production-probe.ps1" -BaseUrl $ProbeUrl
+
+Write-Host ""
 Write-Host "== RUN PHASE 3B STATUS PRODUCTION PROBE =="
 powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-orchestration-status-production-probe.ps1" -BaseUrl $ProbeUrl
 
 Write-Host ""
 Write-Host "PHASE 3B SPRINT CLOSURE PASSED"
+
