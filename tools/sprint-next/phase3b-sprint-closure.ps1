@@ -59,7 +59,11 @@ Invoke-RestMethod "$ProbeUrl/api/hx2/orchestration-execution-plan" |
 
 Write-Host "`n== RUN PHASE 3B STATUS PRODUCTION PROBE =="
 powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-orchestration-status-production-probe.ps1" -BaseUrl $ProbeUrl
+if ($LASTEXITCODE -ne 0) {
+  throw "Phase 3B status production probe failed"
+}
 
 Write-Host "`nPHASE 3B SPRINT CLOSURE PASSED"
+
 
 
