@@ -9,13 +9,18 @@ Write-Host "`n== PHASE 3B VERCEL ALIAS GUARD =="
 $VercelCmd = Get-Command vercel.cmd -ErrorAction SilentlyContinue
 $VercelExe = Get-Command vercel -ErrorAction SilentlyContinue
 
+$PreviousErrorActionPreference = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+
 if ($VercelCmd) {
-  $Inspect = & $VercelCmd.Source inspect $Domain 2>$null | Out-String
+  $Inspect = & $VercelCmd.Source inspect $Domain 2>&1 | Out-String
 } elseif ($VercelExe) {
-  $Inspect = & $VercelExe.Source inspect $Domain 2>$null | Out-String
+  $Inspect = & $VercelExe.Source inspect $Domain 2>&1 | Out-String
 } else {
-  $Inspect = & npx.cmd vercel inspect $Domain 2>$null | Out-String
+  $Inspect = & npx.cmd vercel inspect $Domain 2>&1 | Out-String
 }
+
+$ErrorActionPreference = $PreviousErrorActionPreference
 
 if ([string]::IsNullOrWhiteSpace($Inspect)) {
   throw "Vercel alias guard failed: empty inspect response"
