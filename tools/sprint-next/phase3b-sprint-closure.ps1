@@ -8,6 +8,7 @@ $ErrorActionPreference = "Stop"
 Write-Host "`n== PHASE 3B SPRINT CLOSURE =="
 
 $Guards = @(
+  "tools/sprint-next/phase3b-route-existence-preflight.ps1",
   "tools/sprint-next/orchestration-compiler-stability-guard.ps1",
   "tools/sprint-next/orchestration-compiler-dependency-guard.ps1",
   "tools/sprint-next/orchestration-compiler-contract-guard.ps1",
@@ -64,6 +65,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "`nPHASE 3B SPRINT CLOSURE PASSED"
+
 
 
 
