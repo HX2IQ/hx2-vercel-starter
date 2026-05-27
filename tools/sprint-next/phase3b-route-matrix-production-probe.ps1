@@ -59,6 +59,7 @@ foreach ($Entry in $Matrix.routes) {
     $Response.graph_mode,
     $Response.status_mode,
     $Response.release_mode,
+    $Response.summary_mode,
     $Response.matrix_mode
   ) | Where-Object { $_ }
 
@@ -69,3 +70,4 @@ foreach ($Entry in $Matrix.routes) {
 
 Write-Host ""
 Write-Host "PHASE 3B ROUTE MATRIX PRODUCTION PROBE PASSED"
+
