@@ -8,6 +8,7 @@ Write-Host ""
 Write-Host "== PHASE 3B MASTER PRODUCTION VERIFY =="
 
 $Probes = @(
+  "tools/sprint-next/phase3b-build-health-production-probe.ps1",
   "tools/sprint-next/phase3b-sprint-snapshot-production-probe.ps1",
   "tools/sprint-next/phase3b-release-manifest-production-probe.ps1",
   "tools/sprint-next/phase3b-route-matrix-production-probe.ps1",
@@ -26,3 +27,4 @@ foreach ($Probe in $Probes) {
 
 Write-Host ""
 Write-Host "PHASE 3B MASTER PRODUCTION VERIFY PASSED"
+
