@@ -13,7 +13,7 @@ export function getPhase3BBuildHealthSnapshot() {
     composition_mutation_allowed: false,
 
     health: {
-      compiler_ready: manifest.readiness.compiler_ready,
+      phase3b_ready: manifest.readiness.phase3b_ready,
       blocking_reasons: manifest.readiness.blocking_reasons,
       route_count: sprint.route_contracts.route_count,
       planned_stage_count: sprint.orchestration.planned_stage_count,
@@ -23,3 +23,4 @@ export function getPhase3BBuildHealthSnapshot() {
     route_contracts: sprint.route_contracts,
   };
 }
+
