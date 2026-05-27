@@ -56,9 +56,15 @@ export function getPhase3BRouteMatrix() {
         contract: "phase3b_build_health",
         expected_mode: "read_only_build_health",
       },
+          {
+        route: "/api/hx2/phase3b-build-process-version",
+        contract: "phase3b_build_process_version",
+        expected_mode: "fast_safe_sprint",
+      },
     ],
   };
 }
+
 
 
 

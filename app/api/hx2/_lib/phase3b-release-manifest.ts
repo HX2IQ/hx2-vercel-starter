@@ -17,6 +17,7 @@ export function getPhase3BReleaseManifest() {
     graph_route: "/api/hx2/orchestration-stage-graph",
     execution_plan_route: "/api/hx2/orchestration-execution-plan",
     build_health_route: "/api/hx2/phase3b-build-health",
+    build_process_version_route: "/api/hx2/phase3b-build-process-version",
     readiness: status.readiness,
     route_matrix: {
       route_count: routeMatrix.routes.length,
@@ -32,5 +33,6 @@ export function getPhase3BReleaseManifest() {
     },
   };
 }
+
 
 

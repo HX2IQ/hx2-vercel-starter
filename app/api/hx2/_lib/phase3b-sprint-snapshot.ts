@@ -16,6 +16,10 @@ export function getPhase3BSprintSnapshot() {
       route_count: summary.route_count,
       contracts: summary.contracts,
     },
+    build_process_version: {
+      route: "/api/hx2/phase3b-build-process-version",
+      expected_mode: "fast_safe_sprint",
+    },
     build_health: {
       route: "/api/hx2/phase3b-build-health",
       expected_mode: "read_only_build_health",
@@ -29,4 +33,5 @@ export function getPhase3BSprintSnapshot() {
     },
   };
 }
+
 
