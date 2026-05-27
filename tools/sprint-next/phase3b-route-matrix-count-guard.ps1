@@ -20,7 +20,8 @@ $RequiredRoutes = @(
   "/api/hx2/phase3b-release-manifest",
   "/api/hx2/phase3b-route-matrix",
   "/api/hx2/phase3b-route-contract-summary",
-  "/api/hx2/phase3b-sprint-snapshot"
+  "/api/hx2/phase3b-sprint-snapshot",
+  "/api/hx2/phase3b-build-health"
 )
 
 foreach ($Route in $RequiredRoutes) {
@@ -31,10 +32,11 @@ foreach ($Route in $RequiredRoutes) {
 
 $RouteMatches = [regex]::Matches($Matrix, 'route:\s*"/api/hx2/')
 
-if ($RouteMatches.Count -lt 9) {
+if ($RouteMatches.Count -lt 10) {
   throw "Route matrix has too few routes: $($RouteMatches.Count)"
 }
 
 Write-Host "PHASE 3B ROUTE MATRIX COUNT GUARD PASSED"
+
 
 
