@@ -5,7 +5,8 @@ param(
   [switch]$LocalOnly,
   [switch]$DryRun,
   [switch]$AllowNoCommit,
-  [switch]$SkipDiffSummary
+  [switch]$SkipDiffSummary,
+  [switch]$FastNoReview
 )
 
 $ErrorActionPreference = "Stop"
@@ -22,6 +23,8 @@ if ($LocalOnly) { $ArgsList += "-LocalOnly" }
 if ($DryRun) { $ArgsList += "-DryRun" }
 if ($AllowNoCommit) { $ArgsList += "-AllowNoCommit" }
 if ($SkipDiffSummary) { $ArgsList += "-SkipDiffSummary" }
+if ($FastNoReview) { $ArgsList += "-SkipDiffSummary" }
 
 powershell @ArgsList
+
 
