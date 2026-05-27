@@ -36,6 +36,12 @@ export function getPhase3BRouteMatrix() {
         contract: "phase3b_release_manifest",
         expected_mode: "deterministic_orchestration_preview",
       },
+          {
+        route: "/api/hx2/phase3b-route-matrix",
+        contract: "phase3b_route_matrix",
+        expected_mode: "read_only_contract",
+      },
     ],
   };
 }
+
