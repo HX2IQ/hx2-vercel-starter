@@ -26,6 +26,15 @@ function Invoke-WithRetry {
   throw "Probe failed after $Retries attempts: $Url. Last error: $LastError"
 }
 
+function Get-ModeValues {
+  param($Response)
+
+  return $Response.PSObject.Properties |
+    Where-Object { $_.Name -match "_mode$" } |
+    ForEach-Object { $_.Value } |
+    Where-Object { $_ }
+}
+
 Write-Host ""
 Write-Host "== PHASE 3B ROUTE MATRIX PRODUCTION PROBE =="
 
@@ -52,16 +61,7 @@ foreach ($Entry in $Matrix.routes) {
     throw "Route marker mismatch for $($Entry.route): got $($Response.route)"
   }
 
-  $ModeValues = @(
-    $Response.compiler_mode,
-    $Response.dependency_mode,
-    $Response.plan_mode,
-    $Response.graph_mode,
-    $Response.status_mode,
-    $Response.release_mode,
-    $Response.summary_mode,
-    $Response.matrix_mode
-  ) | Where-Object { $_ }
+  $ModeValues = @(Get-ModeValues -Response $Response)
 
   if ($ModeValues -notcontains $Entry.expected_mode) {
     throw "Expected mode '$($Entry.expected_mode)' not found for $($Entry.route). Got: $($ModeValues -join ', ')"
@@ -70,4 +70,3 @@ foreach ($Entry in $Matrix.routes) {
 
 Write-Host ""
 Write-Host "PHASE 3B ROUTE MATRIX PRODUCTION PROBE PASSED"
-
