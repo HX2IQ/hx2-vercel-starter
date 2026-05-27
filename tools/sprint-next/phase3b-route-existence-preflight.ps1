@@ -9,7 +9,8 @@ $RequiredRoutes = @(
   "app/api/hx2/orchestration-execution-plan/route.ts",
   "app/api/hx2/phase3b-orchestration-status/route.ts",
   "app/api/hx2/phase3b-release-manifest/route.ts",
-  "app/api/hx2/phase3b-route-matrix/route.ts"
+  "app/api/hx2/phase3b-route-matrix/route.ts",
+  "app/api/hx2/phase3b-route-contract-summary/route.ts"
 )
 
 $RequiredHelpers = @(
@@ -19,7 +20,8 @@ $RequiredHelpers = @(
   "app/api/hx2/_lib/orchestration-execution-plan.ts",
   "app/api/hx2/_lib/phase3b-orchestration-status.ts",
   "app/api/hx2/_lib/phase3b-release-manifest.ts",
-  "app/api/hx2/_lib/phase3b-route-matrix.ts"
+  "app/api/hx2/_lib/phase3b-route-matrix.ts",
+  "app/api/hx2/_lib/phase3b-route-contract-summary.ts"
 )
 
 foreach ($Path in @($RequiredRoutes + $RequiredHelpers)) {
@@ -29,4 +31,5 @@ foreach ($Path in @($RequiredRoutes + $RequiredHelpers)) {
 }
 
 Write-Host "PHASE 3B ROUTE EXISTENCE PREFLIGHT PASSED"
+
 

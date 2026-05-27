@@ -23,6 +23,7 @@ $Guards = @(
   "tools/sprint-next/phase3b-release-manifest-guard.ps1",
   "tools/sprint-next/phase3b-route-matrix-guard.ps1",
   "tools/sprint-next/phase3b-route-matrix-count-guard.ps1",
+  "tools/sprint-next/phase3b-route-contract-summary-guard.ps1",
   "tools/sprint-next/phase3b-route-mode-contract-guard.ps1",
   "tools/sprint-next/phase3b-sprint-closure-guard.ps1"
 )
@@ -72,7 +73,8 @@ $Routes = @(
   "/api/hx2/orchestration-execution-plan",
   "/api/hx2/phase3b-orchestration-status",
   "/api/hx2/phase3b-release-manifest",
-  "/api/hx2/phase3b-route-matrix"
+  "/api/hx2/phase3b-route-matrix",
+  "/api/hx2/phase3b-route-contract-summary"
 )
 
 foreach ($Route in $Routes) {
@@ -95,6 +97,7 @@ powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-orchestratio
 
 Write-Host ""
 Write-Host "PHASE 3B SPRINT CLOSURE PASSED"
+
 
 
 
