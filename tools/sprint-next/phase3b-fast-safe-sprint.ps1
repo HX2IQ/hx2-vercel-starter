@@ -50,6 +50,9 @@ if ($LocalOnly) {
   Write-Host ""
   Write-Host "Audit written: $AuditPath"
   Write-Host ""
+  powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-audit.ps1"
+
+  Write-Host ""
   Write-Host "PHASE 3B FAST SAFE SPRINT PASSED - LOCAL ONLY"
   exit 0
 }
@@ -101,4 +104,8 @@ $Audit | ConvertTo-Json -Depth 10 | Set-Content $AuditPath -Encoding UTF8
 Write-Host ""
 Write-Host "Audit written: $AuditPath"
 Write-Host ""
+powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-audit.ps1"
+
+Write-Host ""
 Write-Host "PHASE 3B FAST SAFE SPRINT PASSED"
+
