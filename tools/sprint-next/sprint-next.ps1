@@ -4,7 +4,8 @@ param(
   [string]$ProbeUrl = "https://optinodeiq.com",
   [switch]$LocalOnly,
   [switch]$DryRun,
-  [switch]$AllowNoCommit
+  [switch]$AllowNoCommit,
+  [switch]$SkipDiffSummary
 )
 
 $ErrorActionPreference = "Stop"
@@ -20,5 +21,7 @@ $ArgsList = @(
 if ($LocalOnly) { $ArgsList += "-LocalOnly" }
 if ($DryRun) { $ArgsList += "-DryRun" }
 if ($AllowNoCommit) { $ArgsList += "-AllowNoCommit" }
+if ($SkipDiffSummary) { $ArgsList += "-SkipDiffSummary" }
 
 powershell @ArgsList
+
