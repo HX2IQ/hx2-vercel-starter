@@ -25,7 +25,8 @@ $Guards = @(
   "tools/sprint-next/phase3b-route-matrix-count-guard.ps1",
   "tools/sprint-next/phase3b-route-contract-summary-guard.ps1",
   "tools/sprint-next/phase3b-route-mode-contract-guard.ps1",
-  "tools/sprint-next/phase3b-sprint-closure-guard.ps1"
+  "tools/sprint-next/phase3b-sprint-closure-guard.ps1",
+  "tools/sprint-next/phase3b-fast-safe-sprint-guard.ps1"
 )
 
 foreach ($Guard in $Guards) {
@@ -97,6 +98,7 @@ powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-orchestratio
 
 Write-Host ""
 Write-Host "PHASE 3B SPRINT CLOSURE PASSED"
+
 
 
 
