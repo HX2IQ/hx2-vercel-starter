@@ -11,6 +11,20 @@ $ErrorActionPreference = "Stop"
 Write-Host ""
 Write-Host "== PHASE 3B FAST SAFE SPRINT =="
 
+if ($DryRun) {
+  Write-Host ""
+  Write-Host "== DRY RUN PREVIEW =="
+  Write-Host "FeatureName: $FeatureName"
+  Write-Host "Message: $Message"
+  Write-Host "ProbeUrl: $ProbeUrl"
+  Write-Host "LocalOnly: $LocalOnly"
+  Write-Host "AllowNoCommit: $AllowNoCommit"
+  Write-Host "Would run DEV2 feature compiler if FeatureName is provided."
+  Write-Host "Would run local closure if LocalOnly is set."
+  Write-Host "Would commit/deploy through full closure if LocalOnly is not set."
+  exit 0
+}
+
 $AuditDir = "tools/sprint-next/_audit"
 New-Item -ItemType Directory -Force -Path $AuditDir | Out-Null
 
@@ -108,4 +122,5 @@ powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-aud
 
 Write-Host ""
 Write-Host "PHASE 3B FAST SAFE SPRINT PASSED"
+
 
