@@ -24,7 +24,8 @@ $RequiredTerms = @(
   "composition_mutation_allowed: false",
   "route_count",
   "contracts",
-  "expected_mode"
+  "expected_mode",
+  "build_health"
 )
 
 foreach ($Term in $RequiredTerms) {
@@ -46,3 +47,4 @@ if ($Route -notmatch "/api/hx2/phase3b-route-contract-summary") {
 }
 
 Write-Host "PHASE 3B ROUTE CONTRACT SUMMARY GUARD PASSED"
+

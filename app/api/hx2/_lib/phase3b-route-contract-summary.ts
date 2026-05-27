@@ -15,5 +15,11 @@ export function getPhase3BRouteContractSummary() {
       contract: entry.contract,
       expected_mode: entry.expected_mode,
     })),
+    build_health: {
+      route: "/api/hx2/phase3b-build-health",
+      expected_mode: "read_only_build_health",
+      included_in_matrix: matrix.routes.some((entry) => entry.route === "/api/hx2/phase3b-build-health"),
+    },
   };
 }
+
