@@ -41,7 +41,13 @@ export function getPhase3BRouteMatrix() {
         contract: "phase3b_route_matrix",
         expected_mode: "read_only_contract",
       },
+          {
+        route: "/api/hx2/phase3b-route-contract-summary",
+        contract: "phase3b_route_contract_summary",
+        expected_mode: "read_only_contract_summary",
+      },
     ],
   };
 }
+
 
