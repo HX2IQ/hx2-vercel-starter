@@ -1,3 +1,5 @@
+import { sprintNextStageRegistry } from "./sprint-next-stage-registry";
+
 export type SprintExecutionPackageLineage = {
   root_package: any;
   active_package: any;
@@ -7,7 +9,6 @@ export type SprintExecutionPackageLineage = {
 export function buildSprintExecutionPackageLineage(
   rootPackage: any
 ): SprintExecutionPackageLineage {
-
   return {
     root_package: rootPackage,
     active_package: rootPackage,
@@ -20,7 +21,6 @@ export function evolveSprintExecutionPackage(
   label: string,
   nextPackage: any
 ): SprintExecutionPackageLineage {
-
   return {
     root_package: lineage.root_package,
     active_package: nextPackage,
@@ -30,3 +30,14 @@ export function evolveSprintExecutionPackage(
     ]
   };
 }
+
+export function getSprintExecutionPackageLineage() {
+  return [
+    "root",
+    "registry-validation",
+    ...sprintNextStageRegistry.map((stage) => stage.id)
+  ];
+}
+
+export const sprintExecutionPackageLineage = getSprintExecutionPackageLineage;
+

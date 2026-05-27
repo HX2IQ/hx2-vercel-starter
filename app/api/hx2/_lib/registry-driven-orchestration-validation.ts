@@ -16,39 +16,34 @@ export function validateSprintNextStageRegistry() {
     "decision"
   ];
 
-  const stageTypes: StageType[] =
-    sprintNextStageRegistry.map(
-      (stage) => stage.stage_type
-    );
+  const stageTypes: StageType[] = sprintNextStageRegistry.map(
+    (stage) => stage.stage_type
+  );
 
-  const helpers =
-    sprintNextStageRegistry.map(
-      (stage) => stage.helper
-    );
+  const helpers = sprintNextStageRegistry.map(
+    (stage) => stage.helper
+  );
 
-  const helperDuplicates =
-    helpers.filter(
-      (helper, index) =>
-        helpers.indexOf(helper) !== index
-    );
+  const helperDuplicates = helpers.filter(
+    (helper, index) => helpers.indexOf(helper) !== index
+  );
 
-  const missingTypes =
-    requiredStageTypes.filter(
-      (type) => !stageTypes.includes(type)
-    );
+  const missingTypes = requiredStageTypes.filter(
+    (type) => !stageTypes.includes(type)
+  );
+
+  const registryValid =
+    helperDuplicates.length === 0 &&
+    missingTypes.length === 0;
 
   return {
-    registry_valid:
-      helperDuplicates.length === 0 &&
-      missingTypes.length === 0,
-
-    missing_stage_types:
-      missingTypes,
-
-    duplicate_helpers:
-      Array.from(new Set(helperDuplicates)),
-
-    stage_count:
-      sprintNextStageRegistry.length
+    ok: registryValid,
+    registry_valid: registryValid,
+    missing_stage_types: missingTypes,
+    duplicate_helpers: Array.from(new Set(helperDuplicates)),
+    stage_count: sprintNextStageRegistry.length
   };
 }
+
+export const validateRegistryDrivenOrchestration = validateSprintNextStageRegistry;
+export const registryDrivenOrchestrationValidation = validateSprintNextStageRegistry;

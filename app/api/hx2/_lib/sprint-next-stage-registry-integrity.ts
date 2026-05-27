@@ -13,11 +13,17 @@ export function buildStageRegistryIntegrity() {
     byType[stage.stage_type] = (byType[stage.stage_type] || 0) + 1;
   }
 
+  const registryOk = duplicateIds.length === 0 && duplicateHelpers.length === 0;
+
   return {
+    ok: registryOk,
     stage_count: sprintNextStageRegistry.length,
     by_type: byType,
     duplicate_ids: Array.from(new Set(duplicateIds)),
     duplicate_helpers: Array.from(new Set(duplicateHelpers)),
-    registry_ok: duplicateIds.length === 0 && duplicateHelpers.length === 0
+    registry_ok: registryOk
   };
 }
+
+export const getSprintNextStageRegistryIntegrity = buildStageRegistryIntegrity;
+export const validateSprintNextStageRegistryIntegrity = buildStageRegistryIntegrity;
