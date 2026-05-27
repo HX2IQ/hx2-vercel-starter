@@ -97,3 +97,5 @@ tools/_autopsy/*.bak
 
 tools/_autopsy/**
 !tools/_autopsy/.gitkeep
+
+tools/sprint-next/_audit/
