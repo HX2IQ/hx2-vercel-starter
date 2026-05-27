@@ -16,6 +16,10 @@ export function getPhase3BSprintSnapshot() {
       route_count: summary.route_count,
       contracts: summary.contracts,
     },
+    build_health: {
+      route: "/api/hx2/phase3b-build-health",
+      expected_mode: "read_only_build_health",
+    },
     orchestration: {
       compiler_ready: manifest.summary.compiler_ready,
       dependencies_ready: manifest.summary.dependencies_ready,
@@ -25,3 +29,4 @@ export function getPhase3BSprintSnapshot() {
     },
   };
 }
+

@@ -26,6 +26,7 @@ $RequiredTerms = @(
   "dependency_route",
   "graph_route",
   "execution_plan_route",
+  "build_health_route",
   "route_matrix"
 )
 
@@ -48,4 +49,5 @@ if ($Route -notmatch "/api/hx2/phase3b-release-manifest") {
 }
 
 Write-Host "PHASE 3B RELEASE MANIFEST GUARD PASSED"
+
 
