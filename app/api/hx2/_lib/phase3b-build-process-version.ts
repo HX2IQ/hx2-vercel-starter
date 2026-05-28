@@ -15,7 +15,9 @@ export function getPhase3BBuildProcessVersion() {
       "Added build process production probes",
       "Added parallel production verification",
       "Added serial retry fallback for failed parallel probes",
-      "Build process upgraded to 3b.3"
+      "Build process upgraded to 3b.3",
+      "Added impact speed decision advisory",
+      "Added cached validation advisory without skipping validation"
     ],
     composition_mutation_allowed: false,
     capabilities: {
@@ -32,11 +34,14 @@ export function getPhase3BBuildProcessVersion() {
       master_production_verify: true,
       parallel_production_verify: true,
       serial_retry_fallback: true,
+      impact_speed_decision_advisory: true,
+      cached_validation_advisory_only: true,
       route_matrix_contract: true,
       build_health_snapshot: true,
     },
   };
 }
+
 
 
 
