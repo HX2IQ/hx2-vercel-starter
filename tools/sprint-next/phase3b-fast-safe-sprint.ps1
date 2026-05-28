@@ -67,6 +67,7 @@ if ($LocalOnly) {
   Write-Host "Audit written: $AuditPath"
   Write-Host ""
   powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-audit.ps1"
+  powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-timing-report.ps1"
 
   Write-Host ""
   Write-Host "PHASE 3B FAST SAFE SPRINT PASSED - LOCAL ONLY"
@@ -122,9 +123,11 @@ Write-Host ""
 Write-Host "Audit written: $AuditPath"
 Write-Host ""
 powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-audit.ps1"
+  powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-timing-report.ps1"
 
 Write-Host ""
 Write-Host "PHASE 3B FAST SAFE SPRINT PASSED"
+
 
 
 
