@@ -5,6 +5,15 @@ export function getPhase3BBuildProcessVersion() {
     phase: "phase_3b",
     process_mode: "fast_safe_sprint",
     process_version: "3b.2",
+    release_notes: [
+      "Added fast no review mode",
+      "Added skip diff summary mode",
+      "Added sprint audit logs",
+      "Added latest audit viewer",
+      "Added master production verification",
+      "Added build health snapshot",
+      "Added build process production probes"
+    ],
     composition_mutation_allowed: false,
     capabilities: {
       fast_safe_runner: true,
@@ -23,5 +32,6 @@ export function getPhase3BBuildProcessVersion() {
     },
   };
 }
+
 
 

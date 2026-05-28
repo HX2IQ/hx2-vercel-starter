@@ -19,6 +19,7 @@ $RequiredTerms = @(
   "hx2-phase3b-build-process",
   "fast_safe_sprint",
   "process_version",
+  "release_notes",
   "local_only_mode",
   "dry_run_mode",
   "skip_diff_summary",
@@ -38,4 +39,5 @@ if ($Route -notmatch "/api/hx2/phase3b-build-process-version") {
 }
 
 Write-Host "PHASE 3B BUILD PROCESS VERSION GUARD PASSED"
+
 
