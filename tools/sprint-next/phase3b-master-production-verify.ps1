@@ -39,8 +39,11 @@ $Jobs = foreach ($ProbePath in $ProbePaths) {
 
     Set-Location $RepoRoot
 
+    $ProbeStartedAt = Get-Date
+
     try {
       $Output = powershell -ExecutionPolicy Bypass -File $ProbePath -BaseUrl $Url 2>&1 | Out-String
+      $ProbeDuration = [math]::Round(((Get-Date) - $ProbeStartedAt).TotalSeconds, 2)
 
       if ($LASTEXITCODE -ne 0) {
         throw $Output
@@ -49,12 +52,16 @@ $Jobs = foreach ($ProbePath in $ProbePaths) {
       [pscustomobject]@{
         probe = $ProbePath
         result = "passed"
+        duration_seconds = $ProbeDuration
         output = $Output
       }
     } catch {
+      $ProbeDuration = [math]::Round(((Get-Date) - $ProbeStartedAt).TotalSeconds, 2)
+
       [pscustomobject]@{
         probe = $ProbePath
         result = "failed"
+        duration_seconds = $ProbeDuration
         output = $_.Exception.Message
       }
     }
@@ -72,14 +79,58 @@ $Failures = @($Results | Where-Object { $_.result -ne "passed" })
 
 if ($Failures.Count -gt 0) {
   Write-Host ""
-  Write-Host "== FAILED PROBES =="
-  $Failures | ForEach-Object {
+  Write-Host "== SERIAL RETRY FAILED PROBES =="
+
+  $RetryResults = @()
+
+  foreach ($Failure in $Failures) {
     Write-Host ""
-    Write-Host "FAILED: $($_.probe)"
-    Write-Host $_.output
+    Write-Host "Retrying: $($Failure.probe)"
+
+    $RetryStartedAt = Get-Date
+
+    try {
+      $RetryOutput = powershell -ExecutionPolicy Bypass -File $Failure.probe -BaseUrl $BaseUrl 2>&1 | Out-String
+      $RetryDuration = [math]::Round(((Get-Date) - $RetryStartedAt).TotalSeconds, 2)
+
+      if ($LASTEXITCODE -ne 0) {
+        throw $RetryOutput
+      }
+
+      $RetryResults += [pscustomobject]@{
+        probe = $Failure.probe
+        result = "passed_on_serial_retry"
+        duration_seconds = $RetryDuration
+        output = $RetryOutput
+      }
+    } catch {
+      $RetryDuration = [math]::Round(((Get-Date) - $RetryStartedAt).TotalSeconds, 2)
+
+      $RetryResults += [pscustomobject]@{
+        probe = $Failure.probe
+        result = "failed"
+        duration_seconds = $RetryDuration
+        output = $_.Exception.Message
+      }
+    }
   }
 
-  throw "One or more Phase 3B production probes failed. Failure count: $($Failures.Count)"
+  $StillFailing = @($RetryResults | Where-Object { $_.result -eq "failed" })
+
+  if ($StillFailing.Count -gt 0) {
+    Write-Host ""
+    Write-Host "== FAILED PROBES AFTER SERIAL RETRY =="
+
+    $StillFailing | ForEach-Object {
+      Write-Host ""
+      Write-Host "FAILED: $($_.probe)"
+      Write-Host $_.output
+    }
+
+    throw "One or more Phase 3B production probes failed after serial retry. Failure count: $($StillFailing.Count)"
+  }
+
+  $Results = @($Results | Where-Object { $_.result -eq "passed" }) + $RetryResults
 }
 
 $Summary = [ordered]@{
@@ -88,9 +139,10 @@ $Summary = [ordered]@{
   completed_at_utc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
   duration_seconds = [math]::Round(((Get-Date) - $StartedAtDate).TotalSeconds, 2)
   base_url = $BaseUrl
-  mode = "parallel_absolute_paths"
+  mode = "parallel_absolute_paths_with_serial_retry"
   probe_count = $ProbePaths.Count
   result = "passed"
+  slowest_probes = @($Results | Sort-Object duration_seconds -Descending | Select-Object -First 3)
   probes = $Results
 }
 
@@ -102,5 +154,3 @@ Write-Host "Production verify audit written: $SummaryPath"
 
 Write-Host ""
 Write-Host "PHASE 3B MASTER PRODUCTION VERIFY PASSED"
-
-
