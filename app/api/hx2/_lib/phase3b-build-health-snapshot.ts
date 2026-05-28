@@ -21,6 +21,13 @@ export function getPhase3BBuildHealthSnapshot() {
       capabilities: buildProcess.capabilities,
     },
 
+    speed_advisory: {
+      enabled: true,
+      cached_validation_advisory_only: buildProcess.capabilities.cached_validation_advisory_only,
+      impact_speed_decision_advisory: buildProcess.capabilities.impact_speed_decision_advisory,
+      validation_skipped: false,
+    },
+
     health: {
       phase3b_ready: manifest.readiness.phase3b_ready,
       blocking_reasons: manifest.readiness.blocking_reasons,
@@ -32,3 +39,4 @@ export function getPhase3BBuildHealthSnapshot() {
     route_contracts: sprint.route_contracts,
   };
 }
+

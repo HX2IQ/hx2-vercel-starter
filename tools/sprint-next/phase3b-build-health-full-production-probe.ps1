@@ -40,6 +40,12 @@ if ($Response.build_process.release_notes.Count -lt 3) { throw "Build health rel
 if ($Response.health.route_count -lt 10) { throw "Build health route_count too low: $($Response.health.route_count)" }
 if ($Response.health.planned_stage_count -lt 1) { throw "Build health planned_stage_count too low" }
 
+if ($Response.speed_advisory.enabled -ne $true) { throw "Build health speed_advisory not enabled" }
+if ($Response.speed_advisory.validation_skipped -ne $false) { throw "Build health must not skip validation" }
+if ($Response.speed_advisory.cached_validation_advisory_only -ne $true) { throw "Build health missing cached_validation_advisory_only" }
+if ($Response.speed_advisory.impact_speed_decision_advisory -ne $true) { throw "Build health missing impact_speed_decision_advisory" }
+
 Write-Host ""
 Write-Host "PHASE 3B BUILD HEALTH FULL PRODUCTION PROBE PASSED"
+
 
