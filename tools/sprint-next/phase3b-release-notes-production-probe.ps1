@@ -23,11 +23,44 @@ function Invoke-WithRetry {
 }
 
 Write-Host ""
+$VersionSourcePath = "app/api/hx2/_lib/phase3b-build-process-version.ts"
+
+if (!(Test-Path $VersionSourcePath)) {
+  throw "Missing local version source: $VersionSourcePath"
+}
+
+$VersionSource = Get-Content $VersionSourcePath -Raw
+$VersionMatch = [regex]::Match($VersionSource, 'process_version:\s*"([^"]+)"')
+
+if (-not $VersionMatch.Success) {
+  throw "Could not detect local process_version"
+}
+
+$ExpectedVersion = $VersionMatch.Groups[1].Value
+
 Write-Host "== PHASE 3B RELEASE NOTES PRODUCTION PROBE =="
+Write-Host "Expected process version: $ExpectedVersion"
 
 $Version = Invoke-WithRetry -Url "$BaseUrl/api/hx2/phase3b-build-process-version"
 $Health = Invoke-WithRetry -Url "$BaseUrl/api/hx2/phase3b-build-health"
 $Snapshot = Invoke-WithRetry -Url "$BaseUrl/api/hx2/phase3b-sprint-snapshot"
+$Manifest = Invoke-WithRetry -Url "$BaseUrl/api/hx2/phase3b-release-manifest"
+
+if ($Version.process_version -ne $ExpectedVersion) {
+  throw "Build process version mismatch. Expected $ExpectedVersion, got $($Version.process_version)"
+}
+
+if ($Health.build_process.process_version -ne $ExpectedVersion) {
+  throw "Build health version mismatch. Expected $ExpectedVersion, got $($Health.build_process.process_version)"
+}
+
+if ($Snapshot.build_process_version.process_version -ne $ExpectedVersion) {
+  throw "Sprint snapshot version mismatch. Expected $ExpectedVersion, got $($Snapshot.build_process_version.process_version)"
+}
+
+if ($Manifest.build_process.process_version -ne $ExpectedVersion) {
+  throw "Release manifest version mismatch. Expected $ExpectedVersion, got $($Manifest.build_process.process_version)"
+}
 
 $RequiredNotes = @(
   "Added fast no review mode",
@@ -61,6 +94,7 @@ foreach ($Note in $RequiredNotes) {
 
 Write-Host ""
 Write-Host "PHASE 3B RELEASE NOTES PRODUCTION PROBE PASSED"
+
 
 
 

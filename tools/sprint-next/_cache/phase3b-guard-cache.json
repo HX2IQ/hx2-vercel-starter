@@ -1,11 +1,11 @@
 ﻿{
     "cache_id":  "phase3b-guard-cache-advisory",
-    "generated_at_utc":  "2026-05-28T20:06:15Z",
-    "guard_count":  69,
+    "generated_at_utc":  "2026-05-28T20:12:36Z",
+    "guard_count":  70,
     "changed_count":  1,
-    "unchanged_count":  68,
+    "unchanged_count":  69,
     "changed":  [
-                    "tools/sprint-next/phase3b-build-health-version-aware-probe-guard.ps1"
+                    "tools/sprint-next/phase3b-release-notes-version-aware-probe-guard.ps1"
                 ],
     "unchanged":  [
                       "tools/sprint-next/dev2-sprint-package-preview-guard.ps1",
@@ -29,6 +29,7 @@
                       "tools/sprint-next/phase3b-build-health-build-process-source-guard.ps1",
                       "tools/sprint-next/phase3b-build-health-contract-guard.ps1",
                       "tools/sprint-next/phase3b-build-health-guard.ps1",
+                      "tools/sprint-next/phase3b-build-health-version-aware-probe-guard.ps1",
                       "tools/sprint-next/phase3b-build-process-current-contract-guard.ps1",
                       "tools/sprint-next/phase3b-build-process-version-consistency-guard.ps1",
                       "tools/sprint-next/phase3b-build-process-version-guard.ps1",
@@ -273,6 +274,10 @@
                    {
                        "path":  "tools/sprint-next/phase3b-release-notes-consistency-guard.ps1",
                        "hash":  "481589B0A84AFA685157423A0C1F60FB916FC5B10BA825C6F760EADC299A46C2"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-release-notes-version-aware-probe-guard.ps1",
+                       "hash":  "7C990E695ACC204BB365150CE3112F495CAFFE495427B633C286FB316B9FEEF8"
                    },
                    {
                        "path":  "tools/sprint-next/phase3b-route-contract-summary-guard.ps1",
