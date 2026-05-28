@@ -12,7 +12,9 @@ export function getPhase3BBuildProcessVersion() {
       "Added latest audit viewer",
       "Added master production verification",
       "Added build health snapshot",
-      "Added build process production probes"
+      "Added build process production probes",
+      "Added parallel production verification",
+      "Added serial retry fallback for failed parallel probes"
     ],
     composition_mutation_allowed: false,
     capabilities: {
@@ -27,11 +29,14 @@ export function getPhase3BBuildProcessVersion() {
       origin_main_preflight: true,
       vercel_alias_guard: true,
       master_production_verify: true,
+      parallel_production_verify: true,
+      serial_retry_fallback: true,
       route_matrix_contract: true,
       build_health_snapshot: true,
     },
   };
 }
+
 
 
 

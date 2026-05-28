@@ -25,7 +25,9 @@ $RequiredTerms = @(
   "skip_diff_summary",
   "fast_no_review_mode",
   "audit_log",
-  "master_production_verify"
+  "master_production_verify",
+  "parallel_production_verify",
+  "serial_retry_fallback"
 )
 
 foreach ($Term in $RequiredTerms) {
@@ -39,5 +41,6 @@ if ($Route -notmatch "/api/hx2/phase3b-build-process-version") {
 }
 
 Write-Host "PHASE 3B BUILD PROCESS VERSION GUARD PASSED"
+
 
 
