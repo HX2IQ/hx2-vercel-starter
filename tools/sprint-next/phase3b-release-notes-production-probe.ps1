@@ -34,7 +34,10 @@ $RequiredNotes = @(
   "Added skip diff summary mode",
   "Added sprint audit logs",
   "Added master production verification",
-  "Added build health snapshot"
+  "Added build health snapshot",
+  "Added parallel production verification",
+  "Added serial retry fallback for failed parallel probes",
+  "Build process upgraded to 3b.3"
 )
 
 foreach ($Note in $RequiredNotes) {
@@ -53,3 +56,4 @@ foreach ($Note in $RequiredNotes) {
 
 Write-Host ""
 Write-Host "PHASE 3B RELEASE NOTES PRODUCTION PROBE PASSED"
+
