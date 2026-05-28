@@ -41,6 +41,9 @@ $ExpectedVersion = $VersionMatch.Groups[1].Value
 Write-Host "== PHASE 3B RELEASE NOTES PRODUCTION PROBE =="
 Write-Host "Expected process version: $ExpectedVersion"
 
+Write-Host "Release manifest must pass its own production probe before release-notes alignment"
+powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-release-manifest-production-probe.ps1" -BaseUrl $BaseUrl
+
 $Version = Invoke-WithRetry -Url "$BaseUrl/api/hx2/phase3b-build-process-version"
 $Health = Invoke-WithRetry -Url "$BaseUrl/api/hx2/phase3b-build-health"
 $Snapshot = Invoke-WithRetry -Url "$BaseUrl/api/hx2/phase3b-sprint-snapshot"
@@ -94,6 +97,7 @@ foreach ($Note in $RequiredNotes) {
 
 Write-Host ""
 Write-Host "PHASE 3B RELEASE NOTES PRODUCTION PROBE PASSED"
+
 
 
 
