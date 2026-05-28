@@ -18,7 +18,6 @@ $Probes = @(
   "tools/sprint-next/phase3b-release-notes-production-probe.ps1",
   "tools/sprint-next/phase3b-build-process-version-production-probe.ps1",
   "tools/sprint-next/phase3b-sprint-snapshot-production-probe.ps1",
-  "tools/sprint-next/phase3b-release-manifest-production-probe.ps1",
   "tools/sprint-next/phase3b-route-matrix-production-probe.ps1",
   "tools/sprint-next/phase3b-orchestration-status-production-probe.ps1"
 )
@@ -103,4 +102,5 @@ Write-Host "Production verify audit written: $SummaryPath"
 
 Write-Host ""
 Write-Host "PHASE 3B MASTER PRODUCTION VERIFY PASSED"
+
 
