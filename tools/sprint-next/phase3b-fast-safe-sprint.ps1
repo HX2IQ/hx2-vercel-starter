@@ -28,7 +28,8 @@ if ($DryRun) {
 $AuditDir = "tools/sprint-next/_audit"
 New-Item -ItemType Directory -Force -Path $AuditDir | Out-Null
 
-$StartedAt = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+$StartedAtDate = Get-Date
+$StartedAt = $StartedAtDate.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 $Branch = git branch --show-current
 $BeforeCommit = git rev-parse --short HEAD
 
@@ -48,6 +49,7 @@ if ($LocalOnly) {
     audit_id = "phase3b-fast-safe-sprint"
     started_at_utc = $StartedAt
     completed_at_utc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+    duration_seconds = [math]::Round(((Get-Date) - $StartedAtDate).TotalSeconds, 2)
     mode = "local_only"
     feature_name = $FeatureName
     message = $Message
@@ -102,6 +104,7 @@ $Audit = [ordered]@{
   audit_id = "phase3b-fast-safe-sprint"
   started_at_utc = $StartedAt
   completed_at_utc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+    duration_seconds = [math]::Round(((Get-Date) - $StartedAtDate).TotalSeconds, 2)
   mode = "deploy"
   feature_name = $FeatureName
   message = $Message
@@ -122,6 +125,7 @@ powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-aud
 
 Write-Host ""
 Write-Host "PHASE 3B FAST SAFE SPRINT PASSED"
+
 
 
 

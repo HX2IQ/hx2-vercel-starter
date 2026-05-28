@@ -8,7 +8,8 @@ Write-Host ""
 Write-Host "== PHASE 3B MASTER PRODUCTION VERIFY =="
 
 $RepoRoot = (Get-Location).Path
-$StartedAt = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+$StartedAtDate = Get-Date
+$StartedAt = $StartedAtDate.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 $VerifyDir = Join-Path $RepoRoot "tools/sprint-next/_audit"
 New-Item -ItemType Directory -Force -Path $VerifyDir | Out-Null
 
@@ -86,6 +87,7 @@ $Summary = [ordered]@{
   audit_id = "phase3b-master-production-verify"
   started_at_utc = $StartedAt
   completed_at_utc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+  duration_seconds = [math]::Round(((Get-Date) - $StartedAtDate).TotalSeconds, 2)
   base_url = $BaseUrl
   mode = "parallel_absolute_paths"
   probe_count = $ProbePaths.Count
@@ -101,3 +103,4 @@ Write-Host "Production verify audit written: $SummaryPath"
 
 Write-Host ""
 Write-Host "PHASE 3B MASTER PRODUCTION VERIFY PASSED"
+
