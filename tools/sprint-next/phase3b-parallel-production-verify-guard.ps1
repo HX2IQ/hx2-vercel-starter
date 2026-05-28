@@ -16,7 +16,10 @@ $RequiredTerms = @(
   "Wait-Job",
   "Receive-Job",
   "Remove-Job",
-  "mode = `"parallel`"",
+  "Join-Path $RepoRoot",
+  "Set-Location $RepoRoot",
+  "mode = `"parallel_absolute_paths`"",
+  "FAILED PROBES",
   "Missing production probe",
   "Production verify audit written",
   "phase3b-master-production-verify"
