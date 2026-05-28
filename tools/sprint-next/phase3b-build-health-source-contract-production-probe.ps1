@@ -44,7 +44,7 @@ if ($Response.build_process.process_mode -ne "fast_safe_sprint") {
   throw "Build health build_process process_mode mismatch: $($Response.build_process.process_mode)"
 }
 
-if ($Response.build_process.process_version -ne "3b.2") {
+if ($Response.build_process.process_version -ne "3b.3") {
   throw "Build health build_process process_version mismatch: $($Response.build_process.process_version)"
 }
 
@@ -54,3 +54,4 @@ if ($Response.build_process.release_notes.Count -lt 3) {
 
 Write-Host ""
 Write-Host "PHASE 3B BUILD HEALTH SOURCE CONTRACT PRODUCTION PROBE PASSED"
+

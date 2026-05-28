@@ -34,7 +34,7 @@ if ($Response.phase -ne "phase_3b") { throw "Build health phase mismatch: $($Res
 if ($Response.composition_mutation_allowed -ne $false) { throw "Build health must report composition_mutation_allowed=false" }
 
 if ($Response.build_process.process_mode -ne "fast_safe_sprint") { throw "Build health process_mode mismatch" }
-if ($Response.build_process.process_version -ne "3b.2") { throw "Build health process_version mismatch" }
+if ($Response.build_process.process_version -ne "3b.3") { throw "Build health process_version mismatch" }
 if ($Response.build_process.release_notes.Count -lt 3) { throw "Build health release_notes too short" }
 
 if ($Response.health.route_count -lt 10) { throw "Build health route_count too low: $($Response.health.route_count)" }
@@ -42,3 +42,4 @@ if ($Response.health.planned_stage_count -lt 1) { throw "Build health planned_st
 
 Write-Host ""
 Write-Host "PHASE 3B BUILD HEALTH FULL PRODUCTION PROBE PASSED"
+

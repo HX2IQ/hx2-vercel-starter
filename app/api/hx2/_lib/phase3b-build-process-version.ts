@@ -4,7 +4,7 @@ export function getPhase3BBuildProcessVersion() {
     version_id: "hx2-phase3b-build-process",
     phase: "phase_3b",
     process_mode: "fast_safe_sprint",
-    process_version: "3b.2",
+    process_version: "3b.3",
     release_notes: [
       "Added fast no review mode",
       "Added skip diff summary mode",
@@ -36,6 +36,7 @@ export function getPhase3BBuildProcessVersion() {
     },
   };
 }
+
 
 
 
