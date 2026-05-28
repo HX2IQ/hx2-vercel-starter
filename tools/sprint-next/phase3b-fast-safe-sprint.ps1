@@ -40,6 +40,10 @@ if ($FeatureName -ne "") {
 }
 
 Write-Host ""
+Write-Host "== PHASE 3B IMPACT SCAN =="
+powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-impact-scan.ps1"
+
+Write-Host ""
 Write-Host "== PHASE 3B CLOSURE =="
 
 if ($LocalOnly) {
@@ -133,6 +137,7 @@ powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-aud
 
 Write-Host ""
 Write-Host "PHASE 3B FAST SAFE SPRINT PASSED"
+
 
 
 
