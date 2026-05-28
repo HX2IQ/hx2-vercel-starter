@@ -7,8 +7,9 @@ $ErrorActionPreference = "Stop"
 Write-Host ""
 Write-Host "== PHASE 3B MASTER PRODUCTION VERIFY =="
 
+$RepoRoot = (Get-Location).Path
 $StartedAt = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-$VerifyDir = "tools/sprint-next/_audit"
+$VerifyDir = Join-Path $RepoRoot "tools/sprint-next/_audit"
 New-Item -ItemType Directory -Force -Path $VerifyDir | Out-Null
 
 $Probes = @(
@@ -21,49 +22,63 @@ $Probes = @(
   "tools/sprint-next/phase3b-orchestration-status-production-probe.ps1"
 )
 
-foreach ($Probe in $Probes) {
-  if (!(Test-Path $Probe)) {
+$ProbePaths = foreach ($Probe in $Probes) {
+  $FullPath = Join-Path $RepoRoot $Probe
+  if (!(Test-Path $FullPath)) {
     throw "Missing production probe: $Probe"
   }
+  $FullPath
 }
 
 Write-Host ""
 Write-Host "== RUN PROBES IN PARALLEL =="
 
-$Jobs = foreach ($Probe in $Probes) {
+$Jobs = foreach ($ProbePath in $ProbePaths) {
   Start-Job -ScriptBlock {
-    param($ProbePath, $Url)
+    param($ProbePath, $Url, $RepoRoot)
 
-    powershell -ExecutionPolicy Bypass -File $ProbePath -BaseUrl $Url
+    Set-Location $RepoRoot
 
-    [ordered]@{
-      probe = $ProbePath
-      result = "passed"
+    try {
+      $Output = powershell -ExecutionPolicy Bypass -File $ProbePath -BaseUrl $Url 2>&1 | Out-String
+
+      if ($LASTEXITCODE -ne 0) {
+        throw $Output
+      }
+
+      [pscustomobject]@{
+        probe = $ProbePath
+        result = "passed"
+        output = $Output
+      }
+    } catch {
+      [pscustomobject]@{
+        probe = $ProbePath
+        result = "failed"
+        output = $_.Exception.Message
+      }
     }
-  } -ArgumentList $Probe, $BaseUrl
+  } -ArgumentList $ProbePath, $BaseUrl, $RepoRoot
 }
 
-$Results = @()
-$Failures = @()
+Wait-Job $Jobs | Out-Null
 
-foreach ($Job in $Jobs) {
-  Wait-Job $Job | Out-Null
-
-  if ($Job.State -eq "Failed") {
-    $Failures += $Job
-  } else {
-    try {
-      $Output = Receive-Job $Job -ErrorAction Stop
-      $Results += $Output | Where-Object { $_ -is [System.Collections.Specialized.OrderedDictionary] }
-    } catch {
-      $Failures += $Job
-    }
-  }
-
+$Results = foreach ($Job in $Jobs) {
+  Receive-Job $Job
   Remove-Job $Job -Force
 }
 
+$Failures = @($Results | Where-Object { $_.result -ne "passed" })
+
 if ($Failures.Count -gt 0) {
+  Write-Host ""
+  Write-Host "== FAILED PROBES =="
+  $Failures | ForEach-Object {
+    Write-Host ""
+    Write-Host "FAILED: $($_.probe)"
+    Write-Host $_.output
+  }
+
   throw "One or more Phase 3B production probes failed. Failure count: $($Failures.Count)"
 }
 
@@ -72,8 +87,8 @@ $Summary = [ordered]@{
   started_at_utc = $StartedAt
   completed_at_utc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
   base_url = $BaseUrl
-  mode = "parallel"
-  probe_count = $Probes.Count
+  mode = "parallel_absolute_paths"
+  probe_count = $ProbePaths.Count
   result = "passed"
   probes = $Results
 }
