@@ -1,6 +1,6 @@
 ﻿{
     "cache_id":  "phase3b-guard-cache-advisory",
-    "generated_at_utc":  "2026-05-28T21:35:38Z",
+    "generated_at_utc":  "2026-05-28T22:56:19Z",
     "guard_count":  76,
     "changed_count":  2,
     "unchanged_count":  74,
@@ -271,11 +271,11 @@
                    },
                    {
                        "path":  "tools/sprint-next/phase3b-parallel-production-verify-guard.ps1",
-                       "hash":  "98436619B5A6C3BD60EDD66060384C172F60AC003BA68FF2371E2DCE8BDCEF26"
+                       "hash":  "D2EF4891A86937EADBA12CCA4506631F3CE1AA57FE8E3BCC6A215BA90F51C463"
                    },
                    {
                        "path":  "tools/sprint-next/phase3b-production-audit-summary-guard.ps1",
-                       "hash":  "F434676A0A6AAFE56AFBB70DEDF96A75180333BF8446246E0BFB41F7453CCC2E"
+                       "hash":  "530F02E1415B76425E8E67C64F851872CC75692397D5F7BE2A36331C03A22746"
                    },
                    {
                        "path":  "tools/sprint-next/phase3b-production-probe-existence-guard.ps1",
