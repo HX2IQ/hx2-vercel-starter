@@ -44,5 +44,14 @@ if ($Response.build_process.capabilities.master_production_verify -ne $true) {
   throw "Build health missing master_production_verify capability"
 }
 
+if ($Response.build_process.capabilities.skip_diff_summary -ne $true) {
+  throw "Build health missing skip_diff_summary capability"
+}
+
+if ($Response.build_process.capabilities.fast_no_review_mode -ne $true) {
+  throw "Build health missing fast_no_review_mode capability"
+}
+
 Write-Host ""
 Write-Host "PHASE 3B BUILD HEALTH BUILD PROCESS PRODUCTION PROBE PASSED"
+
