@@ -10,6 +10,8 @@ export function getPhase3BBuildProcessVersion() {
       fast_safe_runner: true,
       local_only_mode: true,
       dry_run_mode: true,
+      skip_diff_summary: true,
+      fast_no_review_mode: true,
       audit_log: true,
       latest_audit_viewer: true,
       route_existence_preflight: true,
@@ -21,3 +23,4 @@ export function getPhase3BBuildProcessVersion() {
     },
   };
 }
+
