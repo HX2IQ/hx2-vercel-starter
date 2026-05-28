@@ -26,7 +26,9 @@ $RequiredTerms = @(
   "Added build health snapshot",
   "Added parallel production verification",
   "Added serial retry fallback for failed parallel probes",
-  "Build process upgraded to 3b.3"
+  "Build process upgraded to 3b.3",
+  "Added impact speed decision advisory",
+  "Added cached validation advisory without skipping validation"
 )
 
 foreach ($Term in $RequiredTerms) {
@@ -36,4 +38,5 @@ foreach ($Term in $RequiredTerms) {
 }
 
 Write-Host "PHASE 3B RELEASE NOTES CONSISTENCY GUARD PASSED"
+
 
