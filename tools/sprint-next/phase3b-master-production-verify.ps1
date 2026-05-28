@@ -21,22 +21,50 @@ $Probes = @(
   "tools/sprint-next/phase3b-orchestration-status-production-probe.ps1"
 )
 
-$Results = @()
-
 foreach ($Probe in $Probes) {
   if (!(Test-Path $Probe)) {
     throw "Missing production probe: $Probe"
   }
+}
 
-  Write-Host ""
-  Write-Host "== RUN PROBE: $Probe =="
+Write-Host ""
+Write-Host "== RUN PROBES IN PARALLEL =="
 
-  powershell -ExecutionPolicy Bypass -File $Probe -BaseUrl $BaseUrl
+$Jobs = foreach ($Probe in $Probes) {
+  Start-Job -ScriptBlock {
+    param($ProbePath, $Url)
 
-  $Results += [ordered]@{
-    probe = $Probe
-    result = "passed"
+    powershell -ExecutionPolicy Bypass -File $ProbePath -BaseUrl $Url
+
+    [ordered]@{
+      probe = $ProbePath
+      result = "passed"
+    }
+  } -ArgumentList $Probe, $BaseUrl
+}
+
+$Results = @()
+$Failures = @()
+
+foreach ($Job in $Jobs) {
+  Wait-Job $Job | Out-Null
+
+  if ($Job.State -eq "Failed") {
+    $Failures += $Job
+  } else {
+    try {
+      $Output = Receive-Job $Job -ErrorAction Stop
+      $Results += $Output | Where-Object { $_ -is [System.Collections.Specialized.OrderedDictionary] }
+    } catch {
+      $Failures += $Job
+    }
   }
+
+  Remove-Job $Job -Force
+}
+
+if ($Failures.Count -gt 0) {
+  throw "One or more Phase 3B production probes failed. Failure count: $($Failures.Count)"
 }
 
 $Summary = [ordered]@{
@@ -44,6 +72,7 @@ $Summary = [ordered]@{
   started_at_utc = $StartedAt
   completed_at_utc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
   base_url = $BaseUrl
+  mode = "parallel"
   probe_count = $Probes.Count
   result = "passed"
   probes = $Results
