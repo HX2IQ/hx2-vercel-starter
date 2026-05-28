@@ -56,6 +56,26 @@ if ($Response.route_matrix.matrix_mode -ne "read_only_contract") {
   throw "Release manifest route matrix mode mismatch: $($Response.route_matrix.matrix_mode)"
 }
 
+if (-not ($Response.PSObject.Properties.Name -contains "build_process")) {
+  throw "Release manifest missing build_process"
+}
+
+if (-not ($Response.build_process.PSObject.Properties.Name -contains "process_version")) {
+  throw "Release manifest build_process missing process_version"
+}
+
+if ([string]::IsNullOrWhiteSpace($Response.build_process.process_version)) {
+  throw "Release manifest build_process process_version is blank"
+}
+
+if (-not ($Response.build_process.PSObject.Properties.Name -contains "release_notes")) {
+  throw "Release manifest build_process missing release_notes"
+}
+
+if ($Response.build_process.release_notes.Count -lt 3) {
+  throw "Release manifest build_process release_notes too short"
+}
+
 if (-not ($Response.summary.PSObject.Properties.Name -contains "planned_stage_count")) {
   throw "Release manifest summary missing planned_stage_count"
 }
@@ -63,3 +83,4 @@ if (-not ($Response.summary.PSObject.Properties.Name -contains "planned_stage_co
 Write-Host ""
 Write-Host "PHASE 3B RELEASE MANIFEST PRODUCTION PROBE PASSED"
 $Response | ConvertTo-Json -Depth 20
+
