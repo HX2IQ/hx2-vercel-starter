@@ -1,11 +1,11 @@
 ﻿{
     "cache_id":  "phase3b-guard-cache-advisory",
-    "generated_at_utc":  "2026-05-28T14:51:34Z",
-    "guard_count":  61,
+    "generated_at_utc":  "2026-05-28T14:57:15Z",
+    "guard_count":  62,
     "changed_count":  1,
-    "unchanged_count":  60,
+    "unchanged_count":  61,
     "changed":  [
-                    "tools/sprint-next/phase3b-cache-gitignore-guard.ps1"
+                    "tools/sprint-next/phase3b-latest-guard-cache-report-guard.ps1"
                 ],
     "unchanged":  [
                       "tools/sprint-next/dev2-sprint-package-preview-guard.ps1",
@@ -34,6 +34,7 @@
                       "tools/sprint-next/phase3b-build-process-version-guard.ps1",
                       "tools/sprint-next/phase3b-build-process-version-number-guard.ps1",
                       "tools/sprint-next/phase3b-build-timing-telemetry-guard.ps1",
+                      "tools/sprint-next/phase3b-cache-gitignore-guard.ps1",
                       "tools/sprint-next/phase3b-clean-tree-guard.ps1",
                       "tools/sprint-next/phase3b-fast-no-review-guard.ps1",
                       "tools/sprint-next/phase3b-fast-safe-dry-run-guard.ps1",
@@ -209,6 +210,10 @@
                    {
                        "path":  "tools/sprint-next/phase3b-latest-audit-guard.ps1",
                        "hash":  "BCA7325F09D1ACEEAC6BF2A669185CA428DCF73974E4F95ECC66B7D5DF73494C"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-latest-guard-cache-report-guard.ps1",
+                       "hash":  "DA9F09FAD0CD1727A22AD1F790718ADE1298B6BB5E3AA7A795185152CD2489E9"
                    },
                    {
                        "path":  "tools/sprint-next/phase3b-latest-timing-report-guard.ps1",

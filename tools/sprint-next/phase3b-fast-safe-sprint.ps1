@@ -70,6 +70,7 @@ if ($LocalOnly) {
   powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-timing-report.ps1"
   powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-timing-threshold-advisory.ps1"
   powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-guard-cache-advisory.ps1"
+  powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-guard-cache-report.ps1"
 
   Write-Host ""
   Write-Host "PHASE 3B FAST SAFE SPRINT PASSED - LOCAL ONLY"
@@ -128,9 +129,11 @@ powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-aud
   powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-timing-report.ps1"
   powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-timing-threshold-advisory.ps1"
   powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-guard-cache-advisory.ps1"
+  powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-guard-cache-report.ps1"
 
 Write-Host ""
 Write-Host "PHASE 3B FAST SAFE SPRINT PASSED"
+
 
 
 
