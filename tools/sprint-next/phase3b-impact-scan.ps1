@@ -3,12 +3,10 @@ $ErrorActionPreference = "Stop"
 Write-Host ""
 Write-Host "== PHASE 3B IMPACT SCAN =="
 
-$ChangedFiles = git diff --name-only HEAD
+$AuditDir = "tools/sprint-next/_audit"
+New-Item -ItemType Directory -Force -Path $AuditDir | Out-Null
 
-if (-not $ChangedFiles) {
-  Write-Host "No uncommitted changes detected."
-  exit 0
-}
+$ChangedFiles = git diff --name-only HEAD
 
 $Areas = [ordered]@{
   compiler = @()
@@ -40,5 +38,22 @@ foreach ($Area in $Areas.Keys) {
   }
 }
 
+if (-not $ChangedFiles) {
+  Write-Host "No uncommitted changes detected."
+}
+
+$Impact = [ordered]@{
+  audit_id = "phase3b-impact-scan"
+  generated_at_utc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+  changed_file_count = @($ChangedFiles).Count
+  advisory_only = $true
+  validation_skipped = $false
+  areas = $Areas
+}
+
+$ImpactPathOut = Join-Path $AuditDir ("phase3b-impact-scan-" + (Get-Date -Format "yyyyMMdd-HHmmss") + ".json")
+$Impact | ConvertTo-Json -Depth 10 | Set-Content $ImpactPathOut -Encoding UTF8
+
 Write-Host ""
+Write-Host "Impact audit written: $ImpactPathOut"
 Write-Host "Impact scan is advisory only. No validation is skipped."
