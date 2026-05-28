@@ -1,9 +1,11 @@
 import { getPhase3BOrchestrationStatusSnapshot } from "./phase3b-orchestration-status";
 import { getPhase3BRouteMatrix } from "./phase3b-route-matrix";
+import { getPhase3BBuildProcessVersion } from "./phase3b-build-process-version";
 
 export function getPhase3BReleaseManifest() {
   const status = getPhase3BOrchestrationStatusSnapshot();
   const routeMatrix = getPhase3BRouteMatrix();
+  const buildProcess = getPhase3BBuildProcessVersion();
 
   return {
     ok: status.ok === true,
@@ -19,6 +21,11 @@ export function getPhase3BReleaseManifest() {
     build_health_route: "/api/hx2/phase3b-build-health",
     build_process_version_route: "/api/hx2/phase3b-build-process-version",
     readiness: status.readiness,
+    build_process: {
+      process_mode: buildProcess.process_mode,
+      process_version: buildProcess.process_version,
+      release_notes: buildProcess.release_notes,
+    },
     route_matrix: {
       route_count: routeMatrix.routes.length,
       matrix_mode: routeMatrix.matrix_mode,
@@ -33,6 +40,7 @@ export function getPhase3BReleaseManifest() {
     },
   };
 }
+
 
 
 
