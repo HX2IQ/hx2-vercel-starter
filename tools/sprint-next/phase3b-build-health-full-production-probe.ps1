@@ -22,8 +22,24 @@ function Invoke-WithRetry {
   }
 }
 
+$VersionSourcePath = "app/api/hx2/_lib/phase3b-build-process-version.ts"
+
+if (!(Test-Path $VersionSourcePath)) {
+  throw "Missing local version source: $VersionSourcePath"
+}
+
+$VersionSource = Get-Content $VersionSourcePath -Raw
+$VersionMatch = [regex]::Match($VersionSource, 'process_version:\s*"([^"]+)"')
+
+if (-not $VersionMatch.Success) {
+  throw "Could not detect local process_version"
+}
+
+$ExpectedVersion = $VersionMatch.Groups[1].Value
+
 Write-Host ""
 Write-Host "== PHASE 3B BUILD HEALTH FULL PRODUCTION PROBE =="
+Write-Host "Expected process version: $ExpectedVersion"
 
 $Response = Invoke-WithRetry -Url "$BaseUrl/api/hx2/phase3b-build-health"
 
@@ -34,7 +50,7 @@ if ($Response.phase -ne "phase_3b") { throw "Build health phase mismatch: $($Res
 if ($Response.composition_mutation_allowed -ne $false) { throw "Build health must report composition_mutation_allowed=false" }
 
 if ($Response.build_process.process_mode -ne "fast_safe_sprint") { throw "Build health process_mode mismatch" }
-if ($Response.build_process.process_version -ne "3b.4") { throw "Build health process_version mismatch" }
+if ($Response.build_process.process_version -ne $ExpectedVersion) { throw "Build health process_version mismatch. Expected $ExpectedVersion, got $($Response.build_process.process_version)" }
 if ($Response.build_process.release_notes.Count -lt 3) { throw "Build health release_notes too short" }
 
 if ($Response.health.route_count -lt 10) { throw "Build health route_count too low: $($Response.health.route_count)" }
@@ -47,6 +63,3 @@ if ($Response.speed_advisory.impact_speed_decision_advisory -ne $true) { throw "
 
 Write-Host ""
 Write-Host "PHASE 3B BUILD HEALTH FULL PRODUCTION PROBE PASSED"
-
-
-
