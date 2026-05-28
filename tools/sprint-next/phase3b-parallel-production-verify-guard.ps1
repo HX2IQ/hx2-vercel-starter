@@ -18,8 +18,10 @@ $RequiredTerms = @(
   "Remove-Job",
   "Join-Path $RepoRoot",
   "Set-Location $RepoRoot",
-  "mode = `"parallel_absolute_paths`"",
+  "parallel_absolute_paths_with_serial_retry",
   "FAILED PROBES",
+  "SERIAL RETRY FAILED PROBES",
+  "passed_on_serial_retry",
   "Missing production probe",
   "Production verify audit written",
   "phase3b-master-production-verify"
@@ -32,3 +34,4 @@ foreach ($Term in $RequiredTerms) {
 }
 
 Write-Host "PHASE 3B PARALLEL PRODUCTION VERIFY GUARD PASSED"
+

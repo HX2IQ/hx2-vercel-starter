@@ -17,7 +17,10 @@ $RequiredTerms = @(
   "probe_count",
   "completed_at_utc",
   "ConvertTo-Json",
-  "phase3b-master-production-verify"
+  "phase3b-master-production-verify",
+  "duration_seconds",
+  "slowest_probes",
+  "parallel_absolute_paths_with_serial_retry"
 )
 
 foreach ($Term in $RequiredTerms) {
@@ -27,3 +30,4 @@ foreach ($Term in $RequiredTerms) {
 }
 
 Write-Host "PHASE 3B PRODUCTION AUDIT SUMMARY GUARD PASSED"
+
