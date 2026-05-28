@@ -42,12 +42,25 @@ if (-not $ChangedFiles) {
   Write-Host "No uncommitted changes detected."
 }
 
+$HighRiskCount = @($Areas.compiler + $Areas.graph + $Areas.routes + $Areas.build_process).Count
+$MediumRiskCount = @($Areas.probes + $Areas.guards).Count
+
+$RiskLevel = "low"
+if ($HighRiskCount -gt 0) {
+  $RiskLevel = "high"
+} elseif ($MediumRiskCount -gt 0) {
+  $RiskLevel = "medium"
+}
+
 $Impact = [ordered]@{
   audit_id = "phase3b-impact-scan"
   generated_at_utc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
   changed_file_count = @($ChangedFiles).Count
   advisory_only = $true
   validation_skipped = $false
+  risk_level = $RiskLevel
+  high_risk_count = $HighRiskCount
+  medium_risk_count = $MediumRiskCount
   areas = $Areas
 }
 
@@ -57,3 +70,4 @@ $Impact | ConvertTo-Json -Depth 10 | Set-Content $ImpactPathOut -Encoding UTF8
 Write-Host ""
 Write-Host "Impact audit written: $ImpactPathOut"
 Write-Host "Impact scan is advisory only. No validation is skipped."
+

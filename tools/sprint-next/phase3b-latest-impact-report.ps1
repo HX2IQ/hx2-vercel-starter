@@ -26,6 +26,9 @@ Write-Host "Generated UTC: $($Impact.generated_at_utc)"
 Write-Host "Changed file count: $($Impact.changed_file_count)"
 Write-Host "Advisory only: $($Impact.advisory_only)"
 Write-Host "Validation skipped: $($Impact.validation_skipped)"
+Write-Host "Risk level: $($Impact.risk_level)"
+Write-Host "High risk count: $($Impact.high_risk_count)"
+Write-Host "Medium risk count: $($Impact.medium_risk_count)"
 
 foreach ($Area in $Impact.areas.PSObject.Properties) {
   if ($Area.Value.Count -gt 0) {
@@ -34,3 +37,4 @@ foreach ($Area in $Impact.areas.PSObject.Properties) {
     $Area.Value | ForEach-Object { Write-Host "- $_" }
   }
 }
+

@@ -24,7 +24,10 @@ $RequiredTerms = @(
   "No validation is skipped",
   "Impact audit written",
   "phase3b-impact-scan",
-  "validation_skipped"
+  "validation_skipped",
+  "risk_level",
+  "high_risk_count",
+  "medium_risk_count"
 )
 
 foreach ($Term in $RequiredTerms) {
@@ -34,4 +37,5 @@ foreach ($Term in $RequiredTerms) {
 }
 
 Write-Host "PHASE 3B IMPACT SCAN GUARD PASSED"
+
 
