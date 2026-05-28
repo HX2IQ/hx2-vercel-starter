@@ -1,0 +1,314 @@
+﻿{
+    "cache_id":  "phase3b-guard-cache-advisory",
+    "generated_at_utc":  "2026-05-28T14:44:36Z",
+    "guard_count":  60,
+    "changed_count":  60,
+    "unchanged_count":  0,
+    "changed":  [
+                    "tools/sprint-next/dev2-sprint-package-preview-guard.ps1",
+                    "tools/sprint-next/execution-lineage-integrity-guard.ps1",
+                    "tools/sprint-next/execution-package-lineage-guard.ps1",
+                    "tools/sprint-next/manifest-health-summary-guard.ps1",
+                    "tools/sprint-next/orchestration-compiler-contract-guard.ps1",
+                    "tools/sprint-next/orchestration-compiler-dependency-guard.ps1",
+                    "tools/sprint-next/orchestration-compiler-dependency-integration-guard.ps1",
+                    "tools/sprint-next/orchestration-compiler-guard.ps1",
+                    "tools/sprint-next/orchestration-compiler-stability-guard.ps1",
+                    "tools/sprint-next/orchestration-execution-plan-guard.ps1",
+                    "tools/sprint-next/orchestration-stage-dependency-registry-guard.ps1",
+                    "tools/sprint-next/orchestration-stage-graph-cycle-guard.ps1",
+                    "tools/sprint-next/orchestration-stage-graph-guard.ps1",
+                    "tools/sprint-next/orchestration-stage-graph-topological-guard.ps1",
+                    "tools/sprint-next/orchestration-stage-manifest-api-guard.ps1",
+                    "tools/sprint-next/orchestration-stage-manifest-preview-guard.ps1",
+                    "tools/sprint-next/orchestration-stage-registry-guard.ps1",
+                    "tools/sprint-next/orchestration-stage-registry-integrity-guard.ps1",
+                    "tools/sprint-next/phase3b-build-health-build-process-source-guard.ps1",
+                    "tools/sprint-next/phase3b-build-health-contract-guard.ps1",
+                    "tools/sprint-next/phase3b-build-health-guard.ps1",
+                    "tools/sprint-next/phase3b-build-process-3b3-contract-guard.ps1",
+                    "tools/sprint-next/phase3b-build-process-version-consistency-guard.ps1",
+                    "tools/sprint-next/phase3b-build-process-version-guard.ps1",
+                    "tools/sprint-next/phase3b-build-process-version-number-guard.ps1",
+                    "tools/sprint-next/phase3b-build-timing-telemetry-guard.ps1",
+                    "tools/sprint-next/phase3b-clean-tree-guard.ps1",
+                    "tools/sprint-next/phase3b-fast-no-review-guard.ps1",
+                    "tools/sprint-next/phase3b-fast-safe-dry-run-guard.ps1",
+                    "tools/sprint-next/phase3b-fast-safe-sprint-audit-guard.ps1",
+                    "tools/sprint-next/phase3b-fast-safe-sprint-guard.ps1",
+                    "tools/sprint-next/phase3b-fast-sprint-template-guard.ps1",
+                    "tools/sprint-next/phase3b-guard-cache-advisory-guard.ps1",
+                    "tools/sprint-next/phase3b-latest-audit-guard.ps1",
+                    "tools/sprint-next/phase3b-latest-timing-report-guard.ps1",
+                    "tools/sprint-next/phase3b-orchestration-status-guard.ps1",
+                    "tools/sprint-next/phase3b-parallel-production-verify-guard.ps1",
+                    "tools/sprint-next/phase3b-production-audit-summary-guard.ps1",
+                    "tools/sprint-next/phase3b-production-probe-existence-guard.ps1",
+                    "tools/sprint-next/phase3b-release-manifest-guard.ps1",
+                    "tools/sprint-next/phase3b-release-notes-consistency-guard.ps1",
+                    "tools/sprint-next/phase3b-route-contract-summary-guard.ps1",
+                    "tools/sprint-next/phase3b-route-matrix-count-guard.ps1",
+                    "tools/sprint-next/phase3b-route-matrix-guard.ps1",
+                    "tools/sprint-next/phase3b-route-mode-contract-guard.ps1",
+                    "tools/sprint-next/phase3b-skip-diff-summary-guard.ps1",
+                    "tools/sprint-next/phase3b-sprint-closure-guard.ps1",
+                    "tools/sprint-next/phase3b-sprint-snapshot-guard.ps1",
+                    "tools/sprint-next/phase3b-timing-threshold-advisory-guard.ps1",
+                    "tools/sprint-next/phase3b-vercel-alias-guard.ps1",
+                    "tools/sprint-next/phase3-orchestration-diagnostics-guard.ps1",
+                    "tools/sprint-next/registry-driven-orchestration-validation-guard.ps1",
+                    "tools/sprint-next/sprint-history-summary-guard.ps1",
+                    "tools/sprint-next/sprint-next-api-guard.ps1",
+                    "tools/sprint-next/sprint-next-composition-anchor-guard.ps1",
+                    "tools/sprint-next/sprint-next-composition-order-guard.ps1",
+                    "tools/sprint-next/sprint-next-composition-variable-guard.ps1",
+                    "tools/sprint-next/sprint-next-preview-ui-guard.ps1",
+                    "tools/sprint-next/sprint-next-stage-helper-existence-guard.ps1",
+                    "tools/sprint-next/verification-escalation-component-guard.ps1"
+                ],
+    "unchanged":  [
+
+                  ],
+    "guards":  [
+                   {
+                       "path":  "tools/sprint-next/dev2-sprint-package-preview-guard.ps1",
+                       "hash":  "59E383091021C38E315FD55DB1021A8EF8BEEB929BCE343CC730C367A81B5738"
+                   },
+                   {
+                       "path":  "tools/sprint-next/execution-lineage-integrity-guard.ps1",
+                       "hash":  "4043F9C8B19AC2F39E42C55A3EA6D22C5495CC6B91C77A4D61CEEC37BEBBE13B"
+                   },
+                   {
+                       "path":  "tools/sprint-next/execution-package-lineage-guard.ps1",
+                       "hash":  "A00D79F84E86A60A6A7D11F3A8BB82471B65A9B762EE79BB3F87535DD16980AA"
+                   },
+                   {
+                       "path":  "tools/sprint-next/manifest-health-summary-guard.ps1",
+                       "hash":  "06841B22EACF39DD3ACA443C84AEE3B52BC182755688176D77B6264946E8BFE7"
+                   },
+                   {
+                       "path":  "tools/sprint-next/orchestration-compiler-contract-guard.ps1",
+                       "hash":  "E9778D2FD6B6AE93615DD0E335776118087DBDC585AFCA149FC80EC23297D58F"
+                   },
+                   {
+                       "path":  "tools/sprint-next/orchestration-compiler-dependency-guard.ps1",
+                       "hash":  "1AA74CA60A6A172A459A0BAD142ACB16286F2E497AF75AC34337EA937D7A8298"
+                   },
+                   {
+                       "path":  "tools/sprint-next/orchestration-compiler-dependency-integration-guard.ps1",
+                       "hash":  "8D5D93925E242F7E03B4F7B5FF5B1E35E7A25F7519B7188E323DCDB708BD0D58"
+                   },
+                   {
+                       "path":  "tools/sprint-next/orchestration-compiler-guard.ps1",
+                       "hash":  "31D6D1F12E7B9F9646F31D39D99B2092C01A6D3F069924231CF1683B0E07E17A"
+                   },
+                   {
+                       "path":  "tools/sprint-next/orchestration-compiler-stability-guard.ps1",
+                       "hash":  "646081100EE9D5EA008E5EB48B7593B37683434AC9DD2E089512748B6B78CB34"
+                   },
+                   {
+                       "path":  "tools/sprint-next/orchestration-execution-plan-guard.ps1",
+                       "hash":  "29DE28A09D2C066CC6B23C250B7CBAF915E01E4ED604FB2FB9FB20A021A45597"
+                   },
+                   {
+                       "path":  "tools/sprint-next/orchestration-stage-dependency-registry-guard.ps1",
+                       "hash":  "F5F0CAAF5777FA7C24FFEC0B11A21CA33E6D43E6607E5EA3E38277DEE218C380"
+                   },
+                   {
+                       "path":  "tools/sprint-next/orchestration-stage-graph-cycle-guard.ps1",
+                       "hash":  "2658A6A53B8A22FA0173CBABD916C70F0DB7D7C4FA835321850275BC5B3B4E87"
+                   },
+                   {
+                       "path":  "tools/sprint-next/orchestration-stage-graph-guard.ps1",
+                       "hash":  "57A9781A6BEFE0912CDDF604703C98953357A58E7731E4B2FE8A9748305A79A2"
+                   },
+                   {
+                       "path":  "tools/sprint-next/orchestration-stage-graph-topological-guard.ps1",
+                       "hash":  "CFF69EAD7D668C64FDF3C28183A2F69A36A5F50FF265DA78933ED651448597A8"
+                   },
+                   {
+                       "path":  "tools/sprint-next/orchestration-stage-manifest-api-guard.ps1",
+                       "hash":  "4ED453DC774FA6154A8C0D89F3A1D8A50BEA7A798F1EC120813243DBB2C94CC1"
+                   },
+                   {
+                       "path":  "tools/sprint-next/orchestration-stage-manifest-preview-guard.ps1",
+                       "hash":  "4F84E77F8743D44E4C11D82404CDE11E6748A0522951D9F7CB4134792C9B4EDA"
+                   },
+                   {
+                       "path":  "tools/sprint-next/orchestration-stage-registry-guard.ps1",
+                       "hash":  "0DC0A746D8011495C4A8C2256FA7EBF4A2494587445098D9C1D8A0071B079D97"
+                   },
+                   {
+                       "path":  "tools/sprint-next/orchestration-stage-registry-integrity-guard.ps1",
+                       "hash":  "1DD409836BE3BE6CDB47699976F20A76B853D9526F701C7AB0349BA17BCD67CC"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-build-health-build-process-source-guard.ps1",
+                       "hash":  "58AFC01151279AC34524676342717C95546CB3F6D8D89433ABD1339FFE321557"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-build-health-contract-guard.ps1",
+                       "hash":  "552A6B88AAEE8249EE552DD236466130D5F10618545037E2B1BED9DB5EB5C1DF"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-build-health-guard.ps1",
+                       "hash":  "37455ED8C4AA783A067D19624998AF7053E441C9E97F80CA8AD2BDBBB368C176"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-build-process-3b3-contract-guard.ps1",
+                       "hash":  "83E2A55A8ACB8079ACD612FC10D07A26C1A7553536D3D0D2B04220B5E1CAB942"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-build-process-version-consistency-guard.ps1",
+                       "hash":  "5406B1DBCE4A4D618E05327EDB03FA820E87F29B9F331A50D1EE5BCE996A2B63"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-build-process-version-guard.ps1",
+                       "hash":  "18C33EE6F81AA0DB860F41758C360B013CAA7699F26BA6C3469BFEE8516D4A5E"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-build-process-version-number-guard.ps1",
+                       "hash":  "C1938EB48E94F228C2BE08591DAA1B8AEA54D5C8664779DDE4C15EA05E9ED9CB"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-build-timing-telemetry-guard.ps1",
+                       "hash":  "9934350DD44F86CB359BA5C3520274BB5F08ED8F6E9E051DE5DF1BB553BC2CEE"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-clean-tree-guard.ps1",
+                       "hash":  "E4D6F527DBB33E28D715366E1F1800E8151BD86E54FEB4023A7322847B604E70"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-fast-no-review-guard.ps1",
+                       "hash":  "4756A6FDEE69DBCD0F18228747735E3AAD45848EAABFF07892BFC102FDABE3C0"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-fast-safe-dry-run-guard.ps1",
+                       "hash":  "B6A8D6BD2B340C3E152A10FBA933900B4C102624C3C02DD6D955445FA56137DA"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-fast-safe-sprint-audit-guard.ps1",
+                       "hash":  "E8561DDDEC6DDD0244F96BF038E7224DB77FAC8892068860ED5E47ACE0532EA8"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-fast-safe-sprint-guard.ps1",
+                       "hash":  "4D88804054971D4C3C3B0CB24367F8F2B2D2788E5C76E86A309AD81EF1841B5D"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-fast-sprint-template-guard.ps1",
+                       "hash":  "1EE006B9448A6D207C93FF92CE597BAD46517C2513EF1885CD33F87C80AA45E4"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-guard-cache-advisory-guard.ps1",
+                       "hash":  "FCFEB51D40C9C506C438A65C012261A02966773D6D21818DDCE4F5FFE330A93E"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-latest-audit-guard.ps1",
+                       "hash":  "BCA7325F09D1ACEEAC6BF2A669185CA428DCF73974E4F95ECC66B7D5DF73494C"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-latest-timing-report-guard.ps1",
+                       "hash":  "6A27423E17A38C3F6F4ED7DA4EA3BBD97131F56C0EDD2DC16F73D498B68399FD"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-orchestration-status-guard.ps1",
+                       "hash":  "F17F5153458B0133554CAFDC0D1A63279402D75BC82349996224B6BC184BE4B4"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-parallel-production-verify-guard.ps1",
+                       "hash":  "F9FC98166652EFD49D2C13471A933651267A04A0AB964493F0F9166E8ED40033"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-production-audit-summary-guard.ps1",
+                       "hash":  "BDEE3F550ADA806EAA4A843C297BEFC98110E8C142D8BD2CB448CE41F8B2BB75"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-production-probe-existence-guard.ps1",
+                       "hash":  "F72D05364A72274DA5CC84007709FB612289B2F002363B21A868712955AAAB51"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-release-manifest-guard.ps1",
+                       "hash":  "487E07DB48A346A89DEDCB0B1D62EAFF5A7E40375A1590AD29FCF4D8F2FD86E8"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-release-notes-consistency-guard.ps1",
+                       "hash":  "60F78C9BCE473C7CB6D80C1A0CD0C3DC4349DAF862FAADB8D81AAF7DB9745A8B"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-route-contract-summary-guard.ps1",
+                       "hash":  "76F2892F78C471FD037AC76C9D06C7754F34F9A1A927B59093DF2DA86C2B2C0E"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-route-matrix-count-guard.ps1",
+                       "hash":  "2079564793216922177A5D0B1FE75B97535ABCBE1E5A31567A1B11066D488D5A"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-route-matrix-guard.ps1",
+                       "hash":  "0BC4C56B9444ECF5CE12D3B493D3E6097C7D696F92F5C05C5AFF1B6621B0D7A1"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-route-mode-contract-guard.ps1",
+                       "hash":  "F44A3F0CBD4A7EB8395D867455FF36E57D11E91ECDC0A932B2EC9E4833157E7A"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-skip-diff-summary-guard.ps1",
+                       "hash":  "019CF0A97C12B07294F06B9C88468E00EDFC0E440D7894D4831F1DC3B280E8F1"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-sprint-closure-guard.ps1",
+                       "hash":  "9F1DD266C8590F84409832DFBF14B633328EC46FA79975471007A76A25247371"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-sprint-snapshot-guard.ps1",
+                       "hash":  "554B12720FFECCE50B54238043B64AA65F636DE0062C024C187771FCA433676F"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-timing-threshold-advisory-guard.ps1",
+                       "hash":  "E9A18BDB53F6AA0F56AD1BC0E1291DE86B6C3D8315927AFD55E41581BD3C563B"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-vercel-alias-guard.ps1",
+                       "hash":  "3D3ADDA17133024A3979BABF80E05F1F94289201AB00EBC6D807F468B82A4724"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3-orchestration-diagnostics-guard.ps1",
+                       "hash":  "E028FB8CE250E739F8400EE028E2D7FC401B3A0473B822FA71036BC357DF8C3E"
+                   },
+                   {
+                       "path":  "tools/sprint-next/registry-driven-orchestration-validation-guard.ps1",
+                       "hash":  "C67ED4673115BC4F4F8EABC348A2ED987DC5D9DC015E6E8F3AA777EFBE29C52B"
+                   },
+                   {
+                       "path":  "tools/sprint-next/sprint-history-summary-guard.ps1",
+                       "hash":  "EDCED3809B02CA845876372515E46A1F196F8BCBD4013B6381106503816A24DE"
+                   },
+                   {
+                       "path":  "tools/sprint-next/sprint-next-api-guard.ps1",
+                       "hash":  "7D26F370CB54C8966CCD658E5AA9191C491AAB2743A2FAEA71F572F334F28E20"
+                   },
+                   {
+                       "path":  "tools/sprint-next/sprint-next-composition-anchor-guard.ps1",
+                       "hash":  "5DA4390C7EC7EBCFF1789596BD2C442D6571B00F0AB86C8D6167D373F0136FCA"
+                   },
+                   {
+                       "path":  "tools/sprint-next/sprint-next-composition-order-guard.ps1",
+                       "hash":  "B7B02B5F4910B208131EFCEF6FC2483E7BFC1305165A406443D0010855B24EE8"
+                   },
+                   {
+                       "path":  "tools/sprint-next/sprint-next-composition-variable-guard.ps1",
+                       "hash":  "7657B2955DAC136EE538F4CA926D3F8EE2223555B943862592517ED10427CC33"
+                   },
+                   {
+                       "path":  "tools/sprint-next/sprint-next-preview-ui-guard.ps1",
+                       "hash":  "C5D6E601638DFFA0B923F009228987EC957E1913F9437A0F6C25DCEEAE669948"
+                   },
+                   {
+                       "path":  "tools/sprint-next/sprint-next-stage-helper-existence-guard.ps1",
+                       "hash":  "CD13CB2CFFF7BC62E927201914067D8FD0B3630FF79F778F61AD55FB92314ED3"
+                   },
+                   {
+                       "path":  "tools/sprint-next/verification-escalation-component-guard.ps1",
+                       "hash":  "37DC3040A7A2E3D1FCF9437F7FADB1A5BB79ADEABBAF7C0D5508CD62DBA96B59"
+                   }
+               ]
+}
