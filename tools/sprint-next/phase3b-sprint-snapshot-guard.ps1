@@ -24,7 +24,9 @@ $RequiredTerms = @(
   "planned_stage_count",
   "build_health",
   "build_process_version",
-  "release_notes"
+  "release_notes",
+  "speed_advisory",
+  "validation_skipped"
 )
 
 foreach ($Term in $RequiredTerms) {
@@ -38,6 +40,7 @@ if ($Route -notmatch "/api/hx2/phase3b-sprint-snapshot") {
 }
 
 Write-Host "PHASE 3B SPRINT SNAPSHOT GUARD PASSED"
+
 
 
 

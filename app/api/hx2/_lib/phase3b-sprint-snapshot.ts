@@ -14,6 +14,13 @@ export function getPhase3BSprintSnapshot() {
     snapshot_mode: "read_only_sprint_snapshot",
     composition_mutation_allowed: false,
     readiness: manifest.readiness,
+    speed_advisory: {
+      enabled: true,
+      cached_validation_advisory_only: buildProcess.capabilities.cached_validation_advisory_only,
+      impact_speed_decision_advisory: buildProcess.capabilities.impact_speed_decision_advisory,
+      validation_skipped: false,
+    },
+
     route_contracts: {
       route_count: summary.route_count,
       contracts: summary.contracts,
@@ -37,6 +44,7 @@ export function getPhase3BSprintSnapshot() {
     },
   };
 }
+
 
 
 
