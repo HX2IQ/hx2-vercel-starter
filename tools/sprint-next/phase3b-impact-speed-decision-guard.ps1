@@ -17,7 +17,10 @@ $RequiredTerms = @(
   "candidate_for_targeted_validation_after_more_calibration",
   "full_validation_required",
   "Validation skipped: false",
-  "Advisory only: true"
+  "Advisory only: true",
+  "Speed decision audit written",
+  "phase3b-impact-speed-decision",
+  "validation_skipped = `$false"
 )
 
 foreach ($Term in $RequiredTerms) {
@@ -27,3 +30,4 @@ foreach ($Term in $RequiredTerms) {
 }
 
 Write-Host "PHASE 3B IMPACT SPEED DECISION GUARD PASSED"
+
