@@ -1,9 +1,11 @@
 import { getPhase3BReleaseManifest } from "./phase3b-release-manifest";
 import { getPhase3BRouteContractSummary } from "./phase3b-route-contract-summary";
+import { getPhase3BBuildProcessVersion } from "./phase3b-build-process-version";
 
 export function getPhase3BSprintSnapshot() {
   const manifest = getPhase3BReleaseManifest();
   const summary = getPhase3BRouteContractSummary();
+  const buildProcess = getPhase3BBuildProcessVersion();
 
   return {
     ok: manifest.ok === true && summary.ok === true,
@@ -19,6 +21,8 @@ export function getPhase3BSprintSnapshot() {
     build_process_version: {
       route: "/api/hx2/phase3b-build-process-version",
       expected_mode: "fast_safe_sprint",
+      process_version: buildProcess.process_version,
+      release_notes: buildProcess.release_notes,
     },
     build_health: {
       route: "/api/hx2/phase3b-build-health",
@@ -33,5 +37,6 @@ export function getPhase3BSprintSnapshot() {
     },
   };
 }
+
 
 
