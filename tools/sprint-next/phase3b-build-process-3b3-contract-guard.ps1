@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 
 Write-Host ""
-Write-Host "== PHASE 3B BUILD PROCESS 3B.3 CONTRACT GUARD =="
+Write-Host "== PHASE 3B BUILD PROCESS 3B.4 CONTRACT GUARD =="
 
 $Files = @(
   "app/api/hx2/_lib/phase3b-build-process-version.ts",
@@ -15,24 +15,24 @@ $Files = @(
 
 foreach ($File in $Files) {
   if (!(Test-Path $File)) {
-    throw "Missing 3b.3 contract file: $File"
+    throw "Missing 3b.4 contract file: $File"
   }
 }
 
 $Combined = ($Files | ForEach-Object { Get-Content $_ -Raw }) -join "`n"
 
 $RequiredTerms = @(
-  "3b.3",
+  "3b.4",
   "parallel_production_verify",
   "serial_retry_fallback",
   "Added parallel production verification",
   "Added serial retry fallback for failed parallel probes",
-  "Build process upgraded to 3b.3"
+  "Build process upgraded to 3b.4"
 )
 
 foreach ($Term in $RequiredTerms) {
   if (-not $Combined.Contains($Term)) {
-    throw "3b.3 contract missing required term: $Term"
+    throw "3b.4 contract missing required term: $Term"
   }
 }
 
@@ -44,4 +44,5 @@ if ($Combined.Contains('process_version: "3b.2"')) {
   throw "Old 3b.2 source version still present"
 }
 
-Write-Host "PHASE 3B BUILD PROCESS 3B.3 CONTRACT GUARD PASSED"
+Write-Host "PHASE 3B BUILD PROCESS 3B.4 CONTRACT GUARD PASSED"
+

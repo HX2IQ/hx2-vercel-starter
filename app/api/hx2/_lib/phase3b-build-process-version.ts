@@ -4,7 +4,7 @@ export function getPhase3BBuildProcessVersion() {
     version_id: "hx2-phase3b-build-process",
     phase: "phase_3b",
     process_mode: "fast_safe_sprint",
-    process_version: "3b.3",
+    process_version: "3b.4",
     release_notes: [
       "Added fast no review mode",
       "Added skip diff summary mode",
@@ -17,7 +17,10 @@ export function getPhase3BBuildProcessVersion() {
       "Added serial retry fallback for failed parallel probes",
       "Build process upgraded to 3b.3",
       "Added impact speed decision advisory",
-      "Added cached validation advisory without skipping validation"
+      "Added cached validation advisory without skipping validation",
+      "Exposed advisory speed layer in build health",
+      "Exposed advisory speed layer in sprint snapshot",
+      "Build process upgraded to 3b.4"
     ],
     composition_mutation_allowed: false,
     capabilities: {
@@ -41,6 +44,7 @@ export function getPhase3BBuildProcessVersion() {
     },
   };
 }
+
 
 
 
