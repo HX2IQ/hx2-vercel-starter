@@ -40,7 +40,12 @@ if ($Response.speed_advisory.validation_skipped -ne $false) { throw "Sprint snap
 if ($Response.speed_advisory.cached_validation_advisory_only -ne $true) { throw "Sprint snapshot missing cached_validation_advisory_only" }
 if ($Response.speed_advisory.impact_speed_decision_advisory -ne $true) { throw "Sprint snapshot missing impact_speed_decision_advisory" }
 
+if ($Response.dashboard.enabled -ne $true) { throw "Sprint snapshot dashboard not enabled" }
+if ($Response.dashboard.readonly_guard -ne $true) { throw "Sprint snapshot dashboard readonly_guard missing" }
+if ($Response.dashboard.latest_production_verify_summary -ne $true) { throw "Sprint snapshot dashboard latest_production_verify_summary missing" }
+
 Write-Host ""
 Write-Host "PHASE 3B SPRINT SNAPSHOT PRODUCTION PROBE PASSED"
 $Response | ConvertTo-Json -Depth 20
+
 

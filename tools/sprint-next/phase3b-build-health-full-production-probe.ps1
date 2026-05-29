@@ -61,5 +61,10 @@ if ($Response.speed_advisory.validation_skipped -ne $false) { throw "Build healt
 if ($Response.speed_advisory.cached_validation_advisory_only -ne $true) { throw "Build health missing cached_validation_advisory_only" }
 if ($Response.speed_advisory.impact_speed_decision_advisory -ne $true) { throw "Build health missing impact_speed_decision_advisory" }
 
+if ($Response.dashboard.enabled -ne $true) { throw "Build health dashboard not enabled" }
+if ($Response.dashboard.readonly_guard -ne $true) { throw "Build health dashboard readonly_guard missing" }
+if ($Response.dashboard.latest_production_verify_summary -ne $true) { throw "Build health dashboard latest_production_verify_summary missing" }
+
 Write-Host ""
 Write-Host "PHASE 3B BUILD HEALTH FULL PRODUCTION PROBE PASSED"
+
