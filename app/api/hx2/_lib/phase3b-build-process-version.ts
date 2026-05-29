@@ -26,7 +26,9 @@ export function getPhase3BBuildProcessVersion() {
       "Build process upgraded to 3b.5",
       "Added read-only build dashboard",
       "Consolidated post-sprint viewers through build dashboard",
-      "Build process upgraded to 3b.6"
+      "Build process upgraded to 3b.6",
+      "Added dashboard surface consistency guard",
+      "Added dashboard capability consistency guard"
     ],
     composition_mutation_allowed: false,
     capabilities: {
@@ -45,6 +47,8 @@ export function getPhase3BBuildProcessVersion() {
       serial_retry_fallback: true,
       latest_production_verify_summary: true,
       build_dashboard: true,
+      dashboard_surface_consistency: true,
+      dashboard_capability_consistency: true,
       readonly_dashboard_guard: true,
       production_probe_timing_summary: true,
       impact_speed_decision_advisory: true,
@@ -54,6 +58,7 @@ export function getPhase3BBuildProcessVersion() {
     },
   };
 }
+
 
 
 

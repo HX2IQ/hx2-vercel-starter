@@ -30,6 +30,8 @@ $RequiredTerms = @(
   "serial_retry_fallback",
   "latest_production_verify_summary",
   "build_dashboard",
+  "dashboard_surface_consistency",
+  "dashboard_capability_consistency",
   "readonly_dashboard_guard",
   "production_probe_timing_summary",
   "impact_speed_decision_advisory",
@@ -47,6 +49,7 @@ if ($Route -notmatch "/api/hx2/phase3b-build-process-version") {
 }
 
 Write-Host "PHASE 3B BUILD PROCESS VERSION GUARD PASSED"
+
 
 
 

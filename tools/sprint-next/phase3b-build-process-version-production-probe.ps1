@@ -58,6 +58,8 @@ if ($Response.capabilities.parallel_production_verify -ne $true) { throw "Build 
 if ($Response.capabilities.serial_retry_fallback -ne $true) { throw "Build process missing serial_retry_fallback capability" }
 if ($Response.capabilities.latest_production_verify_summary -ne $true) { throw "Build process missing latest_production_verify_summary capability" }
 if ($Response.capabilities.build_dashboard -ne $true) { throw "Build process missing build_dashboard capability" }
+if ($Response.capabilities.dashboard_surface_consistency -ne $true) { throw "Build process missing dashboard_surface_consistency capability" }
+if ($Response.capabilities.dashboard_capability_consistency -ne $true) { throw "Build process missing dashboard_capability_consistency capability" }
 if ($Response.capabilities.readonly_dashboard_guard -ne $true) { throw "Build process missing readonly_dashboard_guard capability" }
 if ($Response.capabilities.production_probe_timing_summary -ne $true) { throw "Build process missing production_probe_timing_summary capability" }
 if ($Response.capabilities.impact_speed_decision_advisory -ne $true) { throw "Build process missing impact_speed_decision_advisory capability" }
@@ -66,5 +68,6 @@ if ($Response.capabilities.cached_validation_advisory_only -ne $true) { throw "B
 Write-Host ""
 Write-Host "PHASE 3B BUILD PROCESS VERSION PRODUCTION PROBE PASSED"
 $Response | ConvertTo-Json -Depth 20
+
 
 
