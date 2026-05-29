@@ -56,9 +56,12 @@ if ($Response.capabilities.skip_diff_summary -ne $true) { throw "Build process m
 if ($Response.capabilities.fast_no_review_mode -ne $true) { throw "Build process missing fast_no_review_mode capability" }
 if ($Response.capabilities.parallel_production_verify -ne $true) { throw "Build process missing parallel_production_verify capability" }
 if ($Response.capabilities.serial_retry_fallback -ne $true) { throw "Build process missing serial_retry_fallback capability" }
+if ($Response.capabilities.latest_production_verify_summary -ne $true) { throw "Build process missing latest_production_verify_summary capability" }
+if ($Response.capabilities.production_probe_timing_summary -ne $true) { throw "Build process missing production_probe_timing_summary capability" }
 if ($Response.capabilities.impact_speed_decision_advisory -ne $true) { throw "Build process missing impact_speed_decision_advisory capability" }
 if ($Response.capabilities.cached_validation_advisory_only -ne $true) { throw "Build process missing cached_validation_advisory_only capability" }
 
 Write-Host ""
 Write-Host "PHASE 3B BUILD PROCESS VERSION PRODUCTION PROBE PASSED"
 $Response | ConvertTo-Json -Depth 20
+

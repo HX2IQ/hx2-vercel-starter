@@ -20,7 +20,9 @@ export function getPhase3BBuildProcessVersion() {
       "Added cached validation advisory without skipping validation",
       "Exposed advisory speed layer in build health",
       "Exposed advisory speed layer in sprint snapshot",
-      "Build process upgraded to 3b.4"
+      "Build process upgraded to 3b.4",
+      "Added latest production verify summary viewer",
+      "Added production probe timing summary"
     ],
     composition_mutation_allowed: false,
     capabilities: {
@@ -37,6 +39,8 @@ export function getPhase3BBuildProcessVersion() {
       master_production_verify: true,
       parallel_production_verify: true,
       serial_retry_fallback: true,
+      latest_production_verify_summary: true,
+      production_probe_timing_summary: true,
       impact_speed_decision_advisory: true,
       cached_validation_advisory_only: true,
       route_matrix_contract: true,
@@ -44,6 +48,7 @@ export function getPhase3BBuildProcessVersion() {
     },
   };
 }
+
 
 
 
