@@ -1,4 +1,4 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 
 Write-Host ""
 Write-Host "== PHASE 3B RELEASE NOTES CONSISTENCY GUARD =="
@@ -41,6 +41,7 @@ foreach ($Term in $RequiredTerms) {
 }
 
 Write-Host "PHASE 3B RELEASE NOTES CONSISTENCY GUARD PASSED"
+
 
 
 

@@ -1,10 +1,10 @@
-export function getPhase3BBuildProcessVersion() {
+﻿export function getPhase3BBuildProcessVersion() {
   return {
     ok: true,
     version_id: "hx2-phase3b-build-process",
     phase: "phase_3b",
     process_mode: "fast_safe_sprint",
-    process_version: "3b.7",
+    process_version: "3b.8",
     release_notes: [
       "Added fast no review mode",
       "Added skip diff summary mode",
@@ -29,7 +29,9 @@ export function getPhase3BBuildProcessVersion() {
       "Build process upgraded to 3b.6",
       "Added dashboard surface consistency guard",
       "Added dashboard capability consistency guard",
-      "Build process upgraded to 3b.7"
+      "Build process upgraded to 3b.7",
+      "Added version bump helper dry-run and self-test workflow",
+      "Build process upgraded to 3b.8"
     ],
     composition_mutation_allowed: false,
     capabilities: {
@@ -59,6 +61,7 @@ export function getPhase3BBuildProcessVersion() {
     },
   };
 }
+
 
 
 

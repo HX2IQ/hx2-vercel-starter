@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$BaseUrl = "https://optinodeiq.com",
   [int]$Retries = 6,
   [int]$DelaySeconds = 15
@@ -97,6 +97,7 @@ foreach ($Note in $RequiredNotes) {
 
 Write-Host ""
 Write-Host "PHASE 3B RELEASE NOTES PRODUCTION PROBE PASSED"
+
 
 
 
