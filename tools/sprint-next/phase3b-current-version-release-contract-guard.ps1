@@ -34,7 +34,11 @@ $RequiredTerms = @(
   $CurrentVersion,
   "Build process upgraded to $CurrentVersion",
   "latest_production_verify_summary",
-  "production_probe_timing_summary"
+  "production_probe_timing_summary",
+  "build_dashboard",
+  "readonly_dashboard_guard",
+  "Added read-only build dashboard",
+  "Consolidated post-sprint viewers through build dashboard"
 )
 
 foreach ($Term in $RequiredTerms) {
@@ -58,3 +62,4 @@ foreach ($Pattern in $OldVersionPatterns) {
 
 Write-Host "Current release contract version: $CurrentVersion"
 Write-Host "PHASE 3B CURRENT VERSION RELEASE CONTRACT GUARD PASSED"
+
