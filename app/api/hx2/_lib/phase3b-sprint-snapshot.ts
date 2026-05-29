@@ -14,6 +14,12 @@ export function getPhase3BSprintSnapshot() {
     snapshot_mode: "read_only_sprint_snapshot",
     composition_mutation_allowed: false,
     readiness: manifest.readiness,
+    dashboard: {
+      enabled: buildProcess.capabilities.build_dashboard,
+      readonly_guard: buildProcess.capabilities.readonly_dashboard_guard,
+      latest_production_verify_summary: buildProcess.capabilities.latest_production_verify_summary,
+    },
+
     speed_advisory: {
       enabled: true,
       cached_validation_advisory_only: buildProcess.capabilities.cached_validation_advisory_only,
@@ -44,6 +50,7 @@ export function getPhase3BSprintSnapshot() {
     },
   };
 }
+
 
 
 
