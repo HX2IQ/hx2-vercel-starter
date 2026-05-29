@@ -42,11 +42,11 @@ if ($FeatureName -ne "") {
 Write-Host ""
 Write-Host "== PHASE 3B IMPACT SCAN =="
 powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-impact-scan.ps1"
-powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-impact-report.ps1"
-powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-impact-speed-decision.ps1"
-powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-speed-decision.ps1"
-powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-production-verify-summary.ps1"
-powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-version-status.ps1"
+
+
+
+
+
 
 Write-Host ""
 Write-Host "== PHASE 3B CLOSURE =="
@@ -75,11 +75,11 @@ if ($LocalOnly) {
   Write-Host ""
   Write-Host "Audit written: $AuditPath"
   Write-Host ""
-  powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-audit.ps1"
-  powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-timing-report.ps1"
-  powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-timing-threshold-advisory.ps1"
-  powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-guard-cache-advisory.ps1"
-  powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-guard-cache-report.ps1"
+  
+  
+  
+  
+  
 
   Write-Host ""
   Write-Host "PHASE 3B FAST SAFE SPRINT PASSED - LOCAL ONLY"
@@ -134,14 +134,18 @@ $Audit | ConvertTo-Json -Depth 10 | Set-Content $AuditPath -Encoding UTF8
 Write-Host ""
 Write-Host "Audit written: $AuditPath"
 Write-Host ""
-powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-audit.ps1"
-  powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-timing-report.ps1"
-  powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-timing-threshold-advisory.ps1"
-  powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-guard-cache-advisory.ps1"
-  powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-guard-cache-report.ps1"
+
+  
+  
+  
+  
+
+Write-Host ""
+powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-build-dashboard.ps1" -BaseUrl $ProbeUrl
 
 Write-Host ""
 Write-Host "PHASE 3B FAST SAFE SPRINT PASSED"
+
 
 
 
