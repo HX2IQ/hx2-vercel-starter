@@ -4,7 +4,7 @@ export function getPhase3BBuildProcessVersion() {
     version_id: "hx2-phase3b-build-process",
     phase: "phase_3b",
     process_mode: "fast_safe_sprint",
-    process_version: "3b.5",
+    process_version: "3b.6",
     release_notes: [
       "Added fast no review mode",
       "Added skip diff summary mode",
@@ -25,7 +25,8 @@ export function getPhase3BBuildProcessVersion() {
       "Added production probe timing summary",
       "Build process upgraded to 3b.5",
       "Added read-only build dashboard",
-      "Consolidated post-sprint viewers through build dashboard"
+      "Consolidated post-sprint viewers through build dashboard",
+      "Build process upgraded to 3b.6"
     ],
     composition_mutation_allowed: false,
     capabilities: {
@@ -53,6 +54,7 @@ export function getPhase3BBuildProcessVersion() {
     },
   };
 }
+
 
 
 
