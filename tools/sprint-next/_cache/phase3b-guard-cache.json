@@ -1,11 +1,11 @@
 ﻿{
     "cache_id":  "phase3b-guard-cache-advisory",
-    "generated_at_utc":  "2026-05-29T01:17:17Z",
-    "guard_count":  81,
-    "changed_count":  0,
+    "generated_at_utc":  "2026-05-29T01:23:25Z",
+    "guard_count":  82,
+    "changed_count":  1,
     "unchanged_count":  81,
     "changed":  [
-
+                    "tools/sprint-next/phase3b-build-dashboard-guard.ps1"
                 ],
     "unchanged":  [
                       "tools/sprint-next/dev2-sprint-package-preview-guard.ps1",
@@ -162,6 +162,10 @@
                    {
                        "path":  "tools/sprint-next/orchestration-stage-registry-integrity-guard.ps1",
                        "hash":  "1DD409836BE3BE6CDB47699976F20A76B853D9526F701C7AB0349BA17BCD67CC"
+                   },
+                   {
+                       "path":  "tools/sprint-next/phase3b-build-dashboard-guard.ps1",
+                       "hash":  "08E011CFE2623AF6F9B50941A1EF03A94AE17317B82566ABD521A9C5DE9C80DB"
                    },
                    {
                        "path":  "tools/sprint-next/phase3b-build-health-build-process-source-guard.ps1",
