@@ -17,7 +17,10 @@ $RequiredTerms = @(
   "process_version",
   "release-notes-consistency",
   "release-notes-production-probe",
-  "Build process version bumped"
+  "Build process version bumped",
+  "DryRun",
+  "VERSION BUMP DRY RUN",
+  "No files changed"
 )
 
 foreach ($Term in $RequiredTerms) {
@@ -27,3 +30,4 @@ foreach ($Term in $RequiredTerms) {
 }
 
 Write-Host "PHASE 3B VERSION BUMP HELPER GUARD PASSED"
+

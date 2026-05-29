@@ -2,7 +2,8 @@ param(
   [Parameter(Mandatory=$true)]
   [string]$NewVersion,
   [Parameter(Mandatory=$true)]
-  [string]$ReleaseNote
+  [string]$ReleaseNote,
+  [switch]$DryRun
 )
 
 $ErrorActionPreference = "Stop"
@@ -26,6 +27,15 @@ if (-not $OldMatch.Success) {
 }
 
 $OldVersion = $OldMatch.Groups[1].Value
+
+if ($DryRun) {
+  Write-Host "== VERSION BUMP DRY RUN =="
+  Write-Host "Old version: $OldVersion"
+  Write-Host "New version: $NewVersion"
+  Write-Host "Release note: $ReleaseNote"
+  Write-Host "No files changed."
+  exit 0
+}
 
 $Version = $Version.Replace("process_version: `"$OldVersion`"", "process_version: `"$NewVersion`"")
 
@@ -60,3 +70,4 @@ Set-Content $NumberGuardPath $NumberGuard -Encoding UTF8
 
 Write-Host "Build process version bumped: $OldVersion -> $NewVersion"
 Write-Host "Release note: $ReleaseNote"
+
