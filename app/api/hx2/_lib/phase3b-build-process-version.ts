@@ -1,4 +1,4 @@
-﻿export function getPhase3BBuildProcessVersion() {
+export function getPhase3BBuildProcessVersion() {
   return {
     ok: true,
     version_id: "hx2-phase3b-build-process",
@@ -61,6 +61,7 @@
     },
   };
 }
+
 
 
 
