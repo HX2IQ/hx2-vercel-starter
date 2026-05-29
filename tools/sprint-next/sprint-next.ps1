@@ -32,11 +32,20 @@ if ($AutoMode) {
   Write-Host "Impact risk level: $($Impact.risk_level)"
   Write-Host "Changed file count: $($Impact.changed_file_count)"
 
-  if ($Impact.risk_level -eq "low" -or $Impact.risk_level -eq "medium") {
+  Write-Host ""
+Write-Host "== AUTO MODE RESULT =="
+
+if ($Impact.risk_level -eq "low" -or $Impact.risk_level -eq "medium") {
     Write-Host "Auto decision: LocalOnly validation. No Vercel deploy."
+Write-Host "Execution mode: LOCAL ONLY"
+Write-Host "Expected Vercel usage: minimal"
+Write-Host "Expected VPS usage: minimal"
     $LocalOnly = $true
   } else {
     Write-Host "Auto decision: Full deploy + production verification."
+Write-Host "Execution mode: FULL DEPLOY"
+Write-Host "Expected Vercel usage: elevated"
+Write-Host "Expected VPS usage: elevated"
   }
 }
 
@@ -55,3 +64,4 @@ if ($SkipDiffSummary) { $ArgsList += "-SkipDiffSummary" }
 if ($FastNoReview) { $ArgsList += "-SkipDiffSummary" }
 
 powershell @ArgsList
+
