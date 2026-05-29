@@ -23,7 +23,9 @@ export function getPhase3BBuildProcessVersion() {
       "Build process upgraded to 3b.4",
       "Added latest production verify summary viewer",
       "Added production probe timing summary",
-      "Build process upgraded to 3b.5"
+      "Build process upgraded to 3b.5",
+      "Added read-only build dashboard",
+      "Consolidated post-sprint viewers through build dashboard"
     ],
     composition_mutation_allowed: false,
     capabilities: {
@@ -41,6 +43,8 @@ export function getPhase3BBuildProcessVersion() {
       parallel_production_verify: true,
       serial_retry_fallback: true,
       latest_production_verify_summary: true,
+      build_dashboard: true,
+      readonly_dashboard_guard: true,
       production_probe_timing_summary: true,
       impact_speed_decision_advisory: true,
       cached_validation_advisory_only: true,
@@ -49,6 +53,7 @@ export function getPhase3BBuildProcessVersion() {
     },
   };
 }
+
 
 
 
