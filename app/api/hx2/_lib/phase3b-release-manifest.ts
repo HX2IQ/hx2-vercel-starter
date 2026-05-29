@@ -21,6 +21,12 @@ export function getPhase3BReleaseManifest() {
     build_health_route: "/api/hx2/phase3b-build-health",
     build_process_version_route: "/api/hx2/phase3b-build-process-version",
     readiness: status.readiness,
+    dashboard: {
+      enabled: buildProcess.capabilities.build_dashboard,
+      readonly_guard: buildProcess.capabilities.readonly_dashboard_guard,
+      latest_production_verify_summary: buildProcess.capabilities.latest_production_verify_summary,
+    },
+
     build_process: {
       process_mode: buildProcess.process_mode,
       process_version: buildProcess.process_version,
@@ -40,6 +46,7 @@ export function getPhase3BReleaseManifest() {
     },
   };
 }
+
 
 
 

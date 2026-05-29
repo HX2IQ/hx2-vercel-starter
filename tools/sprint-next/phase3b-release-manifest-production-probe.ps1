@@ -76,6 +76,10 @@ if ($Response.build_process.release_notes.Count -lt 3) {
   throw "Release manifest build_process release_notes too short"
 }
 
+if ($Response.dashboard.enabled -ne $true) { throw "Release manifest dashboard not enabled" }
+if ($Response.dashboard.readonly_guard -ne $true) { throw "Release manifest dashboard readonly_guard missing" }
+if ($Response.dashboard.latest_production_verify_summary -ne $true) { throw "Release manifest dashboard latest_production_verify_summary missing" }
+
 if (-not ($Response.summary.PSObject.Properties.Name -contains "planned_stage_count")) {
   throw "Release manifest summary missing planned_stage_count"
 }
@@ -83,4 +87,5 @@ if (-not ($Response.summary.PSObject.Properties.Name -contains "planned_stage_co
 Write-Host ""
 Write-Host "PHASE 3B RELEASE MANIFEST PRODUCTION PROBE PASSED"
 $Response | ConvertTo-Json -Depth 20
+
 
