@@ -46,6 +46,7 @@ powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-imp
 powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-impact-speed-decision.ps1"
 powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-speed-decision.ps1"
 powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-production-verify-summary.ps1"
+powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-version-status.ps1"
 
 Write-Host ""
 Write-Host "== PHASE 3B CLOSURE =="
@@ -141,6 +142,7 @@ powershell -ExecutionPolicy Bypass -File ".\tools\sprint-next\phase3b-latest-aud
 
 Write-Host ""
 Write-Host "PHASE 3B FAST SAFE SPRINT PASSED"
+
 
 
 
