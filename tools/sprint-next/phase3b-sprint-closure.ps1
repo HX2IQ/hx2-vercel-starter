@@ -115,9 +115,13 @@ powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-orchestratio
 Write-Host ""
 Write-Host "== RUN PHASE 3B MASTER PRODUCTION VERIFY =="
 powershell -ExecutionPolicy Bypass -File "tools/sprint-next/phase3b-master-production-verify.ps1" -BaseUrl $ProbeUrl
+if ($LASTEXITCODE -ne 0) {
+  throw "Phase 3B master production verify failed"
+}
 
 Write-Host ""
 Write-Host "PHASE 3B SPRINT CLOSURE PASSED"
+
 
 
 

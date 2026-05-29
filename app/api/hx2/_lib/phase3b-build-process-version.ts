@@ -1,4 +1,4 @@
-﻿export function getPhase3BBuildProcessVersion() {
+export function getPhase3BBuildProcessVersion() {
   return {
     ok: true,
     version_id: "hx2-phase3b-build-process",
@@ -55,6 +55,7 @@
       dashboard_surface_consistency: true,
       dashboard_capability_consistency: true,
       readonly_dashboard_guard: true,
+      dashboard_health: true,
       production_probe_timing_summary: true,
       impact_speed_decision_advisory: true,
       cached_validation_advisory_only: true,
@@ -63,6 +64,7 @@
     },
   };
 }
+
 
 
 
