@@ -28,6 +28,16 @@ if (-not $OldMatch.Success) {
 
 $OldVersion = $OldMatch.Groups[1].Value
 
+Write-Host ""
+Write-Host "== VERSION BUMP PREFLIGHT =="
+Write-Host "Current version: $OldVersion"
+Write-Host "Target version: $NewVersion"
+Write-Host "Release note: $ReleaseNote"
+Write-Host "Target files:"
+foreach ($Path in @($VersionPath, $NumberGuardPath, $ReleaseNotesGuardPath, $ReleaseNotesProbePath)) {
+  Write-Host "- $Path"
+}
+
 if ($DryRun) {
   Write-Host "== VERSION BUMP DRY RUN =="
   Write-Host "Old version: $OldVersion"
@@ -70,4 +80,5 @@ Set-Content $NumberGuardPath $NumberGuard -Encoding UTF8
 
 Write-Host "Build process version bumped: $OldVersion -> $NewVersion"
 Write-Host "Release note: $ReleaseNote"
+
 
