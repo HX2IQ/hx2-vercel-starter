@@ -107,6 +107,23 @@ $DeploymentConfidence = switch ($Impact.risk_level) {
 }
 
 Write-Host "Deployment confidence: $DeploymentConfidence/100"
+
+Write-Host ""
+Write-Host "== AUTO MODE SMART DEPLOY THRESHOLD =="
+
+$DeployThreshold = switch ($Impact.risk_level) {
+  "low"    { "DEPLOY AVOIDED" }
+  "medium" { "LOCAL VALIDATION PREFERRED" }
+  default  { "FULL VERIFY REQUIRED" }
+}
+
+Write-Host "Deploy threshold mode: $DeployThreshold"
+
+if ($LocalOnly) {
+  Write-Host "Estimated deploys avoided: 1"
+} else {
+  Write-Host "Estimated deploys avoided: 0"
+}
 Write-Host "Fast review mode: $FastNoReview"
 Write-Host "Deploy skipped: $LocalOnly"
 
@@ -187,6 +204,19 @@ $LearningMode = if ($LocalOnly) {
 
 Write-Host "Learning mode: $LearningMode"
 
+Write-Host ""
+Write-Host "== AUTO MODE RESOURCE PROFILE =="
+
+if ($LocalOnly) {
+  Write-Host "Resource profile: COST SAVING"
+  Write-Host "Serverless pressure: LOW"
+  Write-Host "Verification pressure: LOW"
+} else {
+  Write-Host "Resource profile: FULL VALIDATION"
+  Write-Host "Serverless pressure: MODERATE"
+  Write-Host "Verification pressure: HIGH"
+}
+
 if ($Impact.changed_file_count -le 5) {
   Write-Host "Change density: LIGHT"
 } elseif ($Impact.changed_file_count -le 20) {
@@ -197,6 +227,7 @@ if ($Impact.changed_file_count -le 5) {
 }
 }
 }
+
 
 
 
