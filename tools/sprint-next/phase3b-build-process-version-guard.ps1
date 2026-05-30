@@ -35,7 +35,8 @@ $RequiredTerms = @(
   "readonly_dashboard_guard",
   "production_probe_timing_summary",
   "impact_speed_decision_advisory",
-  "cached_validation_advisory_only"
+  "cached_validation_advisory_only",
+  "automode_usage_visibility"
 )
 
 foreach ($Term in $RequiredTerms) {
@@ -49,6 +50,7 @@ if ($Route -notmatch "/api/hx2/phase3b-build-process-version") {
 }
 
 Write-Host "PHASE 3B BUILD PROCESS VERSION GUARD PASSED"
+
 
 
 

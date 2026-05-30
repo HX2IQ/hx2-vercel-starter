@@ -1,4 +1,4 @@
-﻿export function getPhase3BBuildProcessVersion() {
+export function getPhase3BBuildProcessVersion() {
   return {
     ok: true,
     version_id: "hx2-phase3b-build-process",
@@ -35,7 +35,8 @@
       "Added dashboard health capability to build process contract",
       "Build process upgraded to 3b.9",
       "Consolidated dashboard health validation and removed deprecated standalone probe",
-      "Build process upgraded to 3b.10"
+      "Build process upgraded to 3b.10",
+      "Added AutoMode usage visibility"
     ],
     composition_mutation_allowed: false,
     capabilities: {
@@ -61,11 +62,13 @@
       production_probe_timing_summary: true,
       impact_speed_decision_advisory: true,
       cached_validation_advisory_only: true,
+      automode_usage_visibility: true,
       route_matrix_contract: true,
       build_health_snapshot: true,
     },
   };
 }
+
 
 
 
