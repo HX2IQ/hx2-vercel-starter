@@ -40,6 +40,7 @@ export function getPhase3BBuildProcessVersion() {
       "Added AutoMode decision reasoning",
       "Added AutoMode execution summary",
       "Added AutoMode cost telemetry",
+      "Added AutoMode efficiency visibility",
       "Build process upgraded to 3b.11",
       "Added AutoMode usage visibility"
     ],
@@ -71,11 +72,13 @@ export function getPhase3BBuildProcessVersion() {
       automode_decision_reasoning: true,
       automode_execution_summary: true,
       automode_cost_telemetry: true,
+      automode_efficiency_visibility: true,
       route_matrix_contract: true,
       build_health_snapshot: true,
     },
   };
 }
+
 
 
 

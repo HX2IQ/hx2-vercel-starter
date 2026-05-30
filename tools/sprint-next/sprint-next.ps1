@@ -41,6 +41,21 @@ $AutoModeReason = switch ($Impact.risk_level) {
 Write-Host "Decision reason: $AutoModeReason"
 
 Write-Host ""
+Write-Host "== AUTO MODE CHANGE CLASSIFICATION =="
+
+switch ($Impact.risk_level) {
+  "low" {
+    Write-Host "Change class: Guard / metadata / tooling"
+  }
+  "medium" {
+    Write-Host "Change class: Moderate local runtime impact"
+  }
+  default {
+    Write-Host "Change class: Production runtime / API impact"
+  }
+}
+
+Write-Host ""
 Write-Host "== AUTO MODE TELEMETRY =="
 Write-Host "Feature name: $FeatureName"
 Write-Host "Probe URL: $ProbeUrl"
@@ -107,7 +122,23 @@ if ($LocalOnly) {
   Write-Host "Estimated Vercel build impact: standard deploy usage"
   Write-Host "Estimated VPS impact: production verification active"
   Write-Host "Estimated savings mode: INACTIVE"
+
+Write-Host ""
+Write-Host "== AUTO MODE EFFICIENCY SCORE =="
+
+$EfficiencyScore = if ($LocalOnly) { 95 } else { 65 }
+
+Write-Host "Efficiency score: $EfficiencyScore/100"
+
+if ($EfficiencyScore -ge 90) {
+  Write-Host "Efficiency classification: HIGH"
+} elseif ($EfficiencyScore -ge 75) {
+  Write-Host "Efficiency classification: MEDIUM"
+} else {
+  Write-Host "Efficiency classification: STANDARD"
 }
+}
+
 
 
 
