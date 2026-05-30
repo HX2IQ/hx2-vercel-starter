@@ -63,6 +63,7 @@ export function getPhase3BBuildProcessVersion() {
       "Added dashboard deploy memory visibility",
       "Added dashboard cost savings summary",
       "Added runtime intelligence router",
+      "Added runtime intelligence router query inputs",
       "Build process upgraded to 3b.15",
       "Added AutoMode usage visibility"
     ],
@@ -109,11 +110,13 @@ export function getPhase3BBuildProcessVersion() {
       dashboard_deploy_memory_visibility: true,
       dashboard_cost_savings_summary: true,
       runtime_intelligence_router: true,
+      runtime_intelligence_query_inputs: true,
       route_matrix_contract: true,
       build_health_snapshot: true,
     },
   };
 }
+
 
 
 

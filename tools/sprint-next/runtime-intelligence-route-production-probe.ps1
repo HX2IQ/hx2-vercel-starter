@@ -7,7 +7,7 @@ $ErrorActionPreference = "Stop"
 Write-Host ""
 Write-Host "== RUNTIME INTELLIGENCE ROUTE PRODUCTION PROBE =="
 
-$Response = Invoke-RestMethod "$BaseUrl/api/hx2/runtime-intelligence-route"
+$Response = Invoke-RestMethod "$BaseUrl/api/hx2/runtime-intelligence-route?complexity=9&mission_critical=true&repeated_query=false"
 
 if ($Response.ok -ne $true) { throw "Runtime intelligence route did not return ok=true" }
 if ($Response.mode -ne "read_only_runtime_intelligence_route") { throw "Runtime intelligence route mode mismatch" }
@@ -22,9 +22,10 @@ $RequiredRouterFields = @(
 )
 
 foreach ($Field in $RequiredRouterFields) {
-  if (-not ($Response.router.PSObject.Properties.Name -contains $Field)) {
+  if (-not ($Response.routing_decision.PSObject.Properties.Name -contains $Field)) {
     throw "Runtime intelligence router missing field: $Field"
   }
 }
 
 Write-Host "RUNTIME INTELLIGENCE ROUTE PRODUCTION PROBE PASSED"
+
