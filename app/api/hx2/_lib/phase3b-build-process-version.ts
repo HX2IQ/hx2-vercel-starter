@@ -1,10 +1,10 @@
-export function getPhase3BBuildProcessVersion() {
+﻿export function getPhase3BBuildProcessVersion() {
   return {
     ok: true,
     version_id: "hx2-phase3b-build-process",
     phase: "phase_3b",
     process_mode: "fast_safe_sprint",
-    process_version: "3b.14",
+    process_version: "3b.15",
     release_notes: [
       "Added fast no review mode",
       "Added skip diff summary mode",
@@ -59,6 +59,8 @@ export function getPhase3BBuildProcessVersion() {
       "Added AutoMode deploy memory",
       "Protected AutoMode deploy memory audit files from git",
       "Build process upgraded to 3b.14",
+      "Added AutoMode deploy memory gitignore contract protection",
+      "Build process upgraded to 3b.15",
       "Added AutoMode usage visibility"
     ],
     composition_mutation_allowed: false,
@@ -106,6 +108,7 @@ export function getPhase3BBuildProcessVersion() {
     },
   };
 }
+
 
 
 

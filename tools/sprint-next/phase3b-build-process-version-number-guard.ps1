@@ -17,8 +17,8 @@ foreach ($File in $Files) {
 
 $Combined = ($Files | ForEach-Object { Get-Content $_ -Raw }) -join "`n"
 
-if ($Combined -notmatch '3b\.14') {
-  throw "Phase 3B build process version 3b.14 not found"
+if ($Combined -notmatch '3b\.15') {
+  throw "Phase 3B build process version 3b.15 not found"
 }
 
 if ($Combined -match '3b\.6|3b\.5|3b\.4|3b\.3|3b\.2|3b\.1') {
@@ -26,6 +26,7 @@ if ($Combined -match '3b\.6|3b\.5|3b\.4|3b\.3|3b\.2|3b\.1') {
 }
 
 Write-Host "PHASE 3B BUILD PROCESS VERSION NUMBER GUARD PASSED"
+
 
 
 
