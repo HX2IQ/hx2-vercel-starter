@@ -1,4 +1,4 @@
-﻿export function getPhase3BBuildProcessVersion() {
+export function getPhase3BBuildProcessVersion() {
   return {
     ok: true,
     version_id: "hx2-phase3b-build-process",
@@ -37,6 +37,7 @@
       "Consolidated dashboard health validation and removed deprecated standalone probe",
       "Build process upgraded to 3b.10",
       "Added AutoMode Vercel and VPS usage visibility",
+      "Added AutoMode decision reasoning",
       "Build process upgraded to 3b.11",
       "Added AutoMode usage visibility"
     ],
@@ -65,11 +66,13 @@
       impact_speed_decision_advisory: true,
       cached_validation_advisory_only: true,
       automode_usage_visibility: true,
+      automode_decision_reasoning: true,
       route_matrix_contract: true,
       build_health_snapshot: true,
     },
   };
 }
+
 
 
 
