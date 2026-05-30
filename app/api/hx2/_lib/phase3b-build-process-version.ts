@@ -1,4 +1,4 @@
-﻿export function getPhase3BBuildProcessVersion() {
+export function getPhase3BBuildProcessVersion() {
   return {
     ok: true,
     version_id: "hx2-phase3b-build-process",
@@ -53,6 +53,7 @@
       "Added AutoMode default strategy visibility",
       "Build process upgraded to 3b.12",
       "Made AutoMode the default cost-saving sprint strategy",
+      "Added dashboard AutoMode default visibility",
       "Build process upgraded to 3b.13",
       "Added AutoMode usage visibility"
     ],
@@ -93,11 +94,13 @@
       latest_automode_decision_viewer: true,
       automode_default_enabled: true,
       automode_default_strategy: true,
+      dashboard_automode_default_visibility: true,
       route_matrix_contract: true,
       build_health_snapshot: true,
     },
   };
 }
+
 
 
 
