@@ -73,6 +73,21 @@ if ($AllowNoCommit) { $ArgsList += "-AllowNoCommit" }
 if ($SkipDiffSummary) { $ArgsList += "-SkipDiffSummary" }
 if ($FastNoReview) { $ArgsList += "-SkipDiffSummary" }
 
+Write-Host ""
+Write-Host "== AUTO MODE EXECUTION SUMMARY =="
+Write-Host "Risk level: $($Impact.risk_level)"
+Write-Host "Execution mode selected: $(if ($LocalOnly) { "LOCAL ONLY" } else { "FULL DEPLOY" })"
+Write-Host "Fast review mode: $FastNoReview"
+Write-Host "Deploy skipped: $LocalOnly"
+
+$SprintStartedAt = Get-Date
+
 powershell @ArgsList
+
+$SprintDuration = [math]::Round(((Get-Date) - $SprintStartedAt).TotalSeconds, 2)
+
+Write-Host ""
+Write-Host "Sprint duration seconds: $SprintDuration"
+
 
 
