@@ -99,6 +99,14 @@ Write-Host ""
 Write-Host "== AUTO MODE EXECUTION SUMMARY =="
 Write-Host "Risk level: $($Impact.risk_level)"
 Write-Host "Execution mode selected: $(if ($LocalOnly) { "LOCAL ONLY" } else { "FULL DEPLOY" })"
+
+$DeploymentConfidence = switch ($Impact.risk_level) {
+  "low"    { 95 }
+  "medium" { 82 }
+  default  { 68 }
+}
+
+Write-Host "Deployment confidence: $DeploymentConfidence/100"
 Write-Host "Fast review mode: $FastNoReview"
 Write-Host "Deploy skipped: $LocalOnly"
 
@@ -167,9 +175,29 @@ if ($LocalOnly) {
 } else {
   Write-Host "Speed profile: VERIFIED"
   Write-Host "Expected deploy latency: standard"
+
+Write-Host ""
+Write-Host "== AUTO MODE LEARNING LOOP =="
+
+$LearningMode = if ($LocalOnly) {
+  "Cost optimization active"
+} else {
+  "Verification prioritization active"
+}
+
+Write-Host "Learning mode: $LearningMode"
+
+if ($Impact.changed_file_count -le 5) {
+  Write-Host "Change density: LIGHT"
+} elseif ($Impact.changed_file_count -le 20) {
+  Write-Host "Change density: MEDIUM"
+} else {
+  Write-Host "Change density: HEAVY"
 }
 }
 }
+}
+
 
 
 
