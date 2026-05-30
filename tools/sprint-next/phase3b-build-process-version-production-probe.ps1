@@ -66,10 +66,12 @@ if ($Response.capabilities.production_probe_timing_summary -ne $true) { throw "B
 if ($Response.capabilities.impact_speed_decision_advisory -ne $true) { throw "Build process missing impact_speed_decision_advisory capability" }
 if ($Response.capabilities.cached_validation_advisory_only -ne $true) { throw "Build process missing cached_validation_advisory_only capability" }
 if ($Response.capabilities.automode_usage_visibility -ne $true) { throw "Build process missing automode_usage_visibility capability" }
+if ($Response.capabilities.latest_automode_decision_viewer -ne $true) { throw "Build process missing latest_automode_decision_viewer capability" }
 
 Write-Host ""
 Write-Host "PHASE 3B BUILD PROCESS VERSION PRODUCTION PROBE PASSED"
 $Response | ConvertTo-Json -Depth 20
+
 
 
 

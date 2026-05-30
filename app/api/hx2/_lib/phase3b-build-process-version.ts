@@ -46,6 +46,7 @@ export function getPhase3BBuildProcessVersion() {
       "Added AutoMode smart deploy thresholds",
       "Added AutoMode adaptive optimization",
       "Added AutoMode decision audit",
+      "Added latest AutoMode decision viewer",
       "Build process upgraded to 3b.11",
       "Added AutoMode usage visibility"
     ],
@@ -83,11 +84,13 @@ export function getPhase3BBuildProcessVersion() {
       automode_smart_thresholds: true,
       automode_adaptive_optimization: true,
       automode_decision_audit: true,
+      latest_automode_decision_viewer: true,
       route_matrix_contract: true,
       build_health_snapshot: true,
     },
   };
 }
+
 
 
 
