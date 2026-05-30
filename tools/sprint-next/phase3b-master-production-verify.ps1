@@ -14,6 +14,7 @@ $VerifyDir = Join-Path $RepoRoot "tools/sprint-next/_audit"
 New-Item -ItemType Directory -Force -Path $VerifyDir | Out-Null
 
 $Probes = @(
+  "tools/sprint-next/runtime-intelligence-route-production-probe.ps1",
   "tools/sprint-next/phase3b-build-health-full-production-probe.ps1",
   "tools/sprint-next/phase3b-release-notes-production-probe.ps1",
   "tools/sprint-next/phase3b-build-process-version-production-probe.ps1",
@@ -154,5 +155,6 @@ Write-Host "Production verify audit written: $SummaryPath"
 
 Write-Host ""
 Write-Host "PHASE 3B MASTER PRODUCTION VERIFY PASSED"
+
 
 
