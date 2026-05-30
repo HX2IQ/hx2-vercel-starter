@@ -39,6 +39,7 @@ export function getPhase3BBuildProcessVersion() {
       "Added AutoMode Vercel and VPS usage visibility",
       "Added AutoMode decision reasoning",
       "Added AutoMode execution summary",
+      "Added AutoMode cost telemetry",
       "Build process upgraded to 3b.11",
       "Added AutoMode usage visibility"
     ],
@@ -69,11 +70,13 @@ export function getPhase3BBuildProcessVersion() {
       automode_usage_visibility: true,
       automode_decision_reasoning: true,
       automode_execution_summary: true,
+      automode_cost_telemetry: true,
       route_matrix_contract: true,
       build_health_snapshot: true,
     },
   };
 }
+
 
 
 

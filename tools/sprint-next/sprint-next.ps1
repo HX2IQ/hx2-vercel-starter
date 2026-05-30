@@ -40,6 +40,13 @@ $AutoModeReason = switch ($Impact.risk_level) {
 
 Write-Host "Decision reason: $AutoModeReason"
 
+Write-Host ""
+Write-Host "== AUTO MODE TELEMETRY =="
+Write-Host "Feature name: $FeatureName"
+Write-Host "Probe URL: $ProbeUrl"
+Write-Host "Fast review: $FastNoReview"
+Write-Host "Local only forced: $LocalOnly"
+
   Write-Host ""
 Write-Host "== AUTO MODE RESULT =="
 
@@ -88,6 +95,20 @@ $SprintDuration = [math]::Round(((Get-Date) - $SprintStartedAt).TotalSeconds, 2)
 
 Write-Host ""
 Write-Host "Sprint duration seconds: $SprintDuration"
+
+Write-Host ""
+Write-Host "== AUTO MODE COST ESTIMATE =="
+
+if ($LocalOnly) {
+  Write-Host "Estimated Vercel build impact: near zero"
+  Write-Host "Estimated VPS impact: near zero"
+  Write-Host "Estimated savings mode: ACTIVE"
+} else {
+  Write-Host "Estimated Vercel build impact: standard deploy usage"
+  Write-Host "Estimated VPS impact: production verification active"
+  Write-Host "Estimated savings mode: INACTIVE"
+}
+
 
 
 
