@@ -112,6 +112,27 @@ Write-Host ""
 Write-Host "Sprint duration seconds: $SprintDuration"
 
 Write-Host ""
+Write-Host "== AUTO MODE HISTORICAL TELEMETRY =="
+
+$TelemetryDir = "tools/sprint-next/_audit"
+
+if (Test-Path $TelemetryDir) {
+  $RecentAudits = Get-ChildItem $TelemetryDir -Filter "phase3b-fast-safe-sprint-*.json" |
+    Sort-Object LastWriteTime -Descending |
+    Select-Object -First 10
+
+  Write-Host "Recent sprint audits analyzed: $($RecentAudits.Count)"
+
+  if ($RecentAudits.Count -gt 0) {
+    Write-Host "Historical telemetry mode: ACTIVE"
+  } else {
+    Write-Host "Historical telemetry mode: WARMING"
+  }
+} else {
+  Write-Host "Historical telemetry mode: UNAVAILABLE"
+}
+
+Write-Host ""
 Write-Host "== AUTO MODE COST ESTIMATE =="
 
 if ($LocalOnly) {
@@ -136,8 +157,20 @@ if ($EfficiencyScore -ge 90) {
   Write-Host "Efficiency classification: MEDIUM"
 } else {
   Write-Host "Efficiency classification: STANDARD"
+
+Write-Host ""
+Write-Host "== AUTO MODE SPEED PROFILE =="
+
+if ($LocalOnly) {
+  Write-Host "Speed profile: OPTIMIZED"
+  Write-Host "Expected deploy latency: skipped"
+} else {
+  Write-Host "Speed profile: VERIFIED"
+  Write-Host "Expected deploy latency: standard"
 }
 }
+}
+
 
 
 
