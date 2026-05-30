@@ -1,10 +1,10 @@
-export function getPhase3BBuildProcessVersion() {
+﻿export function getPhase3BBuildProcessVersion() {
   return {
     ok: true,
     version_id: "hx2-phase3b-build-process",
     phase: "phase_3b",
     process_mode: "fast_safe_sprint",
-    process_version: "3b.10",
+    process_version: "3b.11",
     release_notes: [
       "Added fast no review mode",
       "Added skip diff summary mode",
@@ -36,6 +36,8 @@ export function getPhase3BBuildProcessVersion() {
       "Build process upgraded to 3b.9",
       "Consolidated dashboard health validation and removed deprecated standalone probe",
       "Build process upgraded to 3b.10",
+      "Added AutoMode Vercel and VPS usage visibility",
+      "Build process upgraded to 3b.11",
       "Added AutoMode usage visibility"
     ],
     composition_mutation_allowed: false,
@@ -68,6 +70,7 @@ export function getPhase3BBuildProcessVersion() {
     },
   };
 }
+
 
 
 
