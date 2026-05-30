@@ -50,6 +50,7 @@ export function getPhase3BBuildProcessVersion() {
       "Build process upgraded to 3b.11",
       "Added latest AutoMode decision viewer capability",
       "Made AutoMode default for sprint-next",
+      "Added AutoMode default strategy visibility",
       "Build process upgraded to 3b.12",
       "Added AutoMode usage visibility"
     ],
@@ -89,11 +90,13 @@ export function getPhase3BBuildProcessVersion() {
       automode_decision_audit: true,
       latest_automode_decision_viewer: true,
       automode_default_enabled: true,
+      automode_default_strategy: true,
       route_matrix_contract: true,
       build_health_snapshot: true,
     },
   };
 }
+
 
 
 

@@ -16,6 +16,17 @@ $ErrorActionPreference = "Stop"
 if (-not $NoAutoMode) {
   $AutoMode = $true
   Write-Host "AutoMode default enabled. Use -NoAutoMode to force legacy behavior."
+
+Write-Host ""
+Write-Host "== AUTO MODE EXECUTION POLICY =="
+
+$ExecutionPolicyMode = if ($AutoMode) {
+  "SMART OPTIMIZATION ACTIVE"
+} else {
+  "LEGACY EXECUTION"
+}
+
+Write-Host "Execution policy mode: $ExecutionPolicyMode"
 }
 
 if ($AutoMode) {
@@ -140,6 +151,19 @@ $OptimizationMode = if ($LocalOnly) {
 }
 
 Write-Host "Optimization mode: $OptimizationMode"
+
+Write-Host ""
+Write-Host "== AUTO MODE DEPLOY STRATEGY =="
+
+if ($LocalOnly) {
+  Write-Host "Deploy strategy: DEPLOYMENT SUPPRESSED"
+  Write-Host "Production verification: SKIPPED"
+  Write-Host "Expected cost profile: LOW"
+} else {
+  Write-Host "Deploy strategy: FULL VALIDATION PIPELINE"
+  Write-Host "Production verification: ACTIVE"
+  Write-Host "Expected cost profile: STANDARD"
+}
 
 $AdaptiveScore = switch ($Impact.risk_level) {
   "low"    { 98 }
@@ -290,6 +314,7 @@ if ($Impact.changed_file_count -le 5) {
 }
 }
 }
+
 
 
 
