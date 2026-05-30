@@ -26,4 +26,8 @@ foreach ($Case in $Cases) {
   Write-Host "Cache allowed: $($Decision.cache_allowed)"
   Write-Host "Orchestration level: $($Decision.orchestration_level)"
   Write-Host "Token budget: $($Decision.token_budget)"
+  Write-Host "Economic priority: $($Response.token_economy.economic_priority)"
+  Write-Host "Estimated cost units: $($Response.token_economy.estimated_cost_units)"
+  Write-Host "Cost pressure: $($Response.token_economy.cost_pressure)"
 }
+
