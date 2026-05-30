@@ -66,6 +66,7 @@ export function getPhase3BBuildProcessVersion() {
       "Added runtime intelligence router query inputs",
       "Added runtime intelligence router contract tests",
       "Added runtime intelligence route matrix probe",
+      "Added runtime intelligence status viewer",
       "Build process upgraded to 3b.15",
       "Added AutoMode usage visibility"
     ],
@@ -115,11 +116,13 @@ export function getPhase3BBuildProcessVersion() {
       runtime_intelligence_query_inputs: true,
       runtime_intelligence_router_contract_tests: true,
       runtime_intelligence_route_matrix_probe: true,
+      runtime_intelligence_status_viewer: true,
       route_matrix_contract: true,
       build_health_snapshot: true,
     },
   };
 }
+
 
 
 

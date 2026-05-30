@@ -14,7 +14,8 @@ $Viewers = @(
   ".\tools\sprint-next\phase3b-latest-impact-report.ps1",
   ".\tools\sprint-next\phase3b-latest-speed-decision.ps1",
   ".\tools\sprint-next\phase3b-latest-automode-decision.ps1",
-  ".\tools\sprint-next\phase3b-latest-production-verify-summary.ps1"
+  ".\tools\sprint-next\phase3b-latest-production-verify-summary.ps1",
+  ".\tools\sprint-next\runtime-intelligence-route-status.ps1"
 )
 
 foreach ($Viewer in $Viewers) {
@@ -33,6 +34,7 @@ foreach ($Viewer in $Viewers) {
     powershell -ExecutionPolicy Bypass -File $Viewer
   }
 }
+
 
 
 
