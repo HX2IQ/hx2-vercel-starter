@@ -1,10 +1,10 @@
-export function getPhase3BBuildProcessVersion() {
+﻿export function getPhase3BBuildProcessVersion() {
   return {
     ok: true,
     version_id: "hx2-phase3b-build-process",
     phase: "phase_3b",
     process_mode: "fast_safe_sprint",
-    process_version: "3b.13",
+    process_version: "3b.14",
     release_notes: [
       "Added fast no review mode",
       "Added skip diff summary mode",
@@ -55,6 +55,8 @@ export function getPhase3BBuildProcessVersion() {
       "Made AutoMode the default cost-saving sprint strategy",
       "Added dashboard AutoMode default visibility",
       "Build process upgraded to 3b.13",
+      "Added AutoMode default production contract coverage",
+      "Build process upgraded to 3b.14",
       "Added AutoMode usage visibility"
     ],
     composition_mutation_allowed: false,
@@ -100,6 +102,7 @@ export function getPhase3BBuildProcessVersion() {
     },
   };
 }
+
 
 
 
