@@ -1,4 +1,4 @@
-﻿export function getPhase3BBuildProcessVersion() {
+export function getPhase3BBuildProcessVersion() {
   return {
     ok: true,
     version_id: "hx2-phase3b-build-process",
@@ -56,6 +56,7 @@
       "Added dashboard AutoMode default visibility",
       "Build process upgraded to 3b.13",
       "Added AutoMode default production contract coverage",
+      "Added AutoMode deploy memory",
       "Build process upgraded to 3b.14",
       "Added AutoMode usage visibility"
     ],
@@ -97,11 +98,13 @@
       automode_default_enabled: true,
       automode_default_strategy: true,
       dashboard_automode_default_visibility: true,
+      automode_deploy_memory: true,
       route_matrix_contract: true,
       build_health_snapshot: true,
     },
   };
 }
+
 
 
 

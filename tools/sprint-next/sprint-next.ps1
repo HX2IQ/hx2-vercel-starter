@@ -173,6 +173,34 @@ $AdaptiveScore = switch ($Impact.risk_level) {
 
 Write-Host "Adaptive optimization score: $AdaptiveScore/100"
 
+Write-Host ""
+Write-Host "== AUTO MODE DEPLOY MEMORY =="
+
+$DeployMemoryPath = "tools/sprint-next/_audit/phase3b-automode-deploy-memory.json"
+
+if (Test-Path $DeployMemoryPath) {
+  $DeployMemory = Get-Content $DeployMemoryPath -Raw | ConvertFrom-Json
+
+  Write-Host "Previous execution mode: $($DeployMemory.execution_mode)"
+  Write-Host "Previous risk level: $($DeployMemory.risk_level)"
+  Write-Host "Previous deploy skipped: $($DeployMemory.deploy_skipped)"
+} else {
+  Write-Host "No previous deploy memory found."
+}
+
+$CurrentDeployMemory = [ordered]@{
+  generated_at_utc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+  execution_mode = $(if ($LocalOnly) { "local_only" } else { "full_deploy" })
+  risk_level = $Impact.risk_level
+  deploy_skipped = [bool]$LocalOnly
+  adaptive_score = $AdaptiveScore
+}
+
+New-Item -ItemType Directory -Force -Path "tools/sprint-next/_audit" | Out-Null
+$CurrentDeployMemory | ConvertTo-Json -Depth 10 | Set-Content $DeployMemoryPath -Encoding UTF8
+
+Write-Host "Deploy memory updated."
+
 $AutoModeAuditDir = "tools/sprint-next/_audit"
 New-Item -ItemType Directory -Force -Path $AutoModeAuditDir | Out-Null
 
@@ -314,6 +342,7 @@ if ($Impact.changed_file_count -le 5) {
 }
 }
 }
+
 
 
 
