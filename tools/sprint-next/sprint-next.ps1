@@ -142,6 +142,30 @@ $AdaptiveScore = switch ($Impact.risk_level) {
 }
 
 Write-Host "Adaptive optimization score: $AdaptiveScore/100"
+
+$AutoModeAuditDir = "tools/sprint-next/_audit"
+New-Item -ItemType Directory -Force -Path $AutoModeAuditDir | Out-Null
+
+$AutoModeAudit = [ordered]@{
+  audit_id = "phase3b-automode-decision"
+  generated_at_utc = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+  feature_name = $FeatureName
+  message = $Message
+  probe_url = $ProbeUrl
+  risk_level = $Impact.risk_level
+  changed_file_count = $Impact.changed_file_count
+  execution_mode = $(if ($LocalOnly) { "local_only" } else { "full_deploy" })
+  deploy_skipped = [bool]$LocalOnly
+  fast_no_review = [bool]$FastNoReview
+  decision_reason = $AutoModeReason
+  optimization_mode = $OptimizationMode
+  adaptive_score = $AdaptiveScore
+}
+
+$AutoModeAuditPath = Join-Path $AutoModeAuditDir ("phase3b-automode-decision-" + (Get-Date -Format "yyyyMMdd-HHmmss") + ".json")
+$AutoModeAudit | ConvertTo-Json -Depth 10 | Set-Content $AutoModeAuditPath -Encoding UTF8
+
+Write-Host "AutoMode decision audit written: $AutoModeAuditPath"
 }
 Write-Host "Fast review mode: $FastNoReview"
 Write-Host "Deploy skipped: $LocalOnly"
@@ -260,6 +284,7 @@ if ($Impact.changed_file_count -le 5) {
 }
 }
 }
+
 
 
 
