@@ -27,5 +27,18 @@ foreach ($Field in $RequiredRouterFields) {
   }
 }
 
+if ($Response.routing_decision.reasoning_depth -ne "deep") {
+  throw "Mission critical route should use deep reasoning"
+}
+
+if ($Response.routing_decision.execution_mode -ne "precision") {
+  throw "Mission critical route should use precision execution"
+}
+
+if ($Response.routing_decision.orchestration_level -ne "multi") {
+  throw "Mission critical route should use multi orchestration"
+}
+
 Write-Host "RUNTIME INTELLIGENCE ROUTE PRODUCTION PROBE PASSED"
+
 
