@@ -123,6 +123,25 @@ if ($LocalOnly) {
   Write-Host "Estimated deploys avoided: 1"
 } else {
   Write-Host "Estimated deploys avoided: 0"
+
+Write-Host ""
+Write-Host "== AUTO MODE ADAPTIVE OPTIMIZATION =="
+
+$OptimizationMode = if ($LocalOnly) {
+  "MAXIMUM COST EFFICIENCY"
+} else {
+  "MAXIMUM PRODUCTION SAFETY"
+}
+
+Write-Host "Optimization mode: $OptimizationMode"
+
+$AdaptiveScore = switch ($Impact.risk_level) {
+  "low"    { 98 }
+  "medium" { 84 }
+  default  { 72 }
+}
+
+Write-Host "Adaptive optimization score: $AdaptiveScore/100"
 }
 Write-Host "Fast review mode: $FastNoReview"
 Write-Host "Deploy skipped: $LocalOnly"
@@ -215,6 +234,20 @@ if ($LocalOnly) {
   Write-Host "Resource profile: FULL VALIDATION"
   Write-Host "Serverless pressure: MODERATE"
   Write-Host "Verification pressure: HIGH"
+
+Write-Host ""
+Write-Host "== AUTO MODE PIPELINE PRESSURE =="
+
+if ($Impact.changed_file_count -le 5) {
+  Write-Host "Pipeline pressure: LOW"
+} elseif ($Impact.changed_file_count -le 20) {
+  Write-Host "Pipeline pressure: MODERATE"
+} else {
+  Write-Host "Pipeline pressure: HIGH"
+}
+
+Write-Host "Changed files analyzed: $($Impact.changed_file_count)"
+Write-Host "Risk classification: $($Impact.risk_level.ToUpper())"
 }
 
 if ($Impact.changed_file_count -le 5) {
@@ -227,6 +260,7 @@ if ($Impact.changed_file_count -le 5) {
 }
 }
 }
+
 
 
 

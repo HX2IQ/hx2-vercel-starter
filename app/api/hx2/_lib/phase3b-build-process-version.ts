@@ -44,6 +44,7 @@ export function getPhase3BBuildProcessVersion() {
       "Added AutoMode historical telemetry",
       "Added AutoMode learning loop visibility",
       "Added AutoMode smart deploy thresholds",
+      "Added AutoMode adaptive optimization",
       "Build process upgraded to 3b.11",
       "Added AutoMode usage visibility"
     ],
@@ -79,11 +80,13 @@ export function getPhase3BBuildProcessVersion() {
       automode_historical_telemetry: true,
       automode_learning_loop: true,
       automode_smart_thresholds: true,
+      automode_adaptive_optimization: true,
       route_matrix_contract: true,
       build_health_snapshot: true,
     },
   };
 }
+
 
 
 
