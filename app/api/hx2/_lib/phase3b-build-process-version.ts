@@ -1,4 +1,4 @@
-﻿export function getPhase3BBuildProcessVersion() {
+export function getPhase3BBuildProcessVersion() {
   return {
     ok: true,
     version_id: "hx2-phase3b-build-process",
@@ -60,6 +60,7 @@
       "Protected AutoMode deploy memory audit files from git",
       "Build process upgraded to 3b.14",
       "Added AutoMode deploy memory gitignore contract protection",
+      "Added dashboard deploy memory visibility",
       "Build process upgraded to 3b.15",
       "Added AutoMode usage visibility"
     ],
@@ -103,11 +104,13 @@
       dashboard_automode_default_visibility: true,
       automode_deploy_memory: true,
       automode_deploy_memory_gitignore: true,
+      dashboard_deploy_memory_visibility: true,
       route_matrix_contract: true,
       build_health_snapshot: true,
     },
   };
 }
+
 
 
 
