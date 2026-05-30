@@ -68,12 +68,14 @@ if ($Response.capabilities.cached_validation_advisory_only -ne $true) { throw "B
 if ($Response.capabilities.automode_usage_visibility -ne $true) { throw "Build process missing automode_usage_visibility capability" }
 if ($Response.capabilities.automode_default_enabled -ne $true) { throw "Build process missing automode_default_enabled capability" }
 if ($Response.capabilities.automode_default_strategy -ne $true) { throw "Build process missing automode_default_strategy capability" }
+if ($Response.capabilities.automode_deploy_memory_gitignore -ne $true) { throw "Build process missing automode_deploy_memory_gitignore capability" }
 if ($Response.capabilities.dashboard_automode_default_visibility -ne $true) { throw "Build process missing dashboard_automode_default_visibility capability" }
 if ($Response.capabilities.latest_automode_decision_viewer -ne $true) { throw "Build process missing latest_automode_decision_viewer capability" }
 
 Write-Host ""
 Write-Host "PHASE 3B BUILD PROCESS VERSION PRODUCTION PROBE PASSED"
 $Response | ConvertTo-Json -Depth 20
+
 
 
 

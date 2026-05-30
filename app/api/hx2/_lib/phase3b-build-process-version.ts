@@ -57,6 +57,7 @@ export function getPhase3BBuildProcessVersion() {
       "Build process upgraded to 3b.13",
       "Added AutoMode default production contract coverage",
       "Added AutoMode deploy memory",
+      "Protected AutoMode deploy memory audit files from git",
       "Build process upgraded to 3b.14",
       "Added AutoMode usage visibility"
     ],
@@ -99,11 +100,13 @@ export function getPhase3BBuildProcessVersion() {
       automode_default_strategy: true,
       dashboard_automode_default_visibility: true,
       automode_deploy_memory: true,
+      automode_deploy_memory_gitignore: true,
       route_matrix_contract: true,
       build_health_snapshot: true,
     },
   };
 }
+
 
 
 
