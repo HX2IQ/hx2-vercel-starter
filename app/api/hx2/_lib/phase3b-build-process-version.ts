@@ -62,6 +62,7 @@ export function getPhase3BBuildProcessVersion() {
       "Added AutoMode deploy memory gitignore contract protection",
       "Added dashboard deploy memory visibility",
       "Added dashboard cost savings summary",
+      "Added runtime intelligence router",
       "Build process upgraded to 3b.15",
       "Added AutoMode usage visibility"
     ],
@@ -107,11 +108,13 @@ export function getPhase3BBuildProcessVersion() {
       automode_deploy_memory_gitignore: true,
       dashboard_deploy_memory_visibility: true,
       dashboard_cost_savings_summary: true,
+      runtime_intelligence_router: true,
       route_matrix_contract: true,
       build_health_snapshot: true,
     },
   };
 }
+
 
 
 
