@@ -1,4 +1,4 @@
-﻿export function getPhase3BBuildProcessVersion() {
+export function getPhase3BBuildProcessVersion() {
   return {
     ok: true,
     version_id: "hx2-phase3b-build-process",
@@ -49,6 +49,7 @@
       "Added latest AutoMode decision viewer",
       "Build process upgraded to 3b.11",
       "Added latest AutoMode decision viewer capability",
+      "Made AutoMode default for sprint-next",
       "Build process upgraded to 3b.12",
       "Added AutoMode usage visibility"
     ],
@@ -87,11 +88,13 @@
       automode_adaptive_optimization: true,
       automode_decision_audit: true,
       latest_automode_decision_viewer: true,
+      automode_default_enabled: true,
       route_matrix_contract: true,
       build_health_snapshot: true,
     },
   };
 }
+
 
 
 

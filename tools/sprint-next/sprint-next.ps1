@@ -7,10 +7,16 @@ param(
   [switch]$AllowNoCommit,
   [switch]$SkipDiffSummary,
   [switch]$FastNoReview,
-  [switch]$AutoMode
+  [switch]$AutoMode,
+  [switch]$NoAutoMode
 )
 
 $ErrorActionPreference = "Stop"
+
+if (-not $NoAutoMode) {
+  $AutoMode = $true
+  Write-Host "AutoMode default enabled. Use -NoAutoMode to force legacy behavior."
+}
 
 if ($AutoMode) {
   Write-Host ""
@@ -284,6 +290,7 @@ if ($Impact.changed_file_count -le 5) {
 }
 }
 }
+
 
 
 
