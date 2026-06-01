@@ -1,4 +1,64 @@
-﻿# HX2 DEV2 CHAT RECOVERY PROMPT
+﻿# HX2 NEW CHAT HANDOFF
+
+Paste this into a new chat before continuing HX2 build work.
+
+---
+
+# HX2 CHAT BOOTSTRAP
+
+Generated UTC:
+2026-06-01T21:03:15Z
+
+Repo:
+https://github.com/HX2IQ/hx2-vercel-starter.git
+
+Branch:
+main
+
+HEAD:
+c71827bf73d2005425e35467bade7dd0e81518d4
+
+Vercel project:
+optinodeiq
+
+Vercel rootDirectory:
+
+
+Production domain:
+https://optinodeiq.com
+
+Current phase:
+Phase 3B stabilization / deployment continuity hardening
+
+Canonical route tree:
+app/api
+
+Do not use:
+src/app/api
+
+Current verified runtime intelligence routes:
+- /api/hx2/runtime-intelligence-dependency-validation
+- /api/hx2/runtime-intelligence-graph-integrity-summary
+- /api/hx2/runtime-intelligence-execution-readiness
+
+Critical DEV2 lesson:
+PowerShell URLs must use ${Route} before query strings. Do not use $Route?cb.
+
+DEV2 rules:
+- Use Structured Mutation Mode
+- Prefer inspect -> coherent rewrite -> tsc -> guard -> sprint
+- Avoid nested powershell -Command
+- Avoid fragile anchor-only patches
+- Verify live route contracts before feature sprints
+
+Recommended first command in new chat:
+powershell -ExecutionPolicy Bypass -File .\tools\dev2-topology-guard.ps1
+powershell -ExecutionPolicy Bypass -File .\tools\dev2-route-contract-guard.ps1 -BaseUrl "https://optinodeiq.com"
+
+
+---
+
+# HX2 DEV2 CHAT RECOVERY PROMPT
 
 ## Repository
 HX2IQ/hx2-vercel-starter
@@ -114,3 +174,18 @@ The deployments themselves were healthy.
 The probe tooling was malformed.
 
 This is now permanently hardened in DEV2.
+
+
+---
+
+## Required startup instruction for new chat
+
+Operate under DEV2/QIDC continuity mode.
+
+Before providing any sprint:
+1. Confirm repo continuity from this handoff.
+2. Preserve DEV2 Structured Mutation Mode.
+3. Do not assume old deployment failures are still active.
+4. Run or request:
+   npm run dev2:continuity
+5. Continue from current HEAD and current Phase 3B stabilization state.
