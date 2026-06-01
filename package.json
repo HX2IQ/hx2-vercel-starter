@@ -44,7 +44,11 @@
     "hx2:env": "powershell -ExecutionPolicy Bypass -File tools/hx2-local-env-check.ps1",
     "hx2:chat-master:guard": "powershell -ExecutionPolicy Bypass -File tools/chat-master/hx2-chat-master-guard-bundle.ps1",
     "hx2:chat-master:report": "powershell -ExecutionPolicy Bypass -File tools/chat-master/chat-master-readiness-report.ps1",
-    "hx2:chat-master:route-report": "powershell -ExecutionPolicy Bypass -File tools/chat-master/chat-master-route-test-report.ps1"
+    "hx2:chat-master:route-report": "powershell -ExecutionPolicy Bypass -File tools/chat-master/chat-master-route-test-report.ps1",
+    "dev2:precheck": "powershell -ExecutionPolicy Bypass -File tools/dev2-sprint-precheck.ps1",
+    "dev2:postdeploy": "powershell -ExecutionPolicy Bypass -File tools/dev2-postdeploy-verify.ps1",
+    "dev2:bootstrap": "powershell -ExecutionPolicy Bypass -File tools/dev2-chat-bootstrap-export.ps1",
+    "dev2:proof": "powershell -ExecutionPolicy Bypass -File tools/dev2-vercel-proof.ps1"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
