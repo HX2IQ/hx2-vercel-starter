@@ -104,3 +104,6 @@ tools/sprint-next/_cache/
 
 # DEV2 deployment forensic artifacts
 tools/_deployment-proof/
+
+# DEV2 generated route inventory snapshots
+tools/_route-inventory/
