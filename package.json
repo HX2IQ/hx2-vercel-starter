@@ -48,7 +48,8 @@
     "dev2:precheck": "powershell -ExecutionPolicy Bypass -File tools/dev2-sprint-precheck.ps1",
     "dev2:postdeploy": "powershell -ExecutionPolicy Bypass -File tools/dev2-postdeploy-verify.ps1",
     "dev2:bootstrap": "powershell -ExecutionPolicy Bypass -File tools/dev2-chat-bootstrap-export.ps1",
-    "dev2:proof": "powershell -ExecutionPolicy Bypass -File tools/dev2-vercel-proof.ps1"
+    "dev2:proof": "powershell -ExecutionPolicy Bypass -File tools/dev2-vercel-proof.ps1",
+    "dev2:continuity": "powershell -ExecutionPolicy Bypass -File tools/dev2-continuity-check.ps1"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
