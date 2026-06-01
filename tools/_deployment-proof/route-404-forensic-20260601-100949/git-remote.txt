@@ -1,0 +1,2 @@
+origin	https://github.com/HX2IQ/hx2-vercel-starter.git (fetch)
+origin	https://github.com/HX2IQ/hx2-vercel-starter.git (push)

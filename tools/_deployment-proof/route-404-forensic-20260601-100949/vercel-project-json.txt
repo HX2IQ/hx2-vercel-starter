@@ -1,0 +1,16 @@
+{
+  "projectId": "prj_K33GKY9G7Lcbh0cZDntnaEuQRJq1",
+  "orgId": "team_RHfUgy0HnivhFce1n709KmPA",
+  "projectName": "optinodeiq",
+  "settings": {
+    "createdAt": 1768011789610,
+    "framework": "nextjs",
+    "devCommand": null,
+    "installCommand": null,
+    "buildCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": null,
+    "directoryListing": false,
+    "nodeVersion": "24.x"
+  }
+}

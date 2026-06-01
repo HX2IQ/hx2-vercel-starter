@@ -1,0 +1,8 @@
+2fabd4b Trigger production redeploy after Vercel route config fix
+841aaa7 Remove stale Vercel src app api route override
+5d247fa Add runtime intelligence execution readiness
+db3e476 Add runtime intelligence graph integrity summary
+a02f91e Add DEV2 deploy target guard
+df69aaa Add runtime intelligence dependency validation route
+617f8df Add runtime intelligence economic pressure modeling
+b6540b2 Add runtime intelligence route status viewer
