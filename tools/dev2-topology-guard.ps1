@@ -3,10 +3,10 @@ $ErrorActionPreference = "Stop"
 Write-Host ""
 Write-Host "== DEV2 TOPOLOGY GUARD =="
 
-$Root = (git rev-parse --show-toplevel).Trim()
-$Here = (Get-Location).Path
+$Root = [System.IO.Path]::GetFullPath((git rev-parse --show-toplevel).Trim()).TrimEnd("\")
+$Here = [System.IO.Path]::GetFullPath((Get-Location).Path).TrimEnd("\")
 
-if ($Here -ne $Root) {
+if ($Here.ToLowerInvariant() -ne $Root.ToLowerInvariant()) {
   throw "Run from repo root. Current directory does not match git root."
 }
 
@@ -57,3 +57,4 @@ Write-Host "Branch: $Branch"
 Write-Host "Vercel project: $($ProjectJson.projectName)"
 Write-Host "Root directory: $($ProjectJson.settings.rootDirectory)"
 Write-Host "DEV2 TOPOLOGY GUARD PASSED"
+

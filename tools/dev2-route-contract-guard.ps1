@@ -22,7 +22,7 @@ foreach ($Route in $Routes) {
 
   $ArtifactPath = ".next/server/app/api/hx2/$Route/route.js"
 
-  if (Test-Path ".next" -and !(Test-Path $ArtifactPath)) {
+  if ((Test-Path ".next") -and !(Test-Path $ArtifactPath)) {
     throw "Missing local build artifact: $ArtifactPath"
   }
 }
@@ -48,3 +48,4 @@ foreach ($Route in $Routes) {
 }
 
 Write-Host "DEV2 ROUTE CONTRACT GUARD PASSED"
+
