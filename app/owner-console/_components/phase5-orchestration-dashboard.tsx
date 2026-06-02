@@ -1,3 +1,4 @@
+import { Phase5ExecutionGraph } from "./phase5-execution-graph";
 import { Phase5TelemetryVisualization } from "./phase5-telemetry-visualization";
 type DashboardPanel = {
   title: string;
@@ -67,7 +68,11 @@ export function Phase5OrchestrationDashboard() {
           </div>
         ))}
       </div>
+    <div className="mt-6">
+        <Phase5ExecutionGraph />
+      </div>
     </div>
   );
 }
+
 
