@@ -1,3 +1,5 @@
+import { Phase5EventStream } from "./phase5-event-stream";
+import { Phase5RuntimeMetrics } from "./phase5-runtime-metrics";
 import { Phase5HealthScore } from "./phase5-health-score";
 import { Phase5ExecutionGraph } from "./phase5-execution-graph";
 import { Phase5TelemetryVisualization } from "./phase5-telemetry-visualization";
@@ -75,9 +77,17 @@ export function Phase5OrchestrationDashboard() {
     <div className="mt-6">
         <Phase5HealthScore />
       </div>
+    <div className="mt-6">
+        <Phase5RuntimeMetrics />
+      </div>
+
+      <div className="mt-6">
+        <Phase5EventStream />
+      </div>
     </div>
   );
 }
+
 
 
 
