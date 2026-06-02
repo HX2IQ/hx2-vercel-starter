@@ -84,7 +84,7 @@ export async function GET() {
 
     execution_memory_summary: buildExecutionMemorySummary(),
 
-    execution_memory,
+    execution_memory: executionMemory,
 
     dev2: {
       stabilization_complete: true,
@@ -94,3 +94,4 @@ export async function GET() {
     }
   });
 }
+
