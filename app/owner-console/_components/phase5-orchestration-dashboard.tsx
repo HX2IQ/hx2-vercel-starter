@@ -1,3 +1,4 @@
+import { Phase5RuntimeTimeline } from "./phase5-runtime-timeline";
 import { Phase5RuntimePolling } from "./phase5-runtime-polling";
 import { Phase5EventStream } from "./phase5-event-stream";
 import { Phase5RuntimeMetrics } from "./phase5-runtime-metrics";
@@ -88,9 +89,13 @@ export function Phase5OrchestrationDashboard() {
     <div className="mt-6">
         <Phase5RuntimePolling />
       </div>
+    <div className="mt-6">
+        <Phase5RuntimeTimeline />
+      </div>
     </div>
   );
 }
+
 
 
 
