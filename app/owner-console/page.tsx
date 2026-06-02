@@ -1,3 +1,4 @@
+import { Phase5OrchestrationDashboard } from "./_components/phase5-orchestration-dashboard";
 import { ChatMasterPanels } from "./_components/chat-master-panels";
 
 async function getOwnerSummary() {
@@ -1612,9 +1613,11 @@ export default async function OwnerConsolePage() {
           </div>
         </div>
       </div>
-    </main>
+      <Phase5OrchestrationDashboard />
+</main>
   );
 }
+
 
 
 
