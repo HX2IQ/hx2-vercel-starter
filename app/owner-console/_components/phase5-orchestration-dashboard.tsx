@@ -1,3 +1,4 @@
+import { Phase5TelemetryVisualization } from "./phase5-telemetry-visualization";
 type DashboardPanel = {
   title: string;
   status: string;
@@ -69,3 +70,4 @@ export function Phase5OrchestrationDashboard() {
     </div>
   );
 }
+
