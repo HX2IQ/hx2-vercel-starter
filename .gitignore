@@ -110,3 +110,6 @@ tools/_route-inventory/
 
 # DEV2 topology fingerprints
 tools/_topology/
+
+# DEV2 local stabilization snapshots
+tools/_stabilization/
