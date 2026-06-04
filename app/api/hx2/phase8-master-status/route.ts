@@ -30,6 +30,40 @@ const readinessChecks = [
   }
 ];
 
+
+const dryRunSimulationContracts = [
+  {
+    simulation_id: "sim_001",
+    scenario: "nominal_execution",
+    dry_run_only: true,
+    mutation_allowed: false
+  },
+  {
+    simulation_id: "sim_002",
+    scenario: "dependency_failure",
+    dry_run_only: true,
+    mutation_allowed: false
+  },
+  {
+    simulation_id: "sim_003",
+    scenario: "rollback_candidate",
+    dry_run_only: true,
+    mutation_allowed: false
+  },
+  {
+    simulation_id: "sim_004",
+    scenario: "recovery_candidate",
+    dry_run_only: true,
+    mutation_allowed: false
+  },
+  {
+    simulation_id: "sim_005",
+    scenario: "promotion_candidate",
+    dry_run_only: true,
+    mutation_allowed: false
+  }
+];
+
 export async function GET() {
 
   return NextResponse.json({
@@ -49,11 +83,17 @@ export async function GET() {
     phase8a_execution_readiness_active:
       true,
 
+    phase8b_dry_run_simulation_active:
+      true,
+
     contract_status:
-      "phase8a_execution_readiness_stabilization",
+      "phase8b_dry_run_simulation_stabilization",
 
     readiness_checks:
       readinessChecks,
+
+    dry_run_simulation_contracts:
+      dryRunSimulationContracts,
 
     replay_execution_active:
       false,
@@ -67,6 +107,9 @@ export async function GET() {
     autonomous_execution_active:
       false,
 
+    execution_simulation_active:
+      false,
+
     dev2: {
       execution_readiness_gate_active: true,
       mutation_block_active: true,
@@ -75,3 +118,4 @@ export async function GET() {
     }
   });
 }
+
