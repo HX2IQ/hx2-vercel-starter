@@ -180,6 +180,35 @@ const operatorOverrideContracts = [
   }
 ];
 
+
+const controlledExecutionPromotionGateContracts = [
+  {
+    promotion_gate_id: "phase9_gate_001",
+    gate: "controlled_execution_sandbox_ready",
+    approved: false
+  },
+  {
+    promotion_gate_id: "phase9_gate_002",
+    gate: "permission_model_ready",
+    approved: false
+  },
+  {
+    promotion_gate_id: "phase9_gate_003",
+    gate: "audit_trail_ready",
+    approved: false
+  },
+  {
+    promotion_gate_id: "phase9_gate_004",
+    gate: "approval_workflow_ready",
+    approved: false
+  },
+  {
+    promotion_gate_id: "phase9_gate_005",
+    gate: "operator_override_ready",
+    approved: false
+  }
+];
+
 export async function GET() {
 
   return NextResponse.json({
@@ -216,8 +245,11 @@ export async function GET() {
     phase9f_operator_override_contracts_active:
       true,
 
+    phase9g_controlled_execution_promotion_gate_active:
+      true,
+
     contract_status:
-      "phase9f_operator_override_contract_stabilization",
+      "phase9g_controlled_execution_promotion_gate_stabilization",
 
     controlled_execution_sandbox_contracts:
       controlledExecutionSandboxContracts,
@@ -236,6 +268,9 @@ export async function GET() {
 
     operator_override_contracts:
       operatorOverrideContracts,
+
+    controlled_execution_promotion_gate_contracts:
+      controlledExecutionPromotionGateContracts,
 
     autonomous_execution_active:
       false,
@@ -261,6 +296,7 @@ export async function GET() {
     }
   });
 }
+
 
 
 
