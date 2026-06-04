@@ -125,6 +125,40 @@ const rollbackEligibilityContracts = [
   }
 ];
 
+
+const faultIsolationContracts = [
+  {
+    fault_contract_id: "route_fault_domain_boundary",
+    containment_required: true,
+    blast_radius: "single_route",
+    mutation_allowed: false
+  },
+  {
+    fault_contract_id: "dependency_fault_boundary",
+    containment_required: true,
+    blast_radius: "declared_dependencies_only",
+    mutation_allowed: false
+  },
+  {
+    fault_contract_id: "runtime_fault_observation_scope",
+    containment_required: true,
+    blast_radius: "read_only_observation",
+    mutation_allowed: false
+  },
+  {
+    fault_contract_id: "rollback_fault_prevention_boundary",
+    containment_required: true,
+    blast_radius: "rollback_validation_only",
+    mutation_allowed: false
+  },
+  {
+    fault_contract_id: "self_healing_fault_gate",
+    containment_required: true,
+    blast_radius: "blocked_until_promotion_gate",
+    mutation_allowed: false
+  }
+];
+
 export async function GET() {
 
   return NextResponse.json({
@@ -156,6 +190,9 @@ export async function GET() {
     phase7d_rollback_eligibility_contracts_active:
       true,
 
+    phase7e_fault_isolation_contracts_active:
+      true,
+
     capability:
       "phase7_master_status_contract",
 
@@ -163,7 +200,7 @@ export async function GET() {
       "phase7_contract_readiness_summary",
 
     contract_status:
-      "phase7d_rollback_eligibility_contract_stabilization",
+      "phase7e_fault_isolation_contract_stabilization",
 
     recovery_contracts:
       recoveryContracts,
@@ -176,6 +213,9 @@ export async function GET() {
 
     rollback_eligibility_contracts:
       rollbackEligibilityContracts,
+
+    fault_isolation_contracts:
+      faultIsolationContracts,
 
     recovery_logic_active:
       false,
@@ -209,4 +249,5 @@ export async function GET() {
     }
   });
 }
+
 
