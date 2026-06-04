@@ -127,6 +127,35 @@ const rollbackSimulationContracts = [
   }
 ];
 
+
+const faultResponseSimulationContracts = [
+  {
+    fault_id: "fault_001",
+    response_type: "dependency_failure",
+    simulation_only: true
+  },
+  {
+    fault_id: "fault_002",
+    response_type: "resource_exhaustion",
+    simulation_only: true
+  },
+  {
+    fault_id: "fault_003",
+    response_type: "checkpoint_violation",
+    simulation_only: true
+  },
+  {
+    fault_id: "fault_004",
+    response_type: "promotion_gate_failure",
+    simulation_only: true
+  },
+  {
+    fault_id: "fault_005",
+    response_type: "recovery_path_failure",
+    simulation_only: true
+  }
+];
+
 export async function GET() {
 
   return NextResponse.json({
@@ -155,8 +184,11 @@ export async function GET() {
     phase8d_rollback_simulation_active:
       true,
 
+    phase8e_fault_response_simulation_active:
+      true,
+
     contract_status:
-      "phase8d_rollback_simulation_stabilization",
+      "phase8e_fault_response_simulation_stabilization",
 
     readiness_checks:
       readinessChecks,
@@ -170,6 +202,9 @@ export async function GET() {
     rollback_simulation_contracts:
       rollbackSimulationContracts,
 
+    fault_response_simulation_contracts:
+      faultResponseSimulationContracts,
+
     replay_execution_active:
       false,
 
@@ -177,6 +212,9 @@ export async function GET() {
       false,
 
     rollback_simulation_execution_active:
+      false,
+
+    fault_response_execution_active:
       false,
 
     self_healing_execution_active:
@@ -199,6 +237,7 @@ export async function GET() {
     }
   });
 }
+
 
 
 
