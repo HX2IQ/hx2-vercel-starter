@@ -312,8 +312,6 @@ export async function GET() {
     execution_simulation_active:
       false,
 
-    replay_execution_active:
-      false,
 
     dev2: {
       execution_readiness_gate_active: true,
