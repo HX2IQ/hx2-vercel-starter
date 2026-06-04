@@ -64,6 +64,35 @@ const dryRunSimulationContracts = [
   }
 ];
 
+
+const replaySimulationContracts = [
+  {
+    replay_id: "replay_001",
+    replay_type: "execution_path",
+    simulation_only: true
+  },
+  {
+    replay_id: "replay_002",
+    replay_type: "dependency_chain",
+    simulation_only: true
+  },
+  {
+    replay_id: "replay_003",
+    replay_type: "recovery_path",
+    simulation_only: true
+  },
+  {
+    replay_id: "replay_004",
+    replay_type: "rollback_path",
+    simulation_only: true
+  },
+  {
+    replay_id: "replay_005",
+    replay_type: "promotion_path",
+    simulation_only: true
+  }
+];
+
 export async function GET() {
 
   return NextResponse.json({
@@ -86,14 +115,20 @@ export async function GET() {
     phase8b_dry_run_simulation_active:
       true,
 
+    phase8c_replay_simulation_active:
+      true,
+
     contract_status:
-      "phase8b_dry_run_simulation_stabilization",
+      "phase8c_replay_simulation_stabilization",
 
     readiness_checks:
       readinessChecks,
 
     dry_run_simulation_contracts:
       dryRunSimulationContracts,
+
+    replay_simulation_contracts:
+      replaySimulationContracts,
 
     replay_execution_active:
       false,
@@ -110,6 +145,9 @@ export async function GET() {
     execution_simulation_active:
       false,
 
+    replay_execution_active:
+      false,
+
     dev2: {
       execution_readiness_gate_active: true,
       mutation_block_active: true,
@@ -118,4 +156,5 @@ export async function GET() {
     }
   });
 }
+
 
