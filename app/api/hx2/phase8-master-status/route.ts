@@ -93,6 +93,40 @@ const replaySimulationContracts = [
   }
 ];
 
+
+const rollbackSimulationContracts = [
+  {
+    rollback_simulation_id: "rollback_sim_001",
+    scenario: "checkpoint_safe_rollback",
+    simulation_only: true,
+    mutation_allowed: false
+  },
+  {
+    rollback_simulation_id: "rollback_sim_002",
+    scenario: "dependency_safe_rollback",
+    simulation_only: true,
+    mutation_allowed: false
+  },
+  {
+    rollback_simulation_id: "rollback_sim_003",
+    scenario: "artifact_lineage_safe_rollback",
+    simulation_only: true,
+    mutation_allowed: false
+  },
+  {
+    rollback_simulation_id: "rollback_sim_004",
+    scenario: "fault_contained_rollback",
+    simulation_only: true,
+    mutation_allowed: false
+  },
+  {
+    rollback_simulation_id: "rollback_sim_005",
+    scenario: "promotion_gate_blocked_rollback",
+    simulation_only: true,
+    mutation_allowed: false
+  }
+];
+
 export async function GET() {
 
   return NextResponse.json({
@@ -118,8 +152,11 @@ export async function GET() {
     phase8c_replay_simulation_active:
       true,
 
+    phase8d_rollback_simulation_active:
+      true,
+
     contract_status:
-      "phase8c_replay_simulation_stabilization",
+      "phase8d_rollback_simulation_stabilization",
 
     readiness_checks:
       readinessChecks,
@@ -130,10 +167,16 @@ export async function GET() {
     replay_simulation_contracts:
       replaySimulationContracts,
 
+    rollback_simulation_contracts:
+      rollbackSimulationContracts,
+
     replay_execution_active:
       false,
 
     rollback_execution_active:
+      false,
+
+    rollback_simulation_execution_active:
       false,
 
     self_healing_execution_active:
@@ -156,5 +199,6 @@ export async function GET() {
     }
   });
 }
+
 
 
