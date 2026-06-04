@@ -93,6 +93,35 @@ const finalPromotionCheckContracts = [
   }
 ];
 
+
+const productionVerificationMatrixContracts = [
+  {
+    matrix_id: "verify_001",
+    category: "build",
+    verified: false
+  },
+  {
+    matrix_id: "verify_002",
+    category: "deploy",
+    verified: false
+  },
+  {
+    matrix_id: "verify_003",
+    category: "production_routes",
+    verified: false
+  },
+  {
+    matrix_id: "verify_004",
+    category: "promotion_gates",
+    verified: false
+  },
+  {
+    matrix_id: "verify_005",
+    category: "safety_validation",
+    verified: false
+  }
+];
+
 export async function GET() {
 
   return NextResponse.json({
@@ -116,8 +145,11 @@ export async function GET() {
     phase10c_final_promotion_checks_active:
       true,
 
+    phase10d_production_verification_matrix_active:
+      true,
+
     contract_status:
-      "phase10c_final_promotion_checks_stabilization",
+      "phase10d_production_verification_matrix_stabilization",
 
     final_production_readiness_contracts:
       finalProductionReadinessContracts,
@@ -127,6 +159,9 @@ export async function GET() {
 
     final_promotion_check_contracts:
       finalPromotionCheckContracts,
+
+    production_verification_matrix_contracts:
+      productionVerificationMatrixContracts,
 
     production_ready:
       false,
@@ -155,5 +190,6 @@ export async function GET() {
     }
   });
 }
+
 
 
