@@ -7,7 +7,62 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Example {
-  id   Int    @id @default(autoincrement())
-  name String
+model Node {
+  id          String   @id @default(cuid())
+  nodeKey     String   @unique
+  displayName String
+  category    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  executions  ExecutionEvent[]
+}
+
+model ExecutionEvent {
+  id            String   @id @default(cuid())
+
+  nodeId        String
+  node          Node     @relation(fields: [nodeId], references: [id])
+
+  executionType String
+  status        String
+
+  inputSummary  String?
+  outputSummary String?
+
+  createdAt     DateTime @default(now())
+}
+
+model CapabilityPlan {
+  id            String   @id @default(cuid())
+
+  requestText   String
+  plannerOutput Json
+
+  createdAt     DateTime @default(now())
+}
+
+model MemoryRecord {
+  id            String   @id @default(cuid())
+
+  memoryType    String
+  memoryKey     String
+
+  payload       Json
+
+  createdAt     DateTime @default(now())
+
+  @@index([memoryType])
+  @@index([memoryKey])
+}
+
+model AuditEvent {
+  id            String   @id @default(cuid())
+
+  eventType     String
+  eventSource   String
+
+  payload       Json
+
+  createdAt     DateTime @default(now())
 }
