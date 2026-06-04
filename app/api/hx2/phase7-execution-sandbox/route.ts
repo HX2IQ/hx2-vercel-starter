@@ -63,6 +63,39 @@ const executionCheckpointContracts = [
   }
 ];
 
+const replayCompatibilityContracts = [
+  {
+    replay_contract_id: "execution_trace_schema",
+    replay_surface: "trace_shape_validation",
+    deterministic_required: true,
+    replay_mutation_allowed: false
+  },
+  {
+    replay_contract_id: "checkpoint_sequence_integrity",
+    replay_surface: "checkpoint_order_validation",
+    deterministic_required: true,
+    replay_mutation_allowed: false
+  },
+  {
+    replay_contract_id: "input_output_correlation",
+    replay_surface: "io_correlation_validation",
+    deterministic_required: true,
+    replay_mutation_allowed: false
+  },
+  {
+    replay_contract_id: "route_version_replay_binding",
+    replay_surface: "route_version_binding",
+    deterministic_required: true,
+    replay_mutation_allowed: false
+  },
+  {
+    replay_contract_id: "artifact_replay_lineage",
+    replay_surface: "build_artifact_replay_compatibility",
+    deterministic_required: true,
+    replay_mutation_allowed: false
+  }
+];
+
 export async function GET() {
 
   return NextResponse.json({
@@ -88,6 +121,9 @@ export async function GET() {
     phase7b_checkpoint_contracts_active:
       true,
 
+    phase7c_replay_compatibility_contracts_active:
+      true,
+
     capability:
       "autonomous_execution_sandbox_contract",
 
@@ -95,13 +131,16 @@ export async function GET() {
       "sandbox_boundary_validation",
 
     contract_status:
-      "phase7b_checkpoint_contract_stabilization",
+      "phase7c_replay_compatibility_contract_stabilization",
 
     recovery_contracts:
       recoveryContracts,
 
     execution_checkpoint_contracts:
       executionCheckpointContracts,
+
+    replay_compatibility_contracts:
+      replayCompatibilityContracts,
 
     recovery_logic_active:
       false,
