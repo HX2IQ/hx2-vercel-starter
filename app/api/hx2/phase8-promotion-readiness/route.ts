@@ -156,6 +156,40 @@ const faultResponseSimulationContracts = [
   }
 ];
 
+
+const selfHealingDecisionPreviewContracts = [
+  {
+    decision_id: "heal_preview_001",
+    scenario: "dependency_failure",
+    proposed_action: "reroute_execution",
+    preview_only: true
+  },
+  {
+    decision_id: "heal_preview_002",
+    scenario: "resource_pressure",
+    proposed_action: "rebalance_resources",
+    preview_only: true
+  },
+  {
+    decision_id: "heal_preview_003",
+    scenario: "checkpoint_violation",
+    proposed_action: "rollback_candidate",
+    preview_only: true
+  },
+  {
+    decision_id: "heal_preview_004",
+    scenario: "fault_isolation_trigger",
+    proposed_action: "contain_fault",
+    preview_only: true
+  },
+  {
+    decision_id: "heal_preview_005",
+    scenario: "promotion_gate_failure",
+    proposed_action: "block_promotion",
+    preview_only: true
+  }
+];
+
 export async function GET() {
 
   return NextResponse.json({
@@ -187,8 +221,11 @@ export async function GET() {
     phase8e_fault_response_simulation_active:
       true,
 
+    phase8f_self_healing_preview_active:
+      true,
+
     contract_status:
-      "phase8e_fault_response_simulation_stabilization",
+      "phase8f_self_healing_preview_stabilization",
 
     readiness_checks:
       readinessChecks,
@@ -205,6 +242,9 @@ export async function GET() {
     fault_response_simulation_contracts:
       faultResponseSimulationContracts,
 
+    self_healing_decision_preview_contracts:
+      selfHealingDecisionPreviewContracts,
+
     replay_execution_active:
       false,
 
@@ -215,6 +255,9 @@ export async function GET() {
       false,
 
     fault_response_execution_active:
+      false,
+
+    self_healing_logic_active:
       false,
 
     self_healing_execution_active:
@@ -237,6 +280,7 @@ export async function GET() {
     }
   });
 }
+
 
 
 
