@@ -122,6 +122,35 @@ const executionApprovalWorkflowContracts = [
   }
 ];
 
+
+const runtimeBoundaryEnforcementContracts = [
+  {
+    boundary_id: "boundary_001",
+    boundary_enforced: true,
+    execution_allowed: false
+  },
+  {
+    boundary_id: "boundary_002",
+    boundary_enforced: true,
+    execution_allowed: false
+  },
+  {
+    boundary_id: "boundary_003",
+    boundary_enforced: true,
+    execution_allowed: false
+  },
+  {
+    boundary_id: "boundary_004",
+    boundary_enforced: true,
+    execution_allowed: false
+  },
+  {
+    boundary_id: "boundary_005",
+    boundary_enforced: true,
+    execution_allowed: false
+  }
+];
+
 export async function GET() {
 
   return NextResponse.json({
@@ -152,8 +181,11 @@ export async function GET() {
     phase9d_execution_approval_workflow_active:
       true,
 
+    phase9e_runtime_boundary_enforcement_active:
+      true,
+
     contract_status:
-      "phase9d_execution_approval_workflow_stabilization",
+      "phase9e_runtime_boundary_enforcement_stabilization",
 
     controlled_execution_sandbox_contracts:
       controlledExecutionSandboxContracts,
@@ -166,6 +198,9 @@ export async function GET() {
 
     execution_approval_workflow_contracts:
       executionApprovalWorkflowContracts,
+
+    runtime_boundary_enforcement_contracts:
+      runtimeBoundaryEnforcementContracts,
 
     autonomous_execution_active:
       false,
@@ -191,6 +226,7 @@ export async function GET() {
     }
   });
 }
+
 
 
 
