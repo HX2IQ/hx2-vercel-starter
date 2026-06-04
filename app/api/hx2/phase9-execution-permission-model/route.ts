@@ -93,6 +93,35 @@ const executionAuditTrailContracts = [
   }
 ];
 
+
+const executionApprovalWorkflowContracts = [
+  {
+    approval_workflow_id: "approval_001",
+    approval_required: true,
+    approved: false
+  },
+  {
+    approval_workflow_id: "approval_002",
+    approval_required: true,
+    approved: false
+  },
+  {
+    approval_workflow_id: "approval_003",
+    approval_required: true,
+    approved: false
+  },
+  {
+    approval_workflow_id: "approval_004",
+    approval_required: true,
+    approved: false
+  },
+  {
+    approval_workflow_id: "approval_005",
+    approval_required: true,
+    approved: false
+  }
+];
+
 export async function GET() {
 
   return NextResponse.json({
@@ -120,8 +149,11 @@ export async function GET() {
     phase9c_execution_audit_contracts_active:
       true,
 
+    phase9d_execution_approval_workflow_active:
+      true,
+
     contract_status:
-      "phase9c_execution_audit_contract_stabilization",
+      "phase9d_execution_approval_workflow_stabilization",
 
     controlled_execution_sandbox_contracts:
       controlledExecutionSandboxContracts,
@@ -131,6 +163,9 @@ export async function GET() {
 
     execution_audit_trail_contracts:
       executionAuditTrailContracts,
+
+    execution_approval_workflow_contracts:
+      executionApprovalWorkflowContracts,
 
     autonomous_execution_active:
       false,
@@ -156,5 +191,6 @@ export async function GET() {
     }
   });
 }
+
 
 
