@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +30,39 @@ const recoveryContracts = [
   }
 ];
 
+const executionCheckpointContracts = [
+  {
+    checkpoint_id: "pre_execution_state_snapshot",
+    checkpoint_type: "state_capture",
+    deterministic_required: true,
+    mutation_allowed: false
+  },
+  {
+    checkpoint_id: "execution_input_fingerprint",
+    checkpoint_type: "input_integrity",
+    deterministic_required: true,
+    mutation_allowed: false
+  },
+  {
+    checkpoint_id: "route_contract_fingerprint",
+    checkpoint_type: "route_integrity",
+    deterministic_required: true,
+    mutation_allowed: false
+  },
+  {
+    checkpoint_id: "artifact_lineage_marker",
+    checkpoint_type: "build_artifact_lineage",
+    deterministic_required: true,
+    mutation_allowed: false
+  },
+  {
+    checkpoint_id: "post_execution_observation_frame",
+    checkpoint_type: "result_observation",
+    deterministic_required: true,
+    mutation_allowed: false
+  }
+];
+
 export async function GET() {
 
   return NextResponse.json({
@@ -52,6 +85,9 @@ export async function GET() {
     phase7a_recovery_contracts_active:
       true,
 
+    phase7b_checkpoint_contracts_active:
+      true,
+
     capability:
       "deterministic_recovery_mesh_contract",
 
@@ -59,10 +95,13 @@ export async function GET() {
       "recovery_dependency_mapping",
 
     contract_status:
-      "phase7a_contract_stabilization",
+      "phase7b_checkpoint_contract_stabilization",
 
     recovery_contracts:
       recoveryContracts,
+
+    execution_checkpoint_contracts:
+      executionCheckpointContracts,
 
     recovery_logic_active:
       false,
@@ -91,6 +130,7 @@ export async function GET() {
       build_speed_layer_active: true,
       deterministic_validation_required: true,
       contract_first_active: true,
+      full_file_rewrite_used: true,
       orchestration_safe: true
     }
   });
