@@ -190,6 +190,40 @@ const selfHealingDecisionPreviewContracts = [
   }
 ];
 
+
+const controlledPromotionGateContracts = [
+  {
+    promotion_gate_id: "promotion_gate_001",
+    gate: "execution_readiness",
+    approved: false,
+    simulation_only: true
+  },
+  {
+    promotion_gate_id: "promotion_gate_002",
+    gate: "replay_readiness",
+    approved: false,
+    simulation_only: true
+  },
+  {
+    promotion_gate_id: "promotion_gate_003",
+    gate: "rollback_readiness",
+    approved: false,
+    simulation_only: true
+  },
+  {
+    promotion_gate_id: "promotion_gate_004",
+    gate: "fault_response_readiness",
+    approved: false,
+    simulation_only: true
+  },
+  {
+    promotion_gate_id: "promotion_gate_005",
+    gate: "self_healing_readiness",
+    approved: false,
+    simulation_only: true
+  }
+];
+
 export async function GET() {
 
   return NextResponse.json({
@@ -224,8 +258,11 @@ export async function GET() {
     phase8f_self_healing_preview_active:
       true,
 
+    phase8g_controlled_promotion_gate_active:
+      true,
+
     contract_status:
-      "phase8f_self_healing_preview_stabilization",
+      "phase8g_controlled_promotion_gate_stabilization",
 
     readiness_checks:
       readinessChecks,
@@ -245,6 +282,9 @@ export async function GET() {
     self_healing_decision_preview_contracts:
       selfHealingDecisionPreviewContracts,
 
+    controlled_promotion_gate_contracts:
+      controlledPromotionGateContracts,
+
     replay_execution_active:
       false,
 
@@ -258,6 +298,9 @@ export async function GET() {
       false,
 
     self_healing_logic_active:
+      false,
+
+    promotion_gate_execution_active:
       false,
 
     self_healing_execution_active:
@@ -280,6 +323,7 @@ export async function GET() {
     }
   });
 }
+
 
 
 
