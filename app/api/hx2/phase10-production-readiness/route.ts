@@ -30,6 +30,35 @@ const finalProductionReadinessContracts = [
   }
 ];
 
+
+const releaseSafetyContracts = [
+  {
+    safety_id: "release_safety_001",
+    required: true,
+    satisfied: false
+  },
+  {
+    safety_id: "release_safety_002",
+    required: true,
+    satisfied: false
+  },
+  {
+    safety_id: "release_safety_003",
+    required: true,
+    satisfied: false
+  },
+  {
+    safety_id: "release_safety_004",
+    required: true,
+    satisfied: false
+  },
+  {
+    safety_id: "release_safety_005",
+    required: true,
+    satisfied: false
+  }
+];
+
 export async function GET() {
 
   return NextResponse.json({
@@ -47,11 +76,17 @@ export async function GET() {
     phase10a_production_readiness_active:
       true,
 
+    phase10b_release_safety_contracts_active:
+      true,
+
     contract_status:
-      "phase10a_production_readiness_stabilization",
+      "phase10b_release_safety_stabilization",
 
     final_production_readiness_contracts:
       finalProductionReadinessContracts,
+
+    release_safety_contracts:
+      releaseSafetyContracts,
 
     production_ready:
       false,
@@ -80,3 +115,4 @@ export async function GET() {
     }
   });
 }
+
