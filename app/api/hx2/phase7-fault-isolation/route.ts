@@ -159,6 +159,40 @@ const faultIsolationContracts = [
   }
 ];
 
+
+const recoveryMeshContracts = [
+  {
+    recovery_node_id: "execution_sandbox",
+    recovery_owner: "phase7_execution_sandbox",
+    recovery_sequence: 1,
+    mutation_allowed: false
+  },
+  {
+    recovery_node_id: "checkpoint_validation",
+    recovery_owner: "phase7_execution_replay",
+    recovery_sequence: 2,
+    mutation_allowed: false
+  },
+  {
+    recovery_node_id: "rollback_eligibility",
+    recovery_owner: "phase7_rollback_validator",
+    recovery_sequence: 3,
+    mutation_allowed: false
+  },
+  {
+    recovery_node_id: "fault_containment",
+    recovery_owner: "phase7_fault_isolation",
+    recovery_sequence: 4,
+    mutation_allowed: false
+  },
+  {
+    recovery_node_id: "recovery_mesh_controller",
+    recovery_owner: "phase7_recovery_mesh",
+    recovery_sequence: 5,
+    mutation_allowed: false
+  }
+];
+
 export async function GET() {
 
   return NextResponse.json({
@@ -193,6 +227,9 @@ export async function GET() {
     phase7e_fault_isolation_contracts_active:
       true,
 
+    phase7f_recovery_mesh_wiring_active:
+      true,
+
     capability:
       "orchestration_fault_isolation_contract",
 
@@ -200,7 +237,7 @@ export async function GET() {
       "fault_containment_scoping",
 
     contract_status:
-      "phase7e_fault_isolation_contract_stabilization",
+      "phase7f_recovery_mesh_wiring_stabilization",
 
     recovery_contracts:
       recoveryContracts,
@@ -216,6 +253,9 @@ export async function GET() {
 
     fault_isolation_contracts:
       faultIsolationContracts,
+
+    recovery_mesh_contracts:
+      recoveryMeshContracts,
 
     recovery_logic_active:
       false,
@@ -249,5 +289,6 @@ export async function GET() {
     }
   });
 }
+
 
 
