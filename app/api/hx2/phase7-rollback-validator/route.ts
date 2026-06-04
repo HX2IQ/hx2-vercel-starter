@@ -193,6 +193,35 @@ const recoveryMeshContracts = [
   }
 ];
 
+
+const selfHealingContracts = [
+  {
+    healing_contract_id: "healing_eligibility_gate",
+    execution_allowed: false,
+    mutation_allowed: false
+  },
+  {
+    healing_contract_id: "healing_ownership_mapping",
+    execution_allowed: false,
+    mutation_allowed: false
+  },
+  {
+    healing_contract_id: "healing_escalation_path",
+    execution_allowed: false,
+    mutation_allowed: false
+  },
+  {
+    healing_contract_id: "healing_safety_boundary",
+    execution_allowed: false,
+    mutation_allowed: false
+  },
+  {
+    healing_contract_id: "healing_promotion_gate",
+    execution_allowed: false,
+    mutation_allowed: false
+  }
+];
+
 export async function GET() {
 
   return NextResponse.json({
@@ -230,6 +259,9 @@ export async function GET() {
     phase7f_recovery_mesh_wiring_active:
       true,
 
+    phase7g_self_healing_contracts_active:
+      true,
+
     capability:
       "autonomous_rollback_validation_contract",
 
@@ -237,7 +269,7 @@ export async function GET() {
       "rollback_eligibility_validation",
 
     contract_status:
-      "phase7f_recovery_mesh_wiring_stabilization",
+      "phase7g_self_healing_contract_stabilization",
 
     recovery_contracts:
       recoveryContracts,
@@ -256,6 +288,9 @@ export async function GET() {
 
     recovery_mesh_contracts:
       recoveryMeshContracts,
+
+    self_healing_contracts:
+      selfHealingContracts,
 
     recovery_logic_active:
       false,
@@ -289,6 +324,7 @@ export async function GET() {
     }
   });
 }
+
 
 
 
