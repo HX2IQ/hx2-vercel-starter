@@ -96,6 +96,35 @@ const replayCompatibilityContracts = [
   }
 ];
 
+
+const rollbackEligibilityContracts = [
+  {
+    rollback_contract_id: "checkpoint_completeness_validation",
+    rollback_required: true,
+    mutation_allowed: false
+  },
+  {
+    rollback_contract_id: "dependency_resolution_validation",
+    rollback_required: true,
+    mutation_allowed: false
+  },
+  {
+    rollback_contract_id: "artifact_lineage_validation",
+    rollback_required: true,
+    mutation_allowed: false
+  },
+  {
+    rollback_contract_id: "execution_trace_validation",
+    rollback_required: true,
+    mutation_allowed: false
+  },
+  {
+    rollback_contract_id: "rollback_safety_boundary_validation",
+    rollback_required: true,
+    mutation_allowed: false
+  }
+];
+
 export async function GET() {
 
   return NextResponse.json({
@@ -124,6 +153,9 @@ export async function GET() {
     phase7c_replay_compatibility_contracts_active:
       true,
 
+    phase7d_rollback_eligibility_contracts_active:
+      true,
+
     capability:
       "autonomous_execution_sandbox_contract",
 
@@ -131,7 +163,7 @@ export async function GET() {
       "sandbox_boundary_validation",
 
     contract_status:
-      "phase7c_replay_compatibility_contract_stabilization",
+      "phase7d_rollback_eligibility_contract_stabilization",
 
     recovery_contracts:
       recoveryContracts,
@@ -141,6 +173,9 @@ export async function GET() {
 
     replay_compatibility_contracts:
       replayCompatibilityContracts,
+
+    rollback_eligibility_contracts:
+      rollbackEligibilityContracts,
 
     recovery_logic_active:
       false,
@@ -174,3 +209,4 @@ export async function GET() {
     }
   });
 }
+
