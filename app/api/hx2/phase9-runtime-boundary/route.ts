@@ -30,6 +30,40 @@ const controlledExecutionSandboxContracts = [
   }
 ];
 
+
+const executionPermissionContracts = [
+  {
+    permission_contract_id: "operator_approval_required",
+    permission_required: true,
+    execution_allowed: false,
+    mutation_allowed: false
+  },
+  {
+    permission_contract_id: "phase8_promotion_required",
+    permission_required: true,
+    execution_allowed: false,
+    mutation_allowed: false
+  },
+  {
+    permission_contract_id: "sandbox_boundary_required",
+    permission_required: true,
+    execution_allowed: false,
+    mutation_allowed: false
+  },
+  {
+    permission_contract_id: "audit_trail_required",
+    permission_required: true,
+    execution_allowed: false,
+    mutation_allowed: false
+  },
+  {
+    permission_contract_id: "runtime_guard_required",
+    permission_required: true,
+    execution_allowed: false,
+    mutation_allowed: false
+  }
+];
+
 export async function GET() {
 
   return NextResponse.json({
@@ -51,11 +85,17 @@ export async function GET() {
     phase9a_controlled_execution_sandbox_active:
       true,
 
+    phase9b_execution_permission_contracts_active:
+      true,
+
     contract_status:
-      "phase9a_controlled_execution_sandbox_stabilization",
+      "phase9b_execution_permission_contract_stabilization",
 
     controlled_execution_sandbox_contracts:
       controlledExecutionSandboxContracts,
+
+    execution_permission_contracts:
+      executionPermissionContracts,
 
     autonomous_execution_active:
       false,
@@ -81,3 +121,4 @@ export async function GET() {
     }
   });
 }
+
