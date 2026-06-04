@@ -151,6 +151,35 @@ const runtimeBoundaryEnforcementContracts = [
   }
 ];
 
+
+const operatorOverrideContracts = [
+  {
+    override_id: "override_001",
+    operator_override_required: true,
+    override_active: false
+  },
+  {
+    override_id: "override_002",
+    operator_override_required: true,
+    override_active: false
+  },
+  {
+    override_id: "override_003",
+    operator_override_required: true,
+    override_active: false
+  },
+  {
+    override_id: "override_004",
+    operator_override_required: true,
+    override_active: false
+  },
+  {
+    override_id: "override_005",
+    operator_override_required: true,
+    override_active: false
+  }
+];
+
 export async function GET() {
 
   return NextResponse.json({
@@ -184,8 +213,11 @@ export async function GET() {
     phase9e_runtime_boundary_enforcement_active:
       true,
 
+    phase9f_operator_override_contracts_active:
+      true,
+
     contract_status:
-      "phase9e_runtime_boundary_enforcement_stabilization",
+      "phase9f_operator_override_contract_stabilization",
 
     controlled_execution_sandbox_contracts:
       controlledExecutionSandboxContracts,
@@ -201,6 +233,9 @@ export async function GET() {
 
     runtime_boundary_enforcement_contracts:
       runtimeBoundaryEnforcementContracts,
+
+    operator_override_contracts:
+      operatorOverrideContracts,
 
     autonomous_execution_active:
       false,
@@ -226,6 +261,7 @@ export async function GET() {
     }
   });
 }
+
 
 
 
