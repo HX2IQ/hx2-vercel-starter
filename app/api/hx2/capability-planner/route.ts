@@ -5,6 +5,7 @@ import { buildKgxGraphContext } from "../_lib/kgx-context-builder";
 import { buildKgxPlannerInfluence } from "../_lib/kgx-planner-influence";
 import { buildKgxExecutionLearning } from "../_lib/kgx-execution-learning";
 import { buildKgxNodeEffectiveness } from "../_lib/kgx-node-effectiveness";
+import { buildKgxAdaptiveNodeSelection } from "../_lib/kgx-adaptive-node-selection";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +39,9 @@ const plannerInfluence =
     userRequest
   );
 
+    const adaptiveSelection =
+      await buildKgxAdaptiveNodeSelection(userRequest);
+
     const result = buildCapabilityPlan(userRequest);
 
     const enhancedResult = {
@@ -46,7 +50,8 @@ const plannerInfluence =
       kgx_graph_context: graphContext,
 kgx_planner_influence: plannerInfluence,
 kgx_execution_learning: executionLearning,
-kgx_node_effectiveness: nodeEffectiveness
+kgx_node_effectiveness: nodeEffectiveness,
+      kgx_adaptive_selection: adaptiveSelection
     };
 
     const savedPlan = await prisma.capabilityPlan.create({
@@ -128,6 +133,7 @@ kgx_node_effectiveness: nodeEffectiveness
     );
   }
 }
+
 
 
 
