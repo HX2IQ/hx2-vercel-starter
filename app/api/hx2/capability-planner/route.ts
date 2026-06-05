@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { buildCapabilityPlan } from "../_lib/capability-planner";
 import { prisma } from "../_lib/kgx-lite";
+import { buildKgxGraphContext } from "../_lib/kgx-context-builder";
 
 export const dynamic = "force-dynamic";
 
@@ -21,24 +22,14 @@ export async function POST(req: Request) {
       );
     }
 
-    const recentMemories = await prisma.memoryRecord.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 5
-    });
-
-    const recentPlans = await prisma.capabilityPlan.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 5
-    });
+    const graphContext = await buildKgxGraphContext(userRequest);
 
     const result = buildCapabilityPlan(userRequest);
 
     const enhancedResult = {
       ...result,
-      kgx_recall_context: {
-        memory_count: recentMemories.length,
-        plan_count: recentPlans.length
-      }
+      kgx_phase_2a_graph_intelligence_active: true,
+      kgx_graph_context: graphContext
     };
 
     const savedPlan = await prisma.capabilityPlan.create({
@@ -50,11 +41,12 @@ export async function POST(req: Request) {
 
     const memory = await prisma.memoryRecord.create({
       data: {
-        memoryType: "capability_plan",
-        memoryKey: `capability_plan_${savedPlan.id}`,
+        memoryType: "graph_aware_capability_plan",
+        memoryKey: `graph_aware_capability_plan_${savedPlan.id}`,
         payload: {
           capability_plan_id: savedPlan.id,
-          requestText: userRequest
+          requestText: userRequest,
+          graph_summary: graphContext.summary
         }
       }
     });
@@ -63,11 +55,12 @@ export async function POST(req: Request) {
       data: {
         sourceType: "Node",
         sourceId: "HX2",
-        relationType: "generated",
+        relationType: "generated_graph_aware_plan",
         targetType: "CapabilityPlan",
         targetId: savedPlan.id,
         payload: {
-          requestText: userRequest
+          requestText: userRequest,
+          ranked_context_count: graphContext.summary.ranked_items
         }
       }
     });
@@ -76,7 +69,7 @@ export async function POST(req: Request) {
       data: {
         sourceType: "CapabilityPlan",
         sourceId: savedPlan.id,
-        relationType: "created_memory",
+        relationType: "created_graph_memory",
         targetType: "MemoryRecord",
         targetId: memory.id,
         payload: {
@@ -87,21 +80,25 @@ export async function POST(req: Request) {
 
     const audit = await prisma.auditEvent.create({
       data: {
-        eventType: "kgx_auto_relationships_created",
+        eventType: "kgx_phase_2a_graph_intelligence_plan",
         eventSource: "api/hx2/capability-planner",
         payload: {
           capability_plan_id: savedPlan.id,
-          memory_id: memory.id
+          memory_id: memory.id,
+          ranked_context_count: graphContext.summary.ranked_items
         }
       }
     });
 
     return NextResponse.json({
       ok: true,
-      kgx_auto_graph_active: true,
-      plan: savedPlan.id,
-      memory: memory.id,
-      audit: audit.id
+      kgx_phase_2a_graph_intelligence_active: true,
+      plan: enhancedResult,
+      persisted: {
+        capabilityPlan: savedPlan.id,
+        memory: memory.id,
+        audit: audit.id
+      }
     });
   }
   catch (err: any) {
