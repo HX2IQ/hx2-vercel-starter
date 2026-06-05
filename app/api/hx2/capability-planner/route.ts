@@ -3,6 +3,7 @@ import { buildCapabilityPlan } from "../_lib/capability-planner";
 import { prisma } from "../_lib/kgx-lite";
 import { buildKgxGraphContext } from "../_lib/kgx-context-builder";
 import { buildKgxPlannerInfluence } from "../_lib/kgx-planner-influence";
+import { buildKgxExecutionLearning } from "../_lib/kgx-execution-learning";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,9 @@ export async function POST(req: Request) {
 
     const graphContext = await buildKgxGraphContext(userRequest);
 
+const executionLearning =
+  await buildKgxExecutionLearning();
+
 const plannerInfluence =
   await buildKgxPlannerInfluence(
     userRequest
@@ -36,7 +40,8 @@ const plannerInfluence =
       ...result,
       kgx_phase_2a_graph_intelligence_active: true,
       kgx_graph_context: graphContext,
-kgx_planner_influence: plannerInfluence
+kgx_planner_influence: plannerInfluence,
+kgx_execution_learning: executionLearning
     };
 
     const savedPlan = await prisma.capabilityPlan.create({
@@ -118,4 +123,5 @@ kgx_planner_influence: plannerInfluence
     );
   }
 }
+
 
