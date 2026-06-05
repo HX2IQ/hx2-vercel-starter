@@ -2,12 +2,14 @@ import { buildKgxGraphContext } from "./kgx-context-builder";
 import { buildKgxPlannerInfluence } from "./kgx-planner-influence";
 import { buildKgxExecutionLearning } from "./kgx-execution-learning";
 import { buildKgxNodeEffectiveness } from "./kgx-node-effectiveness";
+import { buildKgxSpecializationLearning } from "./kgx-specialization-learning";
 
 export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
   const graphContext = await buildKgxGraphContext(userRequest);
   const plannerInfluence = await buildKgxPlannerInfluence(userRequest);
   const executionLearning = await buildKgxExecutionLearning();
   const nodeEffectiveness = await buildKgxNodeEffectiveness();
+  const specializationLearning = await buildKgxSpecializationLearning(userRequest);
 
   const scores: Record<string, number> = {};
 
@@ -27,6 +29,10 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     scores[item.node] = (scores[item.node] || 0) + item.effectivenessScore;
   }
 
+  for (const item of specializationLearning.matches || []) {
+    scores[item.node] = (scores[item.node] || 0) + item.confidence * 75;
+  }
+
   const recommendations = Object.entries(scores)
     .map(([node, score]) => ({
       node,
@@ -41,11 +47,14 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     recommended_node: recommendations[0]?.node || "HX2",
     recommendation_score: recommendations[0]?.score || 0,
     recommendations,
+    specialization_learning: specializationLearning,
     signals: {
       graph_context_items: graphContext.summary.ranked_items,
       planner_influence_nodes: plannerInfluence.ranked_nodes.length,
       learning_nodes: executionLearning.rankings.length,
-      effectiveness_nodes: nodeEffectiveness.rankings.length
+      effectiveness_nodes: nodeEffectiveness.rankings.length,
+      specialization_matches: specializationLearning.matches.length
     }
   };
 }
+
