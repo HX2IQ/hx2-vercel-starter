@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { buildCapabilityPlan } from "../_lib/capability-planner";
 import { prisma } from "../_lib/kgx-lite";
 import { buildKgxGraphContext } from "../_lib/kgx-context-builder";
+import { buildKgxPlannerInfluence } from "../_lib/kgx-planner-influence";
 
 export const dynamic = "force-dynamic";
 
@@ -24,12 +25,18 @@ export async function POST(req: Request) {
 
     const graphContext = await buildKgxGraphContext(userRequest);
 
+const plannerInfluence =
+  await buildKgxPlannerInfluence(
+    userRequest
+  );
+
     const result = buildCapabilityPlan(userRequest);
 
     const enhancedResult = {
       ...result,
       kgx_phase_2a_graph_intelligence_active: true,
-      kgx_graph_context: graphContext
+      kgx_graph_context: graphContext,
+kgx_planner_influence: plannerInfluence
     };
 
     const savedPlan = await prisma.capabilityPlan.create({
@@ -111,3 +118,4 @@ export async function POST(req: Request) {
     );
   }
 }
+
