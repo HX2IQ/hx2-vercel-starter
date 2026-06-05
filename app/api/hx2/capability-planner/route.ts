@@ -16,10 +16,7 @@ export async function POST(req: Request) {
 
     if (!userRequest) {
       return NextResponse.json(
-        {
-          ok: false,
-          error: "Missing planner input"
-        },
+        { ok: false, error: "Missing planner input" },
         { status: 400 }
       );
     }
@@ -40,9 +37,7 @@ export async function POST(req: Request) {
       ...result,
       kgx_recall_context: {
         memory_count: recentMemories.length,
-        plan_count: recentPlans.length,
-        recent_memory_keys: recentMemories.map(x => x.memoryKey),
-        recent_requests: recentPlans.map(x => x.requestText)
+        plan_count: recentPlans.length
       }
     };
 
@@ -58,41 +53,55 @@ export async function POST(req: Request) {
         memoryType: "capability_plan",
         memoryKey: `capability_plan_${savedPlan.id}`,
         payload: {
-          requestText: userRequest,
-          selected_node: (enhancedResult as any)?.selected_node || null,
-          intent: (enhancedResult as any)?.intent || null,
-          execution_mode: (enhancedResult as any)?.execution_mode || null,
-          confidence: (enhancedResult as any)?.confidence || null,
           capability_plan_id: savedPlan.id,
-          kgx_stage: "KGX-I"
+          requestText: userRequest
+        }
+      }
+    });
+
+    await prisma.kgxRelationship.create({
+      data: {
+        sourceType: "Node",
+        sourceId: "HX2",
+        relationType: "generated",
+        targetType: "CapabilityPlan",
+        targetId: savedPlan.id,
+        payload: {
+          requestText: userRequest
+        }
+      }
+    });
+
+    await prisma.kgxRelationship.create({
+      data: {
+        sourceType: "CapabilityPlan",
+        sourceId: savedPlan.id,
+        relationType: "created_memory",
+        targetType: "MemoryRecord",
+        targetId: memory.id,
+        payload: {
+          memoryKey: memory.memoryKey
         }
       }
     });
 
     const audit = await prisma.auditEvent.create({
       data: {
-        eventType: "kgx_planner_memory_created",
+        eventType: "kgx_auto_relationships_created",
         eventSource: "api/hx2/capability-planner",
         payload: {
           capability_plan_id: savedPlan.id,
-          memory_id: memory.id,
-          memory_key: memory.memoryKey,
-          memory_count_before: recentMemories.length,
-          plan_count_before: recentPlans.length
+          memory_id: memory.id
         }
       }
     });
 
     return NextResponse.json({
       ok: true,
-      kgx_recall_planner_active: true,
-      kgx_automatic_planner_memory_active: true,
-      plan: enhancedResult,
-      persisted: {
-        capabilityPlan: savedPlan,
-        memory,
-        audit
-      }
+      kgx_auto_graph_active: true,
+      plan: savedPlan.id,
+      memory: memory.id,
+      audit: audit.id
     });
   }
   catch (err: any) {
