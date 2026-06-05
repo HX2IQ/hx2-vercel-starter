@@ -66,3 +66,25 @@ model AuditEvent {
 
   createdAt     DateTime @default(now())
 }
+
+model KgxRelationship {
+  id           String   @id @default(cuid())
+
+  sourceType   String
+  sourceId     String
+
+  relationType String
+
+  targetType   String
+  targetId     String
+
+  payload      Json?
+
+  createdAt    DateTime @default(now())
+
+  @@index([sourceType])
+  @@index([sourceId])
+  @@index([relationType])
+  @@index([targetType])
+  @@index([targetId])
+}
