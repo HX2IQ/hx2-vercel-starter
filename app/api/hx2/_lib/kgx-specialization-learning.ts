@@ -1,3 +1,9 @@
+type KgxSpecializationMatch = {
+  node: string;
+  confidence: number;
+  reason: string;
+};
+
 const DOMAIN_RULES = [
   {
     keywords: ["travel","flight","hotel","cruise","vacation","trip"],
@@ -28,18 +34,14 @@ const DOMAIN_RULES = [
 export async function buildKgxSpecializationLearning(
   userRequest: string
 ) {
+  const lower = userRequest.toLowerCase();
 
-  const lower =
-    userRequest.toLowerCase();
-
-  const matches = [];
+  const matches: KgxSpecializationMatch[] = [];
 
   for (const rule of DOMAIN_RULES) {
-
-    const hit =
-      rule.keywords.some(
-        k => lower.includes(k)
-      );
+    const hit = rule.keywords.some(
+      k => lower.includes(k)
+    );
 
     if (hit) {
       matches.push({
