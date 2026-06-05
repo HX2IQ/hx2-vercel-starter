@@ -23,7 +23,6 @@ export async function buildKgxNodeEffectiveness() {
       "unknown";
 
     if (!stats[node]) {
-
       stats[node] = {
         node,
         total: 0,
@@ -36,18 +35,21 @@ export async function buildKgxNodeEffectiveness() {
 
     stats[node].total++;
 
-    if (execution.status === "completed")
+    if (execution.status === "completed") {
       stats[node].completed++;
+    }
 
     if (
       execution.status === "failed" ||
       execution.status === "error"
-    )
+    ) {
       stats[node].failed++;
+    }
 
-    if (!stats[node].lastExecution)
+    if (!stats[node].lastExecution) {
       stats[node].lastExecution =
         execution.createdAt;
+    }
   }
 
   for (const rel of relationships) {
@@ -56,7 +58,6 @@ export async function buildKgxNodeEffectiveness() {
       rel.sourceId;
 
     if (!stats[source]) {
-
       stats[source] = {
         node: source,
         total: 0,
@@ -79,16 +80,31 @@ export async function buildKgxNodeEffectiveness() {
             ? x.completed / x.total
             : 0;
 
+        const failureRate =
+          x.total > 0
+            ? x.failed / x.total
+            : 0;
+
         const score =
           (
             successRate * 50 +
             x.completed * 10 +
-            x.relationshipCount * 5
+            x.relationshipCount * 5 -
+            x.failed * 25 -
+            failureRate * 50
           );
 
         return {
           ...x,
           successRate,
+          failureRate,
+          failurePenalty:
+            Math.round(
+              (
+                x.failed * 25 +
+                failureRate * 50
+              ) * 10
+            ) / 10,
           effectivenessScore:
             Math.round(score * 10) / 10
         };
@@ -101,6 +117,7 @@ export async function buildKgxNodeEffectiveness() {
 
   return {
     effectiveness_active: true,
+    failure_aware_effectiveness_active: true,
     rankings
   };
 }
