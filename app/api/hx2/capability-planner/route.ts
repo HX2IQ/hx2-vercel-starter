@@ -25,16 +25,12 @@ export async function POST(req: Request) {
     }
 
     const recentMemories = await prisma.memoryRecord.findMany({
-      orderBy: {
-        createdAt: "desc"
-      },
+      orderBy: { createdAt: "desc" },
       take: 5
     });
 
     const recentPlans = await prisma.capabilityPlan.findMany({
-      orderBy: {
-        createdAt: "desc"
-      },
+      orderBy: { createdAt: "desc" },
       take: 5
     });
 
@@ -57,14 +53,32 @@ export async function POST(req: Request) {
       }
     });
 
-    await prisma.auditEvent.create({
+    const memory = await prisma.memoryRecord.create({
       data: {
-        eventType: "kgx_planner_used_recall",
+        memoryType: "capability_plan",
+        memoryKey: `capability_plan_${savedPlan.id}`,
+        payload: {
+          requestText: userRequest,
+          selected_node: (enhancedResult as any)?.selected_node || null,
+          intent: (enhancedResult as any)?.intent || null,
+          execution_mode: (enhancedResult as any)?.execution_mode || null,
+          confidence: (enhancedResult as any)?.confidence || null,
+          capability_plan_id: savedPlan.id,
+          kgx_stage: "KGX-I"
+        }
+      }
+    });
+
+    const audit = await prisma.auditEvent.create({
+      data: {
+        eventType: "kgx_planner_memory_created",
         eventSource: "api/hx2/capability-planner",
         payload: {
           capability_plan_id: savedPlan.id,
-          memory_count: recentMemories.length,
-          plan_count: recentPlans.length
+          memory_id: memory.id,
+          memory_key: memory.memoryKey,
+          memory_count_before: recentMemories.length,
+          plan_count_before: recentPlans.length
         }
       }
     });
@@ -72,8 +86,13 @@ export async function POST(req: Request) {
     return NextResponse.json({
       ok: true,
       kgx_recall_planner_active: true,
+      kgx_automatic_planner_memory_active: true,
       plan: enhancedResult,
-      persisted_plan_id: savedPlan.id
+      persisted: {
+        capabilityPlan: savedPlan,
+        memory,
+        audit
+      }
     });
   }
   catch (err: any) {
