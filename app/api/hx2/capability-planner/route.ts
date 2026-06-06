@@ -120,6 +120,11 @@ kgx_node_effectiveness: nodeEffectiveness,
     return NextResponse.json({
       ok: true,
       kgx_phase_2a_graph_intelligence_active: true,
+      kgx_primary_node: enhancedResult.kgx_primary_node,
+      kgx_challenge_node: enhancedResult.kgx_challenge_node,
+      kgx_validation_node: enhancedResult.kgx_validation_node,
+      kgx_secondary_node: enhancedResult.kgx_secondary_node,
+      kgx_adaptive_orchestration: enhancedResult.kgx_adaptive_orchestration,
       plan: enhancedResult,
       persisted: {
         capabilityPlan: savedPlan.id,
@@ -138,6 +143,7 @@ kgx_node_effectiveness: nodeEffectiveness,
     );
   }
 }
+
 
 
 
