@@ -19,7 +19,7 @@ export async function writeKgxPipelineOutcome(
     }
   });
 
-  await prisma.auditEvent.create({
+  const audit = await prisma.auditEvent.create({
     data: {
       eventType: "kgx_pipeline_outcome_recorded",
       eventSource: "api/hx2/kgx-pipeline-outcome",
@@ -32,8 +32,22 @@ export async function writeKgxPipelineOutcome(
     }
   });
 
-  return memory;
+  await prisma.kgxRelationship.create({
+    data: {
+      sourceType: "CapabilityPlan",
+      sourceId: capabilityPlanId,
+      relationType: success ? "pipeline_success" : "pipeline_failure",
+      targetType: "MemoryRecord",
+      targetId: memory.id,
+      payload: {
+        score,
+        notes: notes ?? null
+      }
+    }
+  });
+
+  return {
+    memory,
+    audit
+  };
 }
-
-
-
