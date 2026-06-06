@@ -18,18 +18,25 @@ export function buildKgxOrchestrationAssembly(
     recommendations[0];
 
   const challenge =
-    recommendations.find(x => x.node === "DA2") ||
-    recommendations.find(x => x.node !== primary?.node);
+    recommendations.find(x => x.node === "DA2") || {
+      node: "DA2",
+      score: maxScore * 0.55
+    };
 
   const validation =
-    recommendations.find(x => x.node === "QX2") ||
+    recommendations.find(x => x.node === "QX2") || {
+      node: "QX2",
+      score: maxScore * 0.5
+    };
+
+  const secondary =
     recommendations.find(
       x =>
         x.node !== primary?.node &&
-        x.node !== challenge?.node
-    );
-
-  const secondary =
+        x.node !== challenge?.node &&
+        x.node !== validation?.node &&
+        x.node !== "HX2"
+    ) ||
     recommendations.find(
       x =>
         x.node !== primary?.node &&
@@ -53,7 +60,7 @@ export function buildKgxOrchestrationAssembly(
       role: "challenge",
       node: challenge.node,
       confidence: normalize(challenge.score),
-      reason: "challenge or contrast analysis"
+      reason: "forced DA2 challenge analysis"
     });
   }
 
@@ -62,7 +69,7 @@ export function buildKgxOrchestrationAssembly(
       role: "validation",
       node: validation.node,
       confidence: normalize(validation.score),
-      reason: "quality or validation layer"
+      reason: "forced QX2 validation layer"
     });
   }
 
@@ -77,6 +84,7 @@ export function buildKgxOrchestrationAssembly(
 
   return {
     orchestration_assembly_active: true,
+    forced_challenge_role_active: true,
     roles,
     primary_node: primary?.node || null,
     challenge_node: challenge?.node || null,
