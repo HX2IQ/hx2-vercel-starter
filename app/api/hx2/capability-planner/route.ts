@@ -59,6 +59,40 @@ kgx_node_effectiveness: nodeEffectiveness,
       kgx_secondary_node: adaptiveSelection.orchestration_assembly?.secondary_node
     };
 
+        const kgxPipeline = [
+      {
+        step: 1,
+        role: "primary",
+        node: enhancedResult.kgx_primary_node,
+        action: `Execute ${enhancedResult.kgx_primary_node} as primary specialist`,
+        depends_on: []
+      },
+      {
+        step: 2,
+        role: "challenge",
+        node: enhancedResult.kgx_challenge_node,
+        action: `Execute ${enhancedResult.kgx_challenge_node} challenge analysis`,
+        depends_on: [1]
+      },
+      {
+        step: 3,
+        role: "validation",
+        node: enhancedResult.kgx_validation_node,
+        action: `Execute ${enhancedResult.kgx_validation_node} validation review`,
+        depends_on: [1, 2]
+      },
+      {
+        step: 4,
+        role: "secondary",
+        node: enhancedResult.kgx_secondary_node,
+        action: `Execute ${enhancedResult.kgx_secondary_node} secondary support`,
+        depends_on: [1]
+      }
+    ].filter(x => x.node);
+
+    (enhancedResult as any).execution_pipeline = kgxPipeline;
+    (enhancedResult as any).kgx_execution_pipeline_active = true;
+
     const savedPlan = await prisma.capabilityPlan.create({
       data: {
         requestText: userRequest,
@@ -143,6 +177,8 @@ kgx_node_effectiveness: nodeEffectiveness,
     );
   }
 }
+
+
 
 
 
