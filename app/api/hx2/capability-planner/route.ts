@@ -6,6 +6,7 @@ import { buildKgxPlannerInfluence } from "../_lib/kgx-planner-influence";
 import { buildKgxExecutionLearning } from "../_lib/kgx-execution-learning";
 import { buildKgxNodeEffectiveness } from "../_lib/kgx-node-effectiveness";
 import { buildKgxAdaptiveNodeSelection } from "../_lib/kgx-adaptive-node-selection";
+import { persistKgxPipeline } from "../_lib/kgx-pipeline-persistence";
 
 export const dynamic = "force-dynamic";
 
@@ -139,6 +140,18 @@ kgx_node_effectiveness: nodeEffectiveness,
       }
     });
 
+    const pipelinePersistence = await persistKgxPipeline({
+      requestText: userRequest,
+      capabilityPlanId: savedPlan.id,
+      pipeline: (enhancedResult as any).execution_pipeline || []
+    });
+
+    (enhancedResult as any).kgx_pipeline_persistence = {
+      pipeline_persistence_active: true,
+      pipeline_memory_id: pipelinePersistence.pipelineMemory.id,
+      audit_id: pipelinePersistence.audit.id
+    };
+
     const audit = await prisma.auditEvent.create({
       data: {
         eventType: "kgx_phase_2a_graph_intelligence_plan",
@@ -159,6 +172,7 @@ kgx_node_effectiveness: nodeEffectiveness,
       kgx_validation_node: enhancedResult.kgx_validation_node,
       kgx_secondary_node: enhancedResult.kgx_secondary_node,
       kgx_adaptive_orchestration: enhancedResult.kgx_adaptive_orchestration,
+      kgx_pipeline_persistence: (enhancedResult as any).kgx_pipeline_persistence,
       plan: enhancedResult,
       persisted: {
         capabilityPlan: savedPlan.id,
@@ -177,6 +191,7 @@ kgx_node_effectiveness: nodeEffectiveness,
     );
   }
 }
+
 
 
 
