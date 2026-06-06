@@ -30,19 +30,39 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
   }
 
   for (const item of specializationLearning.matches || []) {
-    scores[item.node] = (scores[item.node] || 0) + item.confidence * 75;
+    scores[item.node] = (scores[item.node] || 0) + item.confidence * 250;
   }
 
-  const recommendations = Object.entries(scores)
+  const rawRecommendations = Object.entries(scores)
     .map(([node, score]) => ({
       node,
       score: Math.round(score * 10) / 10
     }))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 10);
+    .sort((a, b) => b.score - a.score);
+
+  const specialist =
+    specializationLearning.matches?.[0]?.node;
+
+  const specialistEffectiveness =
+    nodeEffectiveness.rankings.find(
+      (x: any) => x.node === specialist
+    );
+
+  const specialistSeverelyFailed =
+    specialistEffectiveness &&
+    specialistEffectiveness.effectivenessScore < -50;
+
+  const recommendations =
+    specialist && !specialistSeverelyFailed
+      ? [
+          ...rawRecommendations.filter(x => x.node === specialist),
+          ...rawRecommendations.filter(x => x.node !== specialist)
+        ].slice(0, 10)
+      : rawRecommendations.slice(0, 10);
 
   return {
     adaptive_selection_active: true,
+    specialist_priority_override_active: true,
     request: userRequest,
     recommended_node: recommendations[0]?.node || "HX2",
     recommendation_score: recommendations[0]?.score || 0,
@@ -57,4 +77,3 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     }
   };
 }
-
