@@ -51,7 +51,12 @@ const plannerInfluence =
 kgx_planner_influence: plannerInfluence,
 kgx_execution_learning: executionLearning,
 kgx_node_effectiveness: nodeEffectiveness,
-      kgx_adaptive_selection: adaptiveSelection
+      kgx_adaptive_selection: adaptiveSelection,
+      kgx_adaptive_orchestration: adaptiveSelection.orchestration_assembly,
+      kgx_primary_node: adaptiveSelection.orchestration_assembly?.primary_node,
+      kgx_challenge_node: adaptiveSelection.orchestration_assembly?.challenge_node,
+      kgx_validation_node: adaptiveSelection.orchestration_assembly?.validation_node,
+      kgx_secondary_node: adaptiveSelection.orchestration_assembly?.secondary_node
     };
 
     const savedPlan = await prisma.capabilityPlan.create({
@@ -133,6 +138,7 @@ kgx_node_effectiveness: nodeEffectiveness,
     );
   }
 }
+
 
 
 
