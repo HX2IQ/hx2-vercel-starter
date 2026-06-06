@@ -3,6 +3,7 @@ import { buildKgxPlannerInfluence } from "./kgx-planner-influence";
 import { buildKgxExecutionLearning } from "./kgx-execution-learning";
 import { buildKgxNodeEffectiveness } from "./kgx-node-effectiveness";
 import { buildKgxSpecializationLearning } from "./kgx-specialization-learning";
+import { buildKgxOrchestrationAssembly } from "./kgx-orchestration-assembly";
 
 export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
   const graphContext = await buildKgxGraphContext(userRequest);
@@ -60,6 +61,9 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
         ].slice(0, 10)
       : rawRecommendations.slice(0, 10);
 
+  const orchestrationAssembly =
+    buildKgxOrchestrationAssembly(recommendations);
+
   return {
     adaptive_selection_active: true,
     specialist_priority_override_active: true,
@@ -68,6 +72,7 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     recommendation_score: recommendations[0]?.score || 0,
     recommendations,
     specialization_learning: specializationLearning,
+    orchestration_assembly: orchestrationAssembly,
     signals: {
       graph_context_items: graphContext.summary.ranked_items,
       planner_influence_nodes: plannerInfluence.ranked_nodes.length,
@@ -77,3 +82,4 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     }
   };
 }
+
