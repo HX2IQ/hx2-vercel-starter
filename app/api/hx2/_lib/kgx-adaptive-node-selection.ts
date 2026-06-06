@@ -47,6 +47,7 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
       node,
       score: Math.round(score * 10) / 10
     }))
+    .filter(x => x.node !== "HX2")
     .sort((a, b) => b.score - a.score);
 
   const specialist = specializationLearning.matches?.[0]?.node;
@@ -81,6 +82,7 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     adaptive_selection_active: true,
     specialist_priority_override_active: true,
     self_optimizing_routing_active: true,
+    orchestrator_role_separation_active: true,
     request: userRequest,
     recommended_node: recommendations[0]?.node || "HX2",
     recommendation_score: recommendations[0]?.score || 0,
@@ -100,3 +102,4 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     }
   };
 }
+
