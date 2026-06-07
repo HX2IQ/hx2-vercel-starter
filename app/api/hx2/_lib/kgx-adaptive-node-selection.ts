@@ -92,6 +92,7 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     recommendations,
     specialization_learning: specializationLearning,
     reinforcement_consumption: reinforcementConsumption,
+    reinforcement_score_trace: reinforcementScoreTrace,
     routing_reinforcement: routingReinforcement,
     confidence_adjustment: confidenceAdjustment,
     node_promotion: nodePromotion,
@@ -107,5 +108,6 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     }
   };
 }
+
 
 
