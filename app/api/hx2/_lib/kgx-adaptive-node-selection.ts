@@ -3,6 +3,7 @@ import { buildKgxPlannerInfluence } from "./kgx-planner-influence";
 import { buildKgxExecutionLearning } from "./kgx-execution-learning";
 import { buildKgxNodeEffectiveness } from "./kgx-node-effectiveness";
 import { buildKgxSpecializationLearning } from "./kgx-specialization-learning";
+import { buildKgxReinforcementConsumption } from "./kgx-reinforcement-consumption";
 import { buildKgxOrchestrationAssembly } from "./kgx-orchestration-assembly";
 import { buildKgxRoutingReinforcement } from "./kgx-routing-reinforcement";
 import { buildKgxConfidenceAdjustment } from "./kgx-confidence-adjustment";
@@ -14,6 +15,7 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
   const executionLearning = await buildKgxExecutionLearning();
   const nodeEffectiveness = await buildKgxNodeEffectiveness();
   const specializationLearning = await buildKgxSpecializationLearning(userRequest);
+  const reinforcementConsumption = await buildKgxReinforcementConsumption();
   const routingReinforcement = await buildKgxRoutingReinforcement();
 
   const scores: Record<string, number> = {};
@@ -80,6 +82,7 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
 
   return {
     adaptive_selection_active: true,
+    reinforcement_weight_injection_active: true,
     specialist_priority_override_active: true,
     self_optimizing_routing_active: true,
     orchestrator_role_separation_active: true,
@@ -88,6 +91,7 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     recommendation_score: recommendations[0]?.score || 0,
     recommendations,
     specialization_learning: specializationLearning,
+    reinforcement_consumption: reinforcementConsumption,
     routing_reinforcement: routingReinforcement,
     confidence_adjustment: confidenceAdjustment,
     node_promotion: nodePromotion,
@@ -98,8 +102,10 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
       learning_nodes: executionLearning.rankings.length,
       effectiveness_nodes: nodeEffectiveness.rankings.length,
       specialization_matches: specializationLearning.matches.length,
+      reinforcement_weighted_nodes: Object.keys(reinforcementConsumption.weights || {}).length,
       reinforcement_nodes: routingReinforcement.rankings.length
     }
   };
 }
+
 
