@@ -44,6 +44,25 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     scores[item.node] = (scores[item.node] || 0) + item.net_score * 0.5;
   }
 
+  const reinforcementScoreTrace: any[] = [];
+
+  for (const [node, weight] of Object.entries(reinforcementConsumption.weights || {})) {
+    if (scores[node] !== undefined) {
+      const before = scores[node];
+      const multiplier = Number(weight || 1);
+      const after = before * multiplier;
+
+      reinforcementScoreTrace.push({
+        node,
+        before: Math.round(before * 10) / 10,
+        multiplier,
+        after: Math.round(after * 10) / 10
+      });
+
+      scores[node] = after;
+    }
+  }
+
   const rawRecommendations = Object.entries(scores)
     .map(([node, score]) => ({
       node,
@@ -108,6 +127,3 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     }
   };
 }
-
-
-
