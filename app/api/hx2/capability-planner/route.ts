@@ -7,6 +7,8 @@ import { buildKgxExecutionLearning } from "../_lib/kgx-execution-learning";
 import { buildKgxNodeEffectiveness } from "../_lib/kgx-node-effectiveness";
 import { buildKgxAdaptiveNodeSelection } from "../_lib/kgx-adaptive-node-selection";
 import { persistKgxPipeline } from "../_lib/kgx-pipeline-persistence";
+import { buildKgxContextTags } from "../_lib/kgx-context-tags";
+import { writeKgxContextualExecution } from "../_lib/kgx-contextual-execution-capture";
 
 export const dynamic = "force-dynamic";
 
@@ -152,6 +154,23 @@ kgx_node_effectiveness: nodeEffectiveness,
       audit_id: pipelinePersistence.audit.id
     };
 
+    const contextualTags = buildKgxContextTags(userRequest);
+
+    const contextualExecution =
+      await writeKgxContextualExecution({
+        request: userRequest,
+        context_tags: contextualTags.tags,
+        pipeline: kgxPipeline,
+        score: adaptiveSelection.recommendation_score,
+        success: true
+      });
+
+    (enhancedResult as any).kgx_contextual_execution_capture = {
+      contextual_execution_capture_active: true,
+      memory_id: contextualExecution.memory.id,
+      context_tags: contextualTags.tags
+    };
+
     const audit = await prisma.auditEvent.create({
       data: {
         eventType: "kgx_phase_2a_graph_intelligence_plan",
@@ -191,6 +210,7 @@ kgx_node_effectiveness: nodeEffectiveness,
     );
   }
 }
+
 
 
 
