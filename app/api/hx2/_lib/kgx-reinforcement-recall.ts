@@ -14,14 +14,27 @@ function applyDecay(
 }
 
 export async function recallLatestKgxReinforcementMemory() {
-  const memory = await prisma.memoryRecord.findFirst({
+  const state = await prisma.memoryRecord.findFirst({
     where: {
-      memoryType: "kgx_reinforcement_weights"
+      memoryType: "kgx_reinforcement_state"
     },
     orderBy: {
       createdAt: "desc"
     }
   });
+
+  const fallbackMemory = !state
+    ? await prisma.memoryRecord.findFirst({
+        where: {
+          memoryType: "kgx_reinforcement_weights"
+        },
+        orderBy: {
+          createdAt: "desc"
+        }
+      })
+    : null;
+
+  const memory = state || fallbackMemory;
 
   const rawWeights =
     (memory?.payload as any)?.weights || {};
@@ -54,6 +67,10 @@ export async function recallLatestKgxReinforcementMemory() {
   return {
     reinforcement_recall_active: true,
     reinforcement_decay_active: true,
+    reinforcement_state_preferred_active: true,
+    source: state
+      ? "consolidated_reinforcement_state"
+      : "raw_reinforcement_weights",
     found: !!memory,
     memory,
     age_days: ageDays,
