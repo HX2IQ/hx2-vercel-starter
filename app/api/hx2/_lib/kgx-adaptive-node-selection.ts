@@ -8,6 +8,8 @@ import { buildKgxOrchestrationAssembly } from "./kgx-orchestration-assembly";
 import { buildKgxRoutingReinforcement } from "./kgx-routing-reinforcement";
 import { buildKgxConfidenceAdjustment } from "./kgx-confidence-adjustment";
 import { buildKgxNodePromotion } from "./kgx-node-promotion";
+import { buildKgxContextTags } from "./kgx-context-tags";
+import { buildKgxContextualRoutingBias } from "./kgx-contextual-routing-bias";
 
 export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
   const graphContext = await buildKgxGraphContext(userRequest);
@@ -17,6 +19,9 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
   const specializationLearning = await buildKgxSpecializationLearning(userRequest);
   const reinforcementConsumption = await buildKgxReinforcementConsumption();
   const routingReinforcement = await buildKgxRoutingReinforcement();
+  const contextualTags = buildKgxContextTags(userRequest);
+  const contextualRoutingBias =
+    await buildKgxContextualRoutingBias(contextualTags.tags);
 
   const scores: Record<string, number> = {};
 
@@ -42,6 +47,22 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
 
   for (const item of routingReinforcement.rankings || []) {
     scores[item.node] = (scores[item.node] || 0) + item.net_score * 0.5;
+  }
+
+  const contextualBiasTrace: any[] = [];
+
+  for (const [node, boost] of Object.entries(contextualRoutingBias.boosts || {})) {
+    const before = scores[node] || 0;
+    const after = before + Number(boost || 0);
+
+    contextualBiasTrace.push({
+      node,
+      before: Math.round(before * 10) / 10,
+      boost: Number(boost || 0),
+      after: Math.round(after * 10) / 10
+    });
+
+    scores[node] = after;
   }
 
   const reinforcementScoreTrace: any[] = [];
@@ -101,6 +122,7 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
 
   return {
     adaptive_selection_active: true,
+    contextual_bias_injection_active: true,
     reinforcement_weight_injection_active: true,
     specialist_priority_override_active: true,
     self_optimizing_routing_active: true,
@@ -109,6 +131,9 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     recommended_node: recommendations[0]?.node || "HX2",
     recommendation_score: recommendations[0]?.score || 0,
     recommendations,
+    contextual_tags: contextualTags,
+    contextual_routing_bias: contextualRoutingBias,
+    contextual_bias_trace: contextualBiasTrace,
     specialization_learning: specializationLearning,
     reinforcement_consumption: reinforcementConsumption,
     reinforcement_score_trace: reinforcementScoreTrace,
@@ -122,6 +147,8 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
       learning_nodes: executionLearning.rankings.length,
       effectiveness_nodes: nodeEffectiveness.rankings.length,
       specialization_matches: specializationLearning.matches.length,
+      contextual_tags: contextualTags.tags.length,
+      contextual_bias_nodes: Object.keys(contextualRoutingBias.boosts || {}).length,
       reinforcement_weighted_nodes: Object.keys(reinforcementConsumption.weights || {}).length,
       reinforcement_nodes: routingReinforcement.rankings.length
     }
