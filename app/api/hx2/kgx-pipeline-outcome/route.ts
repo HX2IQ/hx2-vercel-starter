@@ -27,12 +27,20 @@ export async function POST(req: Request) {
         ? body.pipeline
         : [];
 
+    const contextTags =
+      Array.isArray(body?.context_tags)
+        ? body.context_tags
+        : Array.isArray(body?.contextTags)
+          ? body.contextTags
+          : [];
+
     const result = await writeKgxPipelineOutcome(
       capabilityPlanId,
       !!body?.success,
       Number(body?.score ?? 0),
       body?.notes,
-      pipeline
+      pipeline,
+      contextTags
     );
 
     return NextResponse.json({
@@ -52,3 +60,4 @@ export async function POST(req: Request) {
     );
   }
 }
+

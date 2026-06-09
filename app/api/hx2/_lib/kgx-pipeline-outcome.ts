@@ -7,7 +7,8 @@ export async function writeKgxPipelineOutcome(
   success: boolean,
   score: number,
   notes?: string,
-  pipeline: any[] = []
+  pipeline: any[] = [],
+  contextTags: string[] = []
 ) {
   const memory = await prisma.memoryRecord.create({
     data: {
@@ -18,7 +19,8 @@ export async function writeKgxPipelineOutcome(
         success,
         score,
         notes: notes ?? null,
-        pipeline
+        pipeline,
+        context_tags: contextTags
       }
     }
   });
@@ -32,7 +34,8 @@ export async function writeKgxPipelineOutcome(
         success,
         score,
         memory_id: memory.id,
-        pipeline_steps: pipeline.length
+        pipeline_steps: pipeline.length,
+        context_tags: contextTags
       }
     }
   });
@@ -47,7 +50,8 @@ export async function writeKgxPipelineOutcome(
       payload: {
         score,
         notes: notes ?? null,
-        pipeline_steps: pipeline.length
+        pipeline_steps: pipeline.length,
+        context_tags: contextTags
       }
     }
   });
@@ -67,7 +71,8 @@ export async function writeKgxPipelineOutcome(
       pipeline,
       success,
       score,
-      notes
+      notes,
+      contextTags
     );
 
   return {
@@ -77,4 +82,3 @@ export async function writeKgxPipelineOutcome(
     assemblyAttribution
   };
 }
-

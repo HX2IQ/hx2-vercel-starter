@@ -12,9 +12,15 @@ export async function writeKgxAssemblyOutcomeAttribution(
   pipeline: any[],
   success: boolean,
   score: number,
-  notes?: string
+  notes?: string,
+  contextTags: string[] = []
 ) {
   const assemblyKey = assemblyKeyFromPipeline(pipeline);
+
+  const normalizedContextTags =
+    contextTags.length > 0
+      ? Array.from(new Set(contextTags))
+      : ["uncategorized"];
 
   const memory = await prisma.memoryRecord.create({
     data: {
@@ -23,11 +29,12 @@ export async function writeKgxAssemblyOutcomeAttribution(
       payload: {
         capabilityPlanId,
         assembly_key: assemblyKey,
+        context_tags: normalizedContextTags,
         pipeline,
         success,
         score,
         notes: notes ?? null,
-        createdBy: "kgx_phase_6f_assembly_outcome_attribution"
+        createdBy: "kgx_phase_6j_contextual_assembly_outcome_attribution"
       }
     }
   });
@@ -39,6 +46,7 @@ export async function writeKgxAssemblyOutcomeAttribution(
       payload: {
         capability_plan_id: capabilityPlanId,
         assembly_key: assemblyKey,
+        context_tags: normalizedContextTags,
         success,
         score,
         memory_id: memory.id
@@ -48,7 +56,9 @@ export async function writeKgxAssemblyOutcomeAttribution(
 
   return {
     assembly_outcome_attribution_active: true,
+    contextual_assembly_outcome_active: true,
     assembly_key: assemblyKey,
+    context_tags: normalizedContextTags,
     memory,
     audit
   };
