@@ -1,5 +1,6 @@
 import { prisma } from "./kgx-lite";
 import { writeKgxNodeOutcomeAttribution } from "./kgx-node-outcome-attribution";
+import { writeKgxAssemblyOutcomeAttribution } from "./kgx-assembly-outcome-attribution";
 
 export async function writeKgxPipelineOutcome(
   capabilityPlanId: string,
@@ -60,9 +61,20 @@ export async function writeKgxPipelineOutcome(
       notes
     );
 
+  const assemblyAttribution =
+    await writeKgxAssemblyOutcomeAttribution(
+      capabilityPlanId,
+      pipeline,
+      success,
+      score,
+      notes
+    );
+
   return {
     memory,
     audit,
-    nodeAttribution
+    nodeAttribution,
+    assemblyAttribution
   };
 }
+

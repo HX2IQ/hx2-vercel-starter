@@ -10,6 +10,7 @@ import { buildKgxConfidenceAdjustment } from "./kgx-confidence-adjustment";
 import { buildKgxNodePromotion } from "./kgx-node-promotion";
 import { buildKgxContextTags } from "./kgx-context-tags";
 import { buildKgxContextualRoutingBias } from "./kgx-contextual-routing-bias";
+import { buildKgxAssemblyEffectiveness } from "./kgx-assembly-effectiveness";
 
 export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
   const graphContext = await buildKgxGraphContext(userRequest);
@@ -22,6 +23,8 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
   const contextualTags = buildKgxContextTags(userRequest);
   const contextualRoutingBias =
     await buildKgxContextualRoutingBias(contextualTags.tags);
+  const assemblyEffectiveness =
+    await buildKgxAssemblyEffectiveness();
 
   const scores: Record<string, number> = {};
 
@@ -123,6 +126,7 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
   return {
     adaptive_selection_active: true,
     contextual_bias_injection_active: true,
+    assembly_effectiveness_injection_active: true,
     reinforcement_weight_injection_active: true,
     specialist_priority_override_active: true,
     self_optimizing_routing_active: true,
@@ -133,6 +137,7 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     recommendations,
     contextual_tags: contextualTags,
     contextual_routing_bias: contextualRoutingBias,
+    assembly_effectiveness: assemblyEffectiveness,
     contextual_bias_trace: contextualBiasTrace,
     specialization_learning: specializationLearning,
     reinforcement_consumption: reinforcementConsumption,
@@ -149,6 +154,7 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
       specialization_matches: specializationLearning.matches.length,
       contextual_tags: contextualTags.tags.length,
       contextual_bias_nodes: Object.keys(contextualRoutingBias.boosts || {}).length,
+      assembly_effectiveness_rankings: assemblyEffectiveness.rankings.length,
       reinforcement_weighted_nodes: Object.keys(reinforcementConsumption.weights || {}).length,
       reinforcement_nodes: routingReinforcement.rankings.length
     }
