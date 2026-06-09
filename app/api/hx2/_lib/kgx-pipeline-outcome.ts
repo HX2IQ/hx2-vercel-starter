@@ -1,10 +1,12 @@
 import { prisma } from "./kgx-lite";
+import { writeKgxNodeOutcomeAttribution } from "./kgx-node-outcome-attribution";
 
 export async function writeKgxPipelineOutcome(
   capabilityPlanId: string,
   success: boolean,
   score: number,
-  notes?: string
+  notes?: string,
+  pipeline: any[] = []
 ) {
   const memory = await prisma.memoryRecord.create({
     data: {
@@ -14,7 +16,8 @@ export async function writeKgxPipelineOutcome(
         capabilityPlanId,
         success,
         score,
-        notes: notes ?? null
+        notes: notes ?? null,
+        pipeline
       }
     }
   });
@@ -27,7 +30,8 @@ export async function writeKgxPipelineOutcome(
         capability_plan_id: capabilityPlanId,
         success,
         score,
-        memory_id: memory.id
+        memory_id: memory.id,
+        pipeline_steps: pipeline.length
       }
     }
   });
@@ -41,13 +45,24 @@ export async function writeKgxPipelineOutcome(
       targetId: memory.id,
       payload: {
         score,
-        notes: notes ?? null
+        notes: notes ?? null,
+        pipeline_steps: pipeline.length
       }
     }
   });
 
+  const nodeAttribution =
+    await writeKgxNodeOutcomeAttribution(
+      capabilityPlanId,
+      pipeline,
+      success,
+      score,
+      notes
+    );
+
   return {
     memory,
-    audit
+    audit,
+    nodeAttribution
   };
 }

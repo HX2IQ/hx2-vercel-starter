@@ -22,16 +22,23 @@ export async function POST(req: Request) {
       );
     }
 
+    const pipeline =
+      Array.isArray(body?.pipeline)
+        ? body.pipeline
+        : [];
+
     const result = await writeKgxPipelineOutcome(
       capabilityPlanId,
       !!body?.success,
       Number(body?.score ?? 0),
-      body?.notes
+      body?.notes,
+      pipeline
     );
 
     return NextResponse.json({
       ok: true,
       kgx_pipeline_outcome_feedback_active: true,
+      kgx_node_outcome_attribution_active: true,
       outcome: result
     });
   }
