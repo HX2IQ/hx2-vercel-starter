@@ -12,6 +12,7 @@ import { buildKgxContextTags } from "./kgx-context-tags";
 import { buildKgxContextualRoutingBias } from "./kgx-contextual-routing-bias";
 import { buildKgxAssemblyEffectiveness } from "./kgx-assembly-effectiveness";
 import { buildKgxAssemblyRecommendation } from "./kgx-assembly-recommendation";
+import { buildKgxContextualAssemblyRecommendation } from "./kgx-contextual-assembly-recommendation";
 
 export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
   const graphContext = await buildKgxGraphContext(userRequest);
@@ -28,6 +29,8 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     await buildKgxAssemblyEffectiveness();
   const assemblyRecommendation =
     await buildKgxAssemblyRecommendation();
+  const contextualAssemblyRecommendation =
+    await buildKgxContextualAssemblyRecommendation(userRequest);
 
   const scores: Record<string, number> = {};
 
@@ -123,8 +126,13 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
   const nodePromotion =
     buildKgxNodePromotion(confidenceAdjustment);
 
+  const selectedAssemblyRecommendation =
+    contextualAssemblyRecommendation.found
+      ? contextualAssemblyRecommendation
+      : assemblyRecommendation;
+
   const orchestrationAssembly =
-    assemblyRecommendation.found
+    selectedAssemblyRecommendation.found
       ? {
           orchestration_assembly_active: true,
           assembly_recommendation_consumption_active: true,
@@ -132,35 +140,38 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
           roles: [
             {
               role: "primary",
-              node: assemblyRecommendation.recommended_primary,
+              node: selectedAssemblyRecommendation.recommended_primary,
               confidence: 1,
               reason: "assembly recommendation primary"
             },
             {
               role: "challenge",
-              node: assemblyRecommendation.recommended_challenge,
+              node: selectedAssemblyRecommendation.recommended_challenge,
               confidence: 0.75,
               reason: "assembly recommendation challenge"
             },
             {
               role: "validation",
-              node: assemblyRecommendation.recommended_validation,
+              node: selectedAssemblyRecommendation.recommended_validation,
               confidence: 0.65,
               reason: "assembly recommendation validation"
             },
             {
               role: "secondary",
-              node: assemblyRecommendation.recommended_secondary,
+              node: selectedAssemblyRecommendation.recommended_secondary,
               confidence: 0.5,
               reason: "assembly recommendation secondary"
             }
           ].filter(x => x.node),
-          primary_node: assemblyRecommendation.recommended_primary,
-          challenge_node: assemblyRecommendation.recommended_challenge,
-          validation_node: assemblyRecommendation.recommended_validation,
-          secondary_node: assemblyRecommendation.recommended_secondary,
-          recommended_assembly: assemblyRecommendation.recommended_assembly,
-          effectiveness_score: assemblyRecommendation.effectiveness_score
+          primary_node: selectedAssemblyRecommendation.recommended_primary,
+          challenge_node: selectedAssemblyRecommendation.recommended_challenge,
+          validation_node: selectedAssemblyRecommendation.recommended_validation,
+          secondary_node: selectedAssemblyRecommendation.recommended_secondary,
+          recommended_assembly: selectedAssemblyRecommendation.recommended_assembly,
+          effectiveness_score:
+            (selectedAssemblyRecommendation as any).contextual_effectiveness_score ||
+            (selectedAssemblyRecommendation as any).effectiveness_score ||
+            0
         }
       : buildKgxOrchestrationAssembly(recommendations);
 
@@ -168,7 +179,8 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     adaptive_selection_active: true,
     contextual_bias_injection_active: true,
     assembly_effectiveness_injection_active: true,
-    assembly_recommendation_consumption_active: assemblyRecommendation.found,
+    assembly_recommendation_consumption_active: selectedAssemblyRecommendation.found,
+    contextual_assembly_recommendation_consumption_active: contextualAssemblyRecommendation.found,
     reinforcement_weight_injection_active: true,
     specialist_priority_override_active: true,
     self_optimizing_routing_active: true,
@@ -181,6 +193,8 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     contextual_routing_bias: contextualRoutingBias,
     assembly_effectiveness: assemblyEffectiveness,
     assembly_recommendation: assemblyRecommendation,
+    contextual_assembly_recommendation: contextualAssemblyRecommendation,
+    selected_assembly_recommendation: selectedAssemblyRecommendation,
     contextual_bias_trace: contextualBiasTrace,
     specialization_learning: specializationLearning,
     reinforcement_consumption: reinforcementConsumption,
@@ -199,9 +213,12 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
       contextual_bias_nodes: Object.keys(contextualRoutingBias.boosts || {}).length,
       assembly_effectiveness_rankings: assemblyEffectiveness.rankings.length,
       assembly_recommendation_found: assemblyRecommendation.found,
+      contextual_assembly_recommendation_found: contextualAssemblyRecommendation.found,
       reinforcement_weighted_nodes: Object.keys(reinforcementConsumption.weights || {}).length,
       reinforcement_nodes: routingReinforcement.rankings.length
     }
   };
 }
+
+
 
