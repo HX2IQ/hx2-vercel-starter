@@ -15,6 +15,7 @@ import { buildKgxAssemblyRecommendation } from "./kgx-assembly-recommendation";
 import { buildKgxContextualAssemblyRecommendation } from "./kgx-contextual-assembly-recommendation";
 import { buildKgxCombinationSynergyInfluence } from "./kgx-combination-synergy-influence";
 import { buildKgxCombinationFailureInfluence } from "./kgx-combination-failure-influence";
+import { buildKgxNetCombinationInfluence } from "./kgx-net-combination-influence";
 
 export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
   const graphContext = await buildKgxGraphContext(userRequest);
@@ -37,6 +38,8 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     await buildKgxCombinationSynergyInfluence(userRequest);
   const combinationFailureInfluence =
     await buildKgxCombinationFailureInfluence(userRequest);
+  const netCombinationInfluence =
+    await buildKgxNetCombinationInfluence(userRequest);
 
   const scores: Record<string, number> = {};
 
@@ -80,6 +83,33 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     scores[node] = after;
   }
 
+  const netCombinationInfluenceTrace: any[] = [];
+
+  if (
+    netCombinationInfluence.recommended_assembly &&
+    netCombinationInfluence.net_influence !== 0
+  ) {
+    const netNodes =
+      String(netCombinationInfluence.recommended_assembly)
+        .split("+")
+        .map(x => x.trim())
+        .filter(Boolean);
+
+    for (const node of netNodes) {
+      const before = scores[node] || 0;
+      const net = Number(netCombinationInfluence.net_influence || 0);
+      const after = Math.max(0, before + net);
+
+      netCombinationInfluenceTrace.push({
+        node,
+        before: Math.round(before * 10) / 10,
+        net_influence: net,
+        after: Math.round(after * 10) / 10
+      });
+
+      scores[node] = after;
+    }
+  }
   const combinationSynergyTrace: any[] = [];
 
   if (
@@ -244,6 +274,7 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     assembly_recommendation_consumption_active: selectedAssemblyRecommendation.found,
     combination_synergy_consumption_active: combinationSynergyInfluence.found,
     combination_failure_consumption_active: combinationFailureInfluence.found,
+    net_combination_influence_consumption_active: netCombinationInfluence.net_influence !== 0,
     contextual_assembly_recommendation_consumption_active: contextualAssemblyRecommendation.found,
     reinforcement_weight_injection_active: true,
     specialist_priority_override_active: true,
@@ -263,6 +294,8 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     combination_synergy_trace: combinationSynergyTrace,
     combination_failure_influence: combinationFailureInfluence,
     combination_failure_trace: combinationFailureTrace,
+    net_combination_influence: netCombinationInfluence,
+    net_combination_influence_trace: netCombinationInfluenceTrace,
     contextual_bias_trace: contextualBiasTrace,
     specialization_learning: specializationLearning,
     reinforcement_consumption: reinforcementConsumption,
@@ -284,11 +317,13 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
       contextual_assembly_recommendation_found: contextualAssemblyRecommendation.found,
       combination_synergy_found: combinationSynergyInfluence.found,
       combination_failure_found: combinationFailureInfluence.found,
+      net_combination_influence_active: netCombinationInfluence.net_influence !== 0,
       reinforcement_weighted_nodes: Object.keys(reinforcementConsumption.weights || {}).length,
       reinforcement_nodes: routingReinforcement.rankings.length
     }
   };
 }
+
 
 
 
