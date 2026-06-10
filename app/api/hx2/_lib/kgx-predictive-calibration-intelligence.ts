@@ -1,5 +1,6 @@
 import { buildKgxPredictiveAccuracyTracking } from "./kgx-predictive-accuracy-tracking";
 import { buildKgxPredictiveDriftIntelligence } from "./kgx-predictive-drift-intelligence";
+import { buildKgxPredictionHorizonIntelligence } from "./kgx-prediction-horizon-intelligence";
 
 export async function buildKgxPredictiveCalibrationIntelligence() {
   const tracking =
@@ -7,6 +8,9 @@ export async function buildKgxPredictiveCalibrationIntelligence() {
 
   const drift =
     await buildKgxPredictiveDriftIntelligence();
+
+  const horizon =
+    await buildKgxPredictionHorizonIntelligence();
 
   const accuracy =
     Number(tracking.prediction_accuracy || 0);
@@ -32,13 +36,22 @@ export async function buildKgxPredictiveCalibrationIntelligence() {
         ? -0.1
         : 0;
 
+  const horizonAdjustment =
+    horizon.horizon_state === "short_term_outperforming"
+      ? 0.05
+      : horizon.horizon_state === "short_term_underperforming"
+        ? -0.1
+        : 0;
+
   const confidenceMultiplier =
     Math.round(
       Math.max(
         0.5,
         Math.min(
-          1.25,
-          baseConfidenceMultiplier + driftAdjustment
+          1.3,
+          baseConfidenceMultiplier +
+          driftAdjustment +
+          horizonAdjustment
         )
       ) * 100
     ) / 100;
@@ -62,16 +75,23 @@ export async function buildKgxPredictiveCalibrationIntelligence() {
     calibration_band: calibrationBand,
     base_confidence_multiplier: baseConfidenceMultiplier,
     drift_adjustment: driftAdjustment,
+    horizon_adjustment: horizonAdjustment,
     confidence_multiplier: confidenceMultiplier,
     predictive_drift_intelligence: drift,
+    prediction_horizon_intelligence: horizon,
     reason:
       totalPredictions === 0
         ? "no prediction history available yet"
-        : drift.drift_state === "degrading"
-          ? "predictive calibration reduced because drift is degrading"
-          : drift.drift_state === "improving"
-            ? "predictive calibration increased because drift is improving"
-            : "calibrated from predictive accuracy history"
+        : horizon.horizon_state === "short_term_underperforming"
+          ? "predictive calibration reduced because short-term horizon is underperforming"
+          : horizon.horizon_state === "short_term_outperforming"
+            ? "predictive calibration increased because short-term horizon is outperforming"
+            : drift.drift_state === "degrading"
+              ? "predictive calibration reduced because drift is degrading"
+              : drift.drift_state === "improving"
+                ? "predictive calibration increased because drift is improving"
+                : "calibrated from predictive accuracy history"
   };
 }
+
 
