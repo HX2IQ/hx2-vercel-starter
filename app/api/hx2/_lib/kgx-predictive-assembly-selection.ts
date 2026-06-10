@@ -1,6 +1,7 @@
 import { buildKgxRoutingDecisionOutcomeAttribution } from "./kgx-routing-decision-outcome-attribution";
 import { buildKgxNetCombinationInfluence } from "./kgx-net-combination-influence";
 import { buildKgxAssemblyEffectiveness } from "./kgx-assembly-effectiveness";
+import { buildKgxPredictiveCalibrationIntelligence } from "./kgx-predictive-calibration-intelligence";
 
 function parseAssemblyKey(key: string) {
   return String(key || "")
@@ -20,6 +21,9 @@ export async function buildKgxPredictiveAssemblySelection(
 
   const assemblyEffectiveness =
     await buildKgxAssemblyEffectiveness();
+
+  const predictiveCalibration =
+    await buildKgxPredictiveCalibrationIntelligence();
 
   const candidates: Record<string, any> = {};
 
@@ -72,20 +76,31 @@ export async function buildKgxPredictiveAssemblySelection(
   const predictions =
     Object.values(candidates)
       .map((x: any) => {
+        const rawPredictiveScore =
+          (
+            x.routing_decision_score * 0.45 +
+            x.effectiveness_score * 0.4 +
+            x.net_influence * 0.15
+          );
+
         const predictiveScore =
           Math.round(
-            (
-              x.routing_decision_score * 0.45 +
-              x.effectiveness_score * 0.4 +
-              x.net_influence * 0.15
-            ) * 10
+            rawPredictiveScore *
+            Number(predictiveCalibration.confidence_multiplier || 1) *
+            10
           ) / 10;
 
         const nodes = parseAssemblyKey(x.assembly_key);
 
         return {
           ...x,
+          raw_predictive_score:
+            Math.round(rawPredictiveScore * 10) / 10,
           predictive_score: predictiveScore,
+          calibration_multiplier:
+            predictiveCalibration.confidence_multiplier || 1,
+          calibration_band:
+            predictiveCalibration.calibration_band || "unknown",
           recommended_primary: nodes[0] || null,
           recommended_challenge: nodes[1] || null,
           recommended_validation: nodes[2] || null,
@@ -110,7 +125,14 @@ export async function buildKgxPredictiveAssemblySelection(
       net_combination_influence_active:
         netInfluence.net_combination_influence_active,
       assembly_effectiveness_active:
-        assemblyEffectiveness.assembly_effectiveness_active
+        assemblyEffectiveness.assembly_effectiveness_active,
+      predictive_calibration_intelligence_active:
+        predictiveCalibration.predictive_calibration_intelligence_active,
+      calibration_band:
+        predictiveCalibration.calibration_band,
+      confidence_multiplier:
+        predictiveCalibration.confidence_multiplier
     }
   };
 }
+
