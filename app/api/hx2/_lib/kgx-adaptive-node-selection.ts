@@ -18,6 +18,7 @@ import { buildKgxCombinationFailureInfluence } from "./kgx-combination-failure-i
 import { buildKgxNetCombinationInfluence } from "./kgx-net-combination-influence";
 import { buildKgxRoutingDecisionOutcomeAttribution } from "./kgx-routing-decision-outcome-attribution";
 import { buildKgxPredictiveAssemblySelection } from "./kgx-predictive-assembly-selection";
+import { buildKgxPredictionFailureCauseInfluence } from "./kgx-prediction-failure-cause-influence";
 
 export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
   const graphContext = await buildKgxGraphContext(userRequest);
@@ -47,6 +48,9 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
 
   const predictiveAssemblySelection =
     await buildKgxPredictiveAssemblySelection(userRequest);
+
+  const predictionFailureCauseInfluence =
+    await buildKgxPredictionFailureCauseInfluence();
 
   const scores: Record<string, number> = {};
 
@@ -92,6 +96,61 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
 
   const routingDecisionConsumptionTrace: any[] = [];
 
+  const predictionFailureCauseTrace: any[] = [];
+
+  for (const item of predictionFailureCauseInfluence.influence || []) {
+    const penalty =
+      Number(item.penalty || 0);
+
+    if (penalty <= 0) {
+      continue;
+    }
+
+    if (item.routing_effect === "primary_node_penalty") {
+      const primary =
+        predictiveAssemblySelection.predictions?.[0]?.recommended_primary;
+
+      if (primary) {
+        const before = scores[primary] || 0;
+        const after = Math.max(0, before - penalty);
+
+        predictionFailureCauseTrace.push({
+          node: primary,
+          cause: item.cause,
+          routing_effect: item.routing_effect,
+          before: Math.round(before * 10) / 10,
+          penalty,
+          after: Math.round(after * 10) / 10
+        });
+
+        scores[primary] = after;
+      }
+    }
+
+    if (item.routing_effect === "assembly_composition_penalty") {
+      const predictedNodes =
+        String(predictiveAssemblySelection.predicted_assembly || "")
+          .split("+")
+          .map(x => x.trim())
+          .filter(Boolean);
+
+      for (const node of predictedNodes) {
+        const before = scores[node] || 0;
+        const after = Math.max(0, before - penalty);
+
+        predictionFailureCauseTrace.push({
+          node,
+          cause: item.cause,
+          routing_effect: item.routing_effect,
+          before: Math.round(before * 10) / 10,
+          penalty,
+          after: Math.round(after * 10) / 10
+        });
+
+        scores[node] = after;
+      }
+    }
+  }
   const predictiveAssemblyConsumptionTrace: any[] = [];
 
   if (
@@ -361,6 +420,8 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     net_combination_influence_consumption_active: netCombinationInfluence.net_influence !== 0,
     routing_decision_outcome_consumption_active: true,
     predictive_assembly_selection_consumption_active: true,
+    prediction_failure_cause_influence_consumption_active:
+      predictionFailureCauseInfluence.influence_count > 0,
     contextual_assembly_recommendation_consumption_active: contextualAssemblyRecommendation.found,
     reinforcement_weight_injection_active: true,
     specialist_priority_override_active: true,
@@ -386,6 +447,8 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     routing_decision_consumption_trace: routingDecisionConsumptionTrace,
     predictive_assembly_selection: predictiveAssemblySelection,
     predictive_assembly_consumption_trace: predictiveAssemblyConsumptionTrace,
+    prediction_failure_cause_influence: predictionFailureCauseInfluence,
+    prediction_failure_cause_trace: predictionFailureCauseTrace,
     contextual_bias_trace: contextualBiasTrace,
     specialization_learning: specializationLearning,
     reinforcement_consumption: reinforcementConsumption,
@@ -410,11 +473,14 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
       net_combination_influence_active: netCombinationInfluence.net_influence !== 0,
       routing_decision_attribution_active: true,
       predictive_assembly_selection_active: true,
+      prediction_failure_cause_influence_active:
+        predictionFailureCauseInfluence.influence_count > 0,
       reinforcement_weighted_nodes: Object.keys(reinforcementConsumption.weights || {}).length,
       reinforcement_nodes: routingReinforcement.rankings.length
     }
   };
 }
+
 
 
 
