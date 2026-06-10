@@ -1,6 +1,7 @@
 import { buildKgxPredictiveAccuracyTracking } from "./kgx-predictive-accuracy-tracking";
 import { buildKgxPredictiveDriftIntelligence } from "./kgx-predictive-drift-intelligence";
 import { buildKgxPredictionHorizonIntelligence } from "./kgx-prediction-horizon-intelligence";
+import { buildKgxPredictiveStabilityIntelligence } from "./kgx-predictive-stability-intelligence";
 
 export async function buildKgxPredictiveCalibrationIntelligence() {
   const tracking =
@@ -11,6 +12,9 @@ export async function buildKgxPredictiveCalibrationIntelligence() {
 
   const horizon =
     await buildKgxPredictionHorizonIntelligence();
+
+  const stability =
+    await buildKgxPredictiveStabilityIntelligence();
 
   const accuracy =
     Number(tracking.prediction_accuracy || 0);
@@ -43,15 +47,25 @@ export async function buildKgxPredictiveCalibrationIntelligence() {
         ? -0.1
         : 0;
 
+  const stabilityAdjustment =
+    stability.stability_state === "stable"
+      ? 0.03
+      : stability.stability_state === "moderately_stable"
+        ? 0
+        : stability.stability_state === "volatile"
+          ? -0.12
+          : 0;
+
   const confidenceMultiplier =
     Math.round(
       Math.max(
         0.5,
         Math.min(
-          1.3,
+          1.35,
           baseConfidenceMultiplier +
           driftAdjustment +
-          horizonAdjustment
+          horizonAdjustment +
+          stabilityAdjustment
         )
       ) * 100
     ) / 100;
@@ -76,13 +90,19 @@ export async function buildKgxPredictiveCalibrationIntelligence() {
     base_confidence_multiplier: baseConfidenceMultiplier,
     drift_adjustment: driftAdjustment,
     horizon_adjustment: horizonAdjustment,
+    stability_adjustment: stabilityAdjustment,
     confidence_multiplier: confidenceMultiplier,
     predictive_drift_intelligence: drift,
     prediction_horizon_intelligence: horizon,
+    predictive_stability_intelligence: stability,
     reason:
       totalPredictions === 0
         ? "no prediction history available yet"
-        : horizon.horizon_state === "short_term_underperforming"
+        : stability.stability_state === "volatile"
+          ? "predictive calibration reduced because prediction stability is volatile"
+          : stability.stability_state === "stable"
+            ? "predictive calibration increased because prediction stability is stable"
+            : horizon.horizon_state === "short_term_underperforming"
           ? "predictive calibration reduced because short-term horizon is underperforming"
           : horizon.horizon_state === "short_term_outperforming"
             ? "predictive calibration increased because short-term horizon is outperforming"
@@ -93,5 +113,6 @@ export async function buildKgxPredictiveCalibrationIntelligence() {
                 : "calibrated from predictive accuracy history"
   };
 }
+
 
 
