@@ -13,6 +13,7 @@ import { buildKgxContextualRoutingBias } from "./kgx-contextual-routing-bias";
 import { buildKgxAssemblyEffectiveness } from "./kgx-assembly-effectiveness";
 import { buildKgxAssemblyRecommendation } from "./kgx-assembly-recommendation";
 import { buildKgxContextualAssemblyRecommendation } from "./kgx-contextual-assembly-recommendation";
+import { buildKgxCombinationSynergyInfluence } from "./kgx-combination-synergy-influence";
 
 export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
   const graphContext = await buildKgxGraphContext(userRequest);
@@ -31,6 +32,8 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     await buildKgxAssemblyRecommendation();
   const contextualAssemblyRecommendation =
     await buildKgxContextualAssemblyRecommendation(userRequest);
+  const combinationSynergyInfluence =
+    await buildKgxCombinationSynergyInfluence(userRequest);
 
   const scores: Record<string, number> = {};
 
@@ -74,6 +77,34 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     scores[node] = after;
   }
 
+  const combinationSynergyTrace: any[] = [];
+
+  if (
+    combinationSynergyInfluence.found &&
+    combinationSynergyInfluence.best_assembly &&
+    combinationSynergyInfluence.influence_boost > 0
+  ) {
+    const synergyNodes =
+      String(combinationSynergyInfluence.best_assembly)
+        .split("+")
+        .map(x => x.trim())
+        .filter(Boolean);
+
+    for (const node of synergyNodes) {
+      const before = scores[node] || 0;
+      const boost = Number(combinationSynergyInfluence.influence_boost || 0);
+      const after = before + boost;
+
+      combinationSynergyTrace.push({
+        node,
+        before: Math.round(before * 10) / 10,
+        boost,
+        after: Math.round(after * 10) / 10
+      });
+
+      scores[node] = after;
+    }
+  }
   const reinforcementScoreTrace: any[] = [];
 
   for (const [node, weight] of Object.entries(reinforcementConsumption.weights || {})) {
@@ -180,6 +211,7 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     contextual_bias_injection_active: true,
     assembly_effectiveness_injection_active: true,
     assembly_recommendation_consumption_active: selectedAssemblyRecommendation.found,
+    combination_synergy_consumption_active: combinationSynergyInfluence.found,
     contextual_assembly_recommendation_consumption_active: contextualAssemblyRecommendation.found,
     reinforcement_weight_injection_active: true,
     specialist_priority_override_active: true,
@@ -195,6 +227,8 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     assembly_recommendation: assemblyRecommendation,
     contextual_assembly_recommendation: contextualAssemblyRecommendation,
     selected_assembly_recommendation: selectedAssemblyRecommendation,
+    combination_synergy_influence: combinationSynergyInfluence,
+    combination_synergy_trace: combinationSynergyTrace,
     contextual_bias_trace: contextualBiasTrace,
     specialization_learning: specializationLearning,
     reinforcement_consumption: reinforcementConsumption,
@@ -214,11 +248,13 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
       assembly_effectiveness_rankings: assemblyEffectiveness.rankings.length,
       assembly_recommendation_found: assemblyRecommendation.found,
       contextual_assembly_recommendation_found: contextualAssemblyRecommendation.found,
+      combination_synergy_found: combinationSynergyInfluence.found,
       reinforcement_weighted_nodes: Object.keys(reinforcementConsumption.weights || {}).length,
       reinforcement_nodes: routingReinforcement.rankings.length
     }
   };
 }
+
 
 
 
