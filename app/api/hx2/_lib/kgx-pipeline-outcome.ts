@@ -2,14 +2,28 @@ import { prisma } from "./kgx-lite";
 import { writeKgxNodeOutcomeAttribution } from "./kgx-node-outcome-attribution";
 import { writeKgxAssemblyOutcomeAttribution } from "./kgx-assembly-outcome-attribution";
 
+function assemblyKeyFromPipeline(pipeline: any[]) {
+  return (pipeline || [])
+    .map((step: any) => step?.node)
+    .filter(Boolean)
+    .join(" + ");
+}
+
 export async function writeKgxPipelineOutcome(
   capabilityPlanId: string,
   success: boolean,
   score: number,
   notes?: string,
   pipeline: any[] = [],
-  contextTags: string[] = []
+  contextTags: string[] = [],
+  predictedAssembly?: string,
+  actualAssembly?: string
 ) {
+  const resolvedActualAssembly =
+    actualAssembly ||
+    assemblyKeyFromPipeline(pipeline) ||
+    "unknown";
+
   const memory = await prisma.memoryRecord.create({
     data: {
       memoryType: "kgx_pipeline_outcome",
@@ -20,7 +34,10 @@ export async function writeKgxPipelineOutcome(
         score,
         notes: notes ?? null,
         pipeline,
-        context_tags: contextTags
+        context_tags: contextTags,
+        predicted_assembly: predictedAssembly || null,
+        actual_assembly: resolvedActualAssembly,
+        predictive_accuracy_attribution_active: !!predictedAssembly
       }
     }
   });
@@ -35,7 +52,9 @@ export async function writeKgxPipelineOutcome(
         score,
         memory_id: memory.id,
         pipeline_steps: pipeline.length,
-        context_tags: contextTags
+        context_tags: contextTags,
+        predicted_assembly: predictedAssembly || null,
+        actual_assembly: resolvedActualAssembly
       }
     }
   });
@@ -51,7 +70,9 @@ export async function writeKgxPipelineOutcome(
         score,
         notes: notes ?? null,
         pipeline_steps: pipeline.length,
-        context_tags: contextTags
+        context_tags: contextTags,
+        predicted_assembly: predictedAssembly || null,
+        actual_assembly: resolvedActualAssembly
       }
     }
   });
@@ -79,6 +100,15 @@ export async function writeKgxPipelineOutcome(
     memory,
     audit,
     nodeAttribution,
-    assemblyAttribution
+    assemblyAttribution,
+    predictiveAccuracyAttribution: {
+      predictive_accuracy_attribution_active: !!predictedAssembly,
+      predicted_assembly: predictedAssembly || null,
+      actual_assembly: resolvedActualAssembly,
+      correct:
+        predictedAssembly
+          ? predictedAssembly === resolvedActualAssembly
+          : null
+    }
   };
 }

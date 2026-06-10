@@ -34,19 +34,32 @@ export async function POST(req: Request) {
           ? body.contextTags
           : [];
 
+    const predictedAssembly =
+      body?.predicted_assembly ||
+      body?.predictedAssembly ||
+      null;
+
+    const actualAssembly =
+      body?.actual_assembly ||
+      body?.actualAssembly ||
+      null;
+
     const result = await writeKgxPipelineOutcome(
       capabilityPlanId,
       !!body?.success,
       Number(body?.score ?? 0),
       body?.notes,
       pipeline,
-      contextTags
+      contextTags,
+      predictedAssembly,
+      actualAssembly
     );
 
     return NextResponse.json({
       ok: true,
       kgx_pipeline_outcome_feedback_active: true,
       kgx_node_outcome_attribution_active: true,
+      kgx_predictive_accuracy_attribution_active: !!predictedAssembly,
       outcome: result
     });
   }
@@ -60,4 +73,3 @@ export async function POST(req: Request) {
     );
   }
 }
-
