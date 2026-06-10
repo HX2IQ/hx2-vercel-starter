@@ -20,15 +20,32 @@ export async function buildKgxPredictionFailureRiskIntelligence(
         x.predicted_assembly === predictedAssembly
       );
 
-  const failureRisk =
-    prediction.prediction_count > 0
-      ? Math.round(
-          (
-            relevantCauses.length /
-            Math.max(prediction.prediction_count, 1)
-          ) * 1000
-        ) / 1000
+  const minimumSamples = 5;
+
+  const sampleBase =
+    Math.max(prediction.prediction_count || 0, relevantCauses.length);
+
+  const rawFailureRisk =
+    sampleBase > 0
+      ? relevantCauses.length / sampleBase
       : 0;
+
+  const riskConfidence =
+    sampleBase >= minimumSamples
+      ? 1
+      : Math.round((sampleBase / minimumSamples) * 100) / 100;
+
+  const failureRisk =
+    Math.round(rawFailureRisk * riskConfidence * 1000) / 1000;
+
+  const riskBand =
+    riskConfidence < 1
+      ? "low_confidence"
+      : failureRisk >= 0.6
+        ? "high"
+        : failureRisk >= 0.3
+          ? "medium"
+          : "low";
 
   const causeCounts: Record<string, number> = {};
 
@@ -51,7 +68,13 @@ export async function buildKgxPredictionFailureRiskIntelligence(
     predicted_assembly: predictedAssembly,
     predicted_score: prediction.predicted_score || 0,
     relevant_failure_count: relevantCauses.length,
+    minimum_samples: minimumSamples,
+    sample_base: sampleBase,
+    raw_failure_risk:
+      Math.round(rawFailureRisk * 1000) / 1000,
+    risk_confidence: riskConfidence,
     failure_risk: failureRisk,
+    risk_band: riskBand,
     primary_risk_cause: rankedCauses[0]?.cause || null,
     ranked_causes: rankedCauses,
     reason:
@@ -60,3 +83,4 @@ export async function buildKgxPredictionFailureRiskIntelligence(
         : "no historical prediction failures matched predicted assembly"
   };
 }
+
