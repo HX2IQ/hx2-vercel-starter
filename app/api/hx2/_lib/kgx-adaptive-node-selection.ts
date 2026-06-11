@@ -20,6 +20,7 @@ import { buildKgxRoutingDecisionOutcomeAttribution } from "./kgx-routing-decisio
 import { buildKgxPredictiveAssemblySelection } from "./kgx-predictive-assembly-selection";
 import { buildKgxPredictionFailureCauseInfluence } from "./kgx-prediction-failure-cause-influence";
 import { buildKgxPredictionTrustIntelligence } from "./kgx-prediction-trust-intelligence";
+import { buildKgxPredictionPromotionIntelligence } from "./kgx-prediction-promotion-intelligence";
 
 export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
   const graphContext = await buildKgxGraphContext(userRequest);
@@ -55,6 +56,9 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
 
   const predictionTrust =
     await buildKgxPredictionTrustIntelligence(userRequest);
+
+  const predictionPromotion =
+    await buildKgxPredictionPromotionIntelligence(userRequest);
 
   const scores: Record<string, number> = {};
 
@@ -131,6 +135,35 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
       node,
       trust_score: trustScore,
       trust_multiplier: trustMultiplier,
+      before,
+      after
+    });
+
+    scores[node] = after;
+  }
+  const predictionPromotionTrace: any[] = [];
+
+  const promotionBand =
+    String(
+      predictionPromotion.promotion_band || "hold"
+    );
+
+  const promotionMultiplier =
+    promotionBand === "promote"
+      ? 1.15
+      : promotionBand === "hold"
+        ? 1
+        : 0.85;
+
+  for (const node of predictedNodes) {
+    const before = scores[node] || 0;
+    const after =
+      Math.round(before * promotionMultiplier * 10) / 10;
+
+    predictionPromotionTrace.push({
+      node,
+      promotion_band: promotionBand,
+      promotion_multiplier: promotionMultiplier,
       before,
       after
     });
@@ -464,6 +497,7 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     prediction_failure_cause_influence_consumption_active:
       predictionFailureCauseInfluence.influence_count > 0,
     prediction_trust_consumption_active: true,
+    prediction_promotion_consumption_active: true,
     contextual_assembly_recommendation_consumption_active: contextualAssemblyRecommendation.found,
     reinforcement_weight_injection_active: true,
     specialist_priority_override_active: true,
@@ -493,6 +527,8 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
     prediction_failure_cause_trace: predictionFailureCauseTrace,
     prediction_trust: predictionTrust,
     prediction_trust_trace: predictionTrustTrace,
+    prediction_promotion: predictionPromotion,
+    prediction_promotion_trace: predictionPromotionTrace,
     contextual_bias_trace: contextualBiasTrace,
     specialization_learning: specializationLearning,
     reinforcement_consumption: reinforcementConsumption,
@@ -520,11 +556,13 @@ export async function buildKgxAdaptiveNodeSelection(userRequest: string) {
       prediction_failure_cause_influence_active:
         predictionFailureCauseInfluence.influence_count > 0,
       prediction_trust_intelligence_active: true,
+      prediction_promotion_intelligence_active: true,
       reinforcement_weighted_nodes: Object.keys(reinforcementConsumption.weights || {}).length,
       reinforcement_nodes: routingReinforcement.rankings.length
     }
   };
 }
+
 
 
 
