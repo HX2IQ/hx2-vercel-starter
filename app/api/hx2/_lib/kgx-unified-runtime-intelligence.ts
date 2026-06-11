@@ -3,6 +3,7 @@ import { buildKgxUnifiedDecisionEngine } from "./kgx-unified-decision-engine";
 import { buildKgxUnifiedCalibrationEngine } from "./kgx-unified-calibration-engine";
 import { buildKgxLearningSignalAggregator } from "./kgx-learning-signal-aggregator";
 import { buildKgxOutcomeRecordingEngine } from "./kgx-outcome-recording-engine";
+import { buildKgxCostGuardAuthority } from "./kgx-cost-guard-authority";
 
 export async function buildKgxUnifiedRuntimeIntelligence() {
   const [
@@ -10,13 +11,15 @@ export async function buildKgxUnifiedRuntimeIntelligence() {
     decision,
     calibration,
     learning,
-    outcomes
+    outcomes,
+    costGuard
   ] = await Promise.all([
     buildKgxDeepConsumptionIntegration(),
     buildKgxUnifiedDecisionEngine(),
     buildKgxUnifiedCalibrationEngine(),
     buildKgxLearningSignalAggregator(),
-    buildKgxOutcomeRecordingEngine()
+    buildKgxOutcomeRecordingEngine(),
+    buildKgxCostGuardAuthority()
   ]);
 
   const runtimeAuthorityScore =
@@ -30,6 +33,10 @@ export async function buildKgxUnifiedRuntimeIntelligence() {
 
   return {
     unified_runtime_intelligence_active: true,
+    cost_guard_execution_allowed:
+      costGuard.execution_allowed,
+    cost_guard_estimated_cost_band:
+      costGuard.estimated_cost_band,
     runtime_readiness:
       runtimeAuthorityScore >= 70
         ? "ready"
@@ -49,6 +56,8 @@ export async function buildKgxUnifiedRuntimeIntelligence() {
     decision,
     calibration,
     learning,
-    outcomes
+    outcomes,
+    costGuard
   };
 }
+
