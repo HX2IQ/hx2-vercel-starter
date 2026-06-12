@@ -20,8 +20,45 @@ type Msg = {
   sources?: MsgSource[];
 };
 
+type ChatThread = {
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+  messages: Msg[];
+};
+
 function uid() {
   return Math.random().toString(16).slice(2) + Date.now().toString(16);
+}
+
+const THREADS_KEY = "hx2_chat_threads_v2";
+const ACTIVE_THREAD_KEY = "hx2_active_thread_id";
+
+function defaultAssistantMessage(content = "## Opti is online\n\nAsk me anything."): Msg {
+  return {
+    id: uid(),
+    role: "assistant",
+    content,
+    createdAt: new Date().toISOString(),
+  };
+}
+
+function titleFromMessage(text: string): string {
+  const clean = text.trim().replace(/\s+/g, " ");
+  if (!clean) return "New chat";
+  return clean.length > 42 ? clean.slice(0, 42) + "…" : clean;
+}
+
+function createThread(title = "New chat", messages?: Msg[]): ChatThread {
+  const now = new Date().toISOString();
+  return {
+    id: "thread-" + uid(),
+    title,
+    createdAt: now,
+    updatedAt: now,
+    messages: messages || [defaultAssistantMessage()],
+  };
 }
 
 function getSessionId(): string {
@@ -204,7 +241,9 @@ function deriveHx2Envelope(payload: any) {
 
 export default function ChatClient() {
   const [sessionId, setSessionId] = useState<string>("");
-  const [messages, setMessages] = useState<Msg[]>([]);
+  const [threads, setThreads] = useState<ChatThread[]>([]);
+  const [activeThreadId, setActiveThreadId] = useState<string>("");
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [debugOpen, setDebugOpen] = useState(false);
@@ -216,38 +255,114 @@ export default function ChatClient() {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
+  const activeThread = useMemo(
+    () => threads.find((t) => t.id === activeThreadId) || threads[0] || null,
+    [threads, activeThreadId]
+  );
+
+  const messages = activeThread?.messages || [];
+
   const canSend = useMemo(() => input.trim().length > 0 && !sending, [input, sending]);
+
+  function persistThreads(next: ChatThread[], activeId = activeThreadId) {
+    setThreads(next);
+    try {
+      localStorage.setItem(THREADS_KEY, JSON.stringify(next));
+      if (activeId) localStorage.setItem(ACTIVE_THREAD_KEY, activeId);
+    } catch {}
+  }
+
+  function setActiveMessages(updater: (messages: Msg[]) => Msg[]) {
+    setThreads((current) => {
+      const targetId = activeThreadId || current[0]?.id;
+      const next = current.map((thread) => {
+        if (thread.id !== targetId) return thread;
+        return {
+          ...thread,
+          messages: updater(thread.messages),
+          updatedAt: new Date().toISOString(),
+        };
+      });
+
+      try {
+        localStorage.setItem(THREADS_KEY, JSON.stringify(next));
+      } catch {}
+
+      return next;
+    });
+  }
+
+  function startNewChat() {
+    const thread = createThread();
+    const next = [thread, ...threads];
+    setActiveThreadId(thread.id);
+    persistThreads(next, thread.id);
+    setHistoryOpen(false);
+    setLastRaw(null);
+    setInput("");
+    requestAnimationFrame(() => inputRef.current?.focus());
+  }
+
+  function selectThread(id: string) {
+    setActiveThreadId(id);
+    try {
+      localStorage.setItem(ACTIVE_THREAD_KEY, id);
+    } catch {}
+    setHistoryOpen(false);
+    setLastRaw(null);
+    requestAnimationFrame(() => inputRef.current?.focus());
+  }
+
+  function deleteThread(id: string) {
+    const remaining = threads.filter((t) => t.id !== id);
+    const next = remaining.length > 0 ? remaining : [createThread()];
+    const nextActive = activeThreadId === id ? next[0].id : activeThreadId;
+    setActiveThreadId(nextActive);
+    persistThreads(next, nextActive);
+  }
 
   useEffect(() => {
     setSessionId(getSessionId());
 
-    const saved = localStorage.getItem("hx2_chat_messages");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
+    try {
+      const savedThreads = localStorage.getItem(THREADS_KEY);
+      const savedActive = localStorage.getItem(ACTIVE_THREAD_KEY);
+
+      if (savedThreads) {
+        const parsed = JSON.parse(savedThreads);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setMessages(parsed);
+          setThreads(parsed);
+          setActiveThreadId(
+            savedActive && parsed.some((t: ChatThread) => t.id === savedActive)
+              ? savedActive
+              : parsed[0].id
+          );
           return;
         }
-      } catch {}
-    }
+      }
 
-    setMessages([
-      {
-        id: uid(),
-        role: "assistant",
-        content: "## Opti is online\n\nAsk me to reason, build, inspect, activate, execute, or retrieve sources.",
-        createdAt: new Date().toISOString(),
-      },
-    ]);
+      const legacy = localStorage.getItem("hx2_chat_messages");
+      if (legacy) {
+        const legacyMessages = JSON.parse(legacy);
+        if (Array.isArray(legacyMessages) && legacyMessages.length > 0) {
+          const migrated = createThread("Previous chat", legacyMessages);
+          setThreads([migrated]);
+          setActiveThreadId(migrated.id);
+          localStorage.setItem(THREADS_KEY, JSON.stringify([migrated]));
+          localStorage.setItem(ACTIVE_THREAD_KEY, migrated.id);
+          return;
+        }
+      }
+    } catch {}
+
+    const thread = createThread();
+    setThreads([thread]);
+    setActiveThreadId(thread.id);
+    try {
+      localStorage.setItem(THREADS_KEY, JSON.stringify([thread]));
+      localStorage.setItem(ACTIVE_THREAD_KEY, thread.id);
+    } catch {}
   }, []);
-
-  useEffect(() => {
-    if (messages.length > 0) {
-      localStorage.setItem("hx2_chat_messages", JSON.stringify(messages));
-    }
-  }, [messages]);
-
   useEffect(() => {
     autoGrow(inputRef.current);
   }, [input]);
@@ -317,8 +432,7 @@ export default function ChatClient() {
         createdAt: new Date().toISOString(),
       },
     ];
-    setMessages(fresh);
-    localStorage.setItem("hx2_chat_messages", JSON.stringify(fresh));
+    setActiveMessages(() => fresh);
     setLastRaw(null);
   }
 
@@ -351,7 +465,21 @@ export default function ChatClient() {
       createdAt: new Date().toISOString(),
     };
 
-    setMessages((m) => [...m, userMsg, assistantMsg]);
+    setActiveMessages((m) => [...m, userMsg, assistantMsg]);
+
+    const currentThreadId = activeThreadId;
+    if (activeThread && activeThread.title === "New chat") {
+      const nextTitle = titleFromMessage(text);
+      setThreads((current) => {
+        const next = current.map((thread) =>
+          thread.id === currentThreadId
+            ? { ...thread, title: nextTitle, updatedAt: new Date().toISOString() }
+            : thread
+        );
+        try { localStorage.setItem(THREADS_KEY, JSON.stringify(next)); } catch {}
+        return next;
+      });
+    }
     setInput("");
     setSending(true);
 
@@ -384,7 +512,7 @@ export default function ChatClient() {
         const extractedSources = extractSourcesFromPayload(raw);
         setLastRaw({ status: res.status, body: raw });
 
-        setMessages((m) =>
+        setActiveMessages((m) =>
           m.map((msg) =>
             msg.id === assistantId
               ? {
@@ -425,7 +553,7 @@ export default function ChatClient() {
 
           if (evt?.type === "delta") {
             finalReply += String(evt.delta || "");
-            setMessages((m) =>
+            setActiveMessages((m) =>
               m.map((msg) =>
                 msg.id === assistantId ? { ...msg, content: finalReply } : msg
               )
@@ -436,7 +564,7 @@ export default function ChatClient() {
             finalReply = String(evt.reply || finalReply || "");
             finalData = evt?.data || null;
 
-            setMessages((m) =>
+            setActiveMessages((m) =>
               m.map((msg) =>
                 msg.id === assistantId ? { ...msg, content: finalReply || "No reply." } : msg
               )
@@ -447,7 +575,7 @@ export default function ChatClient() {
             const errText = String(evt.error || "Request failed.");
             finalReply = errText;
 
-            setMessages((m) =>
+            setActiveMessages((m) =>
               m.map((msg) =>
                 msg.id === assistantId ? { ...msg, content: errText } : msg
               )
@@ -468,7 +596,7 @@ export default function ChatClient() {
 
       const extractedSources = extractSourcesFromPayload(finalPayload.body);
 
-      setMessages((m) =>
+      setActiveMessages((m) =>
         m.map((msg) =>
           msg.id === assistantId ? { ...msg, sources: extractedSources } : msg
         )
@@ -479,7 +607,7 @@ export default function ChatClient() {
           ? "Request stopped."
           : `Error: ${e?.message || "Request failed"}`;
 
-      setMessages((m) =>
+      setActiveMessages((m) =>
         m.map((msg) =>
           msg.id === assistantId ? { ...msg, content: message } : msg
         )
@@ -502,8 +630,34 @@ export default function ChatClient() {
   const hx2Envelope = deriveHx2Envelope(lastRaw);
 
   return (
-    <div className="hx2-shell">
+    <div className={`hx2-shell ${historyOpen ? "hx2-history-open" : ""}`}>
+      <aside className="hx2-history">
+        <div className="hx2-history-head">
+          <div>
+            <div className="hx2-history-title">Chats</div>
+            <div className="hx2-history-subtitle">Recent HX2 conversations</div>
+          </div>
+          <button className="hx2-history-close" type="button" onClick={() => setHistoryOpen(false)}>×</button>
+        </div>
+
+        <button className="hx2-new-chat" type="button" onClick={startNewChat}>+ New Chat</button>
+
+        <div className="hx2-thread-list">
+          {threads.map((thread) => (
+            <div key={thread.id} className={`hx2-thread-row ${thread.id === activeThreadId ? "hx2-thread-row-active" : ""}`}>
+              <button className="hx2-thread-button" type="button" onClick={() => selectThread(thread.id)}>
+                <span className="hx2-thread-title">{thread.title}</span>
+                <span className="hx2-thread-date">{new Date(thread.updatedAt).toLocaleDateString()}</span>
+              </button>
+              <button className="hx2-thread-delete" type="button" onClick={() => deleteThread(thread.id)}>×</button>
+            </div>
+          ))}
+        </div>
+      </aside>
+
+      {historyOpen && <button className="hx2-history-scrim" aria-label="Close history" onClick={() => setHistoryOpen(false)} />}
       <header className="hx2-topbar">
+        <button className="hx2-menu-button" type="button" onClick={() => setHistoryOpen(true)} aria-label="Open chat history">☰</button>
         <div className="hx2-brand">
           <div className="hx2-title">Opti</div>
           <div className="hx2-subtitle">Optimized Intelligence</div>
@@ -652,6 +806,8 @@ export default function ChatClient() {
     </div>
   );
 }
+
+
 
 
 
