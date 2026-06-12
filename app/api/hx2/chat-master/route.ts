@@ -59,6 +59,34 @@ async function getCryptoSpot(symbol: string) {
   }
 }
 
+
+function getRetrievedSummary(ctx: any): string {
+  const retrieval = ctx?.retrieval;
+
+  if (!retrieval?.sources?.length) {
+    return "";
+  }
+
+  const first = retrieval.sources[0];
+
+  const title =
+    String(first?.title || "").trim();
+
+  const snippet =
+    String(first?.snippet || "").trim();
+
+  if (!snippet) {
+    return "";
+  }
+
+  const shortSnippet =
+    snippet.length > 500
+      ? snippet.substring(0, 500) + "..."
+      : snippet;
+
+  return `Retrieved context (${title}): ${shortSnippet}`;
+}
+
 async function executeX2(ctx: NodeExecutionContext): Promise<string> {
   const q = ctx.input;
   const symbol = detectCryptoSymbol(q);
@@ -110,6 +138,16 @@ async function executeL2(ctx: NodeExecutionContext): Promise<string> {
 }
 
 async function executeHX2(ctx: NodeExecutionContext): Promise<string> {
+
+  const retrieved =
+    getRetrievedSummary(ctx);
+
+  if (retrieved) {
+    return `${retrieved}
+
+---
+Optimized by HX2 Retrieval Intelligence`;
+  }
   const q = ctx.input;
 
   if (/what\s+is\s+hx2/i.test(q)) {
@@ -193,4 +231,5 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
 
