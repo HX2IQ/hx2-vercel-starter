@@ -4,7 +4,60 @@ import { CHAT_MASTER_EXECUTION_MAP } from "../contracts/chat-master-execution-ma
 
 export const runtime = "nodejs";
 
-function buildChatMasterAnswer(input: string, decision: any, execution: any): string {
+async function safeFetchJson(url: string) {
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) {
+      return { ok: false, error: `HTTP ${res.status}` };
+    }
+    return await res.json();
+  } catch (err: any) {
+    return { ok: false, error: err?.message || String(err) };
+  }
+}
+
+function summarizeUnifiedDecision(data: any): string {
+  const engine =
+    data?.decision ||
+    data?.engine ||
+    data?.unified_decision_engine ||
+    data;
+
+  const decision =
+    engine?.decision ||
+    engine?.recommendation ||
+    engine?.adjusted_recommendation ||
+    engine?.arbitration_decision ||
+    "review";
+
+  const score =
+    engine?.score ??
+    engine?.unified_score ??
+    engine?.unified_strategic_score ??
+    engine?.adjusted_score ??
+    null;
+
+  const confidence =
+    engine?.confidence ??
+    engine?.confidence_score ??
+    null;
+
+  const parts = [
+    `HX2 decision engine recommendation: ${decision}.`
+  ];
+
+  if (score !== null && score !== undefined) {
+    parts.push(`Strategic score: ${score}.`);
+  }
+
+  if (confidence !== null && confidence !== undefined) {
+    parts.push(`Confidence: ${confidence}.`);
+  }
+
+  return parts.join(" ");
+}
+
+function buildFallbackAnswer(input: string, decision: any, execution: any): string {
   const q = String(input || "").trim();
   const targetNode = execution?.node || decision?.target_node || "HX2";
 
@@ -39,8 +92,35 @@ export async function POST(req: NextRequest) {
         decision.intent
       ];
 
+    const base = req.nextUrl.origin;
+
+    const adaptiveUrl =
+      `${base}/api/hx2/kgx-adaptive-selection-preview?q=${encodeURIComponent(input)}`;
+
+    const decisionUrl =
+      `${base}/api/hx2/kgx-unified-decision-engine-preview?q=${encodeURIComponent(input)}`;
+
+    const runtimeUrl =
+      `${base}/api/hx2/kgx-unified-runtime-intelligence-preview?q=${encodeURIComponent(input)}`;
+
+    const [
+      adaptive,
+      unifiedDecision,
+      runtime
+    ] = await Promise.all([
+      safeFetchJson(adaptiveUrl),
+      safeFetchJson(decisionUrl),
+      safeFetchJson(runtimeUrl)
+    ]);
+
+    const decisionSummary =
+      unifiedDecision?.ok === true
+        ? summarizeUnifiedDecision(unifiedDecision)
+        : "";
+
     const answer =
-      buildChatMasterAnswer(input, decision, execution);
+      decisionSummary ||
+      buildFallbackAnswer(input, decision, execution);
 
     return NextResponse.json({
       ok: true,
@@ -53,7 +133,12 @@ export async function POST(req: NextRequest) {
       text: answer,
       decision,
       router: decision,
-      execution
+      execution,
+      intelligence: {
+        adaptive,
+        unified_decision: unifiedDecision,
+        runtime
+      }
     });
 
   } catch (err: any) {
