@@ -68,40 +68,57 @@ function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intellige
     return "";
   }
 
-  const first = retrieval.sources[0];
-  const title = String(first?.title || "").trim();
-  const snippet = String(first?.snippet || "").trim();
+  const sources = retrieval.sources
+    .slice(0, 4)
+    .map((source: any) => ({
+      title: String(source?.title || "").trim(),
+      source: String(source?.source || "source").trim(),
+      url: String(source?.url || "").trim(),
+      snippet: String(source?.snippet || "").replace(/\s+/g, " ").trim()
+    }))
+    .filter((source: any) => source.snippet.length > 0);
 
-  if (!snippet) {
+  if (sources.length === 0) {
     return "";
   }
 
-  const sentences =
-    snippet
-      .replace(/\s+/g, " ")
+  const primary = sources[0];
+
+  const primarySentences =
+    primary.snippet
       .split(/(?<=[.!?])\s+/)
       .filter(Boolean);
 
   const opening =
-    sentences.slice(0, 2).join(" ");
+    primarySentences.slice(0, 2).join(" ");
 
-  const keyPoints =
-    sentences
-      .slice(2, 5)
-      .map((s: string) => s.trim())
-      .filter(Boolean);
+  const supportingPoints = sources
+    .slice(1, 4)
+    .map((source: any) => {
+      const short =
+        source.snippet.length > 220
+          ? source.snippet.substring(0, 220) + "..."
+          : source.snippet;
 
-  const bullets =
-    keyPoints.length > 0
-      ? "\n\nKey points:\n" + keyPoints.map((s: string) => `• ${s}`).join("\n")
+      return `• ${source.title || source.source}: ${short}`;
+    });
+
+  const supportingBlock =
+    supportingPoints.length > 0
+      ? `\n\nRecent / supporting signals:\n${supportingPoints.join("\n")}`
       : "";
 
-  return `${opening}${bullets}
+  const sourceNames = Array.from(
+    new Set(
+      sources.map((source: any) => source.source).filter(Boolean)
+    )
+  ).join(", ");
+
+  return `${opening}${supportingBlock}
 
 ---
-Optimized by ${nodeName}`;
+Optimized by ${nodeName}${sourceNames ? ` • Sources: ${sourceNames}` : ""}`;
 }
-
 function getRetrievedSummary(ctx: any): string {
   const retrieval = ctx?.retrieval;
 
@@ -280,6 +297,7 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
 
 
 
