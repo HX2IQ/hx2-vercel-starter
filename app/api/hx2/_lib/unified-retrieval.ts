@@ -64,12 +64,50 @@ async function fetchWikipedia(query: string): Promise<UnifiedRetrievalSource[]> 
   }
 }
 
+
+function normalizedRelevanceTerms(query: string): string[] {
+  const q = String(query || "").toLowerCase();
+
+  if (/\bxrp\b|ripple|xrpl/.test(q)) {
+    return ["xrp", "ripple", "xrpl"];
+  }
+
+  if (/bitcoin|\bbtc\b/.test(q)) {
+    return ["bitcoin", "btc"];
+  }
+
+  if (/ethereum|\beth\b/.test(q)) {
+    return ["ethereum", "eth"];
+  }
+
+  if (/dtcc|depository trust|clearing corporation/.test(q)) {
+    return ["dtcc", "depository", "clearing"];
+  }
+
+  return q
+    .split(/\s+/)
+    .map((x) => x.trim())
+    .filter((x) => x.length > 3);
+}
+
 async function fetchRssRetrieval(query: string): Promise<UnifiedRetrievalSource[]> {
   try {
     const items =
       await fetchRssFeeds(query);
 
-    return (items || []).slice(0, 5).map((item: any) => ({
+    const strictTerms = normalizedRelevanceTerms(query);
+
+    const relevantItems = (items || []).filter((item: any) => {
+      const haystack = `${item?.title || ""} ${item?.link || ""} ${item?.source || ""}`.toLowerCase();
+
+      if (strictTerms.length === 0) {
+        return false;
+      }
+
+      return strictTerms.some((term) => haystack.includes(term));
+    });
+
+    return relevantItems.slice(0, 5).map((item: any) => ({
       title: String(item?.title || "RSS result"),
       url: String(item?.link || ""),
       source: "rss",
@@ -117,3 +155,4 @@ export async function retrieveContext(
         : "stub"
   };
 }
+
