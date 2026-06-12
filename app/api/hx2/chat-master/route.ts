@@ -174,6 +174,18 @@ async function executeX2(ctx: NodeExecutionContext): Promise<string> {
   const symbol = detectCryptoSymbol(q);
   const wantsPrice = /price|current|now|today|trading|worth/i.test(q);
   const wantsForecast = /increase|go up|soon|forecast|prediction|outlook|expected/i.test(q);
+  const wantsNews = /news|latest|recent|today|headline|headlines|update|updates|happened/i.test(q);
+
+  if (wantsNews) {
+    const retrievalAnswer =
+      getNodeRetrievalAnswer(ctx, "X2 Markets Intelligence");
+
+    if (retrievalAnswer) {
+      return retrievalAnswer;
+    }
+
+    return `I checked X2 retrieval, but I do not have a relevant current news result for that query yet. The next upgrade should connect live web search so Opti can find broader market/news sources beyond the current RSS feeds.${nodeFooter("X2 Markets Intelligence")}`;
+  }
 
   if (symbol && wantsPrice) {
     const spot = await getCryptoSpot(symbol);
@@ -320,6 +332,7 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
 
 
 
