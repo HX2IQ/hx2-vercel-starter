@@ -1,3 +1,5 @@
+import { fetchRssFeeds } from "./rss-fetch";
+
 export type UnifiedRetrievalSource = {
   title: string;
   url?: string;
@@ -40,34 +42,43 @@ function normalizeRetrievalQuery(query: string): string {
 
 async function fetchWikipedia(query: string): Promise<UnifiedRetrievalSource[]> {
   try {
-    const normalized =
-      normalizeRetrievalQuery(query);
+    const res = await fetch(
+      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`,
+      { cache: "no-store" }
+    );
 
-    const url =
-      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(normalized)}`;
-
-    const res = await fetch(url, {
-      cache: "no-store"
-    });
-
-    if (!res.ok) {
-      return [];
-    }
+    if (!res.ok) return [];
 
     const json = await res.json();
 
-    if (!json?.extract) {
-      return [];
-    }
+    if (!json?.extract) return [];
 
-    return [
-      {
-        title: String(json?.title || normalized),
-        url: String(json?.content_urls?.desktop?.page || ""),
-        source: "wikipedia",
-        snippet: String(json?.extract || "")
-      }
-    ];
+    return [{
+      title: String(json?.title || query),
+      url: String(json?.content_urls?.desktop?.page || ""),
+      source: "wikipedia",
+      snippet: String(json?.extract || "")
+    }];
+  } catch {
+    return [];
+  }
+}
+
+async function fetchRssRetrieval(query: string): Promise<UnifiedRetrievalSource[]> {
+  try {
+    const items =
+      await fetchRssFeeds(query);
+
+    return (items || []).slice(0, 5).map((item: any) => ({
+      title: String(item?.title || "RSS result"),
+      url: String(item?.link || ""),
+      source: "rss",
+      snippet: [
+        item?.title ? `Title: ${item.title}` : "",
+        item?.pubDate ? `Published: ${item.pubDate}` : "",
+        item?.source ? `Feed: ${item.source}` : ""
+      ].filter(Boolean).join(" | ")
+    }));
   } catch {
     return [];
   }
@@ -80,18 +91,28 @@ export async function retrieveContext(
   const normalized =
     normalizeRetrievalQuery(query);
 
-  const wikiResults =
-    await fetchWikipedia(normalized);
+  const [
+    wikiResults,
+    rssResults
+  ] = await Promise.all([
+    fetchWikipedia(normalized),
+    fetchRssRetrieval(normalized)
+  ]);
+
+  const allSources = [
+    ...wikiResults,
+    ...rssResults
+  ];
 
   return {
     query,
     normalized_query: normalized,
-    web_results: wikiResults,
+    web_results: allSources,
     memory_results: [],
-    sources: wikiResults,
+    sources: allSources,
     retrieval_active: true,
     retrieval_mode:
-      wikiResults.length > 0
+      allSources.length > 0
         ? "live"
         : "stub"
   };
