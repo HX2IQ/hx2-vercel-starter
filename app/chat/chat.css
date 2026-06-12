@@ -997,3 +997,340 @@ html, body {
     height: 48px;
   }
 }
+
+/* Phase 10D-B: modern AI chat visual rebuild */
+:root {
+  --hx2-bg: #ffffff;
+  --hx2-surface: #ffffff;
+  --hx2-border: rgba(17, 24, 39, 0.10);
+  --hx2-text: #111827;
+  --hx2-muted: #6b7280;
+  --hx2-accent: #111827;
+  --hx2-accent-soft: rgba(17, 24, 39, 0.06);
+}
+
+html,
+body {
+  background: #ffffff !important;
+  color: #111827 !important;
+}
+
+.hx2-shell {
+  min-height: 100dvh;
+  background: #ffffff !important;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+.hx2-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: 48px 1fr 48px;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px 10px;
+  background: rgba(255, 255, 255, 0.92) !important;
+  border-bottom: 0 !important;
+  backdrop-filter: blur(20px);
+}
+
+.hx2-menu-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  border: 0;
+  background: #f8fafc;
+  color: #111827;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
+  font-size: 24px;
+}
+
+.hx2-brand {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.hx2-title {
+  font-size: 24px !important;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: #111827 !important;
+}
+
+.hx2-subtitle {
+  display: none !important;
+}
+
+.hx2-top-actions {
+  display: flex !important;
+  justify-self: end;
+  margin: 0 !important;
+  gap: 0;
+}
+
+.hx2-top-actions .hx2-pill {
+  display: none;
+}
+
+.hx2-top-actions .hx2-pill:first-child {
+  display: inline-flex;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 0;
+  border: 0;
+  background: #f8fafc;
+  color: #111827;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
+}
+
+.hx2-top-actions .hx2-pill:first-child::before {
+  content: "✎";
+  font-size: 24px;
+  line-height: 1;
+}
+
+.hx2-chat {
+  background: #ffffff !important;
+  overflow: auto;
+}
+
+.hx2-chat-inner {
+  width: min(760px, calc(100vw - 42px));
+  margin: 0 auto;
+  padding: 48px 0 170px;
+}
+
+.hx2-message {
+  border-bottom: 0 !important;
+  margin: 0 0 30px !important;
+  padding: 0 !important;
+}
+
+.hx2-message-meta {
+  margin-bottom: 10px;
+}
+
+.hx2-role {
+  color: #111827 !important;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.hx2-copy {
+  color: #9ca3af !important;
+  font-size: 13px;
+}
+
+.hx2-message-user .hx2-message-body {
+  margin-left: auto;
+  max-width: 82%;
+  width: fit-content;
+  background: #f4f4f5;
+  border-radius: 28px;
+  padding: 16px 19px;
+  color: #111827 !important;
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.hx2-message-user .hx2-message-meta {
+  display: none;
+}
+
+.hx2-message-assistant .hx2-message-body {
+  color: #111827 !important;
+  font-size: 20px;
+  line-height: 1.58;
+  letter-spacing: -0.015em;
+}
+
+.hx2-md-h1,
+.hx2-md-h2,
+.hx2-md-h3 {
+  color: #111827 !important;
+  letter-spacing: -0.03em;
+}
+
+.hx2-md-h1 {
+  font-size: 30px;
+  line-height: 1.16;
+}
+
+.hx2-md-h2 {
+  font-size: 25px;
+  line-height: 1.22;
+}
+
+.hx2-md-h3 {
+  font-size: 21px;
+  line-height: 1.26;
+}
+
+.hx2-md-p {
+  color: #111827 !important;
+  margin: 0 0 18px;
+}
+
+.hx2-md-ul,
+.hx2-md-ol {
+  color: #111827 !important;
+  padding-left: 24px;
+  margin: 0 0 18px;
+}
+
+.hx2-md-li {
+  margin: 8px 0;
+}
+
+.hx2-composer {
+  position: sticky;
+  bottom: 0;
+  z-index: 40;
+  background: linear-gradient(180deg, rgba(255,255,255,0), #ffffff 22%, #ffffff 100%) !important;
+  border-top: 0 !important;
+  padding: 20px 18px 24px;
+  backdrop-filter: none !important;
+}
+
+.hx2-composer-inner {
+  width: min(680px, calc(100vw - 32px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 46px 1fr 46px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  background: #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 14px 42px rgba(15, 23, 42, 0.10);
+  padding: 8px;
+}
+
+.hx2-inputwrap {
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+}
+
+.hx2-input {
+  min-height: 42px !important;
+  max-height: 140px;
+  padding: 9px 8px !important;
+  color: #111827 !important;
+  font-size: 18px !important;
+  line-height: 1.35;
+}
+
+.hx2-input::placeholder {
+  color: #8b929f !important;
+}
+
+.hx2-iconbtn {
+  width: 46px;
+  height: 46px;
+  min-height: 46px !important;
+  border-radius: 999px !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #111827 !important;
+  padding: 0 !important;
+  font-size: 24px !important;
+}
+
+.hx2-send {
+  width: 46px;
+  height: 46px;
+  min-height: 46px !important;
+  border-radius: 999px !important;
+  border: 0 !important;
+  background: #111827 !important;
+  color: #ffffff !important;
+  padding: 0 !important;
+  font-size: 0 !important;
+}
+
+.hx2-send::before {
+  content: "↑";
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.hx2-send:disabled {
+  background: #111827 !important;
+  opacity: 0.28;
+}
+
+.hx2-stop {
+  font-size: 0 !important;
+  background: #111827 !important;
+}
+
+.hx2-stop::before {
+  content: "■";
+  font-size: 16px;
+}
+
+.hx2-source-chips {
+  margin-top: 18px;
+}
+
+.hx2-source-chip {
+  border-radius: 999px;
+  background: #f8fafc;
+  border-color: rgba(17, 24, 39, 0.08);
+  color: #111827;
+}
+
+.hx2-debug,
+.hx2-suggestions,
+.hx2-intel-strip,
+.hx2-node-workspace {
+  display: none !important;
+}
+
+@media (max-width: 760px) {
+  .hx2-topbar {
+    grid-template-columns: 52px 1fr 52px;
+    padding: 18px 20px 8px;
+  }
+
+  .hx2-title {
+    font-size: 25px !important;
+  }
+
+  .hx2-chat-inner {
+    width: calc(100vw - 48px);
+    padding-top: 42px;
+    padding-bottom: 160px;
+  }
+
+  .hx2-message-assistant .hx2-message-body {
+    font-size: 20px;
+    line-height: 1.58;
+  }
+
+  .hx2-message-user .hx2-message-body {
+    font-size: 17px;
+    max-width: 86%;
+  }
+
+  .hx2-composer {
+    padding: 18px 16px 22px;
+  }
+
+  .hx2-composer-inner {
+    width: calc(100vw - 32px);
+  }
+}
