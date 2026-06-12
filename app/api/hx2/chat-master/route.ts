@@ -61,6 +61,22 @@ async function getCryptoSpot(symbol: string) {
 
 
 
+
+function getNodeRetrievalAnswer(
+  ctx: NodeExecutionContext,
+  nodeName: string
+): string {
+
+  const synthesized =
+    synthesizeRetrievedAnswer(ctx, nodeName);
+
+  if (synthesized) {
+    return synthesized;
+  }
+
+  return "";
+}
+
 function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intelligence"): string {
   const retrieval = ctx?.retrieval;
 
@@ -297,6 +313,7 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
 
 
 
