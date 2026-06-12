@@ -45,6 +45,37 @@ export async function POST(req: NextRequest) {
     const orchestratorJson = await orchestratorRes.json();
     const answer = orchestratorJson.answer || "";
 
+    const router = orchestratorJson.router || orchestratorJson.route || null;
+    const activeNode =
+      router?.target_node ||
+      router?.node ||
+      orchestratorJson?.display_node?.node_id ||
+      orchestratorJson?.display_node?.node_label ||
+      "HX2";
+
+    const rawConfidence =
+      Number(router?.confidence ?? orchestratorJson?.confidence ?? 0.5);
+
+    const confidence =
+      rawConfidence <= 1
+        ? Math.round(rawConfidence * 100)
+        : Math.round(rawConfidence);
+
+    const responseEnvelope = {
+      active_node: activeNode,
+      confidence,
+      memory_used: Array.isArray(body?.conversation_context) && body.conversation_context.length > 0,
+      related_nodes: Array.isArray(orchestratorJson?.related_nodes)
+        ? orchestratorJson.related_nodes
+        : [],
+      suggested_actions: [
+        "Continue conversation",
+        "Inspect routing",
+        "Open Owner Console"
+      ],
+      router
+    };
+
     if (wantsStream) {
       const encoder = new TextEncoder();
 
@@ -64,7 +95,7 @@ export async function POST(req: NextRequest) {
               sse({
                 type: "done",
                 reply: answer,
-                data: orchestratorJson
+                data: { ...orchestratorJson, envelope: responseEnvelope }
               })
             )
           );
@@ -92,6 +123,11 @@ export async function POST(req: NextRequest) {
       content: answer,
       text: answer,
       router: orchestratorJson.router || null,
+      envelope: responseEnvelope,
+      active_node: responseEnvelope.active_node,
+      confidence: responseEnvelope.confidence,
+      memory_used: responseEnvelope.memory_used,
+      suggested_actions: responseEnvelope.suggested_actions,
       details: orchestratorJson
     });
   } catch (error) {
@@ -107,4 +143,5 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
 

@@ -132,6 +132,7 @@ function getHostname(url?: string): string {
   }
 }
 
+
 function getFaviconUrl(url?: string, source?: string): string {
   if (String(source || "").toLowerCase() === "youtube") {
     return "https://www.youtube.com/s/desktop/fe7d0c56/img/favicon_32x32.png";
@@ -139,6 +140,50 @@ function getFaviconUrl(url?: string, source?: string): string {
 
   const host = getHostname(url);
   return host ? `https://www.google.com/s2/favicons?domain=${host}&sz=64` : "";
+}
+
+function deriveHx2Envelope(payload: any) {
+  const body = payload?.body || payload || {};
+  const envelope = body?.envelope || body?.details?.envelope || body?.data?.envelope || {};
+  const router = body?.router || body?.details?.router || envelope?.router || {};
+
+  const node =
+    envelope?.active_node ||
+    body?.active_node ||
+    router?.target_node ||
+    router?.node ||
+    "HX2";
+
+  const rawConfidence =
+    Number(
+      envelope?.confidence ??
+      body?.confidence ??
+      router?.confidence ??
+      0
+    );
+
+  const confidence =
+    rawConfidence <= 1 && rawConfidence > 0
+      ? Math.round(rawConfidence * 100)
+      : Math.round(rawConfidence || 0);
+
+  const memoryUsed =
+    envelope?.memory_used === true ||
+    body?.memory_used === true;
+
+  const suggestedActions =
+    Array.isArray(envelope?.suggested_actions)
+      ? envelope.suggested_actions
+      : Array.isArray(body?.suggested_actions)
+        ? body.suggested_actions
+        : [];
+
+  return {
+    node: String(node || "HX2"),
+    confidence,
+    memoryUsed,
+    suggestedActions: suggestedActions.slice(0, 3).map((x: any) => String(x))
+  };
 }
 
 export default function ChatClient() {
@@ -438,6 +483,7 @@ export default function ChatClient() {
   }
 
   const sources = lastRaw?.body?.sources || lastRaw?.body?.data?.sources || [];
+  const hx2Envelope = deriveHx2Envelope(lastRaw);
 
   return (
     <div className="hx2-shell">
@@ -445,6 +491,18 @@ export default function ChatClient() {
         <div className="hx2-brand">
           <div className="hx2-title">Opti</div>
           <div className="hx2-subtitle">Optimized Intelligence</div>
+        </div>
+
+        <div className="hx2-intel-strip" aria-label="HX2 intelligence status">
+          <div className="hx2-intel-chip">
+            Node: <span>{hx2Envelope.node}</span>
+          </div>
+          <div className="hx2-intel-chip">
+            Confidence: <span>{hx2Envelope.confidence ? `${hx2Envelope.confidence}%` : "pending"}</span>
+          </div>
+          <div className={`hx2-intel-chip ${hx2Envelope.memoryUsed ? "hx2-intel-chip-on" : ""}`}>
+            Memory: <span>{hx2Envelope.memoryUsed ? "used" : "standby"}</span>
+          </div>
         </div>
 
         <div className="hx2-top-actions">
@@ -564,6 +622,24 @@ export default function ChatClient() {
           </div>
         )}
 
+        {hx2Envelope.suggestedActions.length > 0 && (
+          <div className="hx2-suggestions">
+            <div className="hx2-suggestions-title">Suggested Actions</div>
+            <div className="hx2-suggestions-list">
+              {hx2Envelope.suggestedActions.map((action) => (
+                <button
+                  key={action}
+                  className="hx2-suggestion-chip"
+                  type="button"
+                  onClick={() => setInput(action)}
+                >
+                  {action}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {debugOpen && (
           <div className="hx2-debug">
             <pre className="hx2-debugbox">{JSON.stringify(lastRaw, null, 2)}</pre>
@@ -573,6 +649,8 @@ export default function ChatClient() {
     </div>
   );
 }
+
+
 
 
 

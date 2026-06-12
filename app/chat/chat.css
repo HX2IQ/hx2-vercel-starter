@@ -521,3 +521,81 @@ html, body {
   font-weight: 600;
   color: #0f172a;
 }
+
+.hx2-intel-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.hx2-intel-chip {
+  border: 1px solid var(--hx2-border);
+  background: rgba(15, 23, 42, 0.72);
+  color: var(--hx2-muted);
+  border-radius: 999px;
+  padding: 7px 10px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.hx2-intel-chip span {
+  color: var(--hx2-text);
+  font-weight: 700;
+}
+
+.hx2-intel-chip-on {
+  border-color: rgba(34, 197, 94, 0.28);
+  background: rgba(22, 101, 52, 0.22);
+}
+
+.hx2-suggestions {
+  width: min(860px, calc(100vw - 28px));
+  margin: 12px auto 0;
+  border: 1px solid var(--hx2-border);
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.72);
+  padding: 12px;
+}
+
+.hx2-suggestions-title {
+  color: var(--hx2-muted);
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.hx2-suggestions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hx2-suggestion-chip {
+  border: 1px solid var(--hx2-border);
+  background: rgba(96, 165, 250, 0.10);
+  color: var(--hx2-text);
+  border-radius: 999px;
+  padding: 8px 11px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.hx2-suggestion-chip:hover {
+  background: rgba(96, 165, 250, 0.18);
+}
+
+@media (max-width: 760px) {
+  .hx2-topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .hx2-intel-strip {
+    justify-content: flex-start;
+  }
+}
