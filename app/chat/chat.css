@@ -685,3 +685,44 @@ html, body {
     flex-direction: column;
   }
 }
+
+/* Phase 10A-C clean modern chat correction */
+.hx2-intel-strip,
+.hx2-node-workspace {
+  display: none !important;
+}
+
+.hx2-topbar {
+  align-items: flex-start;
+}
+
+.hx2-brand {
+  flex: 1;
+}
+
+.hx2-top-actions {
+  margin-left: auto;
+}
+
+@media (max-width: 760px) {
+  .hx2-topbar {
+    padding: 24px 20px;
+  }
+
+  .hx2-title {
+    font-size: 28px;
+  }
+
+  .hx2-subtitle {
+    font-size: 16px;
+  }
+
+  .hx2-chat-inner {
+    padding-top: 24px;
+  }
+
+  .hx2-message-body {
+    font-size: 17px;
+    line-height: 1.65;
+  }
+}

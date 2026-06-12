@@ -43,7 +43,15 @@ export async function POST(req: NextRequest) {
     });
 
     const orchestratorJson = await orchestratorRes.json();
-    const answer = orchestratorJson.answer || "";
+    const answer =
+      orchestratorJson.answer ||
+      orchestratorJson.reply ||
+      orchestratorJson.message ||
+      orchestratorJson.content ||
+      orchestratorJson.text ||
+      orchestratorJson?.data?.answer ||
+      orchestratorJson?.data?.reply ||
+      "";
 
     const router = orchestratorJson.router || orchestratorJson.route || null;
     const activeNode =
@@ -143,5 +151,6 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
 
 
