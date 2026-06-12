@@ -60,6 +60,48 @@ async function getCryptoSpot(symbol: string) {
 }
 
 
+
+function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intelligence"): string {
+  const retrieval = ctx?.retrieval;
+
+  if (!retrieval?.sources?.length) {
+    return "";
+  }
+
+  const first = retrieval.sources[0];
+  const title = String(first?.title || "").trim();
+  const snippet = String(first?.snippet || "").trim();
+
+  if (!snippet) {
+    return "";
+  }
+
+  const sentences =
+    snippet
+      .replace(/\s+/g, " ")
+      .split(/(?<=[.!?])\s+/)
+      .filter(Boolean);
+
+  const opening =
+    sentences.slice(0, 2).join(" ");
+
+  const keyPoints =
+    sentences
+      .slice(2, 5)
+      .map((s: string) => s.trim())
+      .filter(Boolean);
+
+  const bullets =
+    keyPoints.length > 0
+      ? "\n\nKey points:\n" + keyPoints.map((s: string) => `• ${s}`).join("\n")
+      : "";
+
+  return `${opening}${bullets}
+
+---
+Optimized by ${nodeName}`;
+}
+
 function getRetrievedSummary(ctx: any): string {
   const retrieval = ctx?.retrieval;
 
@@ -141,6 +183,13 @@ async function executeHX2(ctx: NodeExecutionContext): Promise<string> {
 
   const retrieved =
     getRetrievedSummary(ctx);
+
+  const synthesized =
+    synthesizeRetrievedAnswer(ctx, "HX2 Retrieval Intelligence");
+
+  if (synthesized) {
+    return synthesized;
+  }
 
   if (retrieved) {
     return `${retrieved}
@@ -231,5 +280,6 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
 
 
