@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { routeChatMasterIntent } from "../_lib/chat-master-router";
 import { CHAT_MASTER_EXECUTION_MAP } from "../contracts/chat-master-execution-map";
+import { retrieveContext } from "../_lib/unified-retrieval";
 
 export const runtime = "nodejs";
 
@@ -8,6 +9,7 @@ type NodeExecutionContext = {
   input: string;
   decision: any;
   execution: any;
+  retrieval?: any;
 };
 
 function nodeFooter(nodeName: string) {
@@ -149,16 +151,18 @@ export async function POST(req: NextRequest) {
 
     const base = req.nextUrl.origin;
 
-    const [adaptive, unifiedDecision, runtime] = await Promise.all([
+    const [adaptive, unifiedDecision, runtime, retrieval] = await Promise.all([
       safeFetchJson(`${base}/api/hx2/kgx-adaptive-selection-preview?q=${encodeURIComponent(input)}`),
       safeFetchJson(`${base}/api/hx2/kgx-unified-decision-engine-preview?q=${encodeURIComponent(input)}`),
-      safeFetchJson(`${base}/api/hx2/kgx-unified-runtime-intelligence-preview?q=${encodeURIComponent(input)}`)
+      safeFetchJson(`${base}/api/hx2/kgx-unified-runtime-intelligence-preview?q=${encodeURIComponent(input)}`),
+      retrieveContext(input)
     ]);
 
     const answer = await executeNode({
       input,
       decision,
-      execution
+      execution,
+      retrieval
     });
 
     return NextResponse.json({
@@ -176,7 +180,8 @@ export async function POST(req: NextRequest) {
       intelligence: {
         adaptive,
         unified_decision: unifiedDecision,
-        runtime
+        runtime,
+        retrieval
       }
     });
 
@@ -188,3 +193,4 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
