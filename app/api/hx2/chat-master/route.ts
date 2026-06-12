@@ -163,6 +163,13 @@ function getRetrievedSummary(ctx: any): string {
 }
 
 async function executeX2(ctx: NodeExecutionContext): Promise<string> {
+  const retrievalAnswer =
+    getNodeRetrievalAnswer(ctx, "X2 Markets Intelligence");
+
+  if (retrievalAnswer) {
+    return retrievalAnswer;
+  }
+
   const q = ctx.input;
   const symbol = detectCryptoSymbol(q);
   const wantsPrice = /price|current|now|today|trading|worth/i.test(q);
@@ -313,6 +320,7 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
 
 
 
