@@ -178,10 +178,26 @@ function deriveHx2Envelope(payload: any) {
         ? body.suggested_actions
         : [];
 
+  const routingReason =
+    envelope?.routing_reason ||
+    router?.reasoning ||
+    router?.reason ||
+    body?.routing_reason ||
+    "Awaiting routing decision";
+
+  const relatedNodes =
+    Array.isArray(envelope?.related_nodes)
+      ? envelope.related_nodes
+      : Array.isArray(body?.related_nodes)
+        ? body.related_nodes
+        : [];
+
   return {
     node: String(node || "HX2"),
     confidence,
     memoryUsed,
+    routingReason: String(routingReason || "Awaiting routing decision"),
+    relatedNodes: relatedNodes.slice(0, 5).map((x: any) => String(x)),
     suggestedActions: suggestedActions.slice(0, 3).map((x: any) => String(x))
   };
 }
@@ -622,6 +638,37 @@ export default function ChatClient() {
           </div>
         )}
 
+        <div className="hx2-node-workspace">
+          <div className="hx2-node-workspace-head">
+            <div>
+              <div className="hx2-node-kicker">HX2 Workspace</div>
+              <div className="hx2-node-title">{hx2Envelope.node}</div>
+            </div>
+            <div className="hx2-node-confidence">
+              {hx2Envelope.confidence ? `${hx2Envelope.confidence}%` : "pending"}
+            </div>
+          </div>
+
+          <div className="hx2-node-grid">
+            <div className="hx2-node-card">
+              <div className="hx2-node-label">Routing Reason</div>
+              <div className="hx2-node-value">{hx2Envelope.routingReason}</div>
+            </div>
+
+            <div className="hx2-node-card">
+              <div className="hx2-node-label">Memory</div>
+              <div className="hx2-node-value">{hx2Envelope.memoryUsed ? "Conversation context used" : "No memory used yet"}</div>
+            </div>
+
+            <div className="hx2-node-card">
+              <div className="hx2-node-label">Related Nodes</div>
+              <div className="hx2-node-value">
+                {hx2Envelope.relatedNodes.length ? hx2Envelope.relatedNodes.join(", ") : "None reported"}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {hx2Envelope.suggestedActions.length > 0 && (
           <div className="hx2-suggestions">
             <div className="hx2-suggestions-title">Suggested Actions</div>
@@ -649,6 +696,7 @@ export default function ChatClient() {
     </div>
   );
 }
+
 
 
 
