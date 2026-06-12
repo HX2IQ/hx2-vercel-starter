@@ -739,7 +739,7 @@ export default function ChatClient() {
       <footer className="hx2-composer">
         <div className="hx2-composer-inner">
           <button className="hx2-iconbtn" aria-label="Voice" onClick={toggleVoice}>
-            {isRecording ? "■" : "🎤"}
+            <span className={isRecording ? "hx2-mic-icon hx2-mic-icon-recording" : "hx2-mic-icon"} aria-hidden="true" />
           </button>
 
           <div className="hx2-inputwrap">
@@ -806,6 +806,7 @@ export default function ChatClient() {
     </div>
   );
 }
+
 
 
 

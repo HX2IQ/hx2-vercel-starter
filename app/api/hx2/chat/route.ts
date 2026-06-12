@@ -6,6 +6,45 @@ function sse(payload: unknown) {
   return `data: ${JSON.stringify(payload)}\n\n`;
 }
 
+function extractChatText(value: any): string {
+  const preferredKeys = [
+    "answer",
+    "reply",
+    "message",
+    "content",
+    "text",
+    "final",
+    "final_answer",
+    "response",
+    "output"
+  ];
+
+  for (const key of preferredKeys) {
+    const direct = value?.[key];
+    if (typeof direct === "string" && direct.trim()) {
+      return direct;
+    }
+  }
+
+  for (const key of preferredKeys) {
+    const nested = value?.data?.[key] || value?.result?.[key] || value?.details?.[key];
+    if (typeof nested === "string" && nested.trim()) {
+      return nested;
+    }
+  }
+
+  if (value && typeof value === "object") {
+    for (const item of Object.values(value)) {
+      if (item && typeof item === "object") {
+        const found = extractChatText(item);
+        if (found.trim()) return found;
+      }
+    }
+  }
+
+  return "";
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -43,15 +82,11 @@ export async function POST(req: NextRequest) {
     });
 
     const orchestratorJson = await orchestratorRes.json();
+    const extractedAnswer = extractChatText(orchestratorJson);
+
     const answer =
-      orchestratorJson.answer ||
-      orchestratorJson.reply ||
-      orchestratorJson.message ||
-      orchestratorJson.content ||
-      orchestratorJson.text ||
-      orchestratorJson?.data?.answer ||
-      orchestratorJson?.data?.reply ||
-      "";
+      extractedAnswer ||
+      "I received your message, but HX2 did not return a text response yet. The chat route is online; the upstream chat-master response needs inspection.";
 
     const router = orchestratorJson.router || orchestratorJson.route || null;
     const activeNode =
@@ -151,6 +186,7 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
 
 
 
