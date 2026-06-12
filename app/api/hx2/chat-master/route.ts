@@ -57,6 +57,42 @@ function summarizeUnifiedDecision(data: any): string {
   return parts.join(" ");
 }
 
+
+function buildNodeAnswer(input: string, decision: any, execution: any): string {
+  const q = String(input || "").trim();
+  const intent = String(decision?.intent || "general");
+  const node = String(execution?.node || decision?.target_node || "hx2");
+
+  if (!q) {
+    return "";
+  }
+
+  if (intent === "markets" || node === "x2") {
+    if (/current|price|now|today|live/i.test(q) && /xrp|crypto|bitcoin|btc|xlm|hbar|ada/i.test(q)) {
+      return "I routed this to X2 markets intelligence, but I do not yet have live market-price retrieval wired into this chat route. The next step is to connect X2 to a live price source so Opti can return the current XRP price instead of only identifying the correct node.";
+    }
+
+    return "X2 markets intelligence is active. I can analyze crypto, market structure, sentiment, catalysts, risk, and scenarios, but live price retrieval still needs to be wired into the chat execution layer.";
+  }
+
+  if (intent === "developer" || node === "dev2") {
+    return "DEV2 is active. I can help inspect build errors, TypeScript failures, route issues, git status, deployment problems, and sprint planning. Paste the terminal output or say `Sprint next` and I’ll guide the next safe step.";
+  }
+
+  if (intent === "parenting" || node === "pa2") {
+    return "PA2 parenting intelligence is active. I can help with reading plans, school decisions, tutoring strategy, confidence-building language, behavior patterns, and child development questions.";
+  }
+
+  if (intent === "health" || node === "ah2") {
+    return "AH2 health intelligence is active. I can help think through supplements, symptoms, diet, sleep, exercise, and risk signals. For urgent or serious symptoms, you should contact a medical professional.";
+  }
+
+  if (intent === "legal" || node === "l2") {
+    return "L2 legal intelligence is active. I can help review contracts, trademarks, business-risk language, and legal strategy, but I am not a substitute for a licensed attorney.";
+  }
+
+  return "";
+}
 function buildFallbackAnswer(input: string, decision: any, execution: any): string {
   const q = String(input || "").trim();
   const targetNode = execution?.node || decision?.target_node || "HX2";
@@ -113,6 +149,9 @@ export async function POST(req: NextRequest) {
       safeFetchJson(runtimeUrl)
     ]);
 
+    const nodeAnswer =
+      buildNodeAnswer(input, decision, execution);
+
     const fallbackAnswer =
       buildFallbackAnswer(input, decision, execution);
 
@@ -122,6 +161,7 @@ export async function POST(req: NextRequest) {
         : "";
 
     const answer =
+      nodeAnswer ||
       fallbackAnswer ||
       decisionSummary ||
       "I’m online. Ask me anything and I’ll route it through HX2.";
@@ -153,4 +193,6 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
+
 
