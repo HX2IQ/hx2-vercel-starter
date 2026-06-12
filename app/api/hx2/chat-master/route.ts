@@ -113,14 +113,18 @@ export async function POST(req: NextRequest) {
       safeFetchJson(runtimeUrl)
     ]);
 
+    const fallbackAnswer =
+      buildFallbackAnswer(input, decision, execution);
+
     const decisionSummary =
       unifiedDecision?.ok === true
         ? summarizeUnifiedDecision(unifiedDecision)
         : "";
 
     const answer =
+      fallbackAnswer ||
       decisionSummary ||
-      buildFallbackAnswer(input, decision, execution);
+      "I’m online. Ask me anything and I’ll route it through HX2.";
 
     return NextResponse.json({
       ok: true,
@@ -149,3 +153,4 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
