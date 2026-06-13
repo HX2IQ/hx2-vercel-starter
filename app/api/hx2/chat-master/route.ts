@@ -271,7 +271,7 @@ async function executeX2(ctx: NodeExecutionContext): Promise<string> {
       return retrievalAnswer;
     }
 
-    return `I checked X2 retrieval, but I do not have a relevant current news result for that query yet. The next upgrade should connect live web search so Opti can find broader market/news sources beyond the current RSS feeds.${nodeFooter("X2 Markets Intelligence")}`;
+    return `I checked live X2 retrieval, but the current XRP results available from connected sources were mostly low-quality aggregator, price, or quote pages. I am not going to present those as reliable news. The next upgrade should add stronger primary-source and Tier 1/Tier 2 crypto-news fallback for this asset.${nodeFooter("X2 Markets Intelligence")}`;
   }
 
   if (symbol && wantsPrice) {
@@ -419,6 +419,7 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
 
 
 

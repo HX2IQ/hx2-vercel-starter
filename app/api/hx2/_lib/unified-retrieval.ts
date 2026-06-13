@@ -591,20 +591,25 @@ export async function retrieveContext(
   const definitionOnly =
     isDefinitionQuery(query);
 
-  const liveQueries =
+  const freshQueries =
     expandedFreshQueries(query);
 
   const [
     wikiResults,
-    rssResults,
+    rssResultGroups,
     liveWebResultGroups
   ] = await Promise.all([
     fetchWikipedia(normalized),
-    definitionOnly ? Promise.resolve([]) : fetchRssRetrieval(query),
     definitionOnly
-      ? Promise.resolve([])
-      : Promise.all(liveQueries.map((liveQuery) => fetchLiveWebRetrieval(liveQuery)))
+      ? Promise.resolve([] as UnifiedRetrievalSource[][])
+      : Promise.all(freshQueries.map((freshQuery) => fetchRssRetrieval(freshQuery))),
+    definitionOnly
+      ? Promise.resolve([] as UnifiedRetrievalSource[][])
+      : Promise.all(freshQueries.map((freshQuery) => fetchLiveWebRetrieval(freshQuery)))
   ]);
+
+  const rssResults =
+    rssResultGroups.flat();
 
   const liveWebResults =
     liveWebResultGroups.flat();
