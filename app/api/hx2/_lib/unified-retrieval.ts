@@ -100,11 +100,40 @@ function shouldUseLiveWeb(query: string): boolean {
 }
 
 
+function decodeHtmlEntities(text: string): string {
+  return String(text || "")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&#(\d+);/g, (_match: string, code: string) => {
+      const n = Number(code);
+      return Number.isFinite(n) ? String.fromCharCode(n) : "";
+    })
+    .replace(/&#x([0-9a-f]+);/gi, (_match: string, code: string) => {
+      const n = parseInt(code, 16);
+      return Number.isFinite(n) ? String.fromCharCode(n) : "";
+    });
+}
+
+function cleanPageChrome(text: string): string {
+  return decodeHtmlEntities(text)
+    .replace(/\b(Search|Menu|Markets|Tech|Policy|Business|Video|Videos|Podcast|Podcasts)\s*\/\s*/gi, " ")
+    .replace(/\b(Berita Video|Harga|Riset|Acara|Data & Indeks|Bersponsor)\b/gi, " ")
+    .replace(/\b(Make preferred on|Share Share this article|Share this article|Copy link|X icon|X \(Twitter\)|LinkedIn|Facebook|Email|Summary Show)\b/gi, " ")
+    .replace(/\b(Disclosure & Polices|Disclosure & Policies|Disclosure|Privacy Policy|Terms of Use)\b/gi, " ")
+    .replace(/\b(Play Now|Games By LinkedIn|Frase Unscramble The Anagram|Pinpoint Guess The Category|Queens Crown Each Region|Crossclimb Unlock A Trivia Ladder)\b/gi, " ")
+    .replace(/\b\d+\s+min read\b/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function distillPageText(text: string): string {
   const raw =
-    String(text || "")
-      .replace(/\s+/g, " ")
-      .trim();
+    cleanPageChrome(text);
 
   if (!raw) {
     return "";
@@ -118,14 +147,18 @@ function distillPageText(text: string): string {
     /terms of use/i,
     /advertisement/i,
     /enable javascript/i,
-    /newsletter/i
+    /newsletter/i,
+    /copy link/i,
+    /share this article/i,
+    /games by/i
   ];
 
   const sentences =
     raw
       .split(/(?<=[.!?])\s+/)
-      .map((s) => s.trim())
+      .map((s) => cleanPageChrome(s))
       .filter((s) => s.length >= 60)
+      .filter((s) => s.length <= 420)
       .filter((s) => !noisePatterns.some((re) => re.test(s)));
 
   const useful =
@@ -135,7 +168,6 @@ function distillPageText(text: string): string {
     ? useful.substring(0, 900)
     : useful;
 }
-
 async function fetchLiveWebRetrieval(query: string): Promise<UnifiedRetrievalSource[]> {
   try {
     if (!shouldUseLiveWeb(query)) {
@@ -308,6 +340,7 @@ export async function retrieveContext(
         : "stub"
   };
 }
+
 
 
 

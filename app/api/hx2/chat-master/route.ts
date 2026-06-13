@@ -77,6 +77,24 @@ function getNodeRetrievalAnswer(
   return "";
 }
 
+function cleanRetrievedText(value: any): string {
+  return String(value || "")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/\b(Search|Menu|Markets|Tech|Policy|Business|Video|Videos|Podcast|Podcasts)\s*\/\s*/gi, " ")
+    .replace(/\b(Berita Video|Harga|Riset|Acara|Data & Indeks|Bersponsor)\b/gi, " ")
+    .replace(/\b(Make preferred on|Share Share this article|Share this article|Copy link|X icon|X \(Twitter\)|LinkedIn|Facebook|Email|Summary Show)\b/gi, " ")
+    .replace(/\b(Disclosure & Polices|Disclosure & Policies|Disclosure|Privacy Policy|Terms of Use)\b/gi, " ")
+    .replace(/\b\d+\s+min read\b/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intelligence"): string {
   const retrieval = ctx?.retrieval;
   const rawSources =
@@ -91,10 +109,10 @@ function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intellige
   const sources =
     rawSources
       .map((item: any) => ({
-        title: String(item?.title || item?.source || "Source").trim(),
+        title: cleanRetrievedText(item?.title || item?.source || "Source"),
         source: String(item?.source || "source").trim(),
         url: String(item?.url || "").trim(),
-        snippet: String(item?.snippet || "").replace(/\s+/g, " ").trim()
+        snippet: cleanRetrievedText(item?.snippet || "")
       }))
       .filter((item: any) => item.snippet.length >= 80)
       .slice(0, 4);
@@ -401,6 +419,7 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
 
 
 
