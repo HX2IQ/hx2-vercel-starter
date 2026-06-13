@@ -1,4 +1,5 @@
 import { fetchRssFeeds } from "./rss-fetch";
+import { fetchChosenPageText } from "./page-fetch";
 
 export type UnifiedRetrievalSource = {
   title: string;
@@ -135,12 +136,38 @@ async function fetchLiveWebRetrieval(query: string): Promise<UnifiedRetrievalSou
           ? json.result.result.search.results
           : [];
 
-    return results.slice(0, 5).map((item: any) => ({
+    const mapped = results.slice(0, 5).map((item: any) => ({
       title: String(item?.title || "Web result"),
       url: String(item?.url || item?.link || ""),
       source: String(item?.source || "web"),
       snippet: String(item?.snippet || item?.title || "")
     }));
+
+    const enriched = await Promise.all(
+      mapped.map(async (item: UnifiedRetrievalSource, index: number) => {
+        if (index > 1 || !item.url) {
+          return item;
+        }
+
+        const pageText =
+          await fetchChosenPageText(item.url);
+
+        const usefulText =
+          pageText.length > 900
+            ? pageText.substring(0, 900)
+            : pageText;
+
+        return {
+          ...item,
+          snippet:
+            usefulText && usefulText.length > String(item.snippet || "").length
+              ? usefulText
+              : item.snippet
+        };
+      })
+    );
+
+    return enriched;
   } catch {
     return [];
   }
@@ -214,6 +241,8 @@ export async function retrieveContext(
         : "stub"
   };
 }
+
+
 
 
 
