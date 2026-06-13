@@ -91,6 +91,61 @@ function normalizedRelevanceTerms(query: string): string[] {
     .filter((x) => x.length > 3);
 }
 
+
+function shouldUseLiveWeb(query: string): boolean {
+  const q = String(query || "").toLowerCase();
+
+  return /\b(latest|current|today|news|recent|update|updates|search|look up|verify|source|sources|fresh|new|2026)\b/.test(q);
+}
+
+async function fetchLiveWebRetrieval(query: string): Promise<UnifiedRetrievalSource[]> {
+  try {
+    if (!shouldUseLiveWeb(query)) {
+      return [];
+    }
+
+    const base =
+      process.env.BASE_URL ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      process.env.NEXT_PUBLIC_APP_URL ||
+      "https://optinodeiq.com";
+
+    const res = await fetch(`${base}/api/hx2/source-router`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        q: query,
+        limit: 5
+      }),
+      cache: "no-store"
+    });
+
+    if (!res.ok) {
+      return [];
+    }
+
+    const json = await res.json();
+
+    const results =
+      Array.isArray(json?.result?.search?.results)
+        ? json.result.search.results
+        : Array.isArray(json?.result?.result?.search?.results)
+          ? json.result.result.search.results
+          : [];
+
+    return results.slice(0, 5).map((item: any) => ({
+      title: String(item?.title || "Web result"),
+      url: String(item?.url || item?.link || ""),
+      source: String(item?.source || "web"),
+      snippet: String(item?.snippet || item?.title || "")
+    }));
+  } catch {
+    return [];
+  }
+}
+
 async function fetchRssRetrieval(query: string): Promise<UnifiedRetrievalSource[]> {
   try {
     const items =
@@ -132,15 +187,18 @@ export async function retrieveContext(
 
   const [
     wikiResults,
-    rssResults
+    rssResults,
+    liveWebResults
   ] = await Promise.all([
     fetchWikipedia(normalized),
-    fetchRssRetrieval(normalized)
+    fetchRssRetrieval(normalized),
+    fetchLiveWebRetrieval(query)
   ]);
 
   const allSources = [
     ...wikiResults,
-    ...rssResults
+    ...rssResults,
+    ...liveWebResults
   ];
 
   return {
@@ -156,5 +214,6 @@ export async function retrieveContext(
         : "stub"
   };
 }
+
 
 
