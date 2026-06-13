@@ -24,10 +24,11 @@ function normalizeRetrievalQuery(query: string): string {
   q = q.replace(/^(what|who|where|when|why|how)\s+(is|are|was|were|do|does|did)\s+/i, "");
   q = q.replace(/^(what|who|where|when|why|how)\s+/i, "");
   q = q.replace(/\s+/g, " ").trim();
+  q = q.replace(/^the\s+/i, "").trim();
 
   const known: Record<string, string> = {
-    "xrp": "XRP",
-    "ripple": "XRP",
+    "xrp": "XRP Ledger",
+    "ripple": "XRP Ledger",
     "bitcoin": "Bitcoin",
     "btc": "Bitcoin",
     "ethereum": "Ethereum",
@@ -155,4 +156,5 @@ export async function retrieveContext(
         : "stub"
   };
 }
+
 
