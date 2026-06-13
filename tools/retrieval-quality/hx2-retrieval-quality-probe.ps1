@@ -47,7 +47,9 @@ $Checks = @(
       "marketcap",
       "claim community badge",
       "loading data",
-      "Please try using other words"
+      "Please try using other words",
+      "Feed:",
+      "news.google.com/rss"
     )
   },
   [pscustomobject]@{
@@ -60,7 +62,9 @@ $Checks = @(
       "Copy link",
       "Share this article",
       "Skip to main content",
-      "Please try using other words"
+      "Please try using other words",
+      "Feed:",
+      "news.google.com/rss"
     )
   }
 )
@@ -121,3 +125,4 @@ if ($Failures -gt 0) {
 
 Write-Host "PASSED"
 exit 0
+

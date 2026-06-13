@@ -192,7 +192,7 @@ function retrievalSourceScore(
     score += isDefinitionQuery(query) ? 50 : 8;
   }
 
-  if (item.source === "rss") {
+  if (item.source === "rss" || /\b(coindesk|cointelegraph|google news|cnbc|reuters|bloomberg|decrypt|the block|ripple|xrpl)\b/i.test(item.source)) {
     score += isFreshRetrievalQuery(query) ? 8 : 2;
   }
 
@@ -564,6 +564,35 @@ async function fetchLiveWebRetrieval(query: string): Promise<UnifiedRetrievalSou
   }
 }
 
+function inferRssPublisher(item: any): string {
+  const haystack =
+    [
+      item?.title,
+      item?.link,
+      item?.source
+    ]
+      .map((value) => String(value || "").toLowerCase())
+      .join(" ");
+
+  if (haystack.includes("coindesk")) return "CoinDesk";
+  if (haystack.includes("cointelegraph")) return "Cointelegraph";
+  if (haystack.includes("cnbc")) return "CNBC";
+  if (haystack.includes("reuters")) return "Reuters";
+  if (haystack.includes("bloomberg")) return "Bloomberg";
+  if (haystack.includes("decrypt")) return "Decrypt";
+  if (haystack.includes("theblock") || haystack.includes("the block")) return "The Block";
+  if (haystack.includes("ripple.com")) return "Ripple";
+  if (haystack.includes("xrpl.org")) return "XRPL";
+  if (haystack.includes("news.google.com")) return "Google News";
+
+  const title =
+    String(item?.title || "");
+
+  const match =
+    title.match(/\s-\s([A-Za-z0-9 .&]+)$/);
+
+  return match?.[1]?.trim() || "RSS";
+}
 async function fetchRssRetrieval(query: string): Promise<UnifiedRetrievalSource[]> {
   try {
     const items =
@@ -587,18 +616,27 @@ async function fetchRssRetrieval(query: string): Promise<UnifiedRetrievalSource[
           return relevanceTerms.some((term) => haystack.includes(term));
         })
         .slice(0, 5)
-        .map((item: any) => ({
-          title: String(item?.title || "RSS result"),
-          url: String(item?.link || ""),
-          source: "rss",
-          snippet: [
-            String(item?.title || "").trim(),
-            item?.published ? `Published: ${String(item.published).trim()}` : "",
-            item?.source ? `Feed: ${String(item.source).trim()}` : ""
-          ]
-            .filter(Boolean)
-            .join(" | ")
-        }));
+        .map((item: any) => {
+          const title =
+            String(item?.title || "RSS result").trim();
+
+          const published =
+            item?.pubDate
+              ? `Published: ${String(item.pubDate).trim()}`
+              : "";
+
+          return {
+            title,
+            url: String(item?.link || ""),
+            source: inferRssPublisher(item),
+            snippet: [
+              title,
+              published
+            ]
+              .filter(Boolean)
+              .join(" | ")
+          };
+        });
 
     const enriched =
       await Promise.all(
@@ -672,5 +710,6 @@ export async function retrieveContext(
     retrieval_mode: "live"
   };
 }
+
 
 
