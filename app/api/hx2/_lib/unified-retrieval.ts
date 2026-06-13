@@ -213,33 +213,65 @@ async function fetchRssRetrieval(query: string): Promise<UnifiedRetrievalSource[
     const items =
       await fetchRssFeeds(query);
 
-    const strictTerms = normalizedRelevanceTerms(query);
+    const relevanceTerms =
+      normalizedRelevanceTerms(query);
 
-    const relevantItems = (items || []).filter((item: any) => {
-      const haystack = `${item?.title || ""} ${item?.link || ""} ${item?.source || ""}`.toLowerCase();
+    const mapped =
+      items
+        .filter((item: any) => {
+          const haystack =
+            [
+              item?.title,
+              item?.link,
+              item?.source
+            ]
+              .map((value) => String(value || "").toLowerCase())
+              .join(" ");
 
-      if (strictTerms.length === 0) {
-        return false;
-      }
+          return relevanceTerms.some((term) => haystack.includes(term));
+        })
+        .slice(0, 5)
+        .map((item: any) => ({
+          title: String(item?.title || "RSS result"),
+          url: String(item?.link || ""),
+          source: "rss",
+          snippet: [
+            String(item?.title || "").trim(),
+            item?.published ? `Published: ${String(item.published).trim()}` : "",
+            item?.source ? `Feed: ${String(item.source).trim()}` : ""
+          ]
+            .filter(Boolean)
+            .join(" | ")
+        }));
 
-      return strictTerms.some((term) => haystack.includes(term));
-    });
+    const enriched =
+      await Promise.all(
+        mapped.map(async (item: UnifiedRetrievalSource, index: number) => {
+          if (index > 1 || !item.url) {
+            return item;
+          }
 
-    return relevantItems.slice(0, 5).map((item: any) => ({
-      title: String(item?.title || "RSS result"),
-      url: String(item?.link || ""),
-      source: "rss",
-      snippet: [
-        item?.title ? `Title: ${item.title}` : "",
-        item?.pubDate ? `Published: ${item.pubDate}` : "",
-        item?.source ? `Feed: ${item.source}` : ""
-      ].filter(Boolean).join(" | ")
-    }));
+          const pageText =
+            await fetchChosenPageText(item.url);
+
+          const usefulText =
+            distillPageText(pageText);
+
+          return {
+            ...item,
+            snippet:
+              usefulText && usefulText.length > String(item.snippet || "").length
+                ? usefulText
+                : item.snippet
+          };
+        })
+      );
+
+    return enriched;
   } catch {
     return [];
   }
 }
-
 export async function retrieveContext(
   query: string
 ): Promise<UnifiedRetrievalContext> {
@@ -276,6 +308,8 @@ export async function retrieveContext(
         : "stub"
   };
 }
+
+
 
 
 

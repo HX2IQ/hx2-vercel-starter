@@ -126,9 +126,14 @@ function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intellige
     /enable javascript/i
   ];
 
+  const answerSources =
+    wantsDefinition && sources.some((source: any) => source.source === "wikipedia")
+      ? sources.filter((source: any) => source.source === "wikipedia")
+      : sources;
+
   const claims: string[] = [];
 
-  for (const source of sources) {
+  for (const source of answerSources) {
     const sentences =
       source.snippet
         .split(/(?<=[.!?])\s+/)
@@ -146,18 +151,18 @@ function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intellige
 
   const primaryClaim =
     claims[0] ||
-    sources[0].snippet.substring(0, 320);
+    answerSources[0].snippet.substring(0, 320);
 
   const supportClaims =
     claims.slice(1, 4);
 
   const sourceNames =
-    Array.from(new Set(sources.map((source: any) => source.source)))
+    Array.from(new Set(answerSources.map((source: any) => source.source)))
       .filter(Boolean)
       .join(", ");
 
   const sourceTitles =
-    sources
+    answerSources
       .slice(0, 3)
       .map((source: any) => source.title)
       .filter(Boolean);
@@ -396,6 +401,8 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
+
 
 
 
