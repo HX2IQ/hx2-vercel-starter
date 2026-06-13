@@ -171,6 +171,17 @@ function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intellige
     claims[0] ||
     answerSources[0].snippet.substring(0, 320);
 
+  const primaryPublishedMatch =
+    String(answerSources[0]?.snippet || "").match(/Published:\s*([^|]+)/i);
+
+  const primaryPublished =
+    primaryPublishedMatch?.[0]?.trim() || "";
+
+  const primaryClaimWithMetadata =
+    wantsNews && primaryPublished && !/Published:/i.test(primaryClaim)
+      ? `${primaryClaim} | ${primaryPublished}`
+      : primaryClaim;
+
   const supportClaims =
     claims.slice(1, 4);
 
@@ -195,7 +206,7 @@ function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intellige
           : "HX2 retrieval points to this:";
 
   const lines = [
-    `${opening} ${primaryClaim}`
+    `${opening} ${primaryClaimWithMetadata}`
   ];
 
   if (supportClaims.length > 0) {
@@ -419,6 +430,7 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
 
 
 

@@ -110,32 +110,44 @@ foreach ($Check in $Checks) {
     }
 
     if ($Check.PSObject.Properties.Name -contains "MaxFirstPublishedAgeDays") {
-      $PublishedMatch =
-        [regex]::Match($Answer, "Published:\s*([^`r`n|]+)")
+      $PrimaryLine =
+        ($Answer -split "`r?`n" |
+          Where-Object { $_ -match "The latest retrieved signal points to this:" } |
+          Select-Object -First 1)
 
-      if (-not $PublishedMatch.Success) {
-        Write-Host "`nFAIL: Missing first published date for freshness-gated check"
+      if (-not $PrimaryLine) {
+        Write-Host "`nFAIL: Missing top signal line for freshness-gated check"
         $Failures++
       }
       else {
-        $PublishedRaw =
-          $PublishedMatch.Groups[1].Value.Trim()
+        $PublishedMatch =
+          [regex]::Match([string]$PrimaryLine, "Published:\s*([^`r`n|]+)")
 
-        try {
-          $PublishedDate =
-            [DateTime]::Parse($PublishedRaw).ToUniversalTime()
+        if (-not $PublishedMatch.Success) {
+          Write-Host "`nFAIL: Missing first published date on top signal line"
+          Write-Host "TOP LINE: $PrimaryLine"
+          $Failures++
+        }
+        else {
+          $PublishedRaw =
+            $PublishedMatch.Groups[1].Value.Trim()
 
-          $AgeDays =
-            ([DateTime]::UtcNow - $PublishedDate).TotalDays
+          try {
+            $PublishedDate =
+              [DateTime]::Parse($PublishedRaw).ToUniversalTime()
 
-          if ($AgeDays -gt [double]$Check.MaxFirstPublishedAgeDays) {
-            Write-Host "`nFAIL: First published date is too old: $PublishedRaw ($([Math]::Round($AgeDays, 1)) days old)"
+            $AgeDays =
+              ([DateTime]::UtcNow - $PublishedDate).TotalDays
+
+            if ($AgeDays -gt [double]$Check.MaxFirstPublishedAgeDays) {
+              Write-Host "`nFAIL: Top signal published date is too old: $PublishedRaw ($([Math]::Round($AgeDays, 1)) days old)"
+              $Failures++
+            }
+          }
+          catch {
+            Write-Host "`nFAIL: Could not parse top signal published date: $PublishedRaw"
             $Failures++
           }
-        }
-        catch {
-          Write-Host "`nFAIL: Could not parse first published date: $PublishedRaw"
-          $Failures++
         }
       }
     }
@@ -158,5 +170,3 @@ if ($Failures -gt 0) {
 
 Write-Host "PASSED"
 exit 0
-
-
