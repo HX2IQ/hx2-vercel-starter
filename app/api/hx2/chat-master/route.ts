@@ -79,61 +79,125 @@ function getNodeRetrievalAnswer(
 
 function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intelligence"): string {
   const retrieval = ctx?.retrieval;
+  const rawSources =
+    Array.isArray(retrieval?.sources)
+      ? retrieval.sources
+      : [];
 
-  if (!retrieval?.sources?.length) {
+  if (!retrieval?.retrieval_active && rawSources.length === 0) {
     return "";
   }
 
-  const sources = retrieval.sources
-    .slice(0, 4)
-    .map((source: any) => ({
-      title: String(source?.title || "").trim(),
-      source: String(source?.source || "source").trim(),
-      url: String(source?.url || "").trim(),
-      snippet: String(source?.snippet || "").replace(/\s+/g, " ").trim()
-    }))
-    .filter((source: any) => source.snippet.length > 0);
+  const sources =
+    rawSources
+      .map((item: any) => ({
+        title: String(item?.title || item?.source || "Source").trim(),
+        source: String(item?.source || "source").trim(),
+        url: String(item?.url || "").trim(),
+        snippet: String(item?.snippet || "").replace(/\s+/g, " ").trim()
+      }))
+      .filter((item: any) => item.snippet.length >= 80)
+      .slice(0, 4);
 
   if (sources.length === 0) {
     return "";
   }
 
-  const primary = sources[0];
+  const input =
+    String(ctx?.input || "").toLowerCase();
 
-  const primarySentences =
-    primary.snippet
-      .split(/(?<=[.!?])\s+/)
+  const wantsNews =
+    /\b(latest|current|today|news|recent|update|updates|fresh|new|2026)\b/.test(input);
+
+  const wantsDefinition =
+    /\b(what is|who is|define|explain)\b/.test(input) && !wantsNews;
+
+  const wantsForecast =
+    /\b(forecast|prediction|outlook|go up|increase|move|trend|probability|odds)\b/.test(input);
+
+  const noisePatterns = [
+    /subscribe/i,
+    /sign in/i,
+    /cookies?/i,
+    /privacy policy/i,
+    /terms of use/i,
+    /advertisement/i,
+    /newsletter/i,
+    /enable javascript/i
+  ];
+
+  const claims: string[] = [];
+
+  for (const source of sources) {
+    const sentences =
+      source.snippet
+        .split(/(?<=[.!?])\s+/)
+        .map((sentence: string) => sentence.trim())
+        .filter((sentence: string) => sentence.length >= 60)
+        .filter((sentence: string) => sentence.length <= 320)
+        .filter((sentence: string) => !noisePatterns.some((re) => re.test(sentence)));
+
+    for (const sentence of sentences) {
+      if (!claims.some((claim) => claim.toLowerCase() === sentence.toLowerCase())) {
+        claims.push(sentence);
+      }
+    }
+  }
+
+  const primaryClaim =
+    claims[0] ||
+    sources[0].snippet.substring(0, 320);
+
+  const supportClaims =
+    claims.slice(1, 4);
+
+  const sourceNames =
+    Array.from(new Set(sources.map((source: any) => source.source)))
+      .filter(Boolean)
+      .join(", ");
+
+  const sourceTitles =
+    sources
+      .slice(0, 3)
+      .map((source: any) => source.title)
       .filter(Boolean);
 
   const opening =
-    primarySentences.slice(0, 2).join(" ");
+    wantsNews
+      ? "The latest retrieved signal points to this:"
+      : wantsDefinition
+        ? "In plain English:"
+        : wantsForecast
+          ? "Current retrieval points to this read:"
+          : "HX2 retrieval points to this:";
 
-  const supportingPoints = sources
-    .slice(1, 4)
-    .map((source: any) => {
-      const short =
-        source.snippet.length > 220
-          ? source.snippet.substring(0, 220) + "..."
-          : source.snippet;
+  const lines = [
+    `${opening} ${primaryClaim}`
+  ];
 
-      return `• ${source.title || source.source}: ${short}`;
-    });
+  if (supportClaims.length > 0) {
+    lines.push("");
+    lines.push("Supporting signals:");
 
-  const supportingBlock =
-    supportingPoints.length > 0
-      ? `\n\nRecent / supporting signals:\n${supportingPoints.join("\n")}`
-      : "";
+    for (const claim of supportClaims) {
+      lines.push(`• ${claim}`);
+    }
+  }
 
-  const sourceNames = Array.from(
-    new Set(
-      sources.map((source: any) => source.source).filter(Boolean)
-    )
-  ).join(", ");
+  if (sourceTitles.length > 0) {
+    lines.push("");
+    lines.push("Top sources checked:");
 
-  return `${opening}${supportingBlock}
+    for (const title of sourceTitles) {
+      lines.push(`• ${title}`);
+    }
+  }
 
----
-Optimized by ${nodeName}${sourceNames ? ` • Sources: ${sourceNames}` : ""}`;
+  lines.push("");
+  lines.push("---");
+  lines.push(`Optimized by ${nodeName}${sourceNames ? ` • Sources: ${sourceNames}` : ""}`);
+
+  return lines.join("\n");
 }
 function getRetrievedSummary(ctx: any): string {
   const retrieval = ctx?.retrieval;
@@ -332,6 +396,7 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
 
 
 
