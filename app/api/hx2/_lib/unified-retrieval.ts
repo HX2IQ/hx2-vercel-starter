@@ -67,32 +67,173 @@ async function fetchWikipedia(query: string): Promise<UnifiedRetrievalSource[]> 
 }
 
 
-function normalizedRelevanceTerms(query: string): string[] {
+function isDefinitionQuery(query: string): boolean {
   const q = String(query || "").toLowerCase();
 
-  if (/\bxrp\b|ripple|xrpl/.test(q)) {
+  return /\b(what is|who is|define|explain)\b/.test(q) &&
+    !/\b(latest|current|today|news|recent|update|updates|market update|price|forecast|prediction)\b/.test(q);
+}
+
+function isFreshRetrievalQuery(query: string): boolean {
+  const q = String(query || "").toLowerCase();
+
+  return /\b(latest|current|today|news|recent|update|updates|market update|fresh|new|2026)\b/.test(q);
+}
+
+function normalizedRelevanceTerms(query: string): string[] {
+  const q =
+    String(query || "")
+      .toLowerCase()
+      .replace(/\s+/g, " ")
+      .trim();
+
+  if (q.includes("xrp") || q.includes("ripple") || q.includes("xrpl")) {
     return ["xrp", "ripple", "xrpl"];
   }
 
-  if (/bitcoin|\bbtc\b/.test(q)) {
+  if (q.includes("bitcoin") || /\bbtc\b/.test(q)) {
     return ["bitcoin", "btc"];
   }
 
-  if (/ethereum|\beth\b/.test(q)) {
+  if (q.includes("ethereum") || /\beth\b/.test(q)) {
     return ["ethereum", "eth"];
   }
 
-  if (/dtcc|depository trust|clearing corporation/.test(q)) {
+  if (q.includes("dtcc") || q.includes("depository trust")) {
     return ["dtcc", "depository", "clearing"];
+  }
+
+  if (q.includes("xlm") || q.includes("stellar")) {
+    return ["xlm", "stellar"];
+  }
+
+  if (q.includes("hbar") || q.includes("hedera")) {
+    return ["hbar", "hedera"];
+  }
+
+  if (q.includes("cardano") || /\bada\b/.test(q)) {
+    return ["cardano", "ada"];
   }
 
   return q
     .split(/\s+/)
-    .map((x) => x.trim())
-    .filter((x) => x.length > 3);
+    .map((term) => term.trim())
+    .filter((term) => term.length >= 3);
 }
 
+function localDefinitionFallback(normalized: string): UnifiedRetrievalSource[] {
+  const key =
+    String(normalized || "")
+      .toLowerCase()
+      .trim();
 
+  const definitions: Record<string, UnifiedRetrievalSource> = {
+    "xrp ledger": {
+      title: "XRP Ledger",
+      url: "https://xrpl.org/",
+      source: "hx2_local_definition",
+      snippet: "The XRP Ledger is a public blockchain designed for fast settlement, low transaction costs, token issuance, and cross-border value movement. XRP is the native asset used on the ledger."
+    },
+    "depository trust & clearing corporation": {
+      title: "Depository Trust & Clearing Corporation",
+      url: "https://www.dtcc.com/",
+      source: "hx2_local_definition",
+      snippet: "The Depository Trust & Clearing Corporation, or DTCC, is a major financial market infrastructure company that provides clearing, settlement, custody, and trade reporting services for financial markets."
+    },
+    "bitcoin": {
+      title: "Bitcoin",
+      url: "https://bitcoin.org/",
+      source: "hx2_local_definition",
+      snippet: "Bitcoin is a decentralized digital asset and payment network that uses proof-of-work mining and a public blockchain to transfer value without a central issuer."
+    },
+    "ethereum": {
+      title: "Ethereum",
+      url: "https://ethereum.org/",
+      source: "hx2_local_definition",
+      snippet: "Ethereum is a decentralized blockchain network that supports smart contracts, decentralized applications, tokens, and programmable settlement through its native asset ETH."
+    }
+  };
+
+  const direct =
+    definitions[key];
+
+  return direct ? [direct] : [];
+}
+
+function retrievalSourceScore(
+  query: string,
+  item: UnifiedRetrievalSource
+): number {
+  const q =
+    String(query || "").toLowerCase();
+
+  const haystack =
+    [
+      item.title,
+      item.url,
+      item.source,
+      item.snippet
+    ]
+      .map((value) => String(value || "").toLowerCase())
+      .join(" ");
+
+  const terms =
+    normalizedRelevanceTerms(query);
+
+  let score = 0;
+
+  for (const term of terms) {
+    if (haystack.includes(term)) {
+      score += 5;
+    }
+  }
+
+  if (item.source === "wikipedia" || item.source === "hx2_local_definition") {
+    score += isDefinitionQuery(query) ? 50 : 8;
+  }
+
+  if (item.source === "rss") {
+    score += isFreshRetrievalQuery(query) ? 8 : 2;
+  }
+
+  if (/\b(coindesk|cointelegraph|reuters|cnbc|bloomberg|the block|decrypt|ripple\.com|dtcc\.com|xrpl\.org|bitcoin\.org|ethereum\.org)\b/.test(haystack)) {
+    score += 14;
+  }
+
+  if (isFreshRetrievalQuery(query) && /\b(price today|live price|marketcap|market cap|chart|token unlocks|claim community badge|loading data|affiliate links|submit token|all cex|all dex|spot perpetual futures)\b/.test(haystack)) {
+    score -= 30;
+  }
+
+  if (/\b(copy link|share this article|privacy policy|terms of use|subscribe|sign in|advertisement|sponsored)\b/.test(haystack)) {
+    score -= 12;
+  }
+
+  if (q.includes("news") && /\b(news|latest|update|reported|said|announced|launched|urged|partnership|settlement)\b/.test(haystack)) {
+    score += 8;
+  }
+
+  return score;
+}
+
+function rankSourcesForQuery(
+  query: string,
+  sources: UnifiedRetrievalSource[]
+): UnifiedRetrievalSource[] {
+  const scored =
+    sources
+      .map((source) => ({
+        source,
+        score: retrievalSourceScore(query, source)
+      }))
+      .sort((a, b) => b.score - a.score);
+
+  const hasGoodSource =
+    scored.some((item) => item.score >= 8);
+
+  return scored
+    .filter((item) => !hasGoodSource || item.score >= -5)
+    .map((item) => item.source);
+}
 function shouldUseLiveWeb(query: string): boolean {
   const q = String(query || "").toLowerCase();
 
@@ -311,21 +452,32 @@ export async function retrieveContext(
   const normalized =
     normalizeRetrievalQuery(query);
 
+  const definitionOnly =
+    isDefinitionQuery(query);
+
   const [
     wikiResults,
     rssResults,
     liveWebResults
   ] = await Promise.all([
     fetchWikipedia(normalized),
-    fetchRssRetrieval(normalized),
-    fetchLiveWebRetrieval(query)
+    definitionOnly ? Promise.resolve([]) : fetchRssRetrieval(query),
+    definitionOnly ? Promise.resolve([]) : fetchLiveWebRetrieval(query)
   ]);
 
-  const allSources = [
-    ...wikiResults,
-    ...rssResults,
-    ...liveWebResults
-  ];
+  const authoritativeDefinitions =
+    wikiResults.length > 0
+      ? wikiResults
+      : definitionOnly
+        ? localDefinitionFallback(normalized)
+        : [];
+
+  const allSources =
+    rankSourcesForQuery(query, [
+      ...authoritativeDefinitions,
+      ...rssResults,
+      ...liveWebResults
+    ]);
 
   return {
     query,
@@ -333,21 +485,7 @@ export async function retrieveContext(
     web_results: allSources,
     memory_results: [],
     sources: allSources,
-    retrieval_active: true,
-    retrieval_mode:
-      allSources.length > 0
-        ? "live"
-        : "stub"
+    retrieval_active: allSources.length > 0,
+    retrieval_mode: "live"
   };
 }
-
-
-
-
-
-
-
-
-
-
-
