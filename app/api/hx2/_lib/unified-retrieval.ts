@@ -200,7 +200,7 @@ function retrievalSourceScore(
     score += 14;
   }
 
-  if (isFreshRetrievalQuery(query) && /\b(price today|live price|marketcap|market cap|chart|token unlocks|claim community badge|loading data|affiliate links|submit token|all cex|all dex|spot perpetual futures)\b/.test(haystack)) {
+  if (isFreshRetrievalQuery(query) && /\b(newsnow\.com|coinmarketcap\.com|coinbase\.com\/price|finance\.yahoo\.com\/quote|nasdaq\.com\/market-activity\/cryptocurrency|price today|live price|marketcap|market cap|chart|token unlocks|claim community badge|loading data|affiliate links|submit token|all cex|all dex|spot perpetual futures)\b/.test(haystack)) {
     score -= 30;
   }
 
@@ -215,12 +215,61 @@ function retrievalSourceScore(
   return score;
 }
 
+function isLowQualityFreshSource(
+  item: UnifiedRetrievalSource
+): boolean {
+  const haystack =
+    [
+      item.title,
+      item.url,
+      item.source,
+      item.snippet
+    ]
+      .map((value) => String(value || "").toLowerCase())
+      .join(" ");
+
+  return /\b(newsnow\.com|coinmarketcap\.com|coinbase\.com\/price|finance\.yahoo\.com\/quote|nasdaq\.com\/market-activity\/cryptocurrency|binance\.com\/en\/square|price today|live price|marketcap|market cap|chart|token unlocks|claim community badge|loading data|affiliate links|submit token|all cex|all dex|spot perpetual futures|news headlines)\b/.test(haystack);
+}
+
+function stripAnswerJunkFromSnippet(
+  item: UnifiedRetrievalSource
+): UnifiedRetrievalSource {
+  const cleanedSnippet =
+    String(item.snippet || "")
+      .replace(/\bNews Video Prices Research Events Data & Indices Sponsored\b/gi, " ")
+      .replace(/\bNews Video Prices Research Events Data &amp; Indices Sponsored\b/gi, " ")
+      .replace(/\bSponsored en Finance\b/gi, " ")
+      .replace(/\bCopy link\b/gi, " ")
+      .replace(/\bShare this article\b/gi, " ")
+      .replace(/\bSkip to main content\b/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  return {
+    ...item,
+    snippet: cleanedSnippet
+  };
+}
 function rankSourcesForQuery(
   query: string,
   sources: UnifiedRetrievalSource[]
 ): UnifiedRetrievalSource[] {
-  const scored =
+  const fresh =
+    isFreshRetrievalQuery(query);
+
+  const cleanedSources =
     sources
+      .map((source) => stripAnswerJunkFromSnippet(source))
+      .filter((source) => {
+        if (!fresh) {
+          return true;
+        }
+
+        return !isLowQualityFreshSource(source);
+      });
+
+  const scored =
+    cleanedSources
       .map((source) => ({
         source,
         score: retrievalSourceScore(query, source)
@@ -310,10 +359,41 @@ function distillPageText(text: string): string {
     : useful;
 }
 
+function shouldEnrichRetrievedSource(
+  item: UnifiedRetrievalSource
+): boolean {
+  const haystack =
+    [
+      item.title,
+      item.url,
+      item.source,
+      item.snippet
+    ]
+      .map((value) => String(value || "").toLowerCase())
+      .join(" ");
+
+  if (!item.url) {
+    return false;
+  }
+
+  if (/\b(newsnow\.com|coinmarketcap\.com|coinbase\.com\/price|finance\.yahoo\.com\/quote|nasdaq\.com\/market-activity\/cryptocurrency|binance\.com\/en\/square)\b/.test(haystack)) {
+    return false;
+  }
+
+  if (/\b(price today|live price|marketcap|market cap|chart|news headlines|latest news|loading data|token unlocks|claim community badge|all cex|all dex|spot perpetual futures)\b/.test(haystack)) {
+    return false;
+  }
+
+  if (/\b(coindesk\.com|cointelegraph\.com|reuters\.com|cnbc\.com|bloomberg\.com|decrypt\.co|theblock\.co|ripple\.com|dtcc\.com|xrpl\.org)\b/.test(haystack)) {
+    return true;
+  }
+
+  return true;
+}
 async function enrichRetrievedSource(
   item: UnifiedRetrievalSource
 ): Promise<UnifiedRetrievalSource> {
-  if (!item.url) {
+  if (!item.url || !shouldEnrichRetrievedSource(item)) {
     return item;
   }
 
@@ -489,3 +569,5 @@ export async function retrieveContext(
     retrieval_mode: "live"
   };
 }
+
+
