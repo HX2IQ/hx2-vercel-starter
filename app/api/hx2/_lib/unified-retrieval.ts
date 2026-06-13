@@ -99,6 +99,43 @@ function shouldUseLiveWeb(query: string): boolean {
   return /\b(latest|current|today|news|recent|update|updates|search|look up|verify|source|sources|fresh|new|2026)\b/.test(q);
 }
 
+
+function distillPageText(text: string): string {
+  const raw =
+    String(text || "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+  if (!raw) {
+    return "";
+  }
+
+  const noisePatterns = [
+    /subscribe/i,
+    /sign in/i,
+    /cookies?/i,
+    /privacy policy/i,
+    /terms of use/i,
+    /advertisement/i,
+    /enable javascript/i,
+    /newsletter/i
+  ];
+
+  const sentences =
+    raw
+      .split(/(?<=[.!?])\s+/)
+      .map((s) => s.trim())
+      .filter((s) => s.length >= 60)
+      .filter((s) => !noisePatterns.some((re) => re.test(s)));
+
+  const useful =
+    sentences.slice(0, 5).join(" ");
+
+  return useful.length > 900
+    ? useful.substring(0, 900)
+    : useful;
+}
+
 async function fetchLiveWebRetrieval(query: string): Promise<UnifiedRetrievalSource[]> {
   try {
     if (!shouldUseLiveWeb(query)) {
@@ -153,9 +190,7 @@ async function fetchLiveWebRetrieval(query: string): Promise<UnifiedRetrievalSou
           await fetchChosenPageText(item.url);
 
         const usefulText =
-          pageText.length > 900
-            ? pageText.substring(0, 900)
-            : pageText;
+          distillPageText(pageText);
 
         return {
           ...item,
@@ -241,6 +276,7 @@ export async function retrieveContext(
         : "stub"
   };
 }
+
 
 
 
