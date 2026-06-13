@@ -306,6 +306,37 @@ function expandedFreshQueries(query: string): string[] {
 
   return [query];
 }
+function dedupeSourcesByUrlTitle(
+  sources: UnifiedRetrievalSource[]
+): UnifiedRetrievalSource[] {
+  const seen = new Set<string>();
+  const output: UnifiedRetrievalSource[] = [];
+
+  for (const source of sources) {
+    const urlKey =
+      String(source.url || "")
+        .toLowerCase()
+        .split("?")[0]
+        .replace(/\/$/, "");
+
+    const titleKey =
+      String(source.title || "")
+        .toLowerCase()
+        .replace(/\s+/g, " ")
+        .trim();
+
+    const key = urlKey || titleKey;
+
+    if (!key || seen.has(key)) {
+      continue;
+    }
+
+    seen.add(key);
+    output.push(source);
+  }
+
+  return output;
+}
 function rankSourcesForQuery(
   query: string,
   sources: UnifiedRetrievalSource[]
@@ -324,8 +355,11 @@ function rankSourcesForQuery(
         return !isLowQualityFreshSource(source);
       });
 
+  const uniqueSources =
+    dedupeSourcesByUrlTitle(cleanedSources);
+
   const scored =
-    cleanedSources
+    uniqueSources
       .map((source) => ({
         source,
         score: retrievalSourceScore(query, source)
@@ -638,3 +672,5 @@ export async function retrieveContext(
     retrieval_mode: "live"
   };
 }
+
+
