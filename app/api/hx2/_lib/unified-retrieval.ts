@@ -239,6 +239,7 @@ function stripAnswerJunkFromSnippet(
       .replace(/\bNews Video Prices Research Events Data & Indices Sponsored\b/gi, " ")
       .replace(/\bNews Video Prices Research Events Data &amp; Indices Sponsored\b/gi, " ")
       .replace(/\bSponsored en Finance\b/gi, " ")
+      .replace(/\ben Finance\b/gi, " ")
       .replace(/\bCopy link\b/gi, " ")
       .replace(/\bShare this article\b/gi, " ")
       .replace(/\bSkip to main content\b/gi, " ")
@@ -249,6 +250,61 @@ function stripAnswerJunkFromSnippet(
     ...item,
     snippet: cleanedSnippet
   };
+}
+function uniqueStrings(values: string[]): string[] {
+  return Array.from(new Set(values.map((value) => String(value || "").trim()).filter(Boolean)));
+}
+
+function expandedFreshQueries(query: string): string[] {
+  const q =
+    String(query || "")
+      .toLowerCase()
+      .replace(/\s+/g, " ")
+      .trim();
+
+  if (!isFreshRetrievalQuery(query)) {
+    return [query];
+  }
+
+  if (q.includes("xrp") || q.includes("ripple") || q.includes("xrpl")) {
+    return uniqueStrings([
+      query,
+      "latest XRP Ripple news",
+      "XRP Ripple XRPL news CoinDesk",
+      "XRP Ripple XRPL news Cointelegraph",
+      "XRP Ripple XRPL news The Block",
+      "XRP Ripple XRPL news Decrypt",
+      "XRP Ripple XRPL news CNBC",
+      "Ripple XRP XRPL official announcement",
+      "site:ripple.com XRP XRPL news",
+      "site:xrpl.org XRP Ledger news"
+    ]);
+  }
+
+  if (q.includes("bitcoin") || /\bbtc\b/.test(q)) {
+    return uniqueStrings([
+      query,
+      "latest Bitcoin BTC market news CoinDesk",
+      "latest Bitcoin BTC market news Cointelegraph",
+      "latest Bitcoin BTC market news CNBC",
+      "latest Bitcoin BTC market news Reuters",
+      "latest Bitcoin BTC market news Bloomberg",
+      "latest Bitcoin BTC market news The Block",
+      "latest Bitcoin BTC market news Decrypt"
+    ]);
+  }
+
+  if (q.includes("dtcc")) {
+    return uniqueStrings([
+      query,
+      "latest DTCC news",
+      "site:dtcc.com news",
+      "DTCC blockchain tokenization news",
+      "DTCC digital assets news"
+    ]);
+  }
+
+  return [query];
 }
 function rankSourcesForQuery(
   query: string,
@@ -535,15 +591,23 @@ export async function retrieveContext(
   const definitionOnly =
     isDefinitionQuery(query);
 
+  const liveQueries =
+    expandedFreshQueries(query);
+
   const [
     wikiResults,
     rssResults,
-    liveWebResults
+    liveWebResultGroups
   ] = await Promise.all([
     fetchWikipedia(normalized),
     definitionOnly ? Promise.resolve([]) : fetchRssRetrieval(query),
-    definitionOnly ? Promise.resolve([]) : fetchLiveWebRetrieval(query)
+    definitionOnly
+      ? Promise.resolve([])
+      : Promise.all(liveQueries.map((liveQuery) => fetchLiveWebRetrieval(liveQuery)))
   ]);
+
+  const liveWebResults =
+    liveWebResultGroups.flat();
 
   const authoritativeDefinitions =
     wikiResults.length > 0
@@ -569,5 +633,3 @@ export async function retrieveContext(
     retrieval_mode: "live"
   };
 }
-
-
