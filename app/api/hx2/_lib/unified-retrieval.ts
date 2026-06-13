@@ -480,32 +480,58 @@ function shouldEnrichRetrievedSource(
 
   return true;
 }
-async function enrichRetrievedSource(
-  item: UnifiedRetrievalSource
-): Promise<UnifiedRetrievalSource> {
+function mergeEnrichedSnippetWithMetadata(
+  originalSnippet: string,
+  enrichedSnippet: string
+): string {
+  const original =
+    String(originalSnippet || "").trim();
+
+  const enriched =
+    String(enrichedSnippet || "").trim();
+
+  const publishedMatch =
+    original.match(/Published:\s*([^|]+)/i);
+
+  const published =
+    publishedMatch?.[0]?.trim() || "";
+
+  if (!enriched) {
+    return original;
+  }
+
+  if (published && !/Published:/i.test(enriched)) {
+    return `${enriched} | ${published}`;
+  }
+
+  return enriched;
+}
+
+async function enrichRetrievedSource(item: UnifiedRetrievalSource): Promise<UnifiedRetrievalSource> {
   if (!item.url || !shouldEnrichRetrievedSource(item)) {
     return item;
   }
 
   try {
-    const pageText =
-      await fetchChosenPageText(item.url);
+    const pageText = await fetchChosenPageText(item.url);
+    const usefulText = distillPageText(pageText);
 
-    const usefulText =
-      distillPageText(pageText);
+    const originalSnippet =
+      String(item.snippet || "");
+
+    const nextSnippet =
+      usefulText && usefulText.length > originalSnippet.length
+        ? mergeEnrichedSnippetWithMetadata(originalSnippet, usefulText)
+        : originalSnippet;
 
     return {
       ...item,
-      snippet:
-        usefulText && usefulText.length > String(item.snippet || "").length
-          ? usefulText
-          : item.snippet
+      snippet: nextSnippet
     };
   } catch {
     return item;
   }
-}
-async function fetchLiveWebRetrieval(query: string): Promise<UnifiedRetrievalSource[]> {
+}async function fetchLiveWebRetrieval(query: string): Promise<UnifiedRetrievalSource[]> {
   try {
     if (!shouldUseLiveWeb(query)) {
       return [];
@@ -710,6 +736,7 @@ export async function retrieveContext(
     retrieval_mode: "live"
   };
 }
+
 
 
 
