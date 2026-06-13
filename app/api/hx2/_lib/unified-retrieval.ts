@@ -168,6 +168,32 @@ function distillPageText(text: string): string {
     ? useful.substring(0, 900)
     : useful;
 }
+
+async function enrichRetrievedSource(
+  item: UnifiedRetrievalSource
+): Promise<UnifiedRetrievalSource> {
+  if (!item.url) {
+    return item;
+  }
+
+  try {
+    const pageText =
+      await fetchChosenPageText(item.url);
+
+    const usefulText =
+      distillPageText(pageText);
+
+    return {
+      ...item,
+      snippet:
+        usefulText && usefulText.length > String(item.snippet || "").length
+          ? usefulText
+          : item.snippet
+    };
+  } catch {
+    return item;
+  }
+}
 async function fetchLiveWebRetrieval(query: string): Promise<UnifiedRetrievalSource[]> {
   try {
     if (!shouldUseLiveWeb(query)) {
@@ -217,20 +243,7 @@ async function fetchLiveWebRetrieval(query: string): Promise<UnifiedRetrievalSou
         if (index > 1 || !item.url) {
           return item;
         }
-
-        const pageText =
-          await fetchChosenPageText(item.url);
-
-        const usefulText =
-          distillPageText(pageText);
-
-        return {
-          ...item,
-          snippet:
-            usefulText && usefulText.length > String(item.snippet || "").length
-              ? usefulText
-              : item.snippet
-        };
+        return await enrichRetrievedSource(item);
       })
     );
 
@@ -282,20 +295,7 @@ async function fetchRssRetrieval(query: string): Promise<UnifiedRetrievalSource[
           if (index > 1 || !item.url) {
             return item;
           }
-
-          const pageText =
-            await fetchChosenPageText(item.url);
-
-          const usefulText =
-            distillPageText(pageText);
-
-          return {
-            ...item,
-            snippet:
-              usefulText && usefulText.length > String(item.snippet || "").length
-                ? usefulText
-                : item.snippet
-          };
+        return await enrichRetrievedSource(item);
         })
       );
 
@@ -340,6 +340,8 @@ export async function retrieveContext(
         : "stub"
   };
 }
+
+
 
 
 
