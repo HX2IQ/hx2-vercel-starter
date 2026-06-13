@@ -35,6 +35,7 @@ $Checks = @(
     Name = "Latest XRP news"
     Query = "What is the latest XRP news?"
     MustContain = @("Optimized by X2 Markets Intelligence")
+    MaxFirstPublishedAgeDays = 45
     MustNotContain = @(
       "I checked X2 retrieval",
       "do not have a relevant current news result",
@@ -56,6 +57,7 @@ $Checks = @(
     Name = "Bitcoin market update"
     Query = "Give me a current Bitcoin market update"
     MustContain = @("Optimized by X2 Markets Intelligence")
+    MaxFirstPublishedAgeDays = 45
     MustNotContain = @(
       "News Video Prices Research Events",
       "Sponsored en Finance",
@@ -106,6 +108,37 @@ foreach ($Check in $Checks) {
         $Failures++
       }
     }
+
+    if ($Check.PSObject.Properties.Name -contains "MaxFirstPublishedAgeDays") {
+      $PublishedMatch =
+        [regex]::Match($Answer, "Published:\s*([^`r`n|]+)")
+
+      if (-not $PublishedMatch.Success) {
+        Write-Host "`nFAIL: Missing first published date for freshness-gated check"
+        $Failures++
+      }
+      else {
+        $PublishedRaw =
+          $PublishedMatch.Groups[1].Value.Trim()
+
+        try {
+          $PublishedDate =
+            [DateTime]::Parse($PublishedRaw).ToUniversalTime()
+
+          $AgeDays =
+            ([DateTime]::UtcNow - $PublishedDate).TotalDays
+
+          if ($AgeDays -gt [double]$Check.MaxFirstPublishedAgeDays) {
+            Write-Host "`nFAIL: First published date is too old: $PublishedRaw ($([Math]::Round($AgeDays, 1)) days old)"
+            $Failures++
+          }
+        }
+        catch {
+          Write-Host "`nFAIL: Could not parse first published date: $PublishedRaw"
+          $Failures++
+        }
+      }
+    }
   }
   catch {
     Write-Host "`nFAIL: Request error"
@@ -125,4 +158,5 @@ if ($Failures -gt 0) {
 
 Write-Host "PASSED"
 exit 0
+
 
