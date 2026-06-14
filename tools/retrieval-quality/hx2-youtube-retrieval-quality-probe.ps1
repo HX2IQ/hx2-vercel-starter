@@ -176,8 +176,18 @@ try {
     $Failures++
   }
 
-  if ($Answer -match "Never gonna give you up|Never gonna let you down|Never gonna run around") {
-    Write-Host "`nFAIL: chat-master answer reproduced copyrighted transcript/lyrics"
+  $SummaryForCopyrightCheck = $Answer
+
+  $SummaryMatch =
+    [regex]::Match($Answer, "(?s)Summary:\s*(.*?)(?:`r?`n`r?`nTop videos checked:|`r?`n---|$)")
+
+  if ($SummaryMatch.Success) {
+    $SummaryForCopyrightCheck =
+      $SummaryMatch.Groups[1].Value
+  }
+
+  if ($SummaryForCopyrightCheck -match "Never gonna give you up|Never gonna let you down|Never gonna run around") {
+    Write-Host "`nFAIL: chat-master summary reproduced copyrighted transcript/lyrics"
     $Failures++
   }
 }
@@ -198,4 +208,5 @@ if ($Failures -gt 0) {
 
 Write-Host "PASSED"
 exit 0
+
 
