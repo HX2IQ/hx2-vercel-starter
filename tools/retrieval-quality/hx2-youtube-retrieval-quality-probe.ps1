@@ -47,7 +47,6 @@ function Write-CompactYouTubeResult {
     transcript_ok = $Transcript.ok
     transcript_items = $Transcript.n
     transcript_chars = if ($Transcript.full_text) { ([string]$Transcript.full_text).Length } else { 0 }
-    excerpt = if ($Transcript.excerpt) { ([string]$Transcript.excerpt).Substring(0, [Math]::Min(500, ([string]$Transcript.excerpt).Length)) } else { "" }
   } | ConvertTo-Json -Depth 8
 }
 
@@ -131,3 +130,4 @@ if ($Failures -gt 0) {
 
 Write-Host "PASSED"
 exit 0
+
