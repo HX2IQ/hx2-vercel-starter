@@ -90,6 +90,43 @@ function extractYouTubeVideoId(input: string): string {
 function youtubeWatchUrl(videoId: string): string {
   return `https://www.youtube.com/watch?v=${videoId}`;
 }
+async function fetchYouTubeOembedMetadata(url: string): Promise<{ title: string; author_name: string }> {
+  const fallback = {
+    title: "",
+    author_name: ""
+  };
+
+  const videoUrl =
+    clean(url);
+
+  if (!videoUrl) return fallback;
+
+  try {
+    const endpoint =
+      `https://www.youtube.com/oembed?url=${encodeURIComponent(videoUrl)}&format=json`;
+
+    const res = await fetch(endpoint, {
+      method: "GET",
+      headers: {
+        "Accept": "application/json",
+        "User-Agent": "OptinodeIQ-HX2/1.0"
+      },
+      cache: "no-store"
+    });
+
+    if (!res.ok) return fallback;
+
+    const json = await res.json();
+
+    return {
+      title: clean(json?.title),
+      author_name: clean(json?.author_name)
+    };
+  } catch {
+    return fallback;
+  }
+}
+
 function clampTranscript(text: string) {
   const s = clean(text);
   return s.length > MAX_YOUTUBE_RESOURCE_TRANSCRIPT_BYTES
@@ -199,9 +236,15 @@ export async function POST(req: NextRequest) {
       extractYouTubeVideoId(q);
 
     if (directVideoId) {
-      const transcriptRes = await postJson(baseUrl + "/api/hx2/youtube/transcript", {
-        video_id: directVideoId,
-      });
+      const directUrl =
+        youtubeWatchUrl(directVideoId);
+
+      const [transcriptRes, metadata] = await Promise.all([
+        postJson(baseUrl + "/api/hx2/youtube/transcript", {
+          video_id: directVideoId,
+        }),
+        fetchYouTubeOembedMetadata(directUrl)
+      ]);
 
       const transcriptText =
         clean(transcriptRes?.data?.full_text);
@@ -209,12 +252,16 @@ export async function POST(req: NextRequest) {
       const transcriptAvailable =
         !!transcriptText;
 
+      const directTitle =
+        metadata.title || `YouTube video ${directVideoId}`;
+
       const directItem = {
         type: "youtube_resource",
         video_id: directVideoId,
-        title: `YouTube video ${directVideoId}`,
-        url: youtubeWatchUrl(directVideoId),
+        title: directTitle,
+        url: directUrl,
         source: "youtube_direct",
+        channel: metadata.author_name,
         query: q,
         excerpt: clean(transcriptRes?.data?.excerpt || transcriptText).slice(0, 4000),
         transcript_available: transcriptAvailable,
@@ -405,6 +452,7 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
 
 
 

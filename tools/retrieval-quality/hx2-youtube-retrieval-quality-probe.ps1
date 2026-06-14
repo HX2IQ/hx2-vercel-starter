@@ -58,6 +58,8 @@ function Write-CompactYouTubeResult {
     provider = $Search.provider
     result_count = $Search.n
     chosen_title = $Chosen.title
+    chosen_title_is_generic = ([string]$Chosen.title) -match "^YouTube video "
+    chosen_channel = $Chosen.channel
     chosen_video_id = $Chosen.video_id
     chosen_url = $Chosen.url
     transcript_ok = $Transcript.ok
@@ -150,6 +152,7 @@ try {
     has_youtube_footer = $Answer -match "HX2 YouTube Retrieval Intelligence"
     has_video_id = $Answer -match $ExpectedVideoId
     has_transcript_status = $Answer -match "Transcript:"
+    title_is_generic = $Answer -match "Selected video: YouTube video "
     preview = if ($Answer.Length -gt 700) { $Answer.Substring(0, 700) + "..." } else { $Answer }
   } | ConvertTo-Json -Depth 8 | Write-Host
 
@@ -195,3 +198,4 @@ if ($Failures -gt 0) {
 
 Write-Host "PASSED"
 exit 0
+
