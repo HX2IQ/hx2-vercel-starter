@@ -26,14 +26,38 @@ function Invoke-SourceRouterProbe {
     -Body $Body
 }
 
+function Write-CompactYouTubeResult {
+  param(
+    [object]$Res
+  )
+
+  $Chosen = $Res.result.chosen_video
+  $Search = $Res.result.search
+  $Transcript = $Res.result.transcript
+
+  [pscustomobject]@{
+    ok = $Res.ok
+    routed_to = $Res.routed_to
+    result_source = $Res.result.source
+    provider = $Search.provider
+    result_count = $Search.n
+    chosen_title = $Chosen.title
+    chosen_video_id = $Chosen.video_id
+    chosen_url = $Chosen.url
+    transcript_ok = $Transcript.ok
+    transcript_items = $Transcript.n
+    transcript_chars = if ($Transcript.full_text) { ([string]$Transcript.full_text).Length } else { 0 }
+    excerpt = if ($Transcript.excerpt) { ([string]$Transcript.excerpt).Substring(0, [Math]::Min(500, ([string]$Transcript.excerpt).Length)) } else { "" }
+  } | ConvertTo-Json -Depth 8
+}
+
 Write-Host "`n=============================="
 Write-Host "CHECK: YouTube search routing"
 Write-Host "=============================="
 
 try {
   $Res = Invoke-SourceRouterProbe -Query "search youtube for XRP Ripple interview"
-  $Json = $Res | ConvertTo-Json -Depth 16
-  Write-Host $Json
+  Write-CompactYouTubeResult -Res $Res
 
   if (-not $Res.ok) {
     Write-Host "`nFAIL: source-router did not return ok"
@@ -63,8 +87,7 @@ Write-Host "=============================="
 try {
   $ExpectedVideoId = "dQw4w9WgXcQ"
   $Res = Invoke-SourceRouterProbe -Query "summarize this YouTube video https://www.youtube.com/watch?v=$ExpectedVideoId"
-  $Json = $Res | ConvertTo-Json -Depth 16
-  Write-Host $Json
+  Write-CompactYouTubeResult -Res $Res
 
   if (-not $Res.ok) {
     Write-Host "`nFAIL: source-router did not return ok"
