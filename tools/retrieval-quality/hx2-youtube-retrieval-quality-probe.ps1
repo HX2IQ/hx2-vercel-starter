@@ -26,6 +26,22 @@ function Invoke-SourceRouterProbe {
     -Body $Body
 }
 
+function Invoke-ChatMasterProbe {
+  param(
+    [string]$Query
+  )
+
+  $Body = @{
+    user_query = $Query
+  } | ConvertTo-Json -Depth 8
+
+  Invoke-RestMethod `
+    -Uri "$Base/api/hx2/chat-master" `
+    -Method POST `
+    -ContentType "application/json" `
+    -Body $Body
+}
+
 function Write-CompactYouTubeResult {
   param(
     [object]$Res
@@ -120,6 +136,55 @@ catch {
 }
 
 Write-Host "`n=============================="
+Write-Host "CHECK: Chat-master YouTube synthesis"
+Write-Host "=============================="
+
+try {
+  $ExpectedVideoId = "dQw4w9WgXcQ"
+  $Res = Invoke-ChatMasterProbe -Query "summarize this YouTube video https://www.youtube.com/watch?v=$ExpectedVideoId"
+  $Answer = [string]$Res.answer
+
+  [pscustomobject]@{
+    ok = $Res.ok
+    answer_chars = $Answer.Length
+    has_youtube_footer = $Answer -match "HX2 YouTube Retrieval Intelligence"
+    has_video_id = $Answer -match $ExpectedVideoId
+    has_transcript_status = $Answer -match "Transcript:"
+    preview = if ($Answer.Length -gt 700) { $Answer.Substring(0, 700) + "..." } else { $Answer }
+  } | ConvertTo-Json -Depth 8 | Write-Host
+
+  if (-not $Answer) {
+    Write-Host "`nFAIL: chat-master returned no answer"
+    $Failures++
+  }
+
+  if ($Answer -notmatch "HX2 YouTube Retrieval Intelligence") {
+    Write-Host "`nFAIL: chat-master did not use YouTube retrieval intelligence"
+    $Failures++
+  }
+
+  if ($Answer -notmatch $ExpectedVideoId) {
+    Write-Host "`nFAIL: chat-master answer did not include expected video id"
+    $Failures++
+  }
+
+  if ($Answer -notmatch "Transcript:") {
+    Write-Host "`nFAIL: chat-master answer did not include transcript status"
+    $Failures++
+  }
+
+  if ($Answer -match "Never gonna give you up|Never gonna let you down|Never gonna run around") {
+    Write-Host "`nFAIL: chat-master answer reproduced copyrighted transcript/lyrics"
+    $Failures++
+  }
+}
+catch {
+  Write-Host "`nFAIL: Chat-master YouTube synthesis request failed"
+  Write-Host $_.Exception.Message
+  $Failures++
+}
+
+Write-Host "`n=============================="
 Write-Host "YOUTUBE RETRIEVAL QUALITY RESULT"
 Write-Host "=============================="
 
@@ -130,4 +195,3 @@ if ($Failures -gt 0) {
 
 Write-Host "PASSED"
 exit 0
-
