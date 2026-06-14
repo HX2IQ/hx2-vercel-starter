@@ -57,6 +57,9 @@ function Write-CompactYouTubeResult {
     result_source = $Res.result.source
     provider = $Search.provider
     result_count = $Search.n
+    save_reason = $Res.result.save_reason
+    transcript_attempted = $Res.result.transcript_attempted
+    route_transcript_available = $Res.result.transcript_available
     chosen_title = $Chosen.title
     chosen_title_is_generic = ([string]$Chosen.title) -match "^YouTube video "
     chosen_channel = $Chosen.channel
@@ -88,6 +91,11 @@ try {
 
   if (-not $Res.result.chosen_video.video_id) {
     Write-Host "`nFAIL: missing chosen video id"
+    $Failures++
+  }
+
+  if ($Res.result.source -eq "youtube_live" -and $Res.result.chosen_video.video_id -and $Res.result.transcript_attempted -ne $true) {
+    Write-Host "`nFAIL: live YouTube search did not attempt transcript enrichment"
     $Failures++
   }
 }
@@ -208,5 +216,6 @@ if ($Failures -gt 0) {
 
 Write-Host "PASSED"
 exit 0
+
 
 
