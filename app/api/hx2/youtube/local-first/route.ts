@@ -50,6 +50,46 @@ function clean(s: unknown) {
 
 
 
+function extractYouTubeVideoId(input: string): string {
+  const text = clean(input);
+
+  if (!text) return "";
+
+  const urlMatch =
+    text.match(/https?:\/\/[^\s]+/i);
+
+  if (urlMatch?.[0]) {
+    try {
+      const parsed = new URL(urlMatch[0]);
+
+      if (parsed.hostname.includes("youtube.com")) {
+        const watchId = clean(parsed.searchParams.get("v"));
+        if (/^[a-zA-Z0-9_-]{11}$/.test(watchId)) return watchId;
+
+        const pathMatch =
+          parsed.pathname.match(/\/(?:shorts|embed|live)\/([a-zA-Z0-9_-]{11})/);
+
+        if (pathMatch?.[1]) return pathMatch[1];
+      }
+
+      if (parsed.hostname === "youtu.be") {
+        const shortId =
+          clean(parsed.pathname.replace("/", "").split("/")[0]);
+
+        if (/^[a-zA-Z0-9_-]{11}$/.test(shortId)) return shortId;
+      }
+    } catch {}
+  }
+
+  const looseMatch =
+    text.match(/(?:v=|youtu\.be\/|shorts\/|embed\/|live\/)([a-zA-Z0-9_-]{11})/);
+
+  return looseMatch?.[1] || "";
+}
+
+function youtubeWatchUrl(videoId: string): string {
+  return `https://www.youtube.com/watch?v=${videoId}`;
+}
 function clampTranscript(text: string) {
   const s = clean(text);
   return s.length > MAX_YOUTUBE_RESOURCE_TRANSCRIPT_BYTES
@@ -155,6 +195,77 @@ export async function POST(req: NextRequest) {
       req.nextUrl.origin ||
       "https://optinodeiq.com";
 
+    const directVideoId =
+      extractYouTubeVideoId(q);
+
+    if (directVideoId) {
+      const transcriptRes = await postJson(baseUrl + "/api/hx2/youtube/transcript", {
+        video_id: directVideoId,
+      });
+
+      const transcriptText =
+        clean(transcriptRes?.data?.full_text);
+
+      const transcriptAvailable =
+        !!transcriptText;
+
+      const directItem = {
+        type: "youtube_resource",
+        video_id: directVideoId,
+        title: `YouTube video ${directVideoId}`,
+        url: youtubeWatchUrl(directVideoId),
+        source: "youtube_direct",
+        query: q,
+        excerpt: clean(transcriptRes?.data?.excerpt || transcriptText).slice(0, 4000),
+        transcript_available: transcriptAvailable,
+        transcript_text: transcriptAvailable ? transcriptText : "",
+        transcript_chars: transcriptAvailable ? transcriptText.length : 0,
+        quality_score: transcriptAvailable ? 100 : 50,
+        saved_at: new Date().toISOString(),
+      };
+
+      let savedToLocal = false;
+      let saveReason =
+        transcriptAvailable ? "transcript_available" : "transcript_unavailable";
+
+      if (transcriptAvailable) {
+        try {
+          await saveYouTubeResource(directItem);
+          savedToLocal = true;
+          saveReason = "direct_transcript_saved";
+        } catch {
+          saveReason = "direct_transcript_save_failed";
+        }
+      }
+
+      return NextResponse.json({
+        ok: true,
+        source: "youtube_direct",
+        routed_direct_video: true,
+        saved_to_local: savedToLocal,
+        save_reason: saveReason,
+        query_classification: queryClassification,
+        search: {
+          ok: true,
+          provider: "direct_youtube_url",
+          q,
+          n: 1,
+          results: [directItem],
+        },
+        transcript: transcriptAvailable
+          ? transcriptRes.data
+          : {
+              ok: false,
+              video_id: directVideoId,
+              n: 0,
+              transcript: [],
+              full_text: "",
+              excerpt: "",
+              error: clean(transcriptRes?.data?.error || "transcript unavailable"),
+            },
+        chosen_video: directItem,
+      });
+    }
     const savedYt = await postJson(baseUrl + "/api/hx2/youtube/resources/search", {
       q,
       limit,
@@ -294,6 +405,8 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+
 
 
 
