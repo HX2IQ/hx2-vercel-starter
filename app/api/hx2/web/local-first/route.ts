@@ -144,12 +144,19 @@ export async function POST(req: NextRequest) {
       }, { status: 502 });
     }
 
-    const chosen = liveWeb.data.results[0] || null;
-    const chosenLiveScore = scoreLiveWebResult(q, chosen);
+    const rankedLiveResults = [...liveWeb.data.results]
+      .map((item: any) => ({
+        ...item,
+        _score: scoreLiveWebResult(q, item),
+      }))
+      .sort((a: any, b: any) => Number(b?._score || 0) - Number(a?._score || 0))
+      .slice(0, limit);
+
+    const chosen = rankedLiveResults[0] || null;
+    const chosenLiveScore = Number(chosen?._score || 0);
     const MIN_SAVE_SCORE = getMinSaveScore(q);
     let savedToLocal = false;
     let saveReason = "not_attempted";
-
 
     if (!chosen?.url) {
       saveReason = "missing_url";
@@ -173,7 +180,6 @@ export async function POST(req: NextRequest) {
       }
     }
 
-
     if (queryClassification === "price_lookup" && chosen?.url) {
     }
 
@@ -186,7 +192,11 @@ export async function POST(req: NextRequest) {
       min_save_score_used: MIN_SAVE_SCORE,
       chosen_live_score: chosenLiveScore,
       query_classification: queryClassification,
-      search: liveWeb.data,
+      search: {
+        ...liveWeb.data,
+        n: rankedLiveResults.length,
+        results: rankedLiveResults,
+      },
       chosen_result: chosen,
     });
   } catch (err: any) {
