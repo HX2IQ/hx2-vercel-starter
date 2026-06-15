@@ -405,6 +405,61 @@ export async function POST(req: NextRequest) {
     const MIN_SAVE_SCORE = getMinSaveScore(q);
     let savedToLocal = false;
     let saveReason = "not_attempted";
+    let transcriptAttempted = false;
+    let transcriptAvailable = false;
+    let transcriptText = "";
+    let transcriptExcerpt = "";
+    let transcriptPayload: any = null;
+
+    if (chosen?.video_id) {
+      transcriptAttempted = true;
+
+      try {
+        const transcriptRes = await postJson(baseUrl + "/api/hx2/youtube/transcript", {
+          video_id: clean(chosen.video_id),
+          url: clean(chosen?.url),
+        });
+
+        transcriptText = clean(
+          transcriptRes?.data?.transcript_text ||
+          transcriptRes?.data?.transcript ||
+          transcriptRes?.data?.text ||
+          ""
+        );
+
+        transcriptExcerpt = clean(transcriptRes?.data?.excerpt || transcriptText).slice(0, 4000);
+        transcriptAvailable = !!transcriptRes?.data?.ok && transcriptText.length > 0;
+
+        transcriptPayload = transcriptAvailable
+          ? {
+              ok: true,
+              video_id: clean(chosen.video_id),
+              transcript_chars: transcriptText.length,
+              excerpt: transcriptExcerpt,
+            }
+          : {
+              ok: false,
+              video_id: clean(chosen.video_id),
+              error: clean(transcriptRes?.data?.error || "transcript unavailable"),
+            };
+      } catch (err: any) {
+        transcriptPayload = {
+          ok: false,
+          video_id: clean(chosen.video_id),
+          error: clean(err?.message || "transcript enrichment failed"),
+        };
+      }
+    }
+
+    const enrichedChosen = chosen
+      ? {
+          ...chosen,
+          transcript_available: transcriptAvailable,
+          transcript_text: transcriptAvailable ? transcriptText : "",
+          transcript_chars: transcriptAvailable ? transcriptText.length : 0,
+          excerpt: transcriptAvailable ? transcriptExcerpt : clean(chosen?.snippet),
+        }
+      : null;
 
     if (!chosen?.video_id) {
       saveReason = "missing_video_id";
@@ -418,14 +473,15 @@ export async function POST(req: NextRequest) {
           url: clean(chosen?.url),
           source: clean(chosen?.source || "youtube"),
           query: q,
-          excerpt: clean(chosen?.snippet),
-          transcript_available: false,
-          transcript_text: "",
+          excerpt: transcriptAvailable ? transcriptExcerpt : clean(chosen?.snippet),
+          transcript_available: transcriptAvailable,
+          transcript_text: transcriptAvailable ? transcriptText : "",
+          transcript_chars: transcriptAvailable ? transcriptText.length : 0,
           quality_score: typeof chosen?._score === "number" ? chosen._score : null,
           saved_at: new Date().toISOString(),
         });
         savedToLocal = true;
-        saveReason = "score_above_threshold";
+        saveReason = transcriptAvailable ? "score_above_threshold_transcript_saved" : "score_above_threshold";
       } catch {
         saveReason = "save_failed";
       }
@@ -442,8 +498,11 @@ export async function POST(req: NextRequest) {
         ...ytSearch.data,
         results: rankedResults,
       },
-      transcript: null,
-      chosen_video: chosen,
+      transcript_attempted: transcriptAttempted,
+      transcript_available: transcriptAvailable,
+      route_transcript_available: transcriptAvailable,
+      transcript: transcriptPayload,
+      chosen_video: enrichedChosen,
     });
   } catch (err: any) {
     return NextResponse.json(
@@ -452,6 +511,9 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+
+
 
 
 
