@@ -538,6 +538,32 @@ function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intellige
       publishedMillis: null
     };
 
+  const primaryClaimText =
+    cleanRetrievedText(primary.claim);
+
+  const primaryTitleText =
+    cleanRetrievedText(primary.title)
+      .replace(/\s+-\s+(crypto\.news|coindesk|decrypt|cointelegraph|ambcrypto|bitget|ripple\.com|reuters|cnbc|bloomberg)$/i, "")
+      .replace(/\.\s+here is what it means$/i, "")
+      .replace(/\bhere is what it means\b.*$/i, "")
+      .trim();
+
+  const primaryClaimLooksMessy =
+    /^(x\s*\(twitter\)|twitter|here is what it means\b|what it means\b)/i.test(primaryClaimText) ||
+    /\b(copy link|share this article|x\s*\(twitter\)|linkedin|facebook|email)\b/i.test(primaryClaimText) ||
+    /^[a-z]/.test(primaryClaimText) ||
+    primaryClaimText.length > 240;
+
+  const primaryTitleLooksUseful =
+    primaryTitleText.length >= 20 &&
+    primaryTitleText.length <= 180 &&
+    !noisePatterns.some((re) => re.test(primaryTitleText));
+
+  const primaryDisplayClaim =
+    primaryTitleLooksUseful && (wantsNews || primaryClaimLooksMessy)
+      ? primaryTitleText
+      : primaryClaimText;
+
   const supporting =
     evidenceItems
       .slice(1)
@@ -572,7 +598,7 @@ function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intellige
           : "HX2 synthesized read:";
 
   const lines = [
-    opening + " " + primary.claim
+    opening + " " + primaryDisplayClaim
   ];
 
   if (supporting.length > 0) {
