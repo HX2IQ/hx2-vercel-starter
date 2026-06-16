@@ -87,38 +87,135 @@ function normalizedRelevanceTerms(query: string): string[] {
       .replace(/\s+/g, " ")
       .trim();
 
+  const terms: string[] = [];
+
   if (q.includes("xrp") || q.includes("ripple") || q.includes("xrpl")) {
-    return ["xrp", "ripple", "xrpl"];
+    terms.push("xrp", "ripple", "xrpl");
   }
 
   if (q.includes("bitcoin") || /\bbtc\b/.test(q)) {
-    return ["bitcoin", "btc"];
+    terms.push("bitcoin", "btc");
   }
 
   if (q.includes("ethereum") || /\beth\b/.test(q)) {
-    return ["ethereum", "eth"];
+    terms.push("ethereum", "eth");
   }
 
   if (q.includes("dtcc") || q.includes("depository trust")) {
-    return ["dtcc", "depository", "clearing"];
+    terms.push("dtcc", "depository", "clearing", "settlement", "tokenization", "tokenized", "securities");
   }
 
   if (q.includes("xlm") || q.includes("stellar")) {
-    return ["xlm", "stellar"];
+    terms.push("xlm", "stellar", "stellar development foundation");
   }
 
   if (q.includes("hbar") || q.includes("hedera")) {
-    return ["hbar", "hedera"];
+    terms.push("hbar", "hedera");
   }
 
   if (q.includes("cardano") || /\bada\b/.test(q)) {
-    return ["cardano", "ada"];
+    terms.push("cardano", "ada");
   }
+
+  if (terms.length > 0) {
+    return uniqueStrings(terms);
+  }
+
+  const genericStop = new Set([
+    "latest", "current", "today", "news", "recent", "update", "updates",
+    "fresh", "new", "give", "show", "tell", "what", "who", "why", "how"
+  ]);
 
   return q
     .split(/\s+/)
     .map((term) => term.trim())
-    .filter((term) => term.length >= 3);
+    .filter((term) => term.length >= 3 && !genericStop.has(term));
+}
+
+function relevanceEntityGroups(query: string): string[][] {
+  const q =
+    String(query || "")
+      .toLowerCase()
+      .replace(/\s+/g, " ")
+      .trim();
+
+  const groups: string[][] = [];
+
+  if (q.includes("xrp") || q.includes("ripple") || q.includes("xrpl")) {
+    groups.push(["xrp", "ripple", "xrpl"]);
+  }
+
+  if (q.includes("xlm") || q.includes("stellar")) {
+    groups.push(["xlm", "stellar", "stellar development foundation"]);
+  }
+
+  if (q.includes("dtcc") || q.includes("depository trust")) {
+    groups.push(["dtcc", "depository trust", "clearing corporation", "tokenization", "tokenized", "digital token", "securities settlement"]);
+  }
+
+  if (q.includes("bitcoin") || /\bbtc\b/.test(q)) {
+    groups.push(["bitcoin", "btc"]);
+  }
+
+  if (q.includes("ethereum") || /\beth\b/.test(q)) {
+    groups.push(["ethereum", "eth"]);
+  }
+
+  if (q.includes("hbar") || q.includes("hedera")) {
+    groups.push(["hbar", "hedera"]);
+  }
+
+  if (q.includes("cardano") || /\bada\b/.test(q)) {
+    groups.push(["cardano", "ada"]);
+  }
+
+  return groups;
+}
+
+function relevanceGroupMatchCount(query: string, haystack: string): number {
+  const groups =
+    relevanceEntityGroups(query);
+
+  if (groups.length === 0) {
+    return normalizedRelevanceTerms(query).filter((term) => haystack.includes(term)).length;
+  }
+
+  return groups.filter((group) => group.some((term) => haystack.includes(term))).length;
+}
+
+function passesRetrievalRelevanceGate(
+  query: string,
+  item: UnifiedRetrievalSource
+): boolean {
+  const haystack =
+    [
+      item.title,
+      item.url,
+      item.source,
+      item.snippet
+    ]
+      .map((value) => String(value || "").toLowerCase())
+      .join(" ");
+
+  const groups =
+    relevanceEntityGroups(query);
+
+  if (groups.length === 0) {
+    return normalizedRelevanceTerms(query).some((term) => haystack.includes(term));
+  }
+
+  const matchedGroups =
+    relevanceGroupMatchCount(query, haystack);
+
+  if (groups.length >= 2) {
+    const dtccTokenizationBridge =
+      /\bdtcc\b/.test(haystack) &&
+      /\b(tokenization|tokenized|digital token|securities|settlement|clearing|asset token)\b/.test(haystack);
+
+    return matchedGroups >= 2 || dtccTokenizationBridge;
+  }
+
+  return matchedGroups >= 1;
 }
 
 function localDefinitionFallback(normalized: string): UnifiedRetrievalSource[] {
@@ -182,9 +279,22 @@ function retrievalSourceScore(
 
   let score = 0;
 
-  for (const term of terms) {
-    if (haystack.includes(term)) {
-      score += 5;
+  const matchedTermCount =
+    terms.filter((term) => haystack.includes(term)).length;
+
+  score += matchedTermCount * 5;
+
+  const groupCount =
+    relevanceEntityGroups(query).length;
+
+  const matchedGroupCount =
+    relevanceGroupMatchCount(query, haystack);
+
+  if (groupCount >= 2) {
+    score += matchedGroupCount * 10;
+
+    if (!passesRetrievalRelevanceGate(query, item)) {
+      score -= 35;
     }
   }
 
@@ -228,7 +338,7 @@ function isLowQualityFreshSource(
       .map((value) => String(value || "").toLowerCase())
       .join(" ");
 
-  return /\b(newsnow\.com|coinmarketcap\.com|coinbase\.com\/price|finance\.yahoo\.com\/quote|nasdaq\.com\/market-activity\/cryptocurrency|binance\.com\/en\/square|price today|live price|marketcap|market cap|chart|token unlocks|claim community badge|loading data|affiliate links|submit token|all cex|all dex|spot perpetual futures|news headlines)\b/.test(haystack);
+  return /\b(newsnow\.com|coinmarketcap\.com|coinbase\.com\/price|finance\.yahoo\.com\/quote|nasdaq\.com\/market-activity\/cryptocurrency|binance\.com\/en\/square|mshale|cam skattebo|price today|live price|marketcap|market cap|chart|token unlocks|claim community badge|loading data|affiliate links|submit token|all cex|all dex|spot perpetual futures|news headlines|crypto adoption is surging|goes all in on crypto)\b/.test(haystack);
 }
 
 function stripAnswerJunkFromSnippet(
@@ -624,9 +734,6 @@ async function fetchRssRetrieval(query: string): Promise<UnifiedRetrievalSource[
     const items =
       await fetchRssFeeds(query);
 
-    const relevanceTerms =
-      normalizedRelevanceTerms(query);
-
     const mapped =
       items
         .filter((item: any) => {
@@ -639,7 +746,14 @@ async function fetchRssRetrieval(query: string): Promise<UnifiedRetrievalSource[
               .map((value) => String(value || "").toLowerCase())
               .join(" ");
 
-          return relevanceTerms.some((term) => haystack.includes(term));
+          const candidate = {
+            title: String(item?.title || ""),
+            url: String(item?.link || ""),
+            source: String(item?.source || ""),
+            snippet: ""
+          };
+
+          return passesRetrievalRelevanceGate(query, candidate) && !isLowQualityFreshSource(candidate);
         })
         .slice(0, 5)
         .map((item: any) => {
@@ -736,6 +850,10 @@ export async function retrieveContext(
     retrieval_mode: "live"
   };
 }
+
+
+
+
 
 
 

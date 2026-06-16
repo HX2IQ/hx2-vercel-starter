@@ -335,7 +335,10 @@ function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intellige
     /newsletter/i,
     /enable javascript/i,
     /copy link/i,
-    /share this article/i
+    /share this article/i,
+    /^by\s+.+\|\s*edited by/i,
+    /\bcam skattebo\b/i,
+    /\bmshale\b/i
   ];
 
   const stopWords = new Set([
@@ -725,6 +728,7 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
 
 
 
