@@ -91,42 +91,18 @@ $results | Format-Table -AutoSize
 Write-Host ""
 Write-Host ("HX2 QUICK VERIFY PASSED ({0} ms total)" -f $overall.ElapsedMilliseconds) -ForegroundColor Green
 
+Write-Host "`n== RETRIEVAL QUALITY SMOKE =="
+$RetrievalSmoke = Join-Path $PSScriptRoot "retrieval-quality-smoke.ps1"
 
+if (-not (Test-Path $RetrievalSmoke)) {
+  throw "Missing retrieval quality smoke script: $RetrievalSmoke"
+}
 
+powershell -ExecutionPolicy Bypass -File $RetrievalSmoke
 
+if ($LASTEXITCODE -ne 0) {
+  throw "Retrieval quality smoke failed."
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Write-Host "GREEN: retrieval quality smoke passed"
 
