@@ -307,7 +307,7 @@ function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intellige
         snippet: cleanRetrievedText(item?.snippet || "")
       }))
       .filter((item: any) => item.snippet.length >= 80)
-      .slice(0, 4);
+      .slice(0, 5);
 
   if (sources.length === 0) {
     return "";
@@ -333,49 +333,126 @@ function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intellige
     /terms of use/i,
     /advertisement/i,
     /newsletter/i,
-    /enable javascript/i
+    /enable javascript/i,
+    /copy link/i,
+    /share this article/i
   ];
+
+  const stopWords = new Set([
+    "the", "and", "for", "with", "that", "this", "what", "who", "why",
+    "how", "are", "was", "were", "from", "about", "latest", "current",
+    "today", "news", "update", "updates", "give", "show", "tell", "does"
+  ]);
+
+  const queryTerms =
+    Array.from(new Set(
+      input
+        .replace(/[^a-z0-9\s]/g, " ")
+        .split(/\s+/)
+        .map((term: string) => term.trim())
+        .filter((term: string) => term.length >= 3 && !stopWords.has(term))
+    ));
 
   const answerSources =
     wantsDefinition && sources.some((source: any) => source.source === "wikipedia")
       ? sources.filter((source: any) => source.source === "wikipedia")
       : sources;
 
-  const claims: string[] = [];
+  const evidenceItems: Array<{
+    claim: string;
+    title: string;
+    source: string;
+    url: string;
+    score: number;
+  }> = [];
 
-  for (const source of answerSources) {
+  function scoreClaim(sentence: string, source: any, sourceIndex: number): number {
+    const haystack =
+      [source.title, source.source, sentence]
+        .map((value) => String(value || "").toLowerCase())
+        .join(" ");
+
+    let score = Math.max(0, 24 - sourceIndex * 3);
+
+    for (const term of queryTerms) {
+      if (haystack.includes(term)) score += 3;
+      if (String(source.title || "").toLowerCase().includes(term)) score += 2;
+    }
+
+    if (wantsNews && /\b(announced|reported|launched|published|today|2026|recent|latest|said|according)\b/i.test(sentence)) {
+      score += 6;
+    }
+
+    if (wantsForecast && /\b(could|may|likely|risk|trend|outlook|forecast|probability|odds|market|price)\b/i.test(sentence)) {
+      score += 4;
+    }
+
+    if (wantsDefinition && source.source === "wikipedia") {
+      score += 10;
+    }
+
+    if (noisePatterns.some((re) => re.test(sentence))) {
+      score -= 30;
+    }
+
+    if (sentence.length > 300) {
+      score -= 2;
+    }
+
+    return score;
+  }
+
+  for (const [sourceIndex, source] of answerSources.entries()) {
     const sentences =
       source.snippet
         .split(/(?<=[.!?])\s+/)
         .map((sentence: string) => sentence.trim())
-        .filter((sentence: string) => sentence.length >= 60)
-        .filter((sentence: string) => sentence.length <= 320)
+        .filter((sentence: string) => sentence.length >= 55)
+        .filter((sentence: string) => sentence.length <= 360)
         .filter((sentence: string) => !noisePatterns.some((re) => re.test(sentence)));
 
-    for (const sentence of sentences) {
-      if (!claims.some((claim) => claim.toLowerCase() === sentence.toLowerCase())) {
-        claims.push(sentence);
+    const usableSentences =
+      sentences.length > 0
+        ? sentences
+        : [source.snippet.substring(0, 320)];
+
+    for (const sentence of usableSentences) {
+      const claim = cleanRetrievedText(sentence);
+      if (!claim || claim.length < 55) {
+        continue;
       }
+
+      const duplicate = evidenceItems.some((item) => item.claim.toLowerCase() === claim.toLowerCase());
+      if (duplicate) {
+        continue;
+      }
+
+      evidenceItems.push({
+        claim,
+        title: source.title,
+        source: source.source,
+        url: source.url,
+        score: scoreClaim(claim, source, sourceIndex)
+      });
     }
   }
 
-  const primaryClaim =
-    claims[0] ||
-    answerSources[0].snippet.substring(0, 320);
+  evidenceItems.sort((a, b) => b.score - a.score);
 
-  const primaryPublishedMatch =
-    String(answerSources[0]?.snippet || "").match(/Published:\s*([^|]+)/i);
+  const primary =
+    evidenceItems[0] || {
+      claim: answerSources[0].snippet.substring(0, 320),
+      title: answerSources[0].title,
+      source: answerSources[0].source,
+      url: answerSources[0].url,
+      score: 0
+    };
 
-  const primaryPublished =
-    primaryPublishedMatch?.[0]?.trim() || "";
-
-  const primaryClaimWithMetadata =
-    wantsNews && primaryPublished && !/Published:/i.test(primaryClaim)
-      ? `${primaryClaim} | ${primaryPublished}`
-      : primaryClaim;
-
-  const supportClaims =
-    claims.slice(1, 4);
+  const supporting =
+    evidenceItems
+      .slice(1)
+      .filter((item) => item.claim.toLowerCase() !== primary.claim.toLowerCase())
+      .slice(0, 3);
 
   const sourceNames =
     Array.from(new Set(answerSources.map((source: any) => source.source)))
@@ -384,29 +461,36 @@ function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intellige
 
   const sourceTitles =
     answerSources
-      .slice(0, 3)
+      .slice(0, 4)
       .map((source: any) => source.title)
       .filter(Boolean);
 
+  const confidence =
+    answerSources.length >= 4
+      ? "medium-high"
+      : answerSources.length >= 2
+        ? "medium"
+        : "limited";
+
   const opening =
     wantsNews
-      ? "The latest retrieved signal points to this:"
+      ? "Latest retrieved read:"
       : wantsDefinition
         ? "In plain English:"
         : wantsForecast
-          ? "Current retrieval points to this read:"
-          : "HX2 retrieval points to this:";
+          ? "Current retrieval-based read:"
+          : "HX2 synthesized read:";
 
   const lines = [
-    `${opening} ${primaryClaimWithMetadata}`
+    opening + " " + primary.claim
   ];
 
-  if (supportClaims.length > 0) {
+  if (supporting.length > 0) {
     lines.push("");
-    lines.push("Supporting signals:");
+    lines.push("Supporting evidence:");
 
-    for (const claim of supportClaims) {
-      lines.push(`• ${claim}`);
+    for (const item of supporting) {
+      lines.push("• " + item.claim);
     }
   }
 
@@ -415,13 +499,16 @@ function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intellige
     lines.push("Top sources checked:");
 
     for (const title of sourceTitles) {
-      lines.push(`• ${title}`);
+      lines.push("• " + title);
     }
   }
 
   lines.push("");
+  lines.push("Confidence: " + confidence + " based on " + answerSources.length + " ranked retrieved source" + (answerSources.length === 1 ? "" : "s") + ".");
+
+  lines.push("");
   lines.push("---");
-  lines.push(`Optimized by ${nodeName}${sourceNames ? ` • Sources: ${sourceNames}` : ""}`);
+  lines.push("Optimized by " + nodeName + (sourceNames ? " • Sources: " + sourceNames : ""));
 
   return lines.join("\n");
 }
