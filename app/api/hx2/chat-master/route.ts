@@ -369,6 +369,30 @@ function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intellige
     score: number;
   }> = [];
 
+  function parsePublishedMillis(text: string): number | null {
+    const match =
+      String(text || "").match(/Published:\s*([^|]+)/i);
+
+    if (!match?.[1]) {
+      return null;
+    }
+
+    const parsed =
+      Date.parse(match[1].trim());
+
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  const publishedTimes =
+    answerSources
+      .map((source: any) => parsePublishedMillis(String(source?.snippet || "")))
+      .filter((value: number | null): value is number => typeof value === "number");
+
+  const newestPublishedMillis =
+    publishedTimes.length > 0
+      ? Math.max(...publishedTimes)
+      : null;
+
   function scoreClaim(sentence: string, source: any, sourceIndex: number): number {
     const haystack =
       [source.title, source.source, sentence]
@@ -384,6 +408,38 @@ function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intellige
 
     if (wantsNews && /\b(announced|reported|launched|published|today|2026|recent|latest|said|according)\b/i.test(sentence)) {
       score += 6;
+    }
+
+    if (wantsNews) {
+      const publishedMillis =
+        parsePublishedMillis(sentence) ||
+        parsePublishedMillis(String(source?.snippet || ""));
+
+      if (publishedMillis) {
+        const nowMillis =
+          Date.now();
+
+        const ageDays =
+          Math.max(0, (nowMillis - publishedMillis) / 86400000);
+
+        if (ageDays <= 2) {
+          score += 30;
+        } else if (ageDays <= 7) {
+          score += 24;
+        } else if (ageDays <= 30) {
+          score += 14;
+        } else if (ageDays <= 120) {
+          score += 3;
+        } else {
+          score -= 14;
+        }
+
+        if (newestPublishedMillis && (newestPublishedMillis - publishedMillis) > 604800000) {
+          score -= 12;
+        }
+      } else {
+        score -= 4;
+      }
     }
 
     if (wantsForecast && /\b(could|may|likely|risk|trend|outlook|forecast|probability|odds|market|price)\b/i.test(sentence)) {
@@ -728,18 +784,3 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
