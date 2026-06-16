@@ -367,6 +367,7 @@ function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intellige
     source: string;
     url: string;
     score: number;
+    publishedMillis: number | null;
   }> = [];
 
   function parsePublishedMillis(text: string): number | null {
@@ -454,6 +455,14 @@ function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intellige
       score -= 30;
     }
 
+    const midSentenceStart =
+      /^[a-z]/.test(String(sentence || "").trim()) &&
+      !/^(xrp|xlm|dtcc|xrpl|ripple|stellar)\b/i.test(String(sentence || "").trim());
+
+    if (midSentenceStart) {
+      score -= 16;
+    }
+
     if (sentence.length > 300) {
       score -= 2;
     }
@@ -486,25 +495,47 @@ function synthesizeRetrievedAnswer(ctx: any, nodeName = "HX2 Retrieval Intellige
         continue;
       }
 
+      const publishedMillis =
+        parsePublishedMillis(claim) ||
+        parsePublishedMillis(String(source?.snippet || ""));
+
       evidenceItems.push({
         claim,
         title: source.title,
         source: source.source,
         url: source.url,
-        score: scoreClaim(claim, source, sourceIndex)
+        score: scoreClaim(claim, source, sourceIndex),
+        publishedMillis
       });
     }
   }
 
   evidenceItems.sort((a, b) => b.score - a.score);
 
+  const freshPrimaryCandidates =
+    wantsNews && newestPublishedMillis
+      ? evidenceItems.filter((item) =>
+          item.publishedMillis &&
+          newestPublishedMillis - item.publishedMillis <= 604800000 &&
+          !/^[a-z]/.test(String(item.claim || "").trim())
+        )
+      : [];
+
+  const cleanPrimaryCandidates =
+    evidenceItems.filter((item) =>
+      !/^[a-z]/.test(String(item.claim || "").trim())
+    );
+
   const primary =
+    freshPrimaryCandidates[0] ||
+    cleanPrimaryCandidates[0] ||
     evidenceItems[0] || {
       claim: answerSources[0].snippet.substring(0, 320),
       title: answerSources[0].title,
       source: answerSources[0].source,
       url: answerSources[0].url,
-      score: 0
+      score: 0,
+      publishedMillis: null
     };
 
   const supporting =
