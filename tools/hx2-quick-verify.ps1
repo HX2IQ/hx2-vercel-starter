@@ -169,4 +169,15 @@ Write-Host "GREEN: retrieval quality smoke passed"
 
 
 Write-Hx2VerifyRunLog "HX2 quick verify completed successfully"
+Write-Hx2VerifyRunLog ("Total runtime ms: {0}" -f $overall.ElapsedMilliseconds)
+Write-Hx2VerifyRunLog ("Guard count: {0}" -f $results.Count)
+Write-Hx2VerifyRunLog ("Compact mode: {0}" -f ([bool]$Compact))
+Write-Hx2VerifyRunLog "Retrieval quality smoke: passed"
+Write-Hx2VerifyRunLog "Slow-guard radar:"
+
+foreach ($item in ($results | Sort-Object Milliseconds -Descending | Select-Object -First $SlowGuardCount)) {
+  Write-Hx2VerifyRunLog ("- {0}: {1} ms" -f $item.Guard, $item.Milliseconds)
+}
+
 Write-Host "GREEN: verify run log written to $VerifyRunLog"
+
