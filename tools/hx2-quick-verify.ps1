@@ -1,8 +1,16 @@
+param(
+  [switch]$Compact
+)
+
 $ErrorActionPreference = "Stop"
 
 $overall = [System.Diagnostics.Stopwatch]::StartNew()
 
 $results = @()
+
+if ($Compact) {
+  Write-Host "HX2 quick compact mode enabled" -ForegroundColor Cyan
+}
 
 Write-Host ""
 Write-Host "== HX2 QUICK VERIFY ==" -ForegroundColor Cyan

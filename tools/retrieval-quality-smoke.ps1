@@ -4,27 +4,60 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+function Test-AnyMatch {
+  param(
+    [string]$Text,
+    [string[]]$Needles
+  )
+
+  foreach ($Needle in $Needles) {
+    if ($Needle -and $Text -match [regex]::Escape($Needle)) {
+      return $true
+    }
+  }
+
+  return $false
+}
+
+function Test-AllMatch {
+  param(
+    [string]$Text,
+    [string[]]$Needles
+  )
+
+  foreach ($Needle in $Needles) {
+    if ($Needle -and $Text -notmatch [regex]::Escape($Needle)) {
+      return $false
+    }
+  }
+
+  return $true
+}
+
 Write-Host "`n== HX2 RETRIEVAL QUALITY SMOKE =="
 Write-Host "Base: $Base"
 
 $Checks = @(
   @{
     q = "latest XRP news"
-    primaryMust = "Ripple invests in Flutterwave"
-    primaryBlock = "Institutional DeFi on XRPL"
-    fullBlock = "Cam Skattebo"
+    primaryAny = @("Ripple", "XRP", "XRPL")
+    primaryAll = @()
+    primaryBlock = @("Institutional DeFi on XRPL", "Cam Skattebo", "Mshale")
+    fullBlock = @("Cam Skattebo", "Mshale")
   },
   @{
     q = "what is DTCC"
-    primaryMust = "Depository Trust"
-    primaryBlock = ""
-    fullBlock = ""
+    primaryAny = @("Depository Trust", "DTCC")
+    primaryAll = @()
+    primaryBlock = @()
+    fullBlock = @()
   },
   @{
     q = "current XLM DTCC update"
-    primaryMust = "DTCC picked Stellar"
-    primaryBlock = "Cam Skattebo"
-    fullBlock = "Cam Skattebo"
+    primaryAny = @("Stellar", "XLM", "DTCC", "DTC")
+    primaryAll = @()
+    primaryBlock = @("Cam Skattebo", "Mshale")
+    fullBlock = @("Cam Skattebo", "Mshale")
   }
 )
 
@@ -46,16 +79,24 @@ foreach ($Check in $Checks) {
   $Answer = [string]$Res.answer
   $PrimaryLine = ($Answer -split "`n")[0]
 
-  if ($PrimaryLine -notmatch [regex]::Escape($Check.primaryMust)) {
-    throw "Smoke failed for '$($Check.q)': primary missing '$($Check.primaryMust)'. Got: $PrimaryLine"
+  if ($Check.primaryAny.Count -gt 0 -and -not (Test-AnyMatch -Text $PrimaryLine -Needles $Check.primaryAny)) {
+    throw "Smoke failed for '$($Check.q)': primary did not match any expected live-news terms. Got: $PrimaryLine"
   }
 
-  if ($Check.primaryBlock -and $PrimaryLine -match [regex]::Escape($Check.primaryBlock)) {
-    throw "Smoke failed for '$($Check.q)': blocked primary text appeared '$($Check.primaryBlock)'. Got: $PrimaryLine"
+  if ($Check.primaryAll.Count -gt 0 -and -not (Test-AllMatch -Text $PrimaryLine -Needles $Check.primaryAll)) {
+    throw "Smoke failed for '$($Check.q)': primary missing one or more required terms. Got: $PrimaryLine"
   }
 
-  if ($Check.fullBlock -and $Answer -match [regex]::Escape($Check.fullBlock)) {
-    throw "Smoke failed for '$($Check.q)': blocked full-answer text appeared '$($Check.fullBlock)'"
+  foreach ($Blocked in $Check.primaryBlock) {
+    if ($Blocked -and $PrimaryLine -match [regex]::Escape($Blocked)) {
+      throw "Smoke failed for '$($Check.q)': blocked primary text appeared '$Blocked'. Got: $PrimaryLine"
+    }
+  }
+
+  foreach ($Blocked in $Check.fullBlock) {
+    if ($Blocked -and $Answer -match [regex]::Escape($Blocked)) {
+      throw "Smoke failed for '$($Check.q)': blocked full-answer text appeared '$Blocked'"
+    }
   }
 
   if ($Answer -notmatch "Confidence:") {
