@@ -4,7 +4,21 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+
 
+# HX2 verify run log
+$VerifyRunDir = Join-Path "tools" "_verify-runs"
+New-Item -ItemType Directory -Force -Path $VerifyRunDir | Out-Null
+$VerifyRunStamp = Get-Date -Format "yyyyMMdd-HHmmss"
+$VerifyRunLog = Join-Path $VerifyRunDir "hx2-quick-verify-$VerifyRunStamp.log"
+
+function Write-Hx2VerifyRunLog {
+  param([string]$Message)
+  $Line = "[{0}] {1}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"), $Message
+  Add-Content -Path $VerifyRunLog -Value $Line
+}
+
+Write-Hx2VerifyRunLog "HX2 quick verify started"
 $overall = [System.Diagnostics.Stopwatch]::StartNew()
 
 $results = @()
@@ -152,3 +166,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "GREEN: retrieval quality smoke passed"
+
+
+Write-Hx2VerifyRunLog "HX2 quick verify completed successfully"
+Write-Host "GREEN: verify run log written to $VerifyRunLog"

@@ -113,3 +113,6 @@ tools/_topology/
 
 # DEV2 local stabilization snapshots
 tools/_stabilization/
+
+# HX2 local verify run logs
+tools/_verify-runs/
