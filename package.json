@@ -52,7 +52,8 @@
     "dev2:continuity": "powershell -ExecutionPolicy Bypass -File tools/dev2-continuity-check.ps1",
     "dev2:recovery": "powershell -ExecutionPolicy Bypass -File tools/dev2-chat-recovery-export.ps1",
     "dev2:handoff": "powershell -ExecutionPolicy Bypass -File tools/dev2-new-chat-handoff.ps1",
-    "dev2:resume": "powershell -ExecutionPolicy Bypass -File tools/dev2-sprint-resume-gate.ps1"
+    "dev2:resume": "powershell -ExecutionPolicy Bypass -File tools/dev2-sprint-resume-gate.ps1",
+    "hx2:quick:compact": "powershell -ExecutionPolicy Bypass -File tools/hx2-quick-verify.ps1 -Compact"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
