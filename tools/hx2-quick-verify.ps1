@@ -17,7 +17,7 @@ Write-Host "== HX2 QUICK VERIFY ==" -ForegroundColor Cyan
 Write-Host ""
 
 if (Test-Path ".\tools\hx2-local-env-check.ps1") {
-  powershell -ExecutionPolicy Bypass -File .\tools\hx2-local-env-check.ps1
+  powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\hx2-local-env-check.ps1
 }
 
 $guards = @(
@@ -74,7 +74,7 @@ foreach ($guard in $guards) {
   Write-Host ""
   Write-Host "Running $guard" -ForegroundColor Yellow
 
-  powershell -ExecutionPolicy Bypass -File $guard
+  powershell -NoProfile -ExecutionPolicy Bypass -File $guard
 
   $sw.Stop()
 
@@ -106,11 +106,12 @@ if (-not (Test-Path $RetrievalSmoke)) {
   throw "Missing retrieval quality smoke script: $RetrievalSmoke"
 }
 
-powershell -ExecutionPolicy Bypass -File $RetrievalSmoke
+powershell -NoProfile -ExecutionPolicy Bypass -File $RetrievalSmoke
 
 if ($LASTEXITCODE -ne 0) {
   throw "Retrieval quality smoke failed."
 }
 
 Write-Host "GREEN: retrieval quality smoke passed"
+
 
