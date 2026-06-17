@@ -1,5 +1,6 @@
 param(
-  [switch]$Compact
+  [switch]$Compact,
+  [int]$SlowGuardCount = 5
 )
 
 $ErrorActionPreference = "Stop"
@@ -70,23 +71,42 @@ foreach ($guard in $guards) {
   }
 
   $sw = [System.Diagnostics.Stopwatch]::StartNew()
+  $guardName = Split-Path $guard -Leaf
+  $logFile = $null
 
-  Write-Host ""
-  Write-Host "Running $guard" -ForegroundColor Yellow
+  if ($Compact) {
+    $logFile = Join-Path $env:TEMP ("hx2-quick-" + $guardName + ".log")
+    powershell -NoProfile -ExecutionPolicy Bypass -File $guard *> $logFile
+    $exitCode = $LASTEXITCODE
+  } else {
+    Write-Host ""
+    Write-Host "Running $guard" -ForegroundColor Yellow
 
-  powershell -NoProfile -ExecutionPolicy Bypass -File $guard
+    powershell -NoProfile -ExecutionPolicy Bypass -File $guard
+    $exitCode = $LASTEXITCODE
+  }
 
   $sw.Stop()
 
   $results += [pscustomobject]@{
-    Guard = Split-Path $guard -Leaf
+    Guard = $guardName
     Milliseconds = $sw.ElapsedMilliseconds
   }
 
-  Write-Host ("Completed in {0} ms" -f $sw.ElapsedMilliseconds) -ForegroundColor DarkGray
+  if ($exitCode -ne 0) {
+    if ($Compact -and $logFile -and (Test-Path $logFile)) {
+      Write-Host ""
+      Write-Host "FAILED LOG: $guardName" -ForegroundColor Red
+      Get-Content $logFile
+    }
 
-  if ($LASTEXITCODE -ne 0) {
     throw "Quick verify failed: $guard"
+  }
+
+  if ($Compact) {
+    Write-Host ("GREEN: {0} ({1} ms)" -f $guardName, $sw.ElapsedMilliseconds)
+  } else {
+    Write-Host ("Completed in {0} ms" -f $sw.ElapsedMilliseconds) -ForegroundColor DarkGray
   }
 }
 
@@ -94,7 +114,26 @@ $overall.Stop()
 
 Write-Host ""
 Write-Host "QUICK VERIFY SUMMARY" -ForegroundColor Cyan
-$results | Format-Table -AutoSize
+
+if ($Compact) {
+  Write-Host ("Guards passed: {0}" -f $results.Count)
+
+  $slowest =
+    $results |
+      Sort-Object Milliseconds -Descending |
+      Select-Object -First $SlowGuardCount
+
+  if ($slowest.Count -gt 0) {
+    Write-Host ""
+    Write-Host ("SLOW-GUARD RADAR: top {0}" -f $SlowGuardCount) -ForegroundColor Cyan
+
+    foreach ($item in $slowest) {
+      Write-Host ("- {0}: {1} ms" -f $item.Guard, $item.Milliseconds)
+    }
+  }
+} else {
+  $results | Format-Table -AutoSize
+}
 
 Write-Host ""
 Write-Host ("HX2 QUICK VERIFY PASSED ({0} ms total)" -f $overall.ElapsedMilliseconds) -ForegroundColor Green
@@ -113,5 +152,3 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "GREEN: retrieval quality smoke passed"
-
-
