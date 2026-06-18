@@ -18,7 +18,7 @@ foreach ($guard in $guards) {
   Write-Host ""
   Write-Host "Running $guard" -ForegroundColor Yellow
 
-  powershell -ExecutionPolicy Bypass -File $guard
+  powershell -NoProfile -ExecutionPolicy Bypass -File $guard
 
   if ($LASTEXITCODE -ne 0) {
     throw "Orchestrator guard failed: $guard"
@@ -27,3 +27,4 @@ foreach ($guard in $guards) {
 
 Write-Host ""
 Write-Host "ALL ORCHESTRATOR GUARDS PASSED" -ForegroundColor Green
+
