@@ -23,6 +23,11 @@ function Write-Hx2VerifyRunLog {
 Write-Hx2VerifyRunLog "HX2 quick verify started"
 $overall = [System.Diagnostics.Stopwatch]::StartNew()
 
+
+$VerifyModeLabel = "FULL"
+if ($Fast) {
+  $VerifyModeLabel = "FAST"
+}
 $results = @()
 
 if ($Compact) {
@@ -30,7 +35,7 @@ if ($Compact) {
 }
 
 Write-Host ""
-Write-Host "== HX2 QUICK VERIFY ==" -ForegroundColor Cyan
+Write-Host ("== HX2 QUICK VERIFY [{0}] ==" -f $VerifyModeLabel) -ForegroundColor Cyan
 Write-Host ""
 
 if (Test-Path ".\tools\hx2-local-env-check.ps1") {
@@ -88,6 +93,12 @@ if ($Fast) {
   $guards = @(
     $guards |
       Where-Object { (Split-Path $_ -Leaf) -ne "guard-hx2-syntax.ps1" }
+
+if ($Fast) {
+  Write-Host ""
+  Write-Host "FAST VERIFY NOTICE: this is for low-risk iteration only." -ForegroundColor Yellow
+  Write-Host "FINAL SAFETY GATE: run npm run hx2:quick:compact before commit/push on code, routes, retrieval, orchestrator, auth, billing, or fragile changes." -ForegroundColor Yellow
+}
   )
 }
 
@@ -185,6 +196,7 @@ Write-Hx2VerifyRunLog ("Total runtime ms: {0}" -f $overall.ElapsedMilliseconds)
 Write-Hx2VerifyRunLog ("Guard count: {0}" -f $results.Count)
 Write-Hx2VerifyRunLog ("Compact mode: {0}" -f ([bool]$Compact))
 Write-Hx2VerifyRunLog ("Fast mode: {0}" -f ([bool]$Fast))
+Write-Hx2VerifyRunLog ("Verify mode label: {0}" -f $VerifyModeLabel)
 Write-Hx2VerifyRunLog "Retrieval quality smoke: passed"
 Write-Hx2VerifyRunLog "Slow-guard radar:"
 
@@ -193,4 +205,5 @@ foreach ($item in ($results | Sort-Object Milliseconds -Descending | Select-Obje
 }
 
 Write-Host "GREEN: verify run log written to $VerifyRunLog"
+
 
