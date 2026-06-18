@@ -1,8 +1,6 @@
 param(
   [int]$Runs = 20,
-  [int]$Top = 10,
-  [ValidateSet("All", "Full", "Fast", "Unknown")]
-  [string]$Mode = "All"
+  [int]$Top = 10
 )
 
 $ErrorActionPreference = "Stop"
@@ -15,7 +13,6 @@ if ($Top -lt 1) {
   throw "Top must be at least 1."
 }
 
-$RequestedMode = $Mode.ToUpperInvariant()
 $VerifyRunDir = Join-Path $PSScriptRoot "_verify-runs"
 
 if (-not (Test-Path $VerifyRunDir)) {
@@ -33,45 +30,17 @@ if (-not $Logs -or @($Logs).Count -eq 0) {
   exit 0
 }
 
-function Get-Hx2VerifyMode {
-  param([string[]]$Lines)
-
-  $DetectedMode = "UNKNOWN"
-
-  foreach ($Line in $Lines) {
-    if ($Line -match 'Verify mode label:\s*(?<Mode>FAST|FULL)\s*$') {
-      return $Matches.Mode.ToUpperInvariant()
-    }
-
-    if ($Line -match 'Fast mode:\s*(?<Fast>True|False)\s*$') {
-      if ($Matches.Fast -eq "True") {
-        $DetectedMode = "FAST"
-      } else {
-        $DetectedMode = "FULL"
-      }
-    }
-  }
-
-  return $DetectedMode
-}
-
 $GuardRows = @()
 $TotalRows = @()
 
 foreach ($Log in $Logs) {
   $Lines = Get-Content $Log.FullName
-  $VerifyMode = Get-Hx2VerifyMode -Lines $Lines
-
-  if ($RequestedMode -ne "ALL" -and $VerifyMode -ne $RequestedMode) {
-    continue
-  }
 
   foreach ($Line in $Lines) {
     if ($Line -match 'Total runtime ms:\s*(?<Ms>\d+)') {
       $TotalRows += [pscustomobject]@{
         Run = $Log.Name
         LastWriteTime = $Log.LastWriteTime
-        Mode = $VerifyMode
         TotalMs = [int]$Matches.Ms
       }
     }
@@ -80,7 +49,6 @@ foreach ($Log in $Logs) {
       $GuardRows += [pscustomobject]@{
         Run = $Log.Name
         LastWriteTime = $Log.LastWriteTime
-        Mode = $VerifyMode
         Guard = $Matches.Guard
         Milliseconds = [int]$Matches.Ms
       }
@@ -89,65 +57,39 @@ foreach ($Log in $Logs) {
 }
 
 Write-Host ""
-Write-Host ("HX2 VERIFY SPEED REPORT: last {0} run logs / mode filter: {1}" -f @($Logs).Count, $RequestedMode) -ForegroundColor Cyan
+Write-Host ("HX2 VERIFY SPEED REPORT: last {0} run logs" -f @($Logs).Count) -ForegroundColor Cyan
 
-if (@($TotalRows).Count -eq 0) {
+if (@($TotalRows).Count -gt 0) {
   Write-Host ""
-  Write-Host "No verify run totals found for this mode filter." -ForegroundColor Yellow
-  exit 0
+  Write-Host "VERIFY RUN TOTALS" -ForegroundColor Cyan
+
+  $TotalRows |
+    Sort-Object LastWriteTime -Descending |
+    Select-Object LastWriteTime, TotalMs, Run |
+    Format-Table -AutoSize
+
+  $AverageTotal = [Math]::Round((($TotalRows | Measure-Object TotalMs -Average).Average), 0)
+  $MaxTotal = ($TotalRows | Measure-Object TotalMs -Maximum).Maximum
+  $MinTotal = ($TotalRows | Measure-Object TotalMs -Minimum).Minimum
+
+  Write-Host ("Average total runtime: {0} ms" -f $AverageTotal)
+  Write-Host ("Fastest total runtime: {0} ms" -f $MinTotal)
+  Write-Host ("Slowest total runtime: {0} ms" -f $MaxTotal)
 }
-
-Write-Host ""
-Write-Host "VERIFY RUN TOTALS" -ForegroundColor Cyan
-
-$TotalRows |
-  Sort-Object LastWriteTime -Descending |
-  Select-Object LastWriteTime, Mode, TotalMs, Run |
-  Format-Table -AutoSize
-
-Write-Host ""
-Write-Host "VERIFY MODE TOTAL SUMMARY" -ForegroundColor Cyan
-
-$TotalRows |
-  Group-Object Mode |
-  ForEach-Object {
-    $Rows = $_.Group
-
-    [pscustomobject]@{
-      Mode = $_.Name
-      Runs = @($Rows).Count
-      AverageMs = [Math]::Round((($Rows | Measure-Object TotalMs -Average).Average), 0)
-      FastestMs = ($Rows | Measure-Object TotalMs -Minimum).Minimum
-      SlowestMs = ($Rows | Measure-Object TotalMs -Maximum).Maximum
-    }
-  } |
-  Sort-Object Mode |
-  Format-Table -AutoSize
-
-$AverageTotal = [Math]::Round((($TotalRows | Measure-Object TotalMs -Average).Average), 0)
-$MaxTotal = ($TotalRows | Measure-Object TotalMs -Maximum).Maximum
-$MinTotal = ($TotalRows | Measure-Object TotalMs -Minimum).Minimum
-
-Write-Host ("Average total runtime: {0} ms" -f $AverageTotal)
-Write-Host ("Fastest total runtime: {0} ms" -f $MinTotal)
-Write-Host ("Slowest total runtime: {0} ms" -f $MaxTotal)
 
 if (@($GuardRows).Count -eq 0) {
   Write-Host ""
-  Write-Host "No slow-guard radar rows found yet. Run npm run hx2:quick:compact or npm run hx2:quick:fast:compact once after detailed logging is installed." -ForegroundColor Yellow
+  Write-Host "No slow-guard radar rows found yet. Run npm run hx2:quick:compact once after detailed logging is installed." -ForegroundColor Yellow
   exit 0
 }
 
 $Summary =
   $GuardRows |
-    Group-Object Mode, Guard |
+    Group-Object Guard |
     ForEach-Object {
       $Rows = $_.Group
-      $First = $Rows | Select-Object -First 1
-
       [pscustomobject]@{
-        Mode = $First.Mode
-        Guard = $First.Guard
+        Guard = $_.Name
         Seen = @($Rows).Count
         AverageMs = [Math]::Round((($Rows | Measure-Object Milliseconds -Average).Average), 0)
         MaxMs = ($Rows | Measure-Object Milliseconds -Maximum).Maximum
@@ -159,7 +101,7 @@ $Summary =
     Select-Object -First $Top
 
 Write-Host ""
-Write-Host ("SLOWEST GUARDS ACROSS RECENT RUNS: top {0} / mode filter: {1}" -f $Top, $RequestedMode) -ForegroundColor Cyan
+Write-Host ("SLOWEST GUARDS ACROSS RECENT RUNS: top {0}" -f $Top) -ForegroundColor Cyan
 
 $Summary | Format-Table -AutoSize
 
