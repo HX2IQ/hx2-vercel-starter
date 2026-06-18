@@ -61,7 +61,9 @@
     "hx2:verify:speed:full": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-verify-speed-report.ps1 -Mode Full",
     "hx2:verify:speed:fast": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-verify-speed-report.ps1 -Mode Fast",
     "hx2:verify:speed": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-verify-speed-report.ps1",
-    "hx2:verify:policy": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-verify-policy.ps1"
+    "hx2:verify:policy": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-verify-policy.ps1",
+    "hx2:verify:auto": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-verify-auto.ps1",
+    "hx2:verify:auto:full": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-verify-auto.ps1 -ForceFull"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
