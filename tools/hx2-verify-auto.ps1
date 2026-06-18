@@ -1,11 +1,16 @@
 param(
-  [switch]$ForceFull
+  [switch]$ForceFull,
+  [switch]$DryRun
 )
 
 $ErrorActionPreference = "Stop"
 
 Write-Host ""
 Write-Host "== HX2 AUTO VERIFY ROUTER ==" -ForegroundColor Cyan
+
+if ($DryRun) {
+  Write-Host "Mode: DRY RUN - decision only, no verify command will be executed." -ForegroundColor Cyan
+}
 
 $QuickVerify = Join-Path $PSScriptRoot "hx2-quick-verify.ps1"
 
@@ -18,6 +23,12 @@ $StatusLines = git status --porcelain
 if ($ForceFull) {
   Write-Host "AUTO VERIFY DECISION: FULL REQUIRED" -ForegroundColor Yellow
   Write-Host "Reason: ForceFull was provided."
+
+  if ($DryRun) {
+    Write-Host "DRY RUN: would run npm run hx2:quick:compact"
+    exit 0
+  }
+
   powershell -NoProfile -ExecutionPolicy Bypass -File $QuickVerify -Compact
   exit $LASTEXITCODE
 }
@@ -96,12 +107,24 @@ Write-Host ""
 
 if (@($FullReasons).Count -gt 0) {
   Write-Host "AUTO VERIFY DECISION: FULL REQUIRED" -ForegroundColor Yellow
+
+  if ($DryRun) {
+    Write-Host "DRY RUN: would run npm run hx2:quick:compact"
+    exit 0
+  }
+
   Write-Host "Running: npm run hx2:quick:compact"
   powershell -NoProfile -ExecutionPolicy Bypass -File $QuickVerify -Compact
   exit $LASTEXITCODE
 }
 
 Write-Host "AUTO VERIFY DECISION: FAST OK" -ForegroundColor Green
+
+if ($DryRun) {
+  Write-Host "DRY RUN: would run npm run hx2:quick:fast:compact"
+  exit 0
+}
+
 Write-Host "Running: npm run hx2:quick:fast:compact"
 powershell -NoProfile -ExecutionPolicy Bypass -File $QuickVerify -Compact -Fast
 exit $LASTEXITCODE
