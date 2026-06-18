@@ -56,7 +56,9 @@
     "hx2:quick:compact": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-quick-verify.ps1 -Compact",
     "hx2:verify:latest": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-latest-verify-log.ps1 -Content",
     "hx2:verify:cleanup": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-clean-verify-runs.ps1",
-    "hx2:verify:speed": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-verify-speed-report.ps1"
+    "hx2:verify:speed": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-verify-speed-report.ps1",
+    "hx2:quick:fast": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-quick-verify.ps1 -Fast",
+    "hx2:quick:fast:compact": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-quick-verify.ps1 -Compact -Fast"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",

@@ -1,10 +1,12 @@
 param(
   [switch]$Compact,
-  [int]$SlowGuardCount = 5
+  [int]$SlowGuardCount = 5,
+  [switch]$Fast
 )
 
 $ErrorActionPreference = "Stop"
-
+
+
 
 # HX2 verify run log
 $VerifyRunDir = Join-Path "tools" "_verify-runs"
@@ -78,6 +80,16 @@ $guards = @(
   ".\tools\owner-console-layout-guard.ps1",
   ".\tools\owner-console-panel-order-guard.ps1"
 )
+
+
+if ($Fast) {
+  Write-Host "HX2 quick fast mode enabled: TypeScript syntax/type guard is skipped for low-risk iteration." -ForegroundColor Yellow
+  Write-Host "FULL VERIFY REQUIRED before commit/push for code or route changes." -ForegroundColor Yellow
+  $guards = @(
+    $guards |
+      Where-Object { (Split-Path $_ -Leaf) -ne "guard-hx2-syntax.ps1" }
+  )
+}
 
 foreach ($guard in $guards) {
   if (!(Test-Path $guard)) {
@@ -172,6 +184,7 @@ Write-Hx2VerifyRunLog "HX2 quick verify completed successfully"
 Write-Hx2VerifyRunLog ("Total runtime ms: {0}" -f $overall.ElapsedMilliseconds)
 Write-Hx2VerifyRunLog ("Guard count: {0}" -f $results.Count)
 Write-Hx2VerifyRunLog ("Compact mode: {0}" -f ([bool]$Compact))
+Write-Hx2VerifyRunLog ("Fast mode: {0}" -f ([bool]$Fast))
 Write-Hx2VerifyRunLog "Retrieval quality smoke: passed"
 Write-Hx2VerifyRunLog "Slow-guard radar:"
 
