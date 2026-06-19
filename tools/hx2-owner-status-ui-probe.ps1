@@ -1,5 +1,9 @@
 param(
-  [string]$Ba
+  [string]$Base = ""
+)
+
+$ErrorActionPreference = "Stop"
+
 Write-Host ""
 Write-Host "== HX2 OWNER STATUS UI PROBE ==" -ForegroundColor Cyan
 
