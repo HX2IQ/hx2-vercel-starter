@@ -66,7 +66,8 @@
     "hx2:verify:auto:full": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-verify-auto.ps1 -ForceFull",
     "hx2:verify:auto:dry": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-verify-auto.ps1 -DryRun",
     "hx2:verify:status": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-verify-status.ps1",
-    "hx2:retrieval:status": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retrieval-status-probe.ps1"
+    "hx2:retrieval:status": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retrieval-status-probe.ps1",
+    "hx2:owner:status": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-owner-status-probe.ps1"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
