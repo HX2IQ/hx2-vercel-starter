@@ -30,6 +30,28 @@ type OwnerStatus = {
   next_safe_step?: string;
 };
 
+type RetrievalCapability = {
+  id: string;
+  label?: string;
+  route?: string;
+  script?: string;
+  status?: string;
+  exposure?: string;
+  notes?: string;
+};
+
+type RetrievalStatus = {
+  ok: boolean;
+  mode: string;
+  route: string;
+  ip_firewall: string;
+  generated_at: string;
+  capabilities: RetrievalCapability[];
+  smoke_queries: string[];
+  recommended_commands: string[];
+  next_safe_step?: string;
+};
+
 const pageStyle: CSSProperties = {
   minHeight: "100vh",
   padding: "32px",
@@ -69,6 +91,13 @@ const pillStyle: CSSProperties = {
   fontWeight: 700
 };
 
+const warnPillStyle: CSSProperties = {
+  ...pillStyle,
+  background: "#fffbeb",
+  border: "1px solid #fde68a",
+  color: "#92400e"
+};
+
 const codeStyle: CSSProperties = {
   display: "inline-block",
   padding: "4px 8px",
@@ -79,27 +108,36 @@ const codeStyle: CSSProperties = {
   fontSize: "13px"
 };
 
+async function fetchJson<T>(url: string): Promise<T> {
+  const response = await fetch(url, {
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    throw new Error(`${url} request failed: ${response.status}`);
+  }
+
+  return (await response.json()) as T;
+}
+
 export default function OwnerStatusPage() {
-  const [data, setData] = useState<OwnerStatus | null>(null);
+  const [ownerStatus, setOwnerStatus] = useState<OwnerStatus | null>(null);
+  const [retrievalStatus, setRetrievalStatus] = useState<RetrievalStatus | null>(null);
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
     let active = true;
 
-    async function loadOwnerStatus() {
+    async function loadStatus() {
       try {
-        const response = await fetch("/api/hx2/owner-status", {
-          cache: "no-store"
-        });
-
-        if (!response.ok) {
-          throw new Error(`Owner status request failed: ${response.status}`);
-        }
-
-        const payload = (await response.json()) as OwnerStatus;
+        const [ownerPayload, retrievalPayload] = await Promise.all([
+          fetchJson<OwnerStatus>("/api/hx2/owner-status"),
+          fetchJson<RetrievalStatus>("/api/hx2/retrieval-status")
+        ]);
 
         if (active) {
-          setData(payload);
+          setOwnerStatus(ownerPayload);
+          setRetrievalStatus(retrievalPayload);
         }
       } catch (err) {
         if (active) {
@@ -108,7 +146,7 @@ export default function OwnerStatusPage() {
       }
     }
 
-    loadOwnerStatus();
+    loadStatus();
 
     return () => {
       active = false;
@@ -143,19 +181,19 @@ export default function OwnerStatusPage() {
           </section>
         ) : null}
 
-        {!data && !error ? (
+        {!ownerStatus && !retrievalStatus && !error ? (
           <section style={cardStyle}>
             <h2 style={{ marginTop: 0 }}>Loading owner status...</h2>
-            <p style={{ color: "#6b7280" }}>Reading safe owner status metadata.</p>
+            <p style={{ color: "#6b7280" }}>Reading safe owner and retrieval status metadata.</p>
           </section>
         ) : null}
 
-        {data ? (
+        {ownerStatus ? (
           <>
             <section style={cardStyle}>
               <h2 style={{ marginTop: 0 }}>Readiness</h2>
               <div style={gridStyle}>
-                {Object.entries(data.readiness).map(([key, value]) => (
+                {Object.entries(ownerStatus.readiness).map(([key, value]) => (
                   <div key={key} style={{ border: "1px solid #e5e7eb", borderRadius: "12px", padding: "14px" }}>
                     <div style={{ color: "#6b7280", fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.04em" }}>
                       {key.replaceAll("_", " ")}
@@ -169,7 +207,7 @@ export default function OwnerStatusPage() {
             <section style={cardStyle}>
               <h2 style={{ marginTop: 0 }}>Active Surfaces</h2>
               <div style={gridStyle}>
-                {data.surfaces.map((surface) => (
+                {ownerStatus.surfaces.map((surface) => (
                   <article key={surface.id} style={{ border: "1px solid #e5e7eb", borderRadius: "12px", padding: "14px" }}>
                     <div style={pillStyle}>{surface.status ?? "unknown"}</div>
                     <h3 style={{ margin: "12px 0 8px" }}>{surface.label ?? surface.id}</h3>
@@ -180,11 +218,66 @@ export default function OwnerStatusPage() {
                 ))}
               </div>
             </section>
+          </>
+        ) : null}
 
+        {retrievalStatus ? (
+          <section style={cardStyle}>
+            <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
+              <div>
+                <p style={pillStyle}>Retrieval Health</p>
+                <h2 style={{ margin: "12px 0 8px" }}>Retrieval Status</h2>
+                <p style={{ margin: 0, color: "#4b5563" }}>
+                  Live read-only retrieval metadata from the safe retrieval status endpoint.
+                </p>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={codeStyle}>/api/hx2/retrieval-status</div>
+                <p style={{ margin: "8px 0 0", color: "#6b7280", fontSize: "13px" }}>
+                  {retrievalStatus.ip_firewall}
+                </p>
+              </div>
+            </div>
+
+            <div style={{ marginTop: "16px", ...gridStyle }}>
+              {retrievalStatus.capabilities.map((capability) => (
+                <article key={capability.id} style={{ border: "1px solid #e5e7eb", borderRadius: "12px", padding: "14px" }}>
+                  <div style={capability.status === "active" ? pillStyle : warnPillStyle}>{capability.status ?? "unknown"}</div>
+                  <h3 style={{ margin: "12px 0 8px" }}>{capability.label ?? capability.id}</h3>
+                  {capability.route ? <p><span style={codeStyle}>{capability.route}</span></p> : null}
+                  {capability.script ? <p><span style={codeStyle}>{capability.script}</span></p> : null}
+                  <p style={{ color: "#4b5563" }}>{capability.notes}</p>
+                </article>
+              ))}
+            </div>
+
+            <div style={{ marginTop: "16px", ...gridStyle }}>
+              <div style={{ border: "1px solid #e5e7eb", borderRadius: "12px", padding: "14px" }}>
+                <h3 style={{ marginTop: 0 }}>Smoke Queries</h3>
+                {retrievalStatus.smoke_queries.map((query) => (
+                  <p key={query}><span style={codeStyle}>{query}</span></p>
+                ))}
+              </div>
+              <div style={{ border: "1px solid #e5e7eb", borderRadius: "12px", padding: "14px" }}>
+                <h3 style={{ marginTop: 0 }}>Retrieval Commands</h3>
+                {retrievalStatus.recommended_commands.map((command) => (
+                  <p key={command}><span style={codeStyle}>{command}</span></p>
+                ))}
+              </div>
+            </div>
+
+            <p style={{ marginBottom: 0, color: "#6b7280", fontSize: "13px" }}>
+              Retrieval generated: {retrievalStatus.generated_at} | Mode: {retrievalStatus.mode}
+            </p>
+          </section>
+        ) : null}
+
+        {ownerStatus ? (
+          <>
             <section style={cardStyle}>
               <h2 style={{ marginTop: 0 }}>Next Commands</h2>
               <div style={gridStyle}>
-                {data.next_commands.map((item) => (
+                {ownerStatus.next_commands.map((item) => (
                   <div key={item.command} style={{ border: "1px solid #e5e7eb", borderRadius: "12px", padding: "14px" }}>
                     <div style={{ fontWeight: 700 }}>{item.label}</div>
                     <p><span style={codeStyle}>{item.command}</span></p>
@@ -195,9 +288,9 @@ export default function OwnerStatusPage() {
 
             <section style={cardStyle}>
               <h2 style={{ marginTop: 0 }}>Next Safe Step</h2>
-              <p style={{ marginBottom: 0, color: "#4b5563" }}>{data.next_safe_step}</p>
+              <p style={{ marginBottom: 0, color: "#4b5563" }}>{ownerStatus.next_safe_step}</p>
               <p style={{ marginBottom: 0, color: "#6b7280", fontSize: "13px" }}>
-                Generated: {data.generated_at} | Mode: {data.mode}
+                Owner generated: {ownerStatus.generated_at} | Mode: {ownerStatus.mode}
               </p>
             </section>
           </>

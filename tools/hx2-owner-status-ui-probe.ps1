@@ -1,9 +1,5 @@
 param(
-  [string]$Base
-)
-
-$ErrorActionPreference = "Stop"
-
+  [string]$Ba
 Write-Host ""
 Write-Host "== HX2 OWNER STATUS UI PROBE ==" -ForegroundColor Cyan
 
@@ -31,12 +27,17 @@ if ($Response.StatusCode -lt 200 -or $Response.StatusCode -ge 300) {
 
 $Content = [string]$Response.Content
 
-if ($Content -notmatch "HX2 Owner Status") {
-  throw "Owner status UI marker not found."
-}
+$RequiredMarkers = @(
+  "HX2 Owner Status",
+  "Owner Visibility Layer",
+  "Retrieval Health",
+  "/api/hx2/retrieval-status"
+)
 
-if ($Content -notmatch "Owner Visibility Layer") {
-  throw "Owner visibility marker not found."
+foreach ($Marker in $RequiredMarkers) {
+  if ($Content -notmatch [regex]::Escape($Marker)) {
+    throw "Owner status UI marker not found: $Marker"
+  }
 }
 
 Write-Host ""
