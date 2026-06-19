@@ -30,6 +30,14 @@ export async function GET() {
       purpose: "Read-only retrieval health metadata without brain logic exposure."
     },
     {
+      id: "deployment-status",
+      label: "Deployment Status Surface",
+      endpoint: "/api/hx2/deployment-status",
+      command: "npm run hx2:deployment:status",
+      status: "active",
+      purpose: "Shows safe deployment metadata and live Git SHA for stale-production checks."
+    },
+    {
       id: "retrieval-quality-smoke",
       label: "Retrieval Quality Smoke",
       command: "npm run hx2:quick:compact",
@@ -41,6 +49,7 @@ export async function GET() {
   const readiness = {
     verification_layer: "active",
     retrieval_layer: "active",
+    deployment_visibility_layer: "active",
     owner_visibility_layer: "active",
     deployment_probe_ready: true,
     ip_firewall: "safe_metadata_only_no_brain_logic"
@@ -54,6 +63,10 @@ export async function GET() {
     {
       label: "Verify dashboard",
       command: "npm run hx2:verify:status"
+    },
+    {
+      label: "Deployment status",
+      command: "npm run hx2:deployment:status"
     },
     {
       label: "Decision only",
@@ -77,6 +90,6 @@ export async function GET() {
     readiness,
     surfaces,
     next_commands,
-    next_safe_step: "Use this as the owner-facing status index before wiring UI cards or broader operations dashboards."
+    next_safe_step: "Use deployment status when production appears stale or a UI route does not match local HEAD."
   });
 }
