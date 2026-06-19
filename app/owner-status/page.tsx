@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useState, type CSSProperties } from "react";
 
 type ReadinessValue = string | boolean;
 
@@ -108,6 +108,24 @@ const codeStyle: CSSProperties = {
   fontSize: "13px"
 };
 
+const buttonStyle: CSSProperties = {
+  appearance: "none",
+  border: "1px solid #111827",
+  background: "#111827",
+  color: "#ffffff",
+  borderRadius: "10px",
+  padding: "10px 14px",
+  fontSize: "14px",
+  fontWeight: 700,
+  cursor: "pointer"
+};
+
+const disabledButtonStyle: CSSProperties = {
+  ...buttonStyle,
+  opacity: 0.6,
+  cursor: "not-allowed"
+};
+
 async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url, {
     cache: "no-store"
@@ -124,34 +142,44 @@ export default function OwnerStatusPage() {
   const [ownerStatus, setOwnerStatus] = useState<OwnerStatus | null>(null);
   const [retrievalStatus, setRetrievalStatus] = useState<RetrievalStatus | null>(null);
   const [error, setError] = useState<string>("");
+  const [lastRefreshed, setLastRefreshed] = useState<string>("");
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+
+  const loadStatus = useCallback(async (allowStateUpdate = true) => {
+    setIsRefreshing(true);
+    setError("");
+
+    try {
+      const [ownerPayload, retrievalPayload] = await Promise.all([
+        fetchJson<OwnerStatus>("/api/hx2/owner-status"),
+        fetchJson<RetrievalStatus>("/api/hx2/retrieval-status")
+      ]);
+
+      if (allowStateUpdate) {
+        setOwnerStatus(ownerPayload);
+        setRetrievalStatus(retrievalPayload);
+        setLastRefreshed(new Date().toLocaleString());
+      }
+    } catch (err) {
+      if (allowStateUpdate) {
+        setError(err instanceof Error ? err.message : "Unknown owner status error");
+      }
+    } finally {
+      if (allowStateUpdate) {
+        setIsRefreshing(false);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     let active = true;
 
-    async function loadStatus() {
-      try {
-        const [ownerPayload, retrievalPayload] = await Promise.all([
-          fetchJson<OwnerStatus>("/api/hx2/owner-status"),
-          fetchJson<RetrievalStatus>("/api/hx2/retrieval-status")
-        ]);
-
-        if (active) {
-          setOwnerStatus(ownerPayload);
-          setRetrievalStatus(retrievalPayload);
-        }
-      } catch (err) {
-        if (active) {
-          setError(err instanceof Error ? err.message : "Unknown owner status error");
-        }
-      }
-    }
-
-    loadStatus();
+    loadStatus(active);
 
     return () => {
       active = false;
     };
-  }, []);
+  }, [loadStatus]);
 
   return (
     <main style={pageStyle}>
@@ -169,6 +197,19 @@ export default function OwnerStatusPage() {
               <div style={codeStyle}>/api/hx2/owner-status</div>
               <p style={{ margin: "8px 0 0", color: "#6b7280", fontSize: "13px" }}>
                 IP firewall: safe metadata only
+              </p>
+              <div style={{ marginTop: "12px" }}>
+                <button
+                  type="button"
+                  style={isRefreshing ? disabledButtonStyle : buttonStyle}
+                  onClick={() => loadStatus(true)}
+                  disabled={isRefreshing}
+                >
+                  {isRefreshing ? "Refreshing..." : "Refresh status"}
+                </button>
+              </div>
+              <p style={{ margin: "8px 0 0", color: "#6b7280", fontSize: "13px" }}>
+                Last refreshed: {lastRefreshed || "loading"}
               </p>
             </div>
           </div>
