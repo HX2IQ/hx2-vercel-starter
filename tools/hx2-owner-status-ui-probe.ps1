@@ -41,7 +41,11 @@ $PageContent = [string]$PageResponse.Content
 $RequiredPageMarkers = @(
   "HX2 Owner Status",
   "Owner Visibility Layer",
-  "/api/hx2/owner-status"
+  "Owner Quick Links",
+  "Status Shortcuts",
+  "/api/hx2/owner-status",
+  "/api/hx2/retrieval-status",
+  "/api/hx2/deployment-status"
 )
 
 foreach ($Marker in $RequiredPageMarkers) {
@@ -99,3 +103,4 @@ Write-Host "NOTE: Cards are client-rendered after browser hydration, so this pro
 
 Write-Host ""
 Write-Host "GREEN: owner status UI probe passed" -ForegroundColor Green
+

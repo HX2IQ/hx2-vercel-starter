@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, type CSSProperties } from "react";
+import { OwnerQuickLinks } from "./_components/OwnerQuickLinks";
 
 type ReadinessValue = string | boolean;
 
@@ -231,6 +232,8 @@ export default function OwnerStatusPage() {
           </div>
         </section>
 
+        <OwnerQuickLinks />
+
         {error ? (
           <section style={cardStyle}>
             <h2 style={{ marginTop: 0 }}>Status Error</h2>
@@ -417,3 +420,4 @@ export default function OwnerStatusPage() {
     </main>
   );
 }
+
