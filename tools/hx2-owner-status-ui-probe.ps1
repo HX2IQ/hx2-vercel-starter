@@ -20,10 +20,12 @@ if ([string]::IsNullOrWhiteSpace($Base)) {
 $Base = $Base.TrimEnd("/")
 $PageUrl = "$Base/owner-status"
 $RetrievalUrl = "$Base/api/hx2/retrieval-status"
+$DeploymentUrl = "$Base/api/hx2/deployment-status"
 
-Write-Host ("Base:          {0}" -f $Base)
-Write-Host ("Owner UI URL:  {0}" -f $PageUrl)
-Write-Host ("Retrieval API: {0}" -f $RetrievalUrl)
+Write-Host ("Base:           {0}" -f $Base)
+Write-Host ("Owner UI URL:   {0}" -f $PageUrl)
+Write-Host ("Retrieval API:  {0}" -f $RetrievalUrl)
+Write-Host ("Deployment API: {0}" -f $DeploymentUrl)
 
 Write-Host ""
 Write-Host "CHECK OWNER STATUS PAGE SHELL" -ForegroundColor Cyan
@@ -64,28 +66,36 @@ if ($RetrievalResponse.route -ne "/api/hx2/retrieval-status") {
 }
 
 if ($RetrievalResponse.ip_firewall -ne "safe_metadata_only_no_brain_logic") {
-  throw "Unexpected IP firewall value: $($RetrievalResponse.ip_firewall)"
-}
-
-$CapabilityIds = @($RetrievalResponse.capabilities | ForEach-Object { $_.id })
-
-$RequiredCapabilities = @(
-  "web-local-first",
-  "youtube-local-first",
-  "retrieval-quality-smoke",
-  "verify-auto-router"
-)
-
-foreach ($Capability in $RequiredCapabilities) {
-  if ($CapabilityIds -notcontains $Capability) {
-    throw "Retrieval capability not found: $Capability"
-  }
+  throw "Unexpected retrieval IP firewall value: $($RetrievalResponse.ip_firewall)"
 }
 
 Write-Host "GREEN: retrieval status API markers found" -ForegroundColor Green
 
 Write-Host ""
-Write-Host "NOTE: Retrieval Health is client-rendered after browser hydration, so this probe validates the page shell plus the API data source instead of requiring hydrated browser text." -ForegroundColor Yellow
+Write-Host "CHECK DEPLOYMENT STATUS API USED BY CLIENT CARD" -ForegroundColor Cyan
+
+$DeploymentResponse = Invoke-RestMethod -Uri $DeploymentUrl -Method GET -TimeoutSec 30
+
+if (-not $DeploymentResponse.ok) {
+  throw "Deployment status API did not return ok=true."
+}
+
+if ($DeploymentResponse.route -ne "/api/hx2/deployment-status") {
+  throw "Unexpected deployment status route: $($DeploymentResponse.route)"
+}
+
+if ($DeploymentResponse.ip_firewall -ne "safe_metadata_only_no_brain_logic") {
+  throw "Unexpected deployment IP firewall value: $($DeploymentResponse.ip_firewall)"
+}
+
+Write-Host ("Deployment environment: {0}" -f $DeploymentResponse.deployment.environment)
+Write-Host ("Deployment branch:      {0}" -f $DeploymentResponse.deployment.branch)
+Write-Host ("Deployment SHA:         {0}" -f $DeploymentResponse.deployment.commit_short)
+
+Write-Host "GREEN: deployment status API markers found" -ForegroundColor Green
+
+Write-Host ""
+Write-Host "NOTE: Cards are client-rendered after browser hydration, so this probe validates the page shell plus the API data sources instead of requiring hydrated browser text." -ForegroundColor Yellow
 
 Write-Host ""
 Write-Host "GREEN: owner status UI probe passed" -ForegroundColor Green

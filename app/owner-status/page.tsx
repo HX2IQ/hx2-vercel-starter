@@ -52,6 +52,30 @@ type RetrievalStatus = {
   next_safe_step?: string;
 };
 
+type DeploymentStatus = {
+  ok: boolean;
+  mode: string;
+  route: string;
+  ip_firewall: string;
+  generated_at: string;
+  deployment: {
+    provider: string;
+    environment: string;
+    branch: string;
+    commit_sha: string;
+    commit_short: string;
+    commit_message: string;
+    vercel_url: string;
+    region: string;
+  };
+  checks: {
+    can_compare_live_sha_to_local_head: boolean;
+    exposes_brain_logic: boolean;
+    exposes_runtime_secrets: boolean;
+  };
+  next_safe_step?: string;
+};
+
 const pageStyle: CSSProperties = {
   minHeight: "100vh",
   padding: "32px",
@@ -105,7 +129,8 @@ const codeStyle: CSSProperties = {
   background: "#f3f4f6",
   border: "1px solid #e5e7eb",
   fontFamily: "Consolas, Monaco, monospace",
-  fontSize: "13px"
+  fontSize: "13px",
+  overflowWrap: "anywhere"
 };
 
 const buttonStyle: CSSProperties = {
@@ -141,44 +166,35 @@ async function fetchJson<T>(url: string): Promise<T> {
 export default function OwnerStatusPage() {
   const [ownerStatus, setOwnerStatus] = useState<OwnerStatus | null>(null);
   const [retrievalStatus, setRetrievalStatus] = useState<RetrievalStatus | null>(null);
+  const [deploymentStatus, setDeploymentStatus] = useState<DeploymentStatus | null>(null);
   const [error, setError] = useState<string>("");
   const [lastRefreshed, setLastRefreshed] = useState<string>("");
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
-  const loadStatus = useCallback(async (allowStateUpdate = true) => {
+  const loadStatus = useCallback(async () => {
     setIsRefreshing(true);
     setError("");
 
     try {
-      const [ownerPayload, retrievalPayload] = await Promise.all([
+      const [ownerPayload, retrievalPayload, deploymentPayload] = await Promise.all([
         fetchJson<OwnerStatus>("/api/hx2/owner-status"),
-        fetchJson<RetrievalStatus>("/api/hx2/retrieval-status")
+        fetchJson<RetrievalStatus>("/api/hx2/retrieval-status"),
+        fetchJson<DeploymentStatus>("/api/hx2/deployment-status")
       ]);
 
-      if (allowStateUpdate) {
-        setOwnerStatus(ownerPayload);
-        setRetrievalStatus(retrievalPayload);
-        setLastRefreshed(new Date().toLocaleString());
-      }
+      setOwnerStatus(ownerPayload);
+      setRetrievalStatus(retrievalPayload);
+      setDeploymentStatus(deploymentPayload);
+      setLastRefreshed(new Date().toLocaleString());
     } catch (err) {
-      if (allowStateUpdate) {
-        setError(err instanceof Error ? err.message : "Unknown owner status error");
-      }
+      setError(err instanceof Error ? err.message : "Unknown owner status error");
     } finally {
-      if (allowStateUpdate) {
-        setIsRefreshing(false);
-      }
+      setIsRefreshing(false);
     }
   }, []);
 
   useEffect(() => {
-    let active = true;
-
-    loadStatus(active);
-
-    return () => {
-      active = false;
-    };
+    loadStatus();
   }, [loadStatus]);
 
   return (
@@ -190,7 +206,7 @@ export default function OwnerStatusPage() {
               <p style={pillStyle}>Owner Visibility Layer</p>
               <h1 style={{ margin: "12px 0 8px", fontSize: "34px" }}>HX2 Owner Status</h1>
               <p style={{ margin: 0, color: "#4b5563", fontSize: "16px" }}>
-                Safe metadata-only dashboard for verify readiness, retrieval readiness, and next commands.
+                Safe metadata-only dashboard for verify readiness, retrieval readiness, deployment visibility, and next commands.
               </p>
             </div>
             <div style={{ textAlign: "right" }}>
@@ -202,7 +218,7 @@ export default function OwnerStatusPage() {
                 <button
                   type="button"
                   style={isRefreshing ? disabledButtonStyle : buttonStyle}
-                  onClick={() => loadStatus(true)}
+                  onClick={loadStatus}
                   disabled={isRefreshing}
                 >
                   {isRefreshing ? "Refreshing..." : "Refresh status"}
@@ -222,10 +238,71 @@ export default function OwnerStatusPage() {
           </section>
         ) : null}
 
-        {!ownerStatus && !retrievalStatus && !error ? (
+        {!ownerStatus && !retrievalStatus && !deploymentStatus && !error ? (
           <section style={cardStyle}>
             <h2 style={{ marginTop: 0 }}>Loading owner status...</h2>
-            <p style={{ color: "#6b7280" }}>Reading safe owner and retrieval status metadata.</p>
+            <p style={{ color: "#6b7280" }}>Reading safe owner, retrieval, and deployment status metadata.</p>
+          </section>
+        ) : null}
+
+        {deploymentStatus ? (
+          <section style={cardStyle}>
+            <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
+              <div>
+                <p style={pillStyle}>Deployment Visibility</p>
+                <h2 style={{ margin: "12px 0 8px" }}>Deployment Status</h2>
+                <p style={{ margin: 0, color: "#4b5563" }}>
+                  Live safe deployment metadata for production freshness checks.
+                </p>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={codeStyle}>/api/hx2/deployment-status</div>
+                <p style={{ margin: "8px 0 0", color: "#6b7280", fontSize: "13px" }}>
+                  {deploymentStatus.ip_firewall}
+                </p>
+              </div>
+            </div>
+
+            <div style={{ marginTop: "16px", ...gridStyle }}>
+              <div style={{ border: "1px solid #e5e7eb", borderRadius: "12px", padding: "14px" }}>
+                <div style={deploymentStatus.deployment.environment === "production" ? pillStyle : warnPillStyle}>
+                  {deploymentStatus.deployment.environment}
+                </div>
+                <h3 style={{ margin: "12px 0 8px" }}>Environment</h3>
+                <p><span style={codeStyle}>{deploymentStatus.deployment.provider}</span></p>
+              </div>
+              <div style={{ border: "1px solid #e5e7eb", borderRadius: "12px", padding: "14px" }}>
+                <div style={pillStyle}>{deploymentStatus.deployment.branch}</div>
+                <h3 style={{ margin: "12px 0 8px" }}>Branch</h3>
+                <p><span style={codeStyle}>{deploymentStatus.deployment.commit_short}</span></p>
+              </div>
+              <div style={{ border: "1px solid #e5e7eb", borderRadius: "12px", padding: "14px" }}>
+                <div style={deploymentStatus.checks.exposes_brain_logic ? warnPillStyle : pillStyle}>
+                  brain safe
+                </div>
+                <h3 style={{ margin: "12px 0 8px" }}>Exposure Check</h3>
+                <p style={{ color: "#4b5563" }}>
+                  Brain logic exposed: {String(deploymentStatus.checks.exposes_brain_logic)}
+                </p>
+                <p style={{ color: "#4b5563" }}>
+                  Secrets exposed: {String(deploymentStatus.checks.exposes_runtime_secrets)}
+                </p>
+              </div>
+              <div style={{ border: "1px solid #e5e7eb", borderRadius: "12px", padding: "14px" }}>
+                <div style={codeStyle}>{deploymentStatus.deployment.region}</div>
+                <h3 style={{ margin: "12px 0 8px" }}>Vercel URL</h3>
+                <p style={{ color: "#4b5563", overflowWrap: "anywhere" }}>
+                  {deploymentStatus.deployment.vercel_url}
+                </p>
+              </div>
+            </div>
+
+            <p style={{ color: "#4b5563" }}>
+              Commit message: {deploymentStatus.deployment.commit_message}
+            </p>
+            <p style={{ marginBottom: 0, color: "#6b7280", fontSize: "13px" }}>
+              Deployment generated: {deploymentStatus.generated_at} | Mode: {deploymentStatus.mode}
+            </p>
           </section>
         ) : null}
 
