@@ -55,8 +55,11 @@ Write-Host "Speed report fast:   npm run hx2:verify:speed:fast"
 Write-Host "Speed report full:   npm run hx2:verify:speed:full"
 Write-Host "Deployment sync:     npm run hx2:deployment:sync"
 Write-Host "Deploy sync check:   npm run hx2:deployment:sync:check"
+Write-Host "Functional audit:    npm run hx2:functional:audit"
+Write-Host "Functional local:    npm run hx2:functional:audit:local"
 
 Write-Host ""
 Write-Host "GREEN: verify status dashboard complete" -ForegroundColor Green
+
 
 
