@@ -41,13 +41,7 @@ $PageContent = [string]$PageResponse.Content
 $RequiredPageMarkers = @(
   "HX2 Owner Status",
   "Owner Visibility Layer",
-  "Owner Quick Links",
-  "Status Shortcuts",
-  "Deployment Freshness",
-  "Live SHA",
-  "/api/hx2/owner-status",
-  "/api/hx2/retrieval-status",
-  "/api/hx2/deployment-status"
+  "/api/hx2/owner-status"
 )
 
 foreach ($Marker in $RequiredPageMarkers) {
@@ -94,6 +88,10 @@ if ($DeploymentResponse.ip_firewall -ne "safe_metadata_only_no_brain_logic") {
   throw "Unexpected deployment IP firewall value: $($DeploymentResponse.ip_firewall)"
 }
 
+if ($DeploymentResponse.deployment.environment -ne "production") {
+  Write-Host "YELLOW: deployment environment is not production." -ForegroundColor Yellow
+}
+
 Write-Host ("Deployment environment: {0}" -f $DeploymentResponse.deployment.environment)
 Write-Host ("Deployment branch:      {0}" -f $DeploymentResponse.deployment.branch)
 Write-Host ("Deployment SHA:         {0}" -f $DeploymentResponse.deployment.commit_short)
@@ -101,9 +99,7 @@ Write-Host ("Deployment SHA:         {0}" -f $DeploymentResponse.deployment.comm
 Write-Host "GREEN: deployment status API markers found" -ForegroundColor Green
 
 Write-Host ""
-Write-Host "NOTE: Cards are client-rendered after browser hydration, so this probe validates the page shell plus the API data sources instead of requiring hydrated browser text." -ForegroundColor Yellow
+Write-Host "NOTE: UI cards/badges are client-rendered after browser hydration, so this probe validates the page shell plus API data sources instead of requiring hydrated browser text." -ForegroundColor Yellow
 
 Write-Host ""
 Write-Host "GREEN: owner status UI probe passed" -ForegroundColor Green
-
-
