@@ -53,7 +53,10 @@ Write-Host "Owner UI fast lane:  npm run hx2:verify:owner-ui:fast"
 Write-Host "Speed report all:    npm run hx2:verify:speed"
 Write-Host "Speed report fast:   npm run hx2:verify:speed:fast"
 Write-Host "Speed report full:   npm run hx2:verify:speed:full"
+Write-Host "Deployment sync:     npm run hx2:deployment:sync"
+Write-Host "Deploy sync check:   npm run hx2:deployment:sync:check"
 
 Write-Host ""
 Write-Host "GREEN: verify status dashboard complete" -ForegroundColor Green
+
 

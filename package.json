@@ -71,7 +71,9 @@
     "hx2:owner:status:ui": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-owner-status-ui-probe.ps1",
     "hx2:deployment:status": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-deployment-status-probe.ps1",
     "hx2:verify:owner-ui": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-owner-ui-verify.ps1",
-    "hx2:verify:owner-ui:fast": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-owner-ui-verify.ps1 -SkipTypeScript"
+    "hx2:verify:owner-ui:fast": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-owner-ui-verify.ps1 -SkipTypeScript",
+    "hx2:deployment:sync": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-deployment-sync.ps1",
+    "hx2:deployment:sync:check": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-deployment-sync.ps1 -MaxAttempts 1 -SkipOwnerProbes -AllowDirtyTree"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
