@@ -48,9 +48,12 @@ Write-Host "Decision only:       npm run hx2:verify:auto:dry"
 Write-Host "Auto run correct:    npm run hx2:verify:auto"
 Write-Host "Fast iteration:      npm run hx2:quick:fast:compact"
 Write-Host "Full safety gate:    npm run hx2:quick:compact"
+Write-Host "Owner UI lane:       npm run hx2:verify:owner-ui"
+Write-Host "Owner UI fast lane:  npm run hx2:verify:owner-ui:fast"
 Write-Host "Speed report all:    npm run hx2:verify:speed"
 Write-Host "Speed report fast:   npm run hx2:verify:speed:fast"
 Write-Host "Speed report full:   npm run hx2:verify:speed:full"
 
 Write-Host ""
 Write-Host "GREEN: verify status dashboard complete" -ForegroundColor Green
+
