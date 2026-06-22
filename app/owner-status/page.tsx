@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState, type CSSProperties } from "react";
 import { OwnerQuickLinks } from "./_components/OwnerQuickLinks";
+import { DeploymentFreshnessBadge } from "./_components/DeploymentFreshnessBadge";
 
 type ReadinessValue = string | boolean;
 
@@ -234,6 +235,8 @@ export default function OwnerStatusPage() {
 
         <OwnerQuickLinks />
 
+        <DeploymentFreshnessBadge deploymentStatus={deploymentStatus} />
+
         {error ? (
           <section style={cardStyle}>
             <h2 style={{ marginTop: 0 }}>Status Error</h2>
@@ -420,4 +423,5 @@ export default function OwnerStatusPage() {
     </main>
   );
 }
+
 

@@ -43,6 +43,8 @@ $RequiredPageMarkers = @(
   "Owner Visibility Layer",
   "Owner Quick Links",
   "Status Shortcuts",
+  "Deployment Freshness",
+  "Live SHA",
   "/api/hx2/owner-status",
   "/api/hx2/retrieval-status",
   "/api/hx2/deployment-status"
@@ -103,4 +105,5 @@ Write-Host "NOTE: Cards are client-rendered after browser hydration, so this pro
 
 Write-Host ""
 Write-Host "GREEN: owner status UI probe passed" -ForegroundColor Green
+
 
