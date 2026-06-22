@@ -75,7 +75,9 @@
     "hx2:deployment:sync": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-deployment-sync.ps1",
     "hx2:deployment:sync:check": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-deployment-sync.ps1 -MaxAttempts 1 -SkipOwnerProbes -AllowDirtyTree",
     "hx2:functional:audit": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-functional-capability-audit.ps1",
-    "hx2:functional:audit:local": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-functional-capability-audit.ps1 -SkipLive"
+    "hx2:functional:audit:local": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-functional-capability-audit.ps1 -SkipLive",
+    "hx2:master:orchestrator:probe": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-master-orchestrator-probe.ps1",
+    "hx2:master:orchestrator:probe:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-master-orchestrator-probe.ps1 -Strict"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",

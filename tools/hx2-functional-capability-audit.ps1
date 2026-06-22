@@ -195,7 +195,7 @@ $Areas = @(
     Paths=@(".\app", ".\lib", ".\tools")
     Pattern="chat-master|orchestrator|capability-planner|planner|chat/send|hx2/chat"
     RequiredLive=@()
-    RequiredProbe=""
+    RequiredProbe="hx2:master:orchestrator:probe"
   },
   [pscustomobject]@{
     Layer="KGX / memory / graph"
