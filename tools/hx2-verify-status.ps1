@@ -61,9 +61,12 @@ Write-Host "Master probe:        npm run hx2:master:orchestrator:probe"
 Write-Host "Master strict:       npm run hx2:master:orchestrator:probe:strict"
 Write-Host "KGX probe:           npm run hx2:kgx:memory:probe"
 Write-Host "KGX strict:          npm run hx2:kgx:memory:probe:strict"
+Write-Host "Worker probe:        npm run hx2:worker:execution:probe"
+Write-Host "Worker strict:       npm run hx2:worker:execution:probe:strict"
 
 Write-Host ""
 Write-Host "GREEN: verify status dashboard complete" -ForegroundColor Green
+
 
 
 

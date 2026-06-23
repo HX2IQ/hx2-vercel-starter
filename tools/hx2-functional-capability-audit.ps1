@@ -209,7 +209,7 @@ $Areas = @(
     Paths=@(".\app", ".\lib", ".\tools")
     Pattern="queue|worker|redis|upstash|execution|task|autonomous-execution"
     RequiredLive=@()
-    RequiredProbe=""
+    RequiredProbe="hx2:worker:execution:probe"
   },
   [pscustomobject]@{
     Layer="Auth / billing / accounts"
