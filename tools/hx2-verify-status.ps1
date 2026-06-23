@@ -71,6 +71,9 @@ Write-Host "Product strict:     npm run hx2:product:reality:strict"
 Write-Host "Chat E2E:           npm run hx2:chat:e2e"
 Write-Host "Chat E2E local:     npm run hx2:chat:e2e:local"
 Write-Host "Chat E2E strict:    npm run hx2:chat:e2e:strict"
+Write-Host "Answer quality:     npm run hx2:answer:quality"
+Write-Host "Answer local:       npm run hx2:answer:quality:local"
+Write-Host "Answer strict:      npm run hx2:answer:quality:strict"
 
 Write-Host ""
 Write-Host "GREEN: verify status dashboard complete" -ForegroundColor Green
