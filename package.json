@@ -101,7 +101,10 @@
     "hx2:retail:chat-master:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-master-contract-smoke.ps1 -Strict",
     "hx2:retail:consumer": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-consumer-preference-smoke.ps1",
     "hx2:retail:consumer:local": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-consumer-preference-smoke.ps1 -LocalOnly",
-    "hx2:retail:consumer:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-consumer-preference-smoke.ps1 -Strict"
+    "hx2:retail:consumer:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-consumer-preference-smoke.ps1 -Strict",
+    "hx2:retail:client": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-client-helper-smoke.ps1",
+    "hx2:retail:client:local": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-client-helper-smoke.ps1 -LocalOnly",
+    "hx2:retail:client:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-client-helper-smoke.ps1 -Strict"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",

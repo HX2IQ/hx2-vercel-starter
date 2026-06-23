@@ -83,6 +83,9 @@ Write-Host "Retail CM strict:   npm run hx2:retail:chat-master:strict"
 Write-Host "Retail consumer:    npm run hx2:retail:consumer"
 Write-Host "Consumer local:     npm run hx2:retail:consumer:local"
 Write-Host "Consumer strict:    npm run hx2:retail:consumer:strict"
+Write-Host "Retail client:      npm run hx2:retail:client"
+Write-Host "Client local:       npm run hx2:retail:client:local"
+Write-Host "Client strict:      npm run hx2:retail:client:strict"
 
 Write-Host ""
 Write-Host "GREEN: verify status dashboard complete" -ForegroundColor Green
