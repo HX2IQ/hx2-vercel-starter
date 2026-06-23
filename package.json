@@ -81,7 +81,9 @@
     "hx2:kgx:memory:probe": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-kgx-memory-graph-probe.ps1",
     "hx2:kgx:memory:probe:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-kgx-memory-graph-probe.ps1 -Strict",
     "hx2:worker:execution:probe": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-worker-execution-probe.ps1",
-    "hx2:worker:execution:probe:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-worker-execution-probe.ps1 -Strict"
+    "hx2:worker:execution:probe:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-worker-execution-probe.ps1 -Strict",
+    "hx2:auth:billing:probe": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-auth-billing-probe.ps1",
+    "hx2:auth:billing:probe:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-auth-billing-probe.ps1 -Strict"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",

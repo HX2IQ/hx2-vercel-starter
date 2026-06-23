@@ -63,9 +63,12 @@ Write-Host "KGX probe:           npm run hx2:kgx:memory:probe"
 Write-Host "KGX strict:          npm run hx2:kgx:memory:probe:strict"
 Write-Host "Worker probe:        npm run hx2:worker:execution:probe"
 Write-Host "Worker strict:       npm run hx2:worker:execution:probe:strict"
+Write-Host "Auth probe:          npm run hx2:auth:billing:probe"
+Write-Host "Auth strict:         npm run hx2:auth:billing:probe:strict"
 
 Write-Host ""
 Write-Host "GREEN: verify status dashboard complete" -ForegroundColor Green
+
 
 
 

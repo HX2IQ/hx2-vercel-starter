@@ -216,7 +216,7 @@ $Areas = @(
     Paths=@(".\app", ".\lib", ".\prisma")
     Pattern="auth|billing|stripe|subscription|account|login|session"
     RequiredLive=@()
-    RequiredProbe=""
+    RequiredProbe="hx2:auth:billing:probe"
   }
 )
 
