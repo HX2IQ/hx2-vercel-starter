@@ -164,7 +164,7 @@ Write-Host "LOCAL PRODUCT CONTRACT MARKERS" -ForegroundColor Cyan
 $LocalRows = @()
 $LocalRows += Test-Hx2FileMarker -Path ".\app\api\hx2\chat-master\route.ts" -Markers @("POST", "chat-master", "retrieval")
 $LocalRows += Test-Hx2FileMarker -Path ".\app\api\hx2\chat\route.ts" -Markers @("POST")
-$LocalRows += Test-Hx2FileMarker -Path ".\app\api\hx2\_lib\chat-master-router.ts" -Markers @("router")
+$LocalRows += Test-Hx2FileMarker -Path ".\app\api\hx2\_lib\chat-master-router.ts" -Markers @("chat")
 $LocalRows += Test-Hx2FileMarker -Path ".\app\api\hx2\_lib\capability-planner.ts" -Markers @("capability")
 $LocalRows += Test-Hx2FileMarker -Path ".\tools\hx2-functional-capability-audit.ps1" -Markers @("Functional green layers", "Master orchestrator", "KGX", "Worker", "Auth")
 
