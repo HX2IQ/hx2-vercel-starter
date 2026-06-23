@@ -59,9 +59,12 @@ Write-Host "Functional audit:    npm run hx2:functional:audit"
 Write-Host "Functional local:    npm run hx2:functional:audit:local"
 Write-Host "Master probe:        npm run hx2:master:orchestrator:probe"
 Write-Host "Master strict:       npm run hx2:master:orchestrator:probe:strict"
+Write-Host "KGX probe:           npm run hx2:kgx:memory:probe"
+Write-Host "KGX strict:          npm run hx2:kgx:memory:probe:strict"
 
 Write-Host ""
 Write-Host "GREEN: verify status dashboard complete" -ForegroundColor Green
+
 
 
 

@@ -202,7 +202,7 @@ $Areas = @(
     Paths=@(".\app", ".\lib", ".\tools", ".\prisma")
     Pattern="kgx|knowledge|memory|graph|persistent-runtime-memory"
     RequiredLive=@()
-    RequiredProbe=""
+    RequiredProbe="hx2:kgx:memory:probe"
   },
   [pscustomobject]@{
     Layer="Worker / queue / execution"
