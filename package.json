@@ -92,7 +92,10 @@
     "hx2:chat:e2e:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-live-chat-e2e-smoke.ps1 -Strict",
     "hx2:answer:quality": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-answer-quality-smoke.ps1",
     "hx2:answer:quality:local": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-answer-quality-smoke.ps1 -LocalOnly",
-    "hx2:answer:quality:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-answer-quality-smoke.ps1 -Strict"
+    "hx2:answer:quality:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-answer-quality-smoke.ps1 -Strict",
+    "hx2:retail:contract": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-contract-smoke.ps1",
+    "hx2:retail:contract:local": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-contract-smoke.ps1 -LocalOnly",
+    "hx2:retail:contract:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-contract-smoke.ps1 -Strict"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
