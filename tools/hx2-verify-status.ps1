@@ -77,6 +77,9 @@ Write-Host "Answer strict:      npm run hx2:answer:quality:strict"
 Write-Host "Retail contract:    npm run hx2:retail:contract"
 Write-Host "Retail local:       npm run hx2:retail:contract:local"
 Write-Host "Retail strict:      npm run hx2:retail:contract:strict"
+Write-Host "Retail chat-master: npm run hx2:retail:chat-master"
+Write-Host "Retail CM local:    npm run hx2:retail:chat-master:local"
+Write-Host "Retail CM strict:   npm run hx2:retail:chat-master:strict"
 
 Write-Host ""
 Write-Host "GREEN: verify status dashboard complete" -ForegroundColor Green
