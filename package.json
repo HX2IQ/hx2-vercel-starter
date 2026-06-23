@@ -86,7 +86,10 @@
     "hx2:auth:billing:probe:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-auth-billing-probe.ps1 -Strict",
     "hx2:product:reality": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-product-reality-smoke.ps1",
     "hx2:product:reality:local": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-product-reality-smoke.ps1 -LocalOnly",
-    "hx2:product:reality:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-product-reality-smoke.ps1 -Strict"
+    "hx2:product:reality:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-product-reality-smoke.ps1 -Strict",
+    "hx2:chat:e2e": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-live-chat-e2e-smoke.ps1",
+    "hx2:chat:e2e:local": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-live-chat-e2e-smoke.ps1 -LocalOnly",
+    "hx2:chat:e2e:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-live-chat-e2e-smoke.ps1 -Strict"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
