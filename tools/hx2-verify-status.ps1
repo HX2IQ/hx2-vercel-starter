@@ -65,6 +65,9 @@ Write-Host "Worker probe:        npm run hx2:worker:execution:probe"
 Write-Host "Worker strict:       npm run hx2:worker:execution:probe:strict"
 Write-Host "Auth probe:          npm run hx2:auth:billing:probe"
 Write-Host "Auth strict:         npm run hx2:auth:billing:probe:strict"
+Write-Host "Product reality:    npm run hx2:product:reality"
+Write-Host "Product local:      npm run hx2:product:reality:local"
+Write-Host "Product strict:     npm run hx2:product:reality:strict"
 
 Write-Host ""
 Write-Host "GREEN: verify status dashboard complete" -ForegroundColor Green
