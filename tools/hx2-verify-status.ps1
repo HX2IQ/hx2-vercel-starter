@@ -92,6 +92,8 @@ Write-Host "UI proof strict:    npm run hx2:retail:ui-proof:strict"
 Write-Host "Main chat adapter:  npm run hx2:main-chat:adapter"
 Write-Host "Adapter local:      npm run hx2:main-chat:adapter:local"
 Write-Host "Adapter strict:     npm run hx2:main-chat:adapter:strict"
+Write-Host "Main chat inspect:  npm run hx2:main-chat:inspect"
+Write-Host "Inspect strict:     npm run hx2:main-chat:inspect:strict"
 
 Write-Host ""
 Write-Host "GREEN: verify status dashboard complete" -ForegroundColor Green

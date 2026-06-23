@@ -110,7 +110,9 @@
     "hx2:retail:ui-proof:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-ui-proof-smoke.ps1 -Strict",
     "hx2:main-chat:adapter": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-main-chat-ui-adapter-smoke.ps1",
     "hx2:main-chat:adapter:local": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-main-chat-ui-adapter-smoke.ps1 -LocalOnly",
-    "hx2:main-chat:adapter:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-main-chat-ui-adapter-smoke.ps1 -Strict"
+    "hx2:main-chat:adapter:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-main-chat-ui-adapter-smoke.ps1 -Strict",
+    "hx2:main-chat:inspect": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-main-chat-ui-wiring-inspector.ps1",
+    "hx2:main-chat:inspect:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-main-chat-ui-wiring-inspector.ps1 -Strict"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
