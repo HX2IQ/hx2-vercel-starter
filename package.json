@@ -125,7 +125,10 @@
     "hx2:chat-endpoints:cleanup": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-direct-chat-endpoint-cleanup-report.ps1",
     "hx2:chat-endpoints:cleanup:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-direct-chat-endpoint-cleanup-report.ps1 -Strict",
     "hx2:chat-endpoints:allowlist": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-direct-chat-endpoint-allowlist-guard.ps1",
-    "hx2:chat-endpoints:allowlist:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-direct-chat-endpoint-allowlist-guard.ps1 -Strict"
+    "hx2:chat-endpoints:allowlist:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-direct-chat-endpoint-allowlist-guard.ps1 -Strict",
+    "hx2:retail-chat:verify": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-verification-bundle.ps1",
+    "hx2:retail-chat:verify:local": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-verification-bundle.ps1 -LocalOnly",
+    "hx2:retail-chat:verify:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-verification-bundle.ps1 -Strict"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
