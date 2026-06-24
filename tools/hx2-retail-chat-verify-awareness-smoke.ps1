@@ -89,6 +89,31 @@ function Test-Hx2NoInternalLeak {
 }
 
 Write-Host ""
+
+function Invoke-Hx2JsonWithRetry {
+  param(
+    [string]$Uri,
+    [int]$Attempts = 3,
+    [int]$TimeoutSec = 75
+  )
+
+  $LastError = ""
+
+  for ($Try = 1; $Try -le $Attempts; $Try++) {
+    try {
+      Write-Host ("GET attempt {0}/{1}: {2}" -f $Try, $Attempts, $Uri)
+      return Invoke-RestMethod -Uri $Uri -Method GET -TimeoutSec $TimeoutSec
+    } catch {
+      $LastError = $_.Exception.Message
+
+      if ($Try -lt $Attempts) {
+        Start-Sleep -Seconds (5 * $Try)
+      }
+    }
+  }
+
+  throw "GET failed after $Attempts attempts: $LastError"
+}
 Write-Host "LOCAL AWARENESS CHECKS" -ForegroundColor Cyan
 
 $Rows = @()
@@ -149,7 +174,7 @@ if ($LocalOnly) {
   $LiveRows += New-Hx2Row -Check "GET retail chat verify status" -Status "SKIPPED" -Detail "local-only mode"
 } else {
   try {
-    $Result = Invoke-RestMethod -Uri "$Base/api/hx2/retail-chat-verify-status" -Method GET -TimeoutSec 30
+    $Result = Invoke-Hx2JsonWithRetry -Uri "$Base/api/hx2/retail-chat-verify-status" -Attempts 3 -TimeoutSec 75
     $Json = $Result | ConvertTo-Json -Depth 20
     $Leak = Test-Hx2NoInternalLeak -Text $Json
 
@@ -212,3 +237,4 @@ if ($Status) {
 
 Write-Host ""
 Write-Host "GREEN: retail chat verify awareness smoke complete" -ForegroundColor Green
+
