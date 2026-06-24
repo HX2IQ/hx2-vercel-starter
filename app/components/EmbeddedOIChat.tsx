@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { sendHx2MainChatUiMessage } from "../../lib/hx2-main-chat-ui-adapter";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -52,36 +53,21 @@ export default function EmbeddedOIChat({
     setLoading(true);
 
     try {
-      const res = await fetch("/api/hx2/chat-master", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_query: text,
-          mode_hint: modeHint,
-          preferred_node: nodeHint,
-          node_hint: nodeHint,
-          source: "healthoi",
-          conversation_context: [
-            {
-              role: "system",
-              content:
-                "User is asking inside the embedded HealthOI chat. This page is HealthOI, so health and wellness questions should prefer AH3, but route normally based on the actual user question."
-            },
-            ...nextMessages.map((m) => ({
-              role: m.role,
-              content: m.content
-            }))
-          ]
-        })
+      const adapterResult = await sendHx2MainChatUiMessage({
+        message: [
+          "Embedded HealthOI chat context.",
+          `Mode hint: ${modeHint}.`,
+          `Preferred node: ${nodeHint}.`,
+          `User question: ${text}`
+        ].join("\n"),
+        requestId: `hx2-embedded-healthoi-${Date.now()}`
       });
-
-      const data = await res.json();
 
       setMessages([
         ...nextMessages,
         {
           role: "assistant",
-          content: data?.answer || "No answer returned."
+          content: adapterResult.answer || "No answer returned."
         }
       ]);
     } catch {

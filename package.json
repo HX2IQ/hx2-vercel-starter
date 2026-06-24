@@ -118,7 +118,10 @@
     "hx2:main-chat:ui-wiring:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-main-chat-ui-wiring-smoke.ps1 -Strict",
     "hx2:main-chat:user-flow": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-main-chat-user-flow-smoke.ps1",
     "hx2:main-chat:user-flow:local": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-main-chat-user-flow-smoke.ps1 -LocalOnly",
-    "hx2:main-chat:user-flow:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-main-chat-user-flow-smoke.ps1 -Strict"
+    "hx2:main-chat:user-flow:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-main-chat-user-flow-smoke.ps1 -Strict",
+    "hx2:embedded-chat:wiring": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-embedded-chat-wiring-smoke.ps1",
+    "hx2:embedded-chat:wiring:local": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-embedded-chat-wiring-smoke.ps1 -LocalOnly",
+    "hx2:embedded-chat:wiring:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-embedded-chat-wiring-smoke.ps1 -Strict"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
