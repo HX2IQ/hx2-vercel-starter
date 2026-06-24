@@ -100,6 +100,7 @@ if (
   $BundleText -match "HX2 RETAIL CHAT VERIFICATION BUNDLE" -and
   $BundleText -match "hx2:main-chat:user-flow" -and
   $BundleText -match "hx2:embedded-chat:wiring" -and
+  $BundleText -match "hx2:retail-chat:negative" -and
   $BundleText -match "hx2:chat-endpoints:allowlist" -and
   $BundleText -match "hx2:verify:auto"
 ) {
