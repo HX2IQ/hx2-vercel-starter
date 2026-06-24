@@ -43,6 +43,16 @@ export async function GET() {
       command: "npm run hx2:quick:compact",
       status: "active",
       purpose: "Validates current retrieval quality behavior for XRP, DTCC, and XLM."
+    },
+    {
+      id: "retail-chat-verify-bundle",
+      label: "Retail Chat Verification Bundle",
+      endpoint: "/api/hx2/retail-chat-verify-status",
+      command: "npm run hx2:retail-chat:verify",
+      status: "active",
+      purpose: "Runs the 10-check retail chat safety preflight: UI wiring, embedded chat, negative/error-state, browser-prep, endpoint guards, E2E, answer quality, and auto verify.",
+      checks: 10,
+      safety_posture: "guarded_preflight_ready"
     }
   ];
 
@@ -79,6 +89,10 @@ export async function GET() {
     {
       label: "Retrieval status",
       command: "npm run hx2:retrieval:status"
+    },
+    {
+      label: "Retail chat verify",
+      command: "npm run hx2:retail-chat:verify"
     }
   ];
 
@@ -93,3 +107,4 @@ export async function GET() {
     next_safe_step: "Use deployment status when production appears stale or a UI route does not match local HEAD."
   });
 }
+
