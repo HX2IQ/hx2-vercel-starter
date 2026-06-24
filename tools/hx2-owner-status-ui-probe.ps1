@@ -41,7 +41,10 @@ $PageContent = [string]$PageResponse.Content
 $RequiredPageMarkers = @(
   "HX2 Owner Status",
   "Owner Visibility Layer",
-  "/api/hx2/owner-status"
+  "/api/hx2/owner-status",
+  "retail-chat-verify-bundle",
+  "npm run hx2:retail-chat:verify",
+  "guarded_preflight_ready"
 )
 
 foreach ($Marker in $RequiredPageMarkers) {
@@ -103,3 +106,4 @@ Write-Host "NOTE: UI cards/badges are client-rendered after browser hydration, s
 
 Write-Host ""
 Write-Host "GREEN: owner status UI probe passed" -ForegroundColor Green
+

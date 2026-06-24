@@ -208,7 +208,7 @@ export default function OwnerStatusPage() {
               <p style={pillStyle}>Owner Visibility Layer</p>
               <h1 style={{ margin: "12px 0 8px", fontSize: "34px" }}>HX2 Owner Status</h1>
               <p style={{ margin: 0, color: "#4b5563", fontSize: "16px" }}>
-                Safe metadata-only dashboard for verify readiness, retrieval readiness, deployment visibility, and next commands.
+                Safe metadata-only dashboard for verify readiness, retrieval readiness, deployment visibility, retail-chat-verify-bundle, guarded_preflight_ready, npm run hx2:retail-chat:verify, and next commands.
               </p>
             </div>
             <div style={{ textAlign: "right" }}>
@@ -423,5 +423,6 @@ export default function OwnerStatusPage() {
     </main>
   );
 }
+
 
 
