@@ -15,12 +15,13 @@ export async function GET() {
       local_command: "npm run hx2:retail-chat:verify:local",
       strict_command: "npm run hx2:retail-chat:verify:strict",
       purpose:
-        "Runs the retail-safe chat verification bundle, including negative/error-state checks, before or after chat/UI changes.",
+        "Runs the retail-safe chat verification bundle, including negative/error-state checks and browser-surface readiness, before or after chat/UI changes.",
       checks: [
         "main_chat_user_flow",
         "main_chat_ui_wiring",
         "embedded_healthoi_chat_wiring",
         "retail_chat_negative_error_state_smoke",
+        "retail_chat_browser_proof_prep",
         "direct_endpoint_cleanup_report",
         "direct_endpoint_allowlist_guard",
         "chat_e2e_safe_preview",

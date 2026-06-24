@@ -93,6 +93,10 @@ $Checks = @(
     Script = Resolve-Hx2Script -Base "hx2:retail-chat:negative" -Local "hx2:retail-chat:negative:local" -StrictName "hx2:retail-chat:negative:strict"
   },
   @{
+    Label = "Retail chat browser-proof prep"
+    Script = Resolve-Hx2Script -Base "hx2:retail-chat:browser-prep" -Local "hx2:retail-chat:browser-prep:local" -StrictName "hx2:retail-chat:browser-prep:strict"
+  },
+  @{
     Label = "Direct endpoint cleanup report"
     Script = Resolve-Hx2Script -Base "hx2:chat-endpoints:cleanup" -Local "hx2:chat-endpoints:cleanup" -StrictName "hx2:chat-endpoints:cleanup:strict"
   },
@@ -135,7 +139,7 @@ Write-Host ""
   Red = "$Red / $Total"
   LocalOnly = [bool]$LocalOnly
   Strict = [bool]$Strict
-  Meaning = "This bundle verifies the retail-safe chat path, negative/error handling, direct-endpoint regression guards, E2E chat safety, answer quality, and repo verify posture."
+  Meaning = "This bundle verifies the retail-safe chat path, negative/error handling, browser-surface readiness, direct-endpoint regression guards, E2E chat safety, answer quality, and repo verify posture."
   Next = "Run this bundle before future chat/UI changes and after deployment when chat behavior changes."
 } | Format-List
 
