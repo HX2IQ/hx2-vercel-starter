@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import "./chat.css?v=18";
+import { sendHx2MainChatUiMessage } from "../../lib/hx2-main-chat-ui-adapter";
 
 type Role = "user" | "assistant" | "system";
 type MsgSource = {
@@ -487,118 +488,47 @@ export default function ChatClient() {
     abortRef.current = controller;
 
     try {
-      const hdrs: Record<string, string> = {
-        "Content-Type": "application/json",
-        "x-hx2-stream": "1",
-      };
-      if (sessionId) hdrs["x-hx2-session"] = sessionId;
-
-      const res = await fetch("/api/hx2/chat", {
-        method: "POST",
-        headers: hdrs,
-        body: JSON.stringify({
-          message: text,
-          stream: true,
-          conversation_context: messages.slice(-8).map((m) => ({
-            role: m.role,
-            content: m.content
-          }))
-        }),
-        signal: controller.signal,
+      const adapterResult = await sendHx2MainChatUiMessage({
+        message: text,
+        requestId: `hx2-main-chat-ui-${assistantId}`
       });
 
-      if (!res.ok || !res.body) {
-        const raw = await res.json().catch(() => ({}));
-        const extractedSources = extractSourcesFromPayload(raw);
-        setLastRaw({ status: res.status, body: raw });
-
-        setActiveMessages((m) =>
-          m.map((msg) =>
-            msg.id === assistantId
-              ? {
-                  ...msg,
-                  content: raw?.error || raw?.reply || "Request failed.",
-                  sources: extractedSources,
-                }
-              : msg
-          )
-        );
+      if (controller.signal.aborted) {
         return;
       }
 
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-      let finalReply = "";
-      let finalData: any = null;
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const parts = buffer.split("\n\n");
-        buffer = parts.pop() || "";
-
-        for (const part of parts) {
-          const line = part.split("\n").find((x) => x.startsWith("data: "));
-          if (!line) continue;
-
-          let evt: any = null;
-          try {
-            evt = JSON.parse(line.slice(6));
-          } catch {
-            continue;
-          }
-
-          if (evt?.type === "delta") {
-            finalReply += String(evt.delta || "");
-            setActiveMessages((m) =>
-              m.map((msg) =>
-                msg.id === assistantId ? { ...msg, content: finalReply } : msg
-              )
-            );
-          }
-
-          if (evt?.type === "done") {
-            finalReply = String(evt.reply || finalReply || "");
-            finalData = evt?.data || null;
-
-            setActiveMessages((m) =>
-              m.map((msg) =>
-                msg.id === assistantId ? { ...msg, content: finalReply || "No reply." } : msg
-              )
-            );
-          }
-
-          if (evt?.type === "error") {
-            const errText = String(evt.error || "Request failed.");
-            finalReply = errText;
-
-            setActiveMessages((m) =>
-              m.map((msg) =>
-                msg.id === assistantId ? { ...msg, content: errText } : msg
-              )
-            );
-          }
-        }
-      }
+      const finalReply = adapterResult.answer || "No reply.";
 
       const finalPayload = {
         status: 200,
         body: {
           reply: finalReply,
-          data: finalData,
-        },
+          answer: finalReply,
+          data: {
+            main_chat_ui_adapter: {
+              adapter_version: adapterResult.adapter_version,
+              preferred_client: adapterResult.preferred_client,
+              preferred_contract: adapterResult.preferred_contract,
+              participation: adapterResult.participation,
+              warnings: adapterResult.warnings
+            },
+            retail_contract: adapterResult.envelope?.contract ?? null
+          },
+          sources: []
+        }
       };
 
       setLastRaw(finalPayload);
 
-      const extractedSources = extractSourcesFromPayload(finalPayload.body);
-
       setActiveMessages((m) =>
         m.map((msg) =>
-          msg.id === assistantId ? { ...msg, sources: extractedSources } : msg
+          msg.id === assistantId
+            ? {
+                ...msg,
+                content: finalReply,
+                sources: []
+              }
+            : msg
         )
       );
     } catch (e: any) {
@@ -618,7 +548,6 @@ export default function ChatClient() {
       requestAnimationFrame(() => inputRef.current?.focus());
     }
   }
-
   function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
