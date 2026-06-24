@@ -104,3 +104,9 @@ Write-Host "GREEN: verify status dashboard complete" -ForegroundColor Green
 
 
 
+
+Write-Host ""
+Write-Host "Retail chat verify:        npm run hx2:retail-chat:verify"
+Write-Host "Retail chat verify local:  npm run hx2:retail-chat:verify:local"
+Write-Host "Retail chat verify strict: npm run hx2:retail-chat:verify:strict"
+Write-Host "Retail chat status:        /api/hx2/retail-chat-verify-status"
