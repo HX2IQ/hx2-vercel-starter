@@ -134,7 +134,10 @@
     "hx2:retail-chat:verify:awareness:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-verify-awareness-smoke.ps1 -Strict",
     "hx2:retail-chat:negative": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-negative-smoke.ps1",
     "hx2:retail-chat:negative:local": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-negative-smoke.ps1 -LocalOnly",
-    "hx2:retail-chat:negative:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-negative-smoke.ps1 -Strict"
+    "hx2:retail-chat:negative:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-negative-smoke.ps1 -Strict",
+    "hx2:retail-chat:browser-prep": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-browser-proof-prep.ps1",
+    "hx2:retail-chat:browser-prep:local": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-browser-proof-prep.ps1 -LocalOnly",
+    "hx2:retail-chat:browser-prep:strict": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-retail-chat-browser-proof-prep.ps1 -Strict"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
