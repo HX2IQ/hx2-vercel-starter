@@ -1,0 +1,58 @@
+[
+  {
+    "path": "app\\api\\hx2\\_lib\\retail-chat-consumer-preference.ts",
+    "allowedEndpoints": ["/api/hx2/chat-master", "/api/hx2/chat"],
+    "allowedUsageKinds": ["text_reference"],
+    "allowedSurfaceClass": "api_server_route",
+    "reason": "Consumer preference documents deprecated/direct endpoints but does not expose a user-facing fetch."
+  },
+  {
+    "path": "app\\api\\hx2\\chat\\route.ts",
+    "allowedEndpoints": ["/api/hx2/chat-master"],
+    "allowedUsageKinds": ["direct_fetch"],
+    "allowedSurfaceClass": "api_server_route",
+    "reason": "Server route may bridge internally; not a public UI direct fetch."
+  },
+  {
+    "path": "app\\api\\hx2\\chat-master-status\\route.ts",
+    "allowedEndpoints": ["/api/hx2/chat-master"],
+    "allowedUsageKinds": ["text_reference"],
+    "allowedSurfaceClass": "api_server_route",
+    "reason": "Status metadata reference."
+  },
+  {
+    "path": "app\\api\\hx2\\orchestrator-status\\route.ts",
+    "allowedEndpoints": ["/api/hx2/chat-master"],
+    "allowedUsageKinds": ["text_reference"],
+    "allowedSurfaceClass": "api_server_route",
+    "reason": "Orchestrator readiness metadata reference."
+  },
+  {
+    "path": "app\\api\\hx2\\retail-chat-master-contract-preview\\route.ts",
+    "allowedEndpoints": ["/api/hx2/chat-master"],
+    "allowedUsageKinds": ["text_reference", "direct_fetch"],
+    "allowedSurfaceClass": "api_server_route",
+    "reason": "Retail contract bridge may reference chat-master internally while returning retail-safe contract output."
+  },
+  {
+    "path": "app\\api\\owner\\chat-master-health\\route.ts",
+    "allowedEndpoints": ["/api/hx2/chat-master"],
+    "allowedUsageKinds": ["direct_fetch"],
+    "allowedSurfaceClass": "api_server_route",
+    "reason": "Owner-only health diagnostic route."
+  },
+  {
+    "path": "app\\owner-console\\_components\\chat-master-panels.tsx",
+    "allowedEndpoints": ["/api/hx2/chat-master"],
+    "allowedUsageKinds": ["text_reference", "link_reference"],
+    "allowedSurfaceClass": "owner_admin_diagnostic",
+    "reason": "Owner/admin diagnostic text and panel references."
+  },
+  {
+    "path": "app\\owner-console\\page.tsx",
+    "allowedEndpoints": ["/api/hx2/chat-master"],
+    "allowedUsageKinds": ["status_or_remediation_text", "text_reference", "link_reference"],
+    "allowedSurfaceClass": "owner_admin_diagnostic",
+    "reason": "Owner/admin remediation text reference."
+  }
+]
