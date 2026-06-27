@@ -145,7 +145,8 @@
     "hx2:db:restore-test": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-db-restore-test.ps1",
     "hx2:db:schedule": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-db-install-scheduled-backup.ps1",
     "hx2:db:schedule:status": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-db-scheduled-backup-status.ps1",
-    "hx2:db:health": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-db-backup-health.ps1"
+    "hx2:db:health": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-db-backup-health.ps1",
+    "hx2:recovery:snapshot": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-recovery-snapshot.ps1"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
