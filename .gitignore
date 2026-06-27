@@ -123,3 +123,4 @@ tools/_verify-runs/
 .env.vercel.development
 vercel-database-url.tmp
 .env.restore-test
+tools/_phase-closeouts/
