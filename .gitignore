@@ -122,3 +122,4 @@ tools/_verify-runs/
 .env.vercel.preview
 .env.vercel.development
 vercel-database-url.tmp
+.env.restore-test
