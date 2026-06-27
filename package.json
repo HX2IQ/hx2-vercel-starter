@@ -142,7 +142,9 @@
     "hx2:owner:retail-chat-card:local": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-owner-retail-chat-card-smoke.ps1 -LocalOnly",
     "hx2:db:inventory": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-db-inventory.ps1",
     "hx2:db:backup": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-db-backup.ps1",
-    "hx2:db:restore-test": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-db-restore-test.ps1"
+    "hx2:db:restore-test": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-db-restore-test.ps1",
+    "hx2:db:schedule": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-db-install-scheduled-backup.ps1",
+    "hx2:db:schedule:status": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-db-scheduled-backup-status.ps1"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
