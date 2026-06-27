@@ -149,7 +149,8 @@
     "hx2:recovery:snapshot": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-recovery-snapshot.ps1",
     "hx2:recovery:doctor": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-recovery-doctor.ps1",
     "hx2:backup:mirror": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-backup-mirror.ps1",
-    "hx2:backup:mirror:dry": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-backup-mirror.ps1 -DryRun"
+    "hx2:backup:mirror:dry": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-backup-mirror.ps1 -DryRun",
+    "hx2:recovery:daily": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-daily-resilience-job.ps1"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
