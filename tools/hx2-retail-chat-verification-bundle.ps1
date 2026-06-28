@@ -117,6 +117,10 @@ $Checks = @(
     Script = Resolve-Hx2Script -Base "hx2:chat-master:metadata" -Local "hx2:chat-master:metadata" -StrictName "hx2:chat-master:metadata"
   },
   @{
+    Label = "Master route shell guard"
+    Command = "npm run hx2:master-route:shell"
+  },
+  @{
     Label = "Direct intelligence regression"
     Script = Resolve-Hx2Script -Base "hx2:direct-intel:smoke" -Local "hx2:direct-intel:smoke" -StrictName "hx2:direct-intel:smoke"
   },
