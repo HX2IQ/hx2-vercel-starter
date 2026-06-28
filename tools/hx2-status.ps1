@@ -27,3 +27,19 @@ if (Test-Path ".\tools\hx2-last-benchmark.json") {
 Write-Host ""
 Write-Host "== Git Status =="
 git status --short
+
+Write-Host ""
+Write-Host "== DEV2 Sprint Compiler Workflow =="
+if (Test-Path ".\tools\dev2-feature-pack-index.ps1") {
+  Write-Host "GREEN: dev2-feature-pack-index.ps1"
+} else {
+  Write-Host "RED: missing dev2-feature-pack-index.ps1"
+}
+
+if (Test-Path ".\tools\dev2-sprint-compiler-workflow.ps1") {
+  Write-Host "GREEN: dev2-sprint-compiler-workflow.ps1"
+} else {
+  Write-Host "RED: missing dev2-sprint-compiler-workflow.ps1"
+}
+
+Write-Host "Next command: npm run hx2:exec:compiler"
