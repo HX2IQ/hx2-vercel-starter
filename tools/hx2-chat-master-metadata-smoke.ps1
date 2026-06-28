@@ -1,9 +1,9 @@
-$ErrorActionPreference = "Stop"
-
 param(
   [string]$Base = "https://optinodeiq.com",
   [switch]$LocalOnly
 )
+
+$ErrorActionPreference = "Stop"
 
 if ($LocalOnly) {
   $Base = "http://localhost:3000"
