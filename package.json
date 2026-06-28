@@ -153,7 +153,10 @@
     "hx2:recovery:daily": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-daily-resilience-job.ps1",
     "hx2:db:restore-target": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-db-restore-to-target.ps1",
     "hx2:db:restore-target:dry": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-db-restore-to-target.ps1 -DryRun",
-    "hx2:phase13:closeout": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-phase13-retail-chat-closeout.ps1"
+    "hx2:phase13:closeout": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-phase13-retail-chat-closeout.ps1",
+    "dev2:feature:index": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-feature-pack-index.ps1",
+    "dev2:sprint:compiler": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-sprint-compiler-workflow.ps1",
+    "sprint:compiler": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-sprint-compiler-workflow.ps1"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",

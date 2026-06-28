@@ -36,4 +36,5 @@ if (Test-Path ".\tools\hx2-last-benchmark.json") {
 
 Write-Host ""
 Write-Host "NEXT MOVE:"
-Write-Host "System clean. Build roadmap feature or run npm run hx2:exec"
+Write-Host "System clean. Run npm run dev2:sprint:compiler to select/compile the next roadmap feature, or npm run hx2:exec for legacy executor."
+
