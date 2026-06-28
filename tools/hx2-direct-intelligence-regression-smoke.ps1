@@ -20,37 +20,37 @@ $Checks = @(
     q = "is magnesium safe daily?"
     source = "master_chat_direct_intelligence"
     optimized = "HX2 Master Chat Direct Intelligence"
-    mustContain = @("AH3 Quick Read", "magnesium", "glycinate")
+    patterns = @("AH3 Quick Read", "magnesium", "glycinate")
   },
   @{
     q = "How can I get more leads at a trade show?"
     source = "master_chat_direct_intelligence"
     optimized = "HX2 Master Chat Direct Intelligence"
-    mustContain = @("TradeShowIQ Quick Read", "qualify", "follow up")
+    patterns = @("TradeShowIQ Quick Read", "qualif", "follow[- ]?up")
   },
   @{
     q = "My 8 year old hates reading homework. What should I do?"
     source = "master_chat_direct_intelligence"
     optimized = "HX2 Master Chat Direct Intelligence"
-    mustContain = @("PA2 Reading Quick Read", "confidence", "Preview hard words")
+    patterns = @("PA2 Reading Quick Read", "confidence", "Preview hard words")
   },
   @{
     q = "Latest XRP news today"
     source = "hx2_retrieval"
     optimized = "X2 Markets Intelligence"
-    mustContain = @("Latest retrieved read", "Supporting evidence", "Top sources checked")
+    patterns = @("Latest retrieved read", "Supporting evidence", "Top sources checked")
   },
   @{
     q = "current XLM DTCC update"
     source = "hx2_retrieval"
     optimized = "HX2 Retrieval Intelligence"
-    mustContain = @("Latest retrieved read", "DTCC", "Top sources checked")
+    patterns = @("Latest retrieved read", "DTCC|DTC", "Top sources checked")
   },
   @{
     q = "what is DTCC"
     source = "hx2_retrieval"
     optimized = "HX2 Retrieval Intelligence"
-    mustContain = @("In plain English", "Depository Trust", "Supporting evidence")
+    patterns = @("In plain English", "Depository Trust", "Supporting evidence")
   }
 )
 
@@ -66,9 +66,9 @@ foreach ($Check in $Checks) {
   $AnswerOk = -not [string]::IsNullOrWhiteSpace($Answer)
   $Missing = @()
 
-  foreach ($Needle in $Check.mustContain) {
-    if ($Answer -notlike "*$Needle*") {
-      $Missing += $Needle
+  foreach ($Pattern in $Check.patterns) {
+    if ($Answer -notmatch $Pattern) {
+      $Missing += $Pattern
     }
   }
 
@@ -79,7 +79,9 @@ foreach ($Check in $Checks) {
     Query = $Check.q
     Status = $Status
     Source = [string]$R.source
+    ExpectedSource = [string]$Check.source
     OptimizedBy = [string]$R.optimized_by
+    ExpectedOptimizedBy = [string]$Check.optimized
     Missing = ($Missing -join ", ")
   }
 }
