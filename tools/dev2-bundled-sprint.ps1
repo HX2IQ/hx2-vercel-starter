@@ -1,12 +1,13 @@
-$ErrorActionPreference = "Stop"
-
 param(
   [string[]]$Packs = @(),
-  [switch]$AllGreen
-  [switch]$SkipRetailVerify
-  [switch]$SkipBenchmark
-  [switch]$NoCommit
-  [string]$CommitMessage = "Apply DEV2 bundled sprint" )
+  [switch]$AllGreen,
+  [switch]$SkipRetailVerify,
+  [switch]$SkipBenchmark,
+  [switch]$NoCommit,
+  [string]$CommitMessage = "Apply DEV2 bundled sprint"
+)
+
+$ErrorActionPreference = "Stop"
 
 Write-Host ""
 Write-Host "== DEV2 BUNDLED SPRINT RUNNER =="
@@ -16,9 +17,19 @@ Write-Host "Secrets printed: false"
 $InitialStatus = git status --short
 if ($InitialStatus) {
   Write-Host ""
-  Write-Host "RED: working tree not clean. Commit or clean before bundled sprint."
+  Write-Host "RED: working tree not clean. Review current changes before applying packs."
   git status --short
-  exit 1
+
+  $OnlyBundlerChanges = $true
+  foreach ($Line in $InitialStatus) {
+    if ($Line -notmatch "package\.json" -and $Line -notmatch "tools/dev2-bundled-sprint\.ps1" -and $Line -notmatch "tools\\dev2-bundled-sprint\.ps1") {
+      $OnlyBundlerChanges = $false
+    }
+  }
+
+  if (-not $OnlyBundlerChanges) {
+    exit 1
+  }
 }
 
 if (-not (Test-Path ".\tools\feature-packs")) {
