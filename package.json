@@ -159,7 +159,9 @@
     "sprint:compiler": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-sprint-compiler-workflow.ps1",
     "dev2:feature-pack:index": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-feature-pack-index.ps1",
     "hx2:exec:compiler": "npm run dev2:sprint:compiler",
-    "hx2:exec:legacy": "powershell -ExecutionPolicy Bypass -File tools/hx2-exec.ps1"
+    "hx2:exec:legacy": "powershell -ExecutionPolicy Bypass -File tools/hx2-exec.ps1",
+    "dev2:bundle": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-bundled-sprint.ps1",
+    "dev2:bundle:all-green": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-bundled-sprint.ps1 -AllGreen"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
