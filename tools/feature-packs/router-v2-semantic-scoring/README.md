@@ -1,4 +1,4 @@
-﻿# DEV2 Feature Pack: Router v2 Semantic Scoring
+﻿# DEV2 Feature Pack: router-v2-semantic-scoring
 
 ## Purpose
 TODO: Define the feature purpose.
@@ -10,10 +10,10 @@ TODO: List files.
 TODO: Add exact PowerShell patch steps.
 
 ## Smoke test
-npm run hx2:planner; npm run hx2:smoke
+manual
 
 ## Commit
-Add router v2 semantic scoring
+Add router-v2-semantic-scoring
 
 ## Status
 Draft
