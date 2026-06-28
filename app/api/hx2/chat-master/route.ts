@@ -1069,11 +1069,25 @@ export async function POST(req: NextRequest) {
       retrieval
     });
 
+    const answerText = String(answer || "");
+
+    const retrievalAnswerActive =
+      /Latest retrieved read:|Supporting evidence:|Top sources checked:|Optimized by HX2 Retrieval Intelligence|Optimized by X2 Markets Intelligence/.test(answerText);
+
+    const responseSource =
+      retrievalAnswerActive ? "hx2_retrieval" : "hx2_chat_master";
+
+    const responseOptimizedBy =
+      retrievalAnswerActive
+        ? (/X2 Markets Intelligence/.test(answerText) ? "X2 Markets Intelligence" : "HX2 Retrieval Intelligence")
+        : "HX2 Master Orchestrator";
     return NextResponse.json({
       ok: true,
       input,
       routed: true,
       answer,
+      source: responseSource,
+      optimized_by: responseOptimizedBy,
       reply: answer,
       message: answer,
       content: answer,
@@ -1097,6 +1111,7 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
 
 
 
