@@ -1,3 +1,9 @@
+type NodeExecutionContext = {
+  input: string;
+  decision: any;
+  execution: any;
+  retrieval?: any;
+};
 export function getNodeRetrievalAnswer(
   ctx: NodeExecutionContext,
   nodeName: string
@@ -398,4 +404,5 @@ export function getRetrievedSummary(ctx: any): string {
 
   return `Retrieved context (${title}): ${shortSnippet}`;
 }
+
 
