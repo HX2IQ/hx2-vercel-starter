@@ -1,4 +1,4 @@
-# DEV2 Feature Pack: Context Bridge v2
+﻿# DEV2 Feature Pack: context-bridge-v2
 
 ## Purpose
 TODO: Define the feature purpose.
@@ -10,10 +10,10 @@ TODO: List files.
 TODO: Add exact PowerShell patch steps.
 
 ## Smoke test
-npm run hx2:smoke
+manual
 
 ## Commit
-Add context bridge v2
+Add context-bridge-v2
 
 ## Status
 Draft
