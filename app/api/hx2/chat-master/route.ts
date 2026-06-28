@@ -10,17 +10,6 @@ import { executeX2 } from "../_lib/master-x2-markets-execution";
 
 export const runtime = "nodejs";
 
-type NodeExecutionContext = {
-  input: string;
-  decision: any;
-  execution: any;
-  retrieval?: any;
-};
-
-function nodeFooter(nodeName: string) {
-  return `\n\n---\nOptimized by ${nodeName}`;
-}
-
 async function safeFetchJson(url: string) {
   try {
     const res = await fetch(url, { cache: "no-store" });
@@ -28,40 +17,6 @@ async function safeFetchJson(url: string) {
     return await res.json();
   } catch (err: any) {
     return { ok: false, error: err?.message || String(err) };
-  }
-}
-
-async function safePostJson(url: string, body: any) {
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(body ?? {}),
-      cache: "no-store"
-    });
-
-    let data: any = null;
-
-    try {
-      data = await res.json();
-    } catch {}
-
-    return {
-      ok: res.ok,
-      status: res.status,
-      data
-    };
-  } catch (err: any) {
-    return {
-      ok: false,
-      status: 0,
-      data: {
-        ok: false,
-        error: err?.message || String(err)
-      }
-    };
   }
 }
 
@@ -187,16 +142,4 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
