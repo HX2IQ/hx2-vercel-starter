@@ -28,7 +28,7 @@
     "hx2:benchmark:history": "powershell -ExecutionPolicy Bypass -File tools/hx2-benchmark-history.ps1",
     "hx2:benchmark:trend": "powershell -ExecutionPolicy Bypass -File tools/hx2-benchmark-trend.ps1",
     "hx2:status": "powershell -ExecutionPolicy Bypass -File tools/hx2-status.ps1",
-    "hx2:exec": "powershell -ExecutionPolicy Bypass -File tools/hx2-exec.ps1",
+    "hx2:exec": "npm run hx2:exec:compiler",
     "hx2:next": "powershell -ExecutionPolicy Bypass -File tools/hx2-next.ps1",
     "dev2:compile": "powershell -ExecutionPolicy Bypass -File tools/dev2-feature-compiler.ps1",
     "dev2:sprint": "powershell -ExecutionPolicy Bypass -File tools/dev2-sprint.ps1",
@@ -158,7 +158,8 @@
     "dev2:sprint:compiler": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-sprint-compiler-workflow.ps1",
     "sprint:compiler": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-sprint-compiler-workflow.ps1",
     "dev2:feature-pack:index": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-feature-pack-index.ps1",
-    "hx2:exec:compiler": "npm run dev2:sprint:compiler"
+    "hx2:exec:compiler": "npm run dev2:sprint:compiler",
+    "hx2:exec:legacy": "powershell -ExecutionPolicy Bypass -File tools/hx2-exec.ps1"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
