@@ -113,6 +113,10 @@ $Checks = @(
     Script = Resolve-Hx2Script -Base "hx2:answer:quality" -Local "hx2:answer:quality:local" -StrictName "hx2:answer:quality:strict"
   },
   @{
+    Label = "Chat master metadata"
+    Script = Resolve-Hx2Script -Base "hx2:chat-master:metadata" -Local "hx2:chat-master:metadata" -StrictName "hx2:chat-master:metadata"
+  },
+  @{
     Label = "Auto verify"
     Script = "hx2:verify:auto"
   }
@@ -139,7 +143,7 @@ Write-Host ""
   Red = "$Red / $Total"
   LocalOnly = [bool]$LocalOnly
   Strict = [bool]$Strict
-  Meaning = "This bundle verifies the retail-safe chat path, negative/error handling, browser-surface readiness, direct-endpoint regression guards, E2E chat safety, answer quality, and repo verify posture."
+  Meaning = "This bundle verifies the retail-safe chat path, negative/error handling, browser-surface readiness, direct-endpoint regression guards, E2E chat safety, answer quality, metadata integrity, and repo verify posture."
   Next = "Run this bundle before future chat/UI changes and after deployment when chat behavior changes."
 } | Format-List
 
@@ -162,3 +166,4 @@ if ($Status) {
 
 Write-Host ""
 Write-Host "GREEN: retail chat verification bundle complete" -ForegroundColor Green
+
