@@ -260,7 +260,14 @@ function benchmarkQualityLiftAnswer(input: string): string {
 function masterChatDirectIntelligenceAnswer(input: string): string {
   const q = String(input || "").trim().toLowerCase();
 
-  if (/\bmagnesium\b/.test(q) && /\b(safe|daily|nightly|every day)\b/.test(q)) {
+  const currentInfoRetrievalHandoff =
+    /\b(latest|current|today|news|update|breaking|recent)\b/.test(q) &&
+    /\b(xrp|xlm|bitcoin|btc|crypto|dtcc|market|saylor|stellar|ripple|hedera|hbar|cardano|ada)\b/.test(q);
+
+  if (currentInfoRetrievalHandoff) {
+    return "";
+  }
+if (/\bmagnesium\b/.test(q) && /\b(safe|daily|nightly|every day)\b/.test(q)) {
     return [
       "## ◆ AH3 Quick Read",
       "",
@@ -1090,6 +1097,7 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
 
 
 
