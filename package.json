@@ -161,7 +161,8 @@
     "hx2:exec:compiler": "npm run dev2:sprint:compiler",
     "hx2:exec:legacy": "powershell -ExecutionPolicy Bypass -File tools/hx2-exec.ps1",
     "dev2:bundle": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-bundled-sprint.ps1",
-    "dev2:bundle:all-green": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-bundled-sprint.ps1 -AllGreen"
+    "dev2:bundle:all-green": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-bundled-sprint.ps1 -AllGreen",
+    "hx2:chat-master:metadata": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-chat-master-metadata-smoke.ps1"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
