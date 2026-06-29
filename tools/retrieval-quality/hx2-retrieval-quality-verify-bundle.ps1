@@ -59,6 +59,7 @@ function Run-Step {
 
 $SmokeFile = ".\tools\retrieval-quality-smoke.ps1"
 $TrustFile = ".\tools\retrieval-quality\hx2-retrieval-source-trust-radar.ps1"
+$ScoringGuardFile = ".\tools\retrieval-quality\hx2-retrieval-source-trust-scoring-guard.ps1"
 
 if (-not (Test-Path $SmokeFile)) {
   throw "Missing retrieval quality smoke: $SmokeFile"
@@ -101,7 +102,7 @@ Write-Host "RETRIEVAL QUALITY VERIFY SUMMARY"
   Green = $Green
   Red = $Red
   StrictTrust = [bool]$StrictTrust
-  Meaning = "This bundle verifies both retrieval relevance and retrieval source trust."
+  Meaning = "This bundle verifies retrieval relevance, source trust radar output, and runtime source-trust scoring."
 } | Format-List
 
 if ($Red -gt 0) {
@@ -109,5 +110,4 @@ if ($Red -gt 0) {
 }
 
 Write-Host "GREEN: HX2 retrieval quality verify bundle passed."
-
 
