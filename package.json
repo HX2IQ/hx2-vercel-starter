@@ -167,7 +167,8 @@
     "hx2:master-route:shell": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-master-route-shell-guard.ps1",
     "dev2:xe:policy": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-xe-policy-guard.ps1",
     "dev2:xe:inspect": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-xe-safe-inspect.ps1",
-    "dev2:xe:diff-gate": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-xe-diff-approval-gate.ps1"
+    "dev2:xe:diff-gate": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-xe-diff-approval-gate.ps1",
+    "dev2:xe:no-auto-release": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-xe-no-auto-release-guard.ps1"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
