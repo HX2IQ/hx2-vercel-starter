@@ -1,0 +1,33 @@
+{
+  "schema": "dev2-xe-patch-plan/v1",
+  "phase": "2.11I",
+  "title": "DEV2-XE controlled patch apply sample",
+  "mode": "patch-plan",
+  "risk": "low",
+  "ownerApprovalRequired": true,
+  "autoPushAllowed": false,
+  "autoDeployAllowed": false,
+  "allowedSurfaces": [
+    "tools",
+    "docs",
+    "package-scripts"
+  ],
+  "files": [
+    {
+      "path": "tools/DEV2-XE-SAMPLE-PATCH.md",
+      "sourcePath": "tools/_dev2-xe-patches/sample-dev2-xe-note.md",
+      "operation": "create",
+      "risk": "low",
+      "runtimeSurface": false,
+      "requiresBackup": false
+    }
+  ],
+  "requiredGates": [
+    "dev2:xe:preflight",
+    "dev2:xe:patch-plan",
+    "npx tsc --noEmit --pretty false",
+    "hx2:verify:policy"
+  ],
+  "notes": "Sample low-risk controlled patch apply plan."
+}
+
