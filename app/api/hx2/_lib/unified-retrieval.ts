@@ -257,6 +257,77 @@ function localDefinitionFallback(normalized: string): UnifiedRetrievalSource[] {
   return direct ? [direct] : [];
 }
 
+function retrievalSourceTrustScore(
+  query: string,
+  item: UnifiedRetrievalSource,
+  haystack: string
+): number {
+  const q =
+    String(query || "").toLowerCase();
+
+  const sourceSurface =
+    [
+      item.source,
+      item.url,
+      item.title,
+      haystack
+    ]
+      .map((value) => String(value || "").toLowerCase())
+      .join(" ");
+
+  const fresh =
+    isFreshRetrievalQuery(query);
+
+  const authoritative =
+    /\b(dtcc\.com|stellar\.org|ripple\.com|xrpl\.org|sec\.gov|bitcoin\.org|ethereum\.org)\b/i.test(sourceSurface);
+
+  const tierOne =
+    /\b(reuters|bloomberg|cnbc|apnews|ap news|coindesk|the block|decrypt)\b/i.test(sourceSurface);
+
+  const watchlist =
+    /\b(cointribune|cryptorank|coinmarketcap|coingape|u\.today|watcher guru|the crypto basic|bitcoinist|ambcrypto)\b/i.test(sourceSurface);
+
+  const genericAggregator =
+    /\b(google news|rss|source-router|aggregator)\b/i.test(String(item.source || "").toLowerCase()) &&
+    watchlist;
+
+  let score = 0;
+
+  if (authoritative) {
+    score += fresh ? 24 : 12;
+  }
+
+  if (tierOne) {
+    score += fresh ? 14 : 7;
+  }
+
+  if (/\b(dtcc|depository trust)\b/.test(q) && /\bdtcc\.com\b/i.test(sourceSurface)) {
+    score += 16;
+  }
+
+  if (/\b(xrp|ripple|xrpl)\b/.test(q) && /\b(ripple\.com|xrpl\.org)\b/i.test(sourceSurface)) {
+    score += 16;
+  }
+
+  if (/\b(xlm|stellar)\b/.test(q) && /\bstellar\.org\b/i.test(sourceSurface)) {
+    score += 16;
+  }
+
+  if (watchlist) {
+    score -= fresh ? 40 : 24;
+  }
+
+  if (genericAggregator) {
+    score -= 10;
+  }
+
+  if (watchlist && !authoritative && !tierOne && fresh) {
+    score -= 10;
+  }
+
+  return score;
+}
+
 function retrievalSourceScore(
   query: string,
   item: UnifiedRetrievalSource
@@ -305,6 +376,8 @@ function retrievalSourceScore(
   if (item.source === "rss" || /\b(coindesk|cointelegraph|google news|cnbc|reuters|bloomberg|decrypt|the block|ripple|xrpl)\b/i.test(item.source)) {
     score += isFreshRetrievalQuery(query) ? 8 : 2;
   }
+
+  score += retrievalSourceTrustScore(query, item, haystack);
 
   if (/\b(coindesk|cointelegraph|reuters|cnbc|bloomberg|the block|decrypt|ripple\.com|dtcc\.com|xrpl\.org|bitcoin\.org|ethereum\.org)\b/.test(haystack)) {
     score += 14;
@@ -850,6 +923,7 @@ export async function retrieveContext(
     retrieval_mode: "live"
   };
 }
+
 
 
 
