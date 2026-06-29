@@ -1,0 +1,32 @@
+{
+  "schema": "dev2-xe-patch-plan/v1",
+  "phase": "2.11H",
+  "title": "DEV2-XE controlled patch plan template",
+  "mode": "patch-plan",
+  "risk": "low",
+  "ownerApprovalRequired": true,
+  "autoPushAllowed": false,
+  "autoDeployAllowed": false,
+  "allowedSurfaces": [
+    "tools",
+    "docs",
+    "package-scripts"
+  ],
+  "files": [
+    {
+      "path": "tools/example-dev2-xe-file.ps1",
+      "operation": "create",
+      "risk": "low",
+      "runtimeSurface": false,
+      "requiresBackup": false
+    }
+  ],
+  "requiredGates": [
+    "dev2:xe:preflight",
+    "dev2:xe:patch-plan",
+    "npx tsc --noEmit --pretty false",
+    "hx2:verify:policy"
+  ],
+  "notes": "This is a validation-only patch plan template. Actual patch application requires a later controlled patch runner."
+}
+
