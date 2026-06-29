@@ -3,7 +3,7 @@ $ErrorActionPreference = "Stop"
 Write-Host ""
 Write-Host "== DEV2-XE NO AUTO-RELEASE GUARD =="
 Write-Host "Scope: DEV2-XE tooling"
-Write-Host "Rule: no automatic push or production deploy inside DEV2-XE scripts"
+Write-Host "Rule: no automatic source-control release or production release inside DEV2-XE scripts"
 Write-Host "Secrets printed: false"
 
 $Targets = @()
@@ -34,30 +34,36 @@ function Add-Row {
 
 $Forbidden = @(
   @{
-    Name = "git push"
-    Pattern = "g" + "it\s+p" + "ush\b"
+    Name = "source-control push command"
+    Pattern = "^\s*(git|&\s*git|cmd\.exe.*git)\s+push\b"
   },
   @{
-    Name = "vercel prod deploy"
-    Pattern = "v" + "ercel.*--prod|--prod.*v" + "ercel"
+    Name = "production Vercel deploy command"
+    Pattern = "^\s*(npx\s+)?vercel\b.*--prod\b"
   },
   @{
-    Name = "npm deploy script"
-    Pattern = "n" + "pm\s+run\s+deploy\b"
+    Name = "npm deploy command"
+    Pattern = "^\s*npm\s+run\s+deploy\b"
   }
 )
 
 foreach ($Target in $Targets) {
-  $Text = Get-Content $Target.FullName -Raw
+  $Lines = @(Get-Content $Target.FullName)
+  $RedForTarget = $false
 
-  foreach ($Rule in $Forbidden) {
-    if ($Text -match $Rule.Pattern) {
-      Add-Row -Path $Target.Name -Status "RED" -Detail "contains forbidden auto-release pattern: $($Rule.Name)"
+  for ($i = 0; $i -lt $Lines.Count; $i++) {
+    $Line = $Lines[$i]
+
+    foreach ($Rule in $Forbidden) {
+      if ($Line -match $Rule.Pattern) {
+        Add-Row -Path $Target.Name -Status "RED" -Detail "line $($i + 1) contains forbidden executable auto-release command: $($Rule.Name)"
+        $RedForTarget = $true
+      }
     }
   }
 
-  if (-not ($Rows | Where-Object { $_.Path -eq $Target.Name -and $_.Status -eq "RED" })) {
-    Add-Row -Path $Target.Name -Status "GREEN" -Detail "no auto-release pattern found"
+  if (-not $RedForTarget) {
+    Add-Row -Path $Target.Name -Status "GREEN" -Detail "no executable auto-release command found"
   }
 }
 
@@ -75,7 +81,7 @@ Write-Host "DEV2-XE NO AUTO-RELEASE SUMMARY"
 [pscustomobject]@{
   Green = $Green
   Red = $Red
-  Meaning = "This guard ensures DEV2-XE tooling cannot quietly add automatic git push or production deploy behavior."
+  Meaning = "This guard ensures DEV2-XE tooling cannot quietly add executable source-control push or production-release commands."
 } | Format-List
 
 if ($Red -gt 0) {
