@@ -164,7 +164,8 @@
     "dev2:bundle:all-green": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-bundled-sprint.ps1 -AllGreen",
     "hx2:chat-master:metadata": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-chat-master-metadata-smoke.ps1",
     "hx2:direct-intel:smoke": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-direct-intelligence-regression-smoke.ps1",
-    "hx2:master-route:shell": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-master-route-shell-guard.ps1"
+    "hx2:master-route:shell": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/hx2-master-route-shell-guard.ps1",
+    "dev2:xe:policy": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-xe-policy-guard.ps1"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
