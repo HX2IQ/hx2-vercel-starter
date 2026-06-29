@@ -169,7 +169,8 @@
     "dev2:xe:inspect": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-xe-safe-inspect.ps1",
     "dev2:xe:diff-gate": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-xe-diff-approval-gate.ps1",
     "dev2:xe:no-auto-release": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-xe-no-auto-release-guard.ps1",
-    "dev2:xe:preflight": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-xe-preflight.ps1"
+    "dev2:xe:preflight": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-xe-preflight.ps1",
+    "dev2:xe:manifest": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-xe-task-manifest-guard.ps1"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",

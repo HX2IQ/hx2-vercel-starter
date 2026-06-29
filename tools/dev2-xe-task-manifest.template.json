@@ -1,0 +1,22 @@
+{
+  "schema": "dev2-xe-task-manifest/v1",
+  "phase": "2.11F",
+  "title": "DEV2-XE controlled task manifest template",
+  "mode": "inspection",
+  "risk": "low",
+  "ownerApprovalRequired": true,
+  "autoPushAllowed": false,
+  "autoDeployAllowed": false,
+  "allowedSurfaces": [
+    "tools",
+    "docs",
+    "package-scripts"
+  ],
+  "requiredGates": [
+    "dev2:xe:preflight",
+    "npx tsc --noEmit --pretty false",
+    "hx2:verify:policy"
+  ],
+  "notes": "Runtime, route, retrieval, DB, schema, env, and production-release work require single-sprint approval and additional gates."
+}
+
