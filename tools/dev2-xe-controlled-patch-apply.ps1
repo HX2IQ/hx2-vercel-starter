@@ -86,9 +86,17 @@ foreach ($File in $Files) {
   if (-not (Test-Path $SourcePath)) { throw "Patch source file not found: $SourcePath" }
 
   $Exists = Test-Path $TargetPath
+  $IdempotentCreate = $false
 
   if ($Operation -eq "create" -and $Exists) {
-    throw "Create operation refused because target already exists: $TargetPath"
+    $SourceText = Get-Content $SourcePath -Raw
+    $TargetText = Get-Content $TargetPath -Raw
+
+    if ($SourceText -eq $TargetText) {
+      $IdempotentCreate = $true
+    } else {
+      throw "Create operation refused because target already exists with different content: $TargetPath"
+    }
   }
 
   if ($Operation -eq "update" -and -not $Exists) {
@@ -101,6 +109,7 @@ foreach ($File in $Files) {
     Risk = $FileRisk
     SourcePath = $SourcePath
     TargetPath = $TargetPath
+    IdempotentCreate = $IdempotentCreate
   }
 }
 
@@ -122,6 +131,11 @@ if ($WhatIfOnly) {
 }
 
 foreach ($Row in $Rows) {
+  if ($Row.IdempotentCreate) {
+    Write-Host "GREEN: idempotent create already satisfied -> $($Row.TargetPath)"
+    continue
+  }
+
   $TargetDir = Split-Path $Row.TargetPath -Parent
   if (-not [string]::IsNullOrWhiteSpace($TargetDir)) {
     New-Item -ItemType Directory -Force -Path $TargetDir | Out-Null
