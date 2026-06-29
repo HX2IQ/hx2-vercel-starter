@@ -173,7 +173,8 @@
     "dev2:xe:manifest": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-xe-task-manifest-guard.ps1",
     "dev2:xe:task": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-xe-task-runner.ps1",
     "dev2:xe:patch-plan": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-xe-patch-plan-guard.ps1",
-    "dev2:xe:patch-apply": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-xe-controlled-patch-apply.ps1"
+    "dev2:xe:patch-apply": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-xe-controlled-patch-apply.ps1",
+    "dev2:xe:verify": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-xe-verification-bundle.ps1"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
