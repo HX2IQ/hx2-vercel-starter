@@ -38,11 +38,20 @@ function Run-Step {
   Write-Host ""
   Write-Host "== $Label =="
 
-  & $Command
+  $global:LASTEXITCODE = 0
 
-  if ($LASTEXITCODE -ne 0) {
+  try {
+    & $Command
+  } catch {
     Add-Result -Check $Label -Status "RED" -Meaning $Meaning
-    throw "$Label failed."
+    throw
+  }
+
+  $ExitCode = $global:LASTEXITCODE
+
+  if ($ExitCode -ne 0) {
+    Add-Result -Check $Label -Status "RED" -Meaning $Meaning
+    throw "$Label failed with exit code $ExitCode."
   }
 
   Add-Result -Check $Label -Status "GREEN" -Meaning $Meaning
