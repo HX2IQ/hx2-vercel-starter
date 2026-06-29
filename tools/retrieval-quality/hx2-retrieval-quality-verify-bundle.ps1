@@ -68,6 +68,10 @@ if (-not (Test-Path $TrustFile)) {
   throw "Missing retrieval source trust radar: $TrustFile"
 }
 
+if (-not (Test-Path $ScoringGuardFile)) {
+  throw "Missing retrieval source trust scoring guard: $ScoringGuardFile"
+}
+
 Run-Step -Label "Retrieval quality smoke" -Meaning "Confirms live retrieval still returns relevant answers for XRP, DTCC, and XLM/DTCC cases." -Command {
   & $SmokeFile -Base $Base
 }
@@ -78,6 +82,10 @@ Run-Step -Label "Retrieval source trust radar" -Meaning "Classifies source quali
   } else {
     & $TrustFile -Base $Base
   }
+}
+
+Run-Step -Label "Retrieval source trust scoring guard" -Meaning "Confirms runtime retrieval scoring includes source-trust tiers and watchlist demotion logic." -Command {
+  & $ScoringGuardFile
 }
 
 Write-Host ""
@@ -101,4 +109,5 @@ if ($Red -gt 0) {
 }
 
 Write-Host "GREEN: HX2 retrieval quality verify bundle passed."
+
 
