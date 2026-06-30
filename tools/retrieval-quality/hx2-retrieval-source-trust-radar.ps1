@@ -9,7 +9,7 @@ Write-Host ""
 Write-Host "== HX2 RETRIEVAL SOURCE TRUST RADAR =="
 Write-Host "Base: $Base"
 Write-Host "Strict: $Strict"
-Write-Host "Mode: source trust classification"
+Write-Host "Mode: evidence-aware source trust classification"
 Write-Host "Secrets printed: false"
 
 $Base = $Base.TrimEnd("/")
@@ -40,9 +40,17 @@ $HighTrustIndicators = @(
   "xrpl.org",
   "sec.gov",
   "reuters",
+  "reuters.com",
   "bloomberg",
+  "bloomberg.com",
   "coindesk",
+  "coindesk.com",
   "the block",
+  "theblock.co",
+  "decrypt",
+  "decrypt.co",
+  "cnbc",
+  "cnbc.com",
   "yahoo finance",
   "ap news"
 )
@@ -74,6 +82,23 @@ function Test-AnyMatch {
   return $false
 }
 
+function Add-TrustPart {
+  param(
+    [System.Collections.Generic.List[string]]$Parts,
+    [object]$Value
+  )
+
+  if ($null -eq $Value) {
+    return
+  }
+
+  $Text = String($Value).Trim()
+
+  if ($Text.Length -gt 0) {
+    $Parts.Add($Text) | Out-Null
+  }
+}
+
 function Get-AnswerText {
   param($Response)
 
@@ -90,6 +115,56 @@ function Get-AnswerText {
   return ($Parts -join "`n")
 }
 
+function Get-StructuredEvidenceText {
+  param($Response)
+
+  $Parts = New-Object System.Collections.Generic.List[string]
+
+  foreach ($Domain in @($Response.source_domains)) {
+    Add-TrustPart -Parts $Parts -Value $Domain
+  }
+
+  foreach ($Title in @($Response.source_titles)) {
+    Add-TrustPart -Parts $Parts -Value $Title
+  }
+
+  foreach ($Url in @($Response.source_urls)) {
+    Add-TrustPart -Parts $Parts -Value $Url
+  }
+
+  foreach ($Item in @($Response.source_evidence)) {
+    if ($null -eq $Item) {
+      continue
+    }
+
+    Add-TrustPart -Parts $Parts -Value $Item.title
+    Add-TrustPart -Parts $Parts -Value $Item.source
+    Add-TrustPart -Parts $Parts -Value $Item.domain
+    Add-TrustPart -Parts $Parts -Value $Item.url
+    Add-TrustPart -Parts $Parts -Value $Item.snippet
+  }
+
+  return ($Parts.ToArray() -join "`n")
+}
+
+function Get-TrustSurface {
+  param($Response)
+
+  $StructuredEvidence = Get-StructuredEvidenceText -Response $Response
+
+  if ($StructuredEvidence.Trim().Length -gt 0) {
+    return [pscustomobject]@{
+      Text = $StructuredEvidence
+      Mode = "structured_evidence"
+    }
+  }
+
+  return [pscustomobject]@{
+    Text = Get-AnswerText -Response $Response
+    Mode = "answer_fallback"
+  }
+}
+
 $Rows = @()
 
 foreach ($Case in $Cases) {
@@ -99,13 +174,15 @@ foreach ($Case in $Cases) {
 
   try {
     $Response = Invoke-RestMethod -Uri $Url -Method POST -ContentType "application/json" -Body $Body -TimeoutSec 45
-    $Text = Get-AnswerText -Response $Response
-    $JsonText = $Response | ConvertTo-Json -Depth 20 -Compress
-    $Combined = "$Text`n$JsonText"
+    $AnswerText = Get-AnswerText -Response $Response
+    $TrustSurface = Get-TrustSurface -Response $Response
 
-    $HasRequired = Test-AnyMatch -Text $Combined -Needles $Case.RequiredAny
-    $HasHighTrust = Test-AnyMatch -Text $Combined.ToLowerInvariant() -Needles $HighTrustIndicators
-    $HasWatchlist = Test-AnyMatch -Text $Combined.ToLowerInvariant() -Needles $WatchlistIndicators
+    $RequiredSurface = "$AnswerText`n$($TrustSurface.Text)"
+    $TrustText = String($TrustSurface.Text).ToLowerInvariant()
+
+    $HasRequired = Test-AnyMatch -Text $RequiredSurface -Needles $Case.RequiredAny
+    $HasHighTrust = Test-AnyMatch -Text $TrustText -Needles $HighTrustIndicators
+    $HasWatchlist = Test-AnyMatch -Text $TrustText -Needles $WatchlistIndicators
 
     $TrustStatus =
       if ($HasHighTrust -and -not $HasWatchlist) { "GREEN" }
@@ -113,7 +190,7 @@ foreach ($Case in $Cases) {
       elseif ($HasWatchlist) { "YELLOW" }
       else { "UNKNOWN" }
 
-    $PrimaryLine = (($Text -split "`n") | Where-Object { $_.Trim().Length -gt 0 } | Select-Object -First 1)
+    $PrimaryLine = (($AnswerText -split "`n") | Where-Object { $_.Trim().Length -gt 0 } | Select-Object -First 1)
 
     $Rows += [pscustomobject]@{
       Case = $Case.Name
@@ -121,6 +198,7 @@ foreach ($Case in $Cases) {
       TrustStatus = $TrustStatus
       HighTrustSeen = [bool]$HasHighTrust
       WatchlistSeen = [bool]$HasWatchlist
+      EvidenceMode = $TrustSurface.Mode
       PrimaryRead = $PrimaryLine
     }
   } catch {
@@ -130,6 +208,7 @@ foreach ($Case in $Cases) {
       TrustStatus = "RED"
       HighTrustSeen = $false
       WatchlistSeen = $false
+      EvidenceMode = "error"
       PrimaryRead = $_.Exception.Message
     }
   }
@@ -142,6 +221,7 @@ $Rows | Format-Table -AutoSize
 $RedSignals = @($Rows | Where-Object { $_.RequiredSignal -eq "RED" -or $_.TrustStatus -eq "RED" }).Count
 $WatchlistRows = @($Rows | Where-Object { $_.WatchlistSeen -eq $true }).Count
 $UnknownRows = @($Rows | Where-Object { $_.TrustStatus -eq "UNKNOWN" }).Count
+$StructuredRows = @($Rows | Where-Object { $_.EvidenceMode -eq "structured_evidence" }).Count
 
 Write-Host ""
 Write-Host "SOURCE TRUST SUMMARY"
@@ -149,8 +229,9 @@ Write-Host "SOURCE TRUST SUMMARY"
   RedSignals = $RedSignals
   WatchlistRows = $WatchlistRows
   UnknownRows = $UnknownRows
+  StructuredEvidenceRows = $StructuredRows
   Strict = [bool]$Strict
-  Meaning = "This radar separates retrieval relevance from source trust. Watchlist sources do not fail non-strict mode yet; they identify where reranking should improve next."
+  Meaning = "This evidence-aware radar grades curated source_evidence/source_domains first, then falls back to answer text only when structured evidence is unavailable."
 } | Format-List
 
 if ($RedSignals -gt 0) {
