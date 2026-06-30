@@ -74,22 +74,63 @@ function normalizedPublisherDomain(value: any): string {
   return "";
 }
 
+function publisherSuffixFromTitle(title: string): string {
+  const cleanTitle = cleanSourceEvidenceText(title);
+
+  const parts =
+    cleanTitle
+      .split(" - ")
+      .map((part) => part.trim())
+      .filter(Boolean);
+
+  return parts.length >= 2 ? parts[parts.length - 1] : "";
+}
+
+function isGenericEvidenceSource(source: string): boolean {
+  return /^(source|rss|google news|news|web|feed)$/i.test(cleanSourceEvidenceText(source));
+}
+
 function sourceEvidenceDomain(item: any, url: string, source: string, title: string): string {
   const urlDomain = sourceDomainFromUrl(url);
-  const itemSurface = cleanSourceEvidenceText(item?.publisher || item?.provider || item?.source || item?.title || "");
+  const cleanSource = cleanSourceEvidenceText(source);
+  const publisherSuffix = publisherSuffixFromTitle(title);
+  const itemSurface = cleanSourceEvidenceText(item?.publisher || item?.provider || "");
 
   if (urlDomain && !/^news\.google\.com$/i.test(urlDomain)) {
     return urlDomain;
   }
 
+  if (cleanSource && !isGenericEvidenceSource(cleanSource)) {
+    const sourceDomain = normalizedPublisherDomain(cleanSource);
+
+    if (sourceDomain) {
+      return sourceDomain;
+    }
+  }
+
+  if (itemSurface) {
+    const itemDomain = normalizedPublisherDomain(itemSurface);
+
+    if (itemDomain) {
+      return itemDomain;
+    }
+  }
+
+  if (publisherSuffix) {
+    const suffixDomain = normalizedPublisherDomain(publisherSuffix);
+
+    if (suffixDomain) {
+      return suffixDomain;
+    }
+  }
+
   return (
     normalizedPublisherDomain(title) ||
-    normalizedPublisherDomain(source) ||
-    normalizedPublisherDomain(itemSurface) ||
     urlDomain ||
-    source
+    cleanSource
   );
 }
+
 function buildSourceEvidenceContract(retrieval: any) {
   const rawSources =
     Array.isArray(retrieval?.sources)

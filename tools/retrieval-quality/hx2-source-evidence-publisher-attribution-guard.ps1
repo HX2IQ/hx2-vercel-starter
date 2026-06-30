@@ -17,6 +17,7 @@ $Markers = @(
   @{ Name = "publisher suffix parser"; Text = "function publisherSuffixFromTitle" },
   @{ Name = "generic source detector"; Text = "function isGenericEvidenceSource" },
   @{ Name = "source-first attribution"; Text = "if (cleanSource && !isGenericEvidenceSource(cleanSource))" },
+  @{ Name = "source domain extraction"; Text = "const sourceDomain = normalizedPublisherDomain(cleanSource);" },
   @{ Name = "title suffix attribution"; Text = "const suffixDomain = normalizedPublisherDomain(publisherSuffix);" },
   @{ Name = "full title fallback only"; Text = "normalizedPublisherDomain(title) ||" },
   @{ Name = "CoinDesk mapping preserved"; Text = "coindesk.com" },
