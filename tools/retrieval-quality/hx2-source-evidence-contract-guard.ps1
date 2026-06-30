@@ -15,6 +15,7 @@ $Content = Get-Content $RouteFile -Raw
 
 $Markers = @(
   @{ Name = "source evidence helper"; Pattern = "function buildSourceEvidenceContract" },
+  @{ Name = "source evidence contract declaration"; Pattern = "const sourceEvidenceContract = buildSourceEvidenceContract(retrieval);" },
   @{ Name = "source evidence field"; Pattern = "source_evidence:" },
   @{ Name = "source titles field"; Pattern = "source_titles:" },
   @{ Name = "source domains field"; Pattern = "source_domains:" },

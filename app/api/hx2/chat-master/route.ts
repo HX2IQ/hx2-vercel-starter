@@ -20,6 +20,56 @@ async function safeFetchJson(url: string) {
   }
 }
 
+
+function cleanSourceEvidenceText(value: any): string {
+  return String(value || "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function sourceDomainFromUrl(url: any): string {
+  try {
+    const parsed = new URL(String(url || ""));
+    return parsed.hostname.replace(/^www\./i, "");
+  } catch {
+    return "";
+  }
+}
+
+function buildSourceEvidenceContract(retrieval: any) {
+  const rawSources =
+    Array.isArray(retrieval?.sources)
+      ? retrieval.sources
+      : [];
+
+  const sourceEvidence =
+    rawSources
+      .map((item: any) => {
+        const title = cleanSourceEvidenceText(item?.title || item?.source || "Source");
+        const source = cleanSourceEvidenceText(item?.source || "source");
+        const url = cleanSourceEvidenceText(item?.url || "");
+        const domain = sourceDomainFromUrl(url) || source;
+        const snippet = cleanSourceEvidenceText(item?.snippet || "").substring(0, 500);
+
+        return {
+          title,
+          source,
+          domain,
+          url,
+          snippet
+        };
+      })
+      .filter((item: any) => item.title || item.source || item.url)
+      .slice(0, 6);
+
+  return {
+    source_evidence: sourceEvidence,
+    source_titles: Array.from(new Set(sourceEvidence.map((item: any) => item.title).filter(Boolean))),
+    source_domains: Array.from(new Set(sourceEvidence.map((item: any) => item.domain).filter(Boolean))),
+    source_urls: Array.from(new Set(sourceEvidence.map((item: any) => item.url).filter(Boolean))),
+    source_count: rawSources.length
+  };
+}
 export async function POST(req: NextRequest) {
   const benchmarkLiftPayload = await req.clone().json().catch(() => ({}));
   const benchmarkLiftInput = String(
@@ -155,5 +205,6 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
 
 
