@@ -9,7 +9,7 @@ Write-Host ""
 Write-Host "== HX2 RETRIEVAL QUALITY VERIFY BUNDLE =="
 Write-Host "Base: $Base"
 Write-Host "StrictTrust: $StrictTrust"
-Write-Host "Mode: retrieval relevance + source trust"
+Write-Host "Mode: retrieval relevance + source trust + source evidence"
 Write-Host "Secrets printed: false"
 
 $Results = @()
@@ -60,17 +60,23 @@ function Run-Step {
 $SmokeFile = ".\tools\retrieval-quality-smoke.ps1"
 $TrustFile = ".\tools\retrieval-quality\hx2-retrieval-source-trust-radar.ps1"
 $ScoringGuardFile = ".\tools\retrieval-quality\hx2-retrieval-source-trust-scoring-guard.ps1"
+$EvidenceContractGuardFile = ".\tools\retrieval-quality\hx2-source-evidence-contract-guard.ps1"
+$EvidenceDomainGuardFile = ".\tools\retrieval-quality\hx2-source-evidence-domain-normalization-guard.ps1"
+$EvidencePublisherGuardFile = ".\tools\retrieval-quality\hx2-source-evidence-publisher-attribution-guard.ps1"
 
-if (-not (Test-Path $SmokeFile)) {
-  throw "Missing retrieval quality smoke: $SmokeFile"
-}
+$RequiredFiles = @(
+  @{ Label = "retrieval quality smoke"; Path = $SmokeFile },
+  @{ Label = "retrieval source trust radar"; Path = $TrustFile },
+  @{ Label = "retrieval source trust scoring guard"; Path = $ScoringGuardFile },
+  @{ Label = "source evidence contract guard"; Path = $EvidenceContractGuardFile },
+  @{ Label = "source evidence domain normalization guard"; Path = $EvidenceDomainGuardFile },
+  @{ Label = "source evidence publisher attribution guard"; Path = $EvidencePublisherGuardFile }
+)
 
-if (-not (Test-Path $TrustFile)) {
-  throw "Missing retrieval source trust radar: $TrustFile"
-}
-
-if (-not (Test-Path $ScoringGuardFile)) {
-  throw "Missing retrieval source trust scoring guard: $ScoringGuardFile"
+foreach ($RequiredFile in $RequiredFiles) {
+  if (-not (Test-Path $RequiredFile.Path)) {
+    throw "Missing $($RequiredFile.Label): $($RequiredFile.Path)"
+  }
 }
 
 Run-Step -Label "Retrieval quality smoke" -Meaning "Confirms live retrieval still returns relevant answers for XRP, DTCC, and XLM/DTCC cases." -Command {
@@ -89,6 +95,18 @@ Run-Step -Label "Retrieval source trust scoring guard" -Meaning "Confirms runtim
   & $ScoringGuardFile
 }
 
+Run-Step -Label "Source evidence contract guard" -Meaning "Confirms chat-master exposes structured source evidence while preserving visible answer fields." -Command {
+  & $EvidenceContractGuardFile
+}
+
+Run-Step -Label "Source evidence domain normalization guard" -Meaning "Confirms Google News relay URLs are not treated as publisher domains when real publisher signals exist." -Command {
+  & $EvidenceDomainGuardFile
+}
+
+Run-Step -Label "Source evidence publisher attribution guard" -Meaning "Confirms evidence domain attribution prioritizes explicit publisher/source over topic words in titles." -Command {
+  & $EvidencePublisherGuardFile
+}
+
 Write-Host ""
 Write-Host "RETRIEVAL QUALITY VERIFY RESULTS"
 $Results | Format-Table -AutoSize
@@ -102,7 +120,7 @@ Write-Host "RETRIEVAL QUALITY VERIFY SUMMARY"
   Green = $Green
   Red = $Red
   StrictTrust = [bool]$StrictTrust
-  Meaning = "This bundle verifies retrieval relevance, source trust radar output, and runtime source-trust scoring."
+  Meaning = "This bundle verifies retrieval relevance, source trust, runtime source scoring, and structured source evidence integrity."
 } | Format-List
 
 if ($Red -gt 0) {
