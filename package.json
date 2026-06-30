@@ -178,7 +178,8 @@
     "hx2:retrieval:source-trust": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/retrieval-quality/hx2-retrieval-source-trust-radar.ps1",
     "hx2:retrieval:quality:verify": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/retrieval-quality/hx2-retrieval-quality-verify-bundle.ps1",
     "hx2:retrieval:source-trust:scoring": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/retrieval-quality/hx2-retrieval-source-trust-scoring-guard.ps1",
-    "hx2:retrieval:evidence-contract": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/retrieval-quality/hx2-source-evidence-contract-guard.ps1"
+    "hx2:retrieval:evidence-contract": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/retrieval-quality/hx2-source-evidence-contract-guard.ps1",
+    "hx2:retrieval:evidence-domain": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/retrieval-quality/hx2-source-evidence-domain-normalization-guard.ps1"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
