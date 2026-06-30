@@ -36,6 +36,60 @@ function sourceDomainFromUrl(url: any): string {
   }
 }
 
+
+function normalizedPublisherDomain(value: any): string {
+  const surface =
+    cleanSourceEvidenceText(value)
+      .toLowerCase();
+
+  const directDomain =
+    surface.match(/\b([a-z0-9-]+\.(?:com|org|net|io|gov|edu|co))\b/i)?.[1] || "";
+
+  if (directDomain) {
+    return directDomain.replace(/^www\./i, "");
+  }
+
+  const known: Array<[RegExp, string]> = [
+    [/\bdtcc\b/i, "dtcc.com"],
+    [/\bstellar\b/i, "stellar.org"],
+    [/\bripple\b/i, "ripple.com"],
+    [/\bxrpl\b|\bxrp ledger\b/i, "xrpl.org"],
+    [/\bcoindesk\b/i, "coindesk.com"],
+    [/\bdecrypt\b/i, "decrypt.co"],
+    [/\bthe block\b/i, "theblock.co"],
+    [/\breuters\b/i, "reuters.com"],
+    [/\bbloomberg\b/i, "bloomberg.com"],
+    [/\bcnbc\b/i, "cnbc.com"],
+    [/\bbitget\b/i, "bitget.com"],
+    [/\btradingview\b/i, "tradingview.com"],
+    [/\bwikipedia\b/i, "en.wikipedia.org"]
+  ];
+
+  for (const [pattern, domain] of known) {
+    if (pattern.test(surface)) {
+      return domain;
+    }
+  }
+
+  return "";
+}
+
+function sourceEvidenceDomain(item: any, url: string, source: string, title: string): string {
+  const urlDomain = sourceDomainFromUrl(url);
+  const itemSurface = cleanSourceEvidenceText(item?.publisher || item?.provider || item?.source || item?.title || "");
+
+  if (urlDomain && !/^news\.google\.com$/i.test(urlDomain)) {
+    return urlDomain;
+  }
+
+  return (
+    normalizedPublisherDomain(title) ||
+    normalizedPublisherDomain(source) ||
+    normalizedPublisherDomain(itemSurface) ||
+    urlDomain ||
+    source
+  );
+}
 function buildSourceEvidenceContract(retrieval: any) {
   const rawSources =
     Array.isArray(retrieval?.sources)
@@ -48,7 +102,7 @@ function buildSourceEvidenceContract(retrieval: any) {
         const title = cleanSourceEvidenceText(item?.title || item?.source || "Source");
         const source = cleanSourceEvidenceText(item?.source || "source");
         const url = cleanSourceEvidenceText(item?.url || "");
-        const domain = sourceDomainFromUrl(url) || source;
+        const domain = sourceEvidenceDomain(item, url, source, title);
         const snippet = cleanSourceEvidenceText(item?.snippet || "").substring(0, 500);
 
         return {
@@ -205,6 +259,7 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
 
 
 

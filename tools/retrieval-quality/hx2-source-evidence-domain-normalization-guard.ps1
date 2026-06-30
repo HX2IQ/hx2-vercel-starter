@@ -14,24 +14,24 @@ if (-not (Test-Path $RouteFile)) {
 $Content = Get-Content $RouteFile -Raw
 
 $Markers = @(
-  @{ Name = "publisher domain normalizer"; Pattern = "function normalizedPublisherDomain" },
-  @{ Name = "source evidence domain helper"; Pattern = "function sourceEvidenceDomain" },
-  @{ Name = "google news relay bypass"; Pattern = "news\.google\.com" },
-  @{ Name = "DTCC domain mapping"; Pattern = "dtcc.com" },
-  @{ Name = "Ripple domain mapping"; Pattern = "ripple.com" },
-  @{ Name = "XRPL domain mapping"; Pattern = "xrpl.org" },
-  @{ Name = "Stellar domain mapping"; Pattern = "stellar.org" },
-  @{ Name = "CoinDesk domain mapping"; Pattern = "coindesk.com" },
-  @{ Name = "Decrypt domain mapping"; Pattern = "decrypt.co" },
-  @{ Name = "domain field uses helper"; Pattern = "const domain = sourceEvidenceDomain(item, url, source, title);" },
-  @{ Name = "source domains field preserved"; Pattern = "source_domains:" },
-  @{ Name = "source evidence field preserved"; Pattern = "source_evidence:" }
+  @{ Name = "publisher domain normalizer"; Text = "function normalizedPublisherDomain" },
+  @{ Name = "source evidence domain helper"; Text = "function sourceEvidenceDomain" },
+  @{ Name = "google news relay bypass"; Text = "news\.google\.com" },
+  @{ Name = "DTCC domain mapping"; Text = "dtcc.com" },
+  @{ Name = "Ripple domain mapping"; Text = "ripple.com" },
+  @{ Name = "XRPL domain mapping"; Text = "xrpl.org" },
+  @{ Name = "Stellar domain mapping"; Text = "stellar.org" },
+  @{ Name = "CoinDesk domain mapping"; Text = "coindesk.com" },
+  @{ Name = "Decrypt domain mapping"; Text = "decrypt.co" },
+  @{ Name = "domain field uses helper"; Text = "const domain = sourceEvidenceDomain(item, url, source, title);" },
+  @{ Name = "source domains field preserved"; Text = "source_domains:" },
+  @{ Name = "source evidence field preserved"; Text = "source_evidence:" }
 )
 
 $Rows = foreach ($Marker in $Markers) {
   [pscustomobject]@{
     Marker = $Marker.Name
-    Status = if ($Content -match [regex]::Escape($Marker.Pattern)) { "GREEN" } else { "RED" }
+    Status = if ($Content.Contains($Marker.Text)) { "GREEN" } else { "RED" }
   }
 }
 
