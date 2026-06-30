@@ -112,6 +112,9 @@ export async function POST(req: NextRequest) {
       retrievalAnswerActive
         ? (/X2 Markets Intelligence/.test(answerText) ? "X2 Markets Intelligence" : "HX2 Retrieval Intelligence")
         : "HX2 Master Orchestrator";
+
+    const sourceEvidenceContract = buildSourceEvidenceContract(retrieval);
+
     return NextResponse.json({
       ok: true,
       input,
@@ -119,6 +122,16 @@ export async function POST(req: NextRequest) {
       answer,
       source: responseSource,
       optimized_by: responseOptimizedBy,
+      source_evidence: retrievalAnswerActive ? sourceEvidenceContract.source_evidence : [],
+      source_titles: retrievalAnswerActive ? sourceEvidenceContract.source_titles : [],
+      source_domains: retrievalAnswerActive ? sourceEvidenceContract.source_domains : [],
+      source_urls: retrievalAnswerActive ? sourceEvidenceContract.source_urls : [],
+      retrieval_summary: {
+        retrieval_active: Boolean((retrieval as any)?.retrieval_active),
+        retrieval_mode: String((retrieval as any)?.retrieval_mode || ""),
+        source_count: sourceEvidenceContract.source_count,
+        evidence_count: retrievalAnswerActive ? sourceEvidenceContract.source_evidence.length : 0
+      },
       reply: answer,
       message: answer,
       content: answer,
@@ -142,4 +155,5 @@ export async function POST(req: NextRequest) {
     }, { status: 500 });
   }
 }
+
 
