@@ -92,7 +92,7 @@ function Add-TrustPart {
     return
   }
 
-  $Text = String($Value).Trim()
+  $Text = ([string]$Value).Trim()
 
   if ($Text.Length -gt 0) {
     $Parts.Add($Text) | Out-Null
@@ -178,7 +178,7 @@ foreach ($Case in $Cases) {
     $TrustSurface = Get-TrustSurface -Response $Response
 
     $RequiredSurface = "$AnswerText`n$($TrustSurface.Text)"
-    $TrustText = String($TrustSurface.Text).ToLowerInvariant()
+    $TrustText = ([string]$TrustSurface.Text).ToLowerInvariant()
 
     $HasRequired = Test-AnyMatch -Text $RequiredSurface -Needles $Case.RequiredAny
     $HasHighTrust = Test-AnyMatch -Text $TrustText -Needles $HighTrustIndicators
@@ -243,4 +243,5 @@ if ($Strict -and ($WatchlistRows -gt 0 -or $UnknownRows -gt 0)) {
 }
 
 Write-Host "GREEN: HX2 retrieval source trust radar passed."
+
 
