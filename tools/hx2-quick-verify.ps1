@@ -175,7 +175,7 @@ if ($Compact) {
 Write-Host ""
 Write-Host ("HX2 QUICK VERIFY PASSED ({0} ms total)" -f $overall.ElapsedMilliseconds) -ForegroundColor Green
 
-Write-Host "`n== RETRIEVAL QUALITY VERIFY BUNDLE =="
+Write-Host "`n== STRICT RETRIEVAL QUALITY VERIFY BUNDLE =="
 $RetrievalVerifyBundle = Join-Path $PSScriptRoot "retrieval-quality\hx2-retrieval-quality-verify-bundle.ps1"
 
 if (-not (Test-Path $RetrievalVerifyBundle)) {
@@ -183,14 +183,14 @@ if (-not (Test-Path $RetrievalVerifyBundle)) {
 }
 
 $global:LASTEXITCODE = 0
-powershell -NoProfile -ExecutionPolicy Bypass -File $RetrievalVerifyBundle
+powershell -NoProfile -ExecutionPolicy Bypass -File $RetrievalVerifyBundle -StrictTrust
 $RetrievalVerifyExitCode = $LASTEXITCODE
 
 if ($RetrievalVerifyExitCode -ne 0) {
   throw "Retrieval quality verify bundle failed with exit code $RetrievalVerifyExitCode."
 }
 
-Write-Host "GREEN: retrieval quality verify bundle passed"
+Write-Host "GREEN: strict retrieval quality verify bundle passed"
 
 
 Write-Hx2VerifyRunLog "HX2 quick verify completed successfully"
@@ -199,7 +199,7 @@ Write-Hx2VerifyRunLog ("Guard count: {0}" -f $results.Count)
 Write-Hx2VerifyRunLog ("Compact mode: {0}" -f ([bool]$Compact))
 Write-Hx2VerifyRunLog ("Fast mode: {0}" -f ([bool]$Fast))
 Write-Hx2VerifyRunLog ("Verify mode label: {0}" -f $VerifyModeLabel)
-Write-Hx2VerifyRunLog "Retrieval quality verify bundle: passed"
+Write-Hx2VerifyRunLog "Strict retrieval quality verify bundle: passed"
 Write-Hx2VerifyRunLog "Slow-guard radar:"
 
 foreach ($item in ($results | Sort-Object Milliseconds -Descending | Select-Object -First $SlowGuardCount)) {
@@ -207,6 +207,7 @@ foreach ($item in ($results | Sort-Object Milliseconds -Descending | Select-Obje
 }
 
 Write-Host "GREEN: verify run log written to $VerifyRunLog"
+
 
 
 
