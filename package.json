@@ -182,7 +182,9 @@
     "hx2:retrieval:evidence-domain": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/retrieval-quality/hx2-source-evidence-domain-normalization-guard.ps1",
     "hx2:retrieval:evidence-publisher": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/retrieval-quality/hx2-source-evidence-publisher-attribution-guard.ps1",
     "hx2:retrieval:definition-source": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/retrieval-quality/hx2-authoritative-definition-source-preference-guard.ps1",
-    "dev2:team:manifest:guard": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-team-sprint-manifest-guard.ps1"
+    "dev2:team:manifest:guard": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-team-sprint-manifest-guard.ps1",
+    "dev2:team:preview": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-team-sprint-preview.ps1",
+    "dev2:team:preview:guard": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev2-team-sprint-preview-guard.ps1"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
