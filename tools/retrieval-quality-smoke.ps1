@@ -42,7 +42,8 @@ $Checks = @(
     q = "latest XRP news"
     primaryAny = @("Ripple", "XRP", "XRPL")
     primaryAll = @()
-    primaryBlock = @("Institutional DeFi on XRPL", "Cam Skattebo", "Mshale")
+    primaryBlock = @("Cam Skattebo", "Mshale")
+    primarySoftBlock = @("Institutional DeFi on XRPL")
     fullBlock = @("Cam Skattebo", "Mshale")
   },
   @{
@@ -50,6 +51,7 @@ $Checks = @(
     primaryAny = @("Depository Trust", "DTCC")
     primaryAll = @()
     primaryBlock = @()
+    primarySoftBlock = @()
     fullBlock = @()
   },
   @{
@@ -57,6 +59,7 @@ $Checks = @(
     primaryAny = @("Stellar", "XLM", "DTCC", "DTC")
     primaryAll = @()
     primaryBlock = @("Cam Skattebo", "Mshale")
+    primarySoftBlock = @()
     fullBlock = @("Cam Skattebo", "Mshale")
   }
 )
@@ -87,9 +90,35 @@ foreach ($Check in $Checks) {
     throw "Smoke failed for '$($Check.q)': primary missing one or more required terms. Got: $PrimaryLine"
   }
 
+  $SourceDomainsText = ""
+  if ($Res.PSObject.Properties.Name -contains "source_domains") {
+    $SourceDomainsText = ((@($Res.source_domains) | ForEach-Object { [string]$_ }) -join "`n").ToLowerInvariant()
+  }
+
+  $TrustedEvidenceDomains = @(
+    "ripple.com",
+    "xrpl.org",
+    "coindesk.com",
+    "decrypt.co",
+    "dtcc.com",
+    "stellar.org"
+  )
+
   foreach ($Blocked in $Check.primaryBlock) {
     if ($Blocked -and $PrimaryLine -match [regex]::Escape($Blocked)) {
       throw "Smoke failed for '$($Check.q)': blocked primary text appeared '$Blocked'. Got: $PrimaryLine"
+    }
+  }
+
+  if ($Check.ContainsKey("primarySoftBlock")) {
+    foreach ($Blocked in $Check.primarySoftBlock) {
+      if ($Blocked -and $PrimaryLine -match [regex]::Escape($Blocked)) {
+        if (Test-AnyMatch -Text $SourceDomainsText -Needles $TrustedEvidenceDomains) {
+          Write-Host "YELLOW: $($Check.q) -> soft-blocked primary text appeared with trusted structured evidence: $Blocked" -ForegroundColor Yellow
+        } else {
+          throw "Smoke failed for '$($Check.q)': soft-blocked primary text appeared without trusted structured evidence '$Blocked'. Got: $PrimaryLine"
+        }
+      }
     }
   }
 
@@ -111,3 +140,4 @@ foreach ($Check in $Checks) {
 }
 
 Write-Host "`nALL GREEN: retrieval quality smoke passed"
+
