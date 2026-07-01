@@ -103,6 +103,91 @@ if ($Fast) {
   )
 }
 
+
+function Test-Hx2GuardInProcessCandidate {
+  param([string]$GuardPath)
+
+  if (-not (Test-Path $GuardPath)) {
+    return $false
+  }
+
+  $Raw = Get-Content $GuardPath -Raw
+
+  $UnsafePatterns = @(
+    '(?m)^\s*exit\b',
+    '\$global:',
+    '(?i)\bSet-Location\b',
+    '(?m)^\s*cd\s+',
+    '(?i)\bStart-Process\b',
+    '(?i)\bpowershell(\.exe)?\b',
+    '(?i)\bpwsh(\.exe)?\b',
+    '(?i)\bnpm\s+',
+    '(?i)\bnpx\s+',
+    '(?i)\btsc(\.cmd)?\b',
+    '(?i)\bnext\s+build\b',
+    '(?i)\bprisma\s+',
+    '(?i)\bgit\s+'
+  )
+
+  foreach ($Pattern in $UnsafePatterns) {
+    if ($Raw -match $Pattern) {
+      return $false
+    }
+  }
+
+  return $true
+}
+
+function Invoke-Hx2QuickGuard {
+  param(
+    [string]$Guard,
+    [bool]$Compact,
+    [string]$LogFile
+  )
+
+  $UseInProcess = Test-Hx2GuardInProcessCandidate -GuardPath $Guard
+  $RunnerMode = if ($UseInProcess) { "in-process" } else { "isolated" }
+
+  if ($UseInProcess) {
+    try {
+      if ($Compact -and $LogFile) {
+        & $Guard *> $LogFile
+      } else {
+        & $Guard
+      }
+
+      return [pscustomobject]@{
+        ExitCode = 0
+        RunnerMode = $RunnerMode
+      }
+    } catch {
+      if ($Compact -and $LogFile) {
+        Add-Content -Path $LogFile -Value ($_ | Out-String)
+      } else {
+        Write-Host $_
+      }
+
+      return [pscustomobject]@{
+        ExitCode = 1
+        RunnerMode = $RunnerMode
+      }
+    }
+  }
+
+  if ($Compact -and $LogFile) {
+    powershell -NoProfile -ExecutionPolicy Bypass -File $Guard *> $LogFile
+    $ExitCode = $LASTEXITCODE
+  } else {
+    powershell -NoProfile -ExecutionPolicy Bypass -File $Guard
+    $ExitCode = $LASTEXITCODE
+  }
+
+  return [pscustomobject]@{
+    ExitCode = $ExitCode
+    RunnerMode = $RunnerMode
+  }
+}
+
 foreach ($guard in $guards) {
   if (!(Test-Path $guard)) {
     throw "Missing quick guard: $guard"
@@ -142,7 +227,7 @@ foreach ($guard in $guards) {
   }
 
   if ($Compact) {
-    Write-Host ("GREEN: {0} ({1} ms)" -f $guardName, $sw.ElapsedMilliseconds)
+    Write-Host ("GREEN: {0} ({1} ms, {2})" -f $guardName, $sw.ElapsedMilliseconds, $runnerMode)
   } else {
     Write-Host ("Completed in {0} ms" -f $sw.ElapsedMilliseconds) -ForegroundColor DarkGray
   }
@@ -208,6 +293,7 @@ foreach ($item in ($results | Sort-Object Milliseconds -Descending | Select-Obje
 }
 
 Write-Host "GREEN: verify run log written to $VerifyRunLog"
+
 
 
 
