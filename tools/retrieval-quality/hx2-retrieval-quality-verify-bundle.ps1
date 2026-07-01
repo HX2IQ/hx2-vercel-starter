@@ -9,7 +9,7 @@ Write-Host ""
 Write-Host "== HX2 RETRIEVAL QUALITY VERIFY BUNDLE =="
 Write-Host "Base: $Base"
 Write-Host "StrictTrust: $StrictTrust"
-Write-Host "Mode: retrieval relevance + source trust + source evidence"
+Write-Host "Mode: retrieval relevance + source trust + source evidence + definition source authority"
 Write-Host "Secrets printed: false"
 
 $Results = @()
@@ -63,6 +63,7 @@ $ScoringGuardFile = ".\tools\retrieval-quality\hx2-retrieval-source-trust-scorin
 $EvidenceContractGuardFile = ".\tools\retrieval-quality\hx2-source-evidence-contract-guard.ps1"
 $EvidenceDomainGuardFile = ".\tools\retrieval-quality\hx2-source-evidence-domain-normalization-guard.ps1"
 $EvidencePublisherGuardFile = ".\tools\retrieval-quality\hx2-source-evidence-publisher-attribution-guard.ps1"
+$DefinitionSourceGuardFile = ".\tools\retrieval-quality\hx2-authoritative-definition-source-preference-guard.ps1"
 
 $RequiredFiles = @(
   @{ Label = "retrieval quality smoke"; Path = $SmokeFile },
@@ -70,7 +71,8 @@ $RequiredFiles = @(
   @{ Label = "retrieval source trust scoring guard"; Path = $ScoringGuardFile },
   @{ Label = "source evidence contract guard"; Path = $EvidenceContractGuardFile },
   @{ Label = "source evidence domain normalization guard"; Path = $EvidenceDomainGuardFile },
-  @{ Label = "source evidence publisher attribution guard"; Path = $EvidencePublisherGuardFile }
+  @{ Label = "source evidence publisher attribution guard"; Path = $EvidencePublisherGuardFile },
+  @{ Label = "authoritative definition source preference guard"; Path = $DefinitionSourceGuardFile }
 )
 
 foreach ($RequiredFile in $RequiredFiles) {
@@ -83,7 +85,7 @@ Run-Step -Label "Retrieval quality smoke" -Meaning "Confirms live retrieval stil
   & $SmokeFile -Base $Base
 }
 
-Run-Step -Label "Retrieval source trust radar" -Meaning "Classifies source quality and flags watchlist sources without failing non-strict mode." -Command {
+Run-Step -Label "Retrieval source trust radar" -Meaning "Classifies source quality using curated source evidence and flags watchlist or unknown trust state." -Command {
   if ($StrictTrust) {
     & $TrustFile -Base $Base -Strict
   } else {
@@ -107,6 +109,10 @@ Run-Step -Label "Source evidence publisher attribution guard" -Meaning "Confirms
   & $EvidencePublisherGuardFile
 }
 
+Run-Step -Label "Authoritative definition source preference guard" -Meaning "Confirms definition-only retrieval includes local authoritative definitions before Wikipedia so official domains can rank first." -Command {
+  & $DefinitionSourceGuardFile
+}
+
 Write-Host ""
 Write-Host "RETRIEVAL QUALITY VERIFY RESULTS"
 $Results | Format-Table -AutoSize
@@ -120,7 +126,7 @@ Write-Host "RETRIEVAL QUALITY VERIFY SUMMARY"
   Green = $Green
   Red = $Red
   StrictTrust = [bool]$StrictTrust
-  Meaning = "This bundle verifies retrieval relevance, source trust, runtime source scoring, and structured source evidence integrity."
+  Meaning = "This bundle verifies retrieval relevance, source trust, runtime source scoring, structured source evidence integrity, and authoritative definition source preference."
 } | Format-List
 
 if ($Red -gt 0) {
