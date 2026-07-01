@@ -1,0 +1,120 @@
+{
+  "version": "1.0",
+  "phase": "2.17",
+  "phase_mode": "team",
+  "sprint_id": "TEAM-SPRINT-TEMPLATE",
+  "objective": "Bundle compatible work safely by lane so HX2 can build faster without weakening verification.",
+  "lanes": [
+    {
+      "lane_id": "ARCH",
+      "role": "Architect",
+      "ownership": "Architecture boundaries, dependency map, hot-file risk, acceptance criteria.",
+      "risk_class": "medium",
+      "verify_tier": "full",
+      "files": [
+        "tools/DEV2-TEAM-BUILD-ACCELERATOR-CHARTER.md"
+      ],
+      "dependencies": []
+    },
+    {
+      "lane_id": "PLAN",
+      "role": "Planner",
+      "ownership": "Sprint manifest, sequencing, task breakdown, rollback notes.",
+      "risk_class": "medium",
+      "verify_tier": "full",
+      "files": [
+        "tools/dev2-team-sprint-manifest.template.json"
+      ],
+      "dependencies": [
+        "ARCH"
+      ]
+    },
+    {
+      "lane_id": "IMPL",
+      "role": "Implementer",
+      "ownership": "Patch execution using structured mutation mode and file ownership boundaries.",
+      "risk_class": "high",
+      "verify_tier": "build",
+      "files": [
+        "app/api/hx2/<feature>/route.ts",
+        "app/api/hx2/_lib/<feature-module>.ts"
+      ],
+      "dependencies": [
+        "ARCH",
+        "PLAN"
+      ]
+    },
+    {
+      "lane_id": "QA",
+      "role": "QA",
+      "ownership": "Guard coverage, smoke checks, strict retrieval trust, benchmark, failure triage.",
+      "risk_class": "high",
+      "verify_tier": "strict",
+      "files": [
+        "tools/<feature>-guard.ps1",
+        "tools/retrieval-quality/<retrieval-guard>.ps1"
+      ],
+      "dependencies": [
+        "IMPL"
+      ]
+    },
+    {
+      "lane_id": "REL",
+      "role": "Release Manager",
+      "ownership": "Git status, diff review, commit grouping, push decision, deploy readiness.",
+      "risk_class": "medium",
+      "verify_tier": "full",
+      "files": [
+        "package.json",
+        "tools/hx2-quick-verify.ps1"
+      ],
+      "dependencies": [
+        "QA"
+      ]
+    },
+    {
+      "lane_id": "DOCS",
+      "role": "Docs",
+      "ownership": "Closeout snapshot, runbook updates, handoff notes.",
+      "risk_class": "low",
+      "verify_tier": "fast",
+      "files": [
+        "tools/<phase-closeout>.md"
+      ],
+      "dependencies": [
+        "REL"
+      ]
+    }
+  ],
+  "coordination": {
+    "hot_files": [
+      {
+        "path": "package.json",
+        "owner_lane": "REL",
+        "reason": "Package script wiring must be release-managed."
+      },
+      {
+        "path": "tools/hx2-quick-verify.ps1",
+        "owner_lane": "REL",
+        "reason": "Quick verify changes affect release safety gates."
+      },
+      {
+        "path": "app/api/hx2/_lib/unified-retrieval.ts",
+        "owner_lane": "IMPL",
+        "reason": "Retrieval runtime changes require strict retrieval trust."
+      }
+    ],
+    "release_policy": [
+      "No commit unless required lane verification passes.",
+      "No push unless working tree is reviewed and expected files are staged.",
+      "No production deploy without explicit approval."
+    ],
+    "handoff_rules": [
+      "Architect defines boundaries before implementation.",
+      "Planner declares file ownership before patching.",
+      "QA verifies before Release Manager commits.",
+      "Docs lane closes the phase after repo lock."
+    ]
+  }
+}
+
