@@ -85,6 +85,21 @@ function Test-Hx2SmokeResult {
       Reason = "primary missing one or more required terms"
     }
   }
+  if ($Check.ContainsKey("requiredAssetAny") -and $Check.requiredAssetAny.Count -gt 0 -and -not (Test-AnyMatch -Text $PrimaryLine -Needles $Check.requiredAssetAny)) {
+    return [pscustomobject]@{
+      Passed = $false
+      PrimaryLine = $PrimaryLine
+      Reason = "primary missing required asset terms"
+    }
+  }
+
+  if ($Check.ContainsKey("requiredContextAny") -and $Check.requiredContextAny.Count -gt 0 -and -not (Test-AnyMatch -Text $PrimaryLine -Needles $Check.requiredContextAny)) {
+    return [pscustomobject]@{
+      Passed = $false
+      PrimaryLine = $PrimaryLine
+      Reason = "primary missing required context terms"
+    }
+  }
 
   $SourceDomainsText = ""
   if ($Res.PSObject.Properties.Name -contains "source_domains") {
@@ -189,7 +204,9 @@ $Checks = @(
       "XLM Stellar DTCC DTC tokenization update",
       "Stellar DTC DTCC crypto tokenization update"
     )
-    primaryAny = @("Stellar", "XLM", "DTCC", "DTC")
+    primaryAny = @()
+    requiredAssetAny = @("Stellar", "XLM")
+    requiredContextAny = @("DTCC", "DTC", "tokenization", "tokenized")
     primaryAll = @()
     primaryBlock = @("Cam Skattebo", "Mshale")
     primarySoftBlock = @()
@@ -237,4 +254,5 @@ foreach ($Check in $Checks) {
 }
 
 Write-Host "`nALL GREEN: retrieval quality smoke passed"
+
 
