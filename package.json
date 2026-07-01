@@ -180,7 +180,8 @@
     "hx2:retrieval:source-trust:scoring": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/retrieval-quality/hx2-retrieval-source-trust-scoring-guard.ps1",
     "hx2:retrieval:evidence-contract": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/retrieval-quality/hx2-source-evidence-contract-guard.ps1",
     "hx2:retrieval:evidence-domain": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/retrieval-quality/hx2-source-evidence-domain-normalization-guard.ps1",
-    "hx2:retrieval:evidence-publisher": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/retrieval-quality/hx2-source-evidence-publisher-attribution-guard.ps1"
+    "hx2:retrieval:evidence-publisher": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/retrieval-quality/hx2-source-evidence-publisher-attribution-guard.ps1",
+    "hx2:retrieval:definition-source": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/retrieval-quality/hx2-authoritative-definition-source-preference-guard.ps1"
   },
   "dependencies": {
     "@prisma/client": "6.19.1",
