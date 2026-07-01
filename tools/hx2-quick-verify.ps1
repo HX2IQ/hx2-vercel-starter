@@ -246,12 +246,27 @@ if ($Compact) {
       Sort-Object Milliseconds -Descending |
       Select-Object -First $SlowGuardCount
 
+  $runnerSummary =
+    $results |
+      Group-Object RunnerMode |
+      Select-Object Name, Count
+
+  if ($runnerSummary.Count -gt 0) {
+    Write-Host ""
+    Write-Host "RUNNER MODE SUMMARY" -ForegroundColor Cyan
+
+    foreach ($mode in $runnerSummary) {
+      $modeName = if ([string]::IsNullOrWhiteSpace([string]$mode.Name)) { "unknown" } else { [string]$mode.Name }
+      Write-Host ("- {0}: {1}" -f $modeName, $mode.Count)
+    }
+  }
   if ($slowest.Count -gt 0) {
     Write-Host ""
     Write-Host ("SLOW-GUARD RADAR: top {0}" -f $SlowGuardCount) -ForegroundColor Cyan
 
     foreach ($item in $slowest) {
-      Write-Host ("- {0}: {1} ms" -f $item.Guard, $item.Milliseconds)
+      $itemMode = if ([string]::IsNullOrWhiteSpace([string]$item.RunnerMode)) { "unknown" } else { [string]$item.RunnerMode }
+      Write-Host ("- {0}: {1} ms ({2})" -f $item.Guard, $item.Milliseconds, $itemMode)
     }
   }
 } else {
@@ -287,12 +302,21 @@ Write-Hx2VerifyRunLog ("Fast mode: {0}" -f ([bool]$Fast))
 Write-Hx2VerifyRunLog ("Verify mode label: {0}" -f $VerifyModeLabel)
 Write-Hx2VerifyRunLog "Strict retrieval quality verify bundle: passed"
 Write-Hx2VerifyRunLog "Slow-guard radar:"
+Write-Hx2VerifyRunLog "Runner mode summary:"
+foreach ($mode in ($results | Group-Object RunnerMode | Select-Object Name, Count)) {
+  $modeName = if ([string]::IsNullOrWhiteSpace([string]$mode.Name)) { "unknown" } else { [string]$mode.Name }
+  Write-Hx2VerifyRunLog ("- {0}: {1}" -f $modeName, $mode.Count)
+}
+
 
 foreach ($item in ($results | Sort-Object Milliseconds -Descending | Select-Object -First $SlowGuardCount)) {
-  Write-Hx2VerifyRunLog ("- {0}: {1} ms" -f $item.Guard, $item.Milliseconds)
+  $itemMode = if ([string]::IsNullOrWhiteSpace([string]$item.RunnerMode)) { "unknown" } else { [string]$item.RunnerMode }
+  Write-Hx2VerifyRunLog ("- {0}: {1} ms ({2})" -f $item.Guard, $item.Milliseconds, $itemMode)
 }
 
 Write-Host "GREEN: verify run log written to $VerifyRunLog"
+
+
 
 
 
