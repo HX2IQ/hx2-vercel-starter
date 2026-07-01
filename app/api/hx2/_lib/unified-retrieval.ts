@@ -899,12 +899,18 @@ export async function retrieveContext(
   const liveWebResults =
     liveWebResultGroups.flat();
 
+  const localDefinitions =
+    definitionOnly
+      ? localDefinitionFallback(normalized)
+      : [];
+
   const authoritativeDefinitions =
-    wikiResults.length > 0
-      ? wikiResults
-      : definitionOnly
-        ? localDefinitionFallback(normalized)
-        : [];
+    definitionOnly
+      ? [
+          ...localDefinitions,
+          ...wikiResults
+        ]
+      : wikiResults;
 
   const allSources =
     rankSourcesForQuery(query, [

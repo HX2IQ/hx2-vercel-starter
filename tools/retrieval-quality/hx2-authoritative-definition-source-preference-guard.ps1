@@ -18,9 +18,10 @@ $Markers = @(
   @{ Name = "DTCC local definition exists"; Text = '"depository trust & clearing corporation"' },
   @{ Name = "DTCC official URL exists"; Text = 'url: "https://www.dtcc.com/"' },
   @{ Name = "localDefinitions variable"; Text = "const localDefinitions =" },
-  @{ Name = "definitionOnly uses local fallback"; Text = "? localDefinitionFallback(normalized)" },
-  @{ Name = "authoritative definitions preserve definition branch"; Text = "definitionOnly" },
-  @{ Name = "local definitions spread before wiki"; Text = "...localDefinitions," },
+  @{ Name = "definition-only local fallback"; Text = "localDefinitionFallback(normalized)" },
+  @{ Name = "authoritativeDefinitions variable"; Text = "const authoritativeDefinitions =" },
+  @{ Name = "definitionOnly branch preserved"; Text = "definitionOnly" },
+  @{ Name = "local definitions before wiki"; Text = "...localDefinitions," },
   @{ Name = "wiki definitions preserved"; Text = "...wikiResults" },
   @{ Name = "definition sources still ranked"; Text = "rankSourcesForQuery(query, [" },
   @{ Name = "DTCC trust boost preserved"; Text = "dtcc.com" }
