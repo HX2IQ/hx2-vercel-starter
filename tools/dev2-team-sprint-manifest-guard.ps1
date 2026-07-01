@@ -71,11 +71,11 @@ foreach ($Lane in $Lanes) {
   }
 
   if ($AllowedRisk -notcontains $Risk) {
-    $RiskFailures += "$LaneId:$Risk"
+    $RiskFailures += "${LaneId}:$Risk"
   }
 
   if ($AllowedVerify -notcontains $Verify) {
-    $VerifyFailures += "$LaneId:$Verify"
+    $VerifyFailures += "${LaneId}:$Verify"
   }
 
   if ($Files.Count -lt 1) {
@@ -146,4 +146,5 @@ if ($Red -gt 0) {
 }
 
 Write-Host "GREEN: DEV2 team sprint manifest guard passed."
+
 
