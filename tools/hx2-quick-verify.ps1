@@ -83,7 +83,8 @@ $guards = @(
   ".\tools\orchestrator\hx2-orchestrator-guard-bundle.ps1",
   ".\tools\chat-master\chat-master-status-guard.ps1",
   ".\tools\owner-console-layout-guard.ps1",
-  ".\tools\owner-console-panel-order-guard.ps1"
+  ".\tools\owner-console-panel-order-guard.ps1",
+  ".\tools\dev2-team-sprint-manifest-guard.ps1"
 )
 
 
@@ -207,6 +208,7 @@ foreach ($item in ($results | Sort-Object Milliseconds -Descending | Select-Obje
 }
 
 Write-Host "GREEN: verify run log written to $VerifyRunLog"
+
 
 
 
