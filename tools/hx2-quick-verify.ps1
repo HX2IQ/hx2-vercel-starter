@@ -189,24 +189,25 @@ function Invoke-Hx2QuickGuard {
 }
 
 foreach ($guard in $guards) {
-  if (!(Test-Path $guard)) {
-    throw "Missing quick guard: $guard"
-  }
-
-  $sw = [System.Diagnostics.Stopwatch]::StartNew()
   $guardName = Split-Path $guard -Leaf
+  $sw = [Diagnostics.Stopwatch]::StartNew()
   $logFile = $null
+  $runnerMode = "unknown"
+  $exitCode = 1
 
   if ($Compact) {
     $logFile = Join-Path $env:TEMP ("hx2-quick-" + $guardName + ".log")
-    powershell -NoProfile -ExecutionPolicy Bypass -File $guard *> $logFile
-    $exitCode = $LASTEXITCODE
   } else {
     Write-Host ""
     Write-Host "Running $guard" -ForegroundColor Yellow
+  }
 
-    powershell -NoProfile -ExecutionPolicy Bypass -File $guard
-    $exitCode = $LASTEXITCODE
+  $guardRun = Invoke-Hx2QuickGuard -Guard $guard -Compact:([bool]$Compact) -LogFile $logFile
+  $exitCode = [int]$guardRun.ExitCode
+  $runnerMode = if ([string]::IsNullOrWhiteSpace([string]$guardRun.RunnerMode)) {
+    "unknown"
+  } else {
+    [string]$guardRun.RunnerMode
   }
 
   $sw.Stop()
@@ -214,22 +215,21 @@ foreach ($guard in $guards) {
   $results += [pscustomobject]@{
     Guard = $guardName
     Milliseconds = $sw.ElapsedMilliseconds
+    RunnerMode = $runnerMode
   }
 
   if ($exitCode -ne 0) {
     if ($Compact -and $logFile -and (Test-Path $logFile)) {
       Write-Host ""
-      Write-Host "FAILED LOG: $guardName" -ForegroundColor Red
-      Get-Content $logFile
+      Write-Host "RED: $guardName failed. Log tail:" -ForegroundColor Red
+      Get-Content $logFile -Tail 80
     }
 
-    throw "Quick verify failed: $guard"
+    throw "Guard failed: $guardName"
   }
 
   if ($Compact) {
     Write-Host ("GREEN: {0} ({1} ms, {2})" -f $guardName, $sw.ElapsedMilliseconds, $runnerMode)
-  } else {
-    Write-Host ("Completed in {0} ms" -f $sw.ElapsedMilliseconds) -ForegroundColor DarkGray
   }
 }
 
@@ -315,6 +315,7 @@ foreach ($item in ($results | Sort-Object Milliseconds -Descending | Select-Obje
 }
 
 Write-Host "GREEN: verify run log written to $VerifyRunLog"
+
 
 
 
